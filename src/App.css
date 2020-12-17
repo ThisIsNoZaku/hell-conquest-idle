@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  height: 100vh;
 }
 
 .App-logo {
@@ -35,4 +36,25 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  0% {
+    color: red
+  }
+  50% {
+    color: black
+  }
+  100% {
+    color: red
+  }
+}
+
+.MuiTooltip-tooltip > * {
+  font-size: 14pt;
+  line-height: 125%;
 }
