@@ -7,7 +7,6 @@ import {getCharacter} from "../engine";
 
 const styles = {
     root: {
-        height: "100%",
         display: "flex",
         flex: "1 0 auto",
         justifyContent: "flex-end",
@@ -67,15 +66,15 @@ function printActionItem(item) {
     switch (item.result) {
         case "hit":
             return <div key={item.uuid}>
-                {`${item.tick}: ${item.actor.name} hit! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.target).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
             </div>
         case "miss":
             return <div key={item.uuid}>
-                {`${item.tick}: ${item.actor.name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.target).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
             </div>
         case "kill":
             return <div key={item.uuid}>
-                <strong>{item.target.name === "You" ? `${item.tick}:${item.target.name} Were Killed!` : `${item.tick}:${item.target.name} Was Killed!`}</strong>
+                <strong>{getCharacter(item.target).name === "You" ? `${item.tick}:${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
             </div>
         case "gainedPower":
             return <div key={item.uuid}>
@@ -83,7 +82,7 @@ function printActionItem(item) {
             </div>
         case "healed":
             return <div key={item.uuid}>
-                {`${item.target.name} gained ${item.value} health.`}
+                {`${getCharacter(item.target).name} gained ${item.value} health.`}
             </div>
         case "escaped":
             return <div key={item.uuid}>
