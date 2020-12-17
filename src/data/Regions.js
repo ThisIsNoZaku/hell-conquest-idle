@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import {generateCreature} from "../engine";
 import {config} from "../config";
 import Big from "big.js";
+import {debugMessage} from "../debugging";
 
 class Region {
     constructor(name, available, encounters, background) {
@@ -11,10 +12,16 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        const minimumLevel = player.powerLevel - config.encounters.lesserLevelScale * 2;
+        const minimumLevel = Math.max(1, player.powerLevel - config.encounters.lesserLevelScale * 2);
         const maximumLevel = player.powerLevel + config.encounters.greaterLevelScale * 2;
+        if(config.debug) {
+            debugMessage(`Generating an encounter between ${minimumLevel} and ${maximumLevel} `);
+        }
         const encounterLevelModifier = minimumLevel + Math.floor(rng.double() * (maximumLevel - minimumLevel));
         const encounterLevel = Big(Math.max(1, encounterLevelModifier));
+        if(config.debug) {
+            debugMessage(`Generated encounter level is ${encounterLevel}`);
+        }
         const encounterDef = chooseRandomEncounter(this.encounters);
         const encounter = {
             encounterLevel,
