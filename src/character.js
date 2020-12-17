@@ -70,6 +70,10 @@ export class Character {
     get absorbedPower() {
         return this._absorbedPower;
     }
+
+    set absorbedPower(value){
+        this._absorbedPower = value;
+    }
 }
 
 class Attributes {
