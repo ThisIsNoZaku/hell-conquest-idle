@@ -2,7 +2,7 @@ import Grid from "@material-ui/core/Grid";
 import React, {useRef} from "react";
 import {Creatures} from "../../data/creatures";
 import Button from "@material-ui/core/Button";
-import {getCharacter, getGlobalState, getSpriteForCreature} from "../../engine";
+import {getCharacter, getGlobalState, getLevelForPower, getSpriteForCreature} from "../../engine";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../data/Traits";
 import * as _ from "lodash";
@@ -20,7 +20,7 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with <strong>{player.powerLevel.minus(1).toFixed()}</strong> additional stored energy, letting you start at level { player.powerLevel.minus(1).plus(globalState.current.startingPower).toFixed()}
+            You will reincarnate with <strong>{player.powerLevel.minus(1).toFixed()}</strong> additional starting energy, letting you start at level { getLevelForPower(globalState.current.startingPower.plus(player.powerLevel)).toFixed()}
             <br/>
             You will also gain the following Traits as a result of your previous reincarnations:
             <ul>
