@@ -17,7 +17,7 @@ export const Traits = {
     cupidity: {
         name: "Cupidity",
         icon: "icons/icons-2503.png",
-        description: _.template("When this demon Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to take the intimidated demon's Artifacts as though it were killed."),
+        description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to take the intimidated demon's Artifacts as though it were killed."),
         on_intimidate: {
             effects: {
                 steal_item_chance: "$rank"
