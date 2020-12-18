@@ -301,14 +301,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 }
 
 function resolveMiss(tick, combatResult, actingCharacter, targetCharacter, rng) {
-    combatResult.rounds.push({
-        uuid: v4(),
-        tick,
-        target: targetCharacter,
-        actor: actingCharacter,
-        result: "miss",
-        effects: []
-    });
+    combatResult.rounds.push(generateMissCombatResult(tick, targetCharacter, actingCharacter));
 }
 
 function generateItem() {
