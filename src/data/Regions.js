@@ -12,7 +12,7 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        const minimumLevel = Math.max(1, player.powerLevel - config.encounters.lesserLevelScale * 2);
+        const minimumLevel = 1;
         const maximumLevel = player.powerLevel + config.encounters.greaterLevelScale * 2;
         if(config.debug) {
             debugMessage(`Generating an encounter between ${minimumLevel} and ${maximumLevel} `);
