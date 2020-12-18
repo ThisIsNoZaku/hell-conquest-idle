@@ -370,23 +370,36 @@ export function getLevelForPower(powerPoints) {
 }
 
 export function reincarnateAs(monsterId) {
-    if(monsterId === "random") {
+    const player = getCharacter(0);
+    // Improve your starting traits
+    const currentDemon = Creatures[player.appearance];
+    if(currentDemon) {
+        currentDemon.traits.forEach(trait => {
+            if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
+                globalState.startingTraits[trait] = player.powerLevel;
+            }
+        });
+    }
+
+    if (monsterId === "random") {
         const options = _.difference(Object.keys(Creatures), Object.keys(globalState.unlockedMonsters)
             .filter(m => globalState.unlockedMonsters[m]));
         monsterId = options[Math.floor(Math.random() * options.length)];
-        globalState.unlockedMonsters[monsterId] = true;
     }
-    // Improve your starting traits
-    if(globalState.characters[0].powerLevel > 1) {
-        Object.keys(globalState.characters[0].traits).forEach(trait => {
-            globalState.startingTraits = _.get(globalState.startingTraits, trait, 0) + globalState.characters[0].traits[trait] / 10;
-        });
-    }
+
+    // Gain the traits of your new demon
+    Creatures[monsterId].traits.forEach(trait => {
+        if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
+            globalState.startingTraits[trait] = player.powerLevel.toNumber();
+        }
+    });
+
     // Add your level to your starting energy.
     globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1));
-    globalState.absorbedPower = globalState.startingPower;
+    globalState.characters[0].absorbedPower = globalState.startingPower;
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.currentAction = "exploring";
+    globalState.unlockedMonsters[monsterId] = true;
 
     saveGlobalState();
 }
