@@ -231,7 +231,7 @@ export function generateCreature(id, powerLevel, rng) {
             traits[next] = powerLevel;
             return traits;
         }, {}),
-        powerLevel,
+        absorbedPower: getPowerNeededForLevel(powerLevel),
         currentHp: powerLevel.mul(5),
         artifacts: [],
         statuses: [],
