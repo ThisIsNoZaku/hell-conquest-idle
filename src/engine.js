@@ -294,7 +294,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
             case "damage":
                 return `${effect.value} damage`
         }
-        
+
     }).join(", ")}. Target has ${combatResult.combatantCombatStats[targetCharacter].hp} remaining.`)
     // TODO: Trigger on-damage effects
     combatResult.rounds.push(attackResult);
@@ -312,7 +312,7 @@ function applyTrait(trait, rank, event, state, tick) {
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
         const effect = trait[event];
-        if(effect.when !== undefined) {
+        if (effect.when !== undefined) {
             debugMessage("Trait has triggers");
         }
         const effectTriggers = effect.when === undefined || Object.keys(effect.when)
@@ -338,11 +338,11 @@ function applyTrait(trait, rank, event, state, tick) {
                                 const damageModifier = evaluateExpression(trait[event].effects[traitEffect], {
                                     $rank: rank
                                 });
-                                if(Number.isNaN(damageModifier)) {
+                                if (Number.isNaN(damageModifier)) {
                                     throw new Error("Damage modifier somehow was NaN");
                                 }
                                 debugMessage(`Tick ${tick}: Applying ${damageModifier} percentage modifier to damage`);
-                                effect.value = Math.floor(effect.value * ((100 + damageModifier)/100));
+                                effect.value = Math.floor(effect.value * ((100 + damageModifier) / 100));
                             }
                         });
                 }
