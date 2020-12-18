@@ -148,9 +148,7 @@ export function saveGlobalState() {
 export function loadGlobalState(state) {
     const loaded = window.localStorage.getItem(saveKey);
     return loaded ? JSON.parse(loaded, stateReviver) : {
-        unlockedMonsters: {
-            bloodthirstyKnight: false
-        },
+        unlockedMonsters: {},
         paused: true,
         currentAction: "reincarnating",
         nextAction: null,
