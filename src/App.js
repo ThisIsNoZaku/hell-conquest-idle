@@ -23,21 +23,13 @@ import {MemoryRouter, Route, Switch} from "react-router-dom";
 import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectionPage";
 import {Big} from "big.js";
 import TopSection from "./components/TopSection";
+import AdventuringPage from "./components/scene/AdventuringPage";
 
 loadGlobalState();
 
 const rng = seedrandom();
 
 let lastTime;
-
-const styles = {
-    root: {
-        display: "flex",
-        flex: "1",
-        flexDirection: "row",
-        justifyContent: "space-between"
-    }
-}
 
 function changeCurrentAction(newAction) {
     getGlobalState().currentAction = newAction;
@@ -52,7 +44,6 @@ function pushLogItem(item) {
 }
 
 function App() {
-    const [player, setPlayer] = useState(getCharacter(0));
     const [currentEncounter, setCurrentEncounter] = useState(getGlobalState().currentEncounter);
     const accruedTime = useRef(0);
     const manualSpeedUpActive = useRef(false);
@@ -60,14 +51,22 @@ function App() {
     const [currentAction, setCurrentAction] = useState(Actions[getGlobalState().currentAction]);
     const [actionLog, setActionLog] = useState(getGlobalState().actionLog);
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
-    const [tutorials] = useState(getGlobalState().tutorials);
+    const player = useRef(getCharacter(0));
+
+    useEffect(() => {
+        document.addEventListener("keydown", function (e) {
+            if (e.code === "KeyP") {
+                getGlobalState().paused = !getGlobalState().paused;
+            }
+        })
+    }, []);
 
     useEffect(() => {
         function applyAction(action) {
             pushLogItem(action);
             switch (action.result) {
                 case "combat-end":
-                    if (player.currentHp < player.maximumHp) {
+                    if (player.current.currentHp < player.current.maximumHp) {
                         setCurrentAction(Actions[changeCurrentAction("recovering")]);
                     } else {
                         if (config.artifacts.enabled) {
@@ -84,8 +83,7 @@ function App() {
                     }
                     if (action.actor === getCharacter(0) && action.target !== getCharacter(0)) {
                         const player = getCharacter(0);
-                        player.gainPower(action.target.powerLevel);
-                        setPlayer(player);
+                        player.gainPower(getCharacter(action.target).powerLevel.mul(2));
                     }
                     break;
                 case "hit":
@@ -125,28 +123,31 @@ function App() {
                     accruedTime.current = 0;
                     switch (getGlobalState().currentAction) {
                         case "exploring":
-                            getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
-                            setCurrentEncounter(getGlobalState().currentEncounter);
-                            setCurrentAction(Actions[changeCurrentAction("approaching")]);
-                            setPlayer(getCharacter(0));
-                            getGlobalState().nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
-                                if (actionSoFar !== "fighting") {
-                                    return actionSoFar;
-                                }
+                            if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
+                                setCurrentAction(Actions[changeCurrentAction("recovering")]);
+                            } else {
+                                getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
+                                setCurrentEncounter(getGlobalState().currentEncounter);
+                                setCurrentAction(Actions[changeCurrentAction("approaching")]);
+                                getGlobalState().nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
+                                    if (actionSoFar !== "fighting") {
+                                        return actionSoFar;
+                                    }
 
-                                const playerPowerLevel = getCharacter(0).powerLevel;
-                                const lesserPowerLevel = playerPowerLevel.minus(config.encounters.lesserLevelScale);
-                                const greaterPowerLevel = playerPowerLevel.plus(config.encounters.greaterLevelScale);
-                                if (lesserPowerLevel.gte(nextEnemy.powerLevel)) {
-                                    return "intimidating";
-                                } else if (greaterPowerLevel.lte(nextEnemy.powerLevel)) {
-                                    return "fleeing";
-                                } else {
-                                    return "fighting";
-                                }
-                            }, "fighting");
-                            setNextAction(getGlobalState().nextAction);
-                            clearActionLog();
+                                    const playerPowerLevel = getCharacter(0).powerLevel;
+                                    const lesserPowerLevel = playerPowerLevel.minus(config.encounters.lesserLevelScale);
+                                    const greaterPowerLevel = playerPowerLevel.plus(config.encounters.greaterLevelScale);
+                                    if (lesserPowerLevel.gte(nextEnemy.powerLevel)) {
+                                        return "intimidating";
+                                    } else if (greaterPowerLevel.lte(nextEnemy.powerLevel)) {
+                                        return "fleeing";
+                                    } else {
+                                        return "fighting";
+                                    }
+                                }, "fighting");
+                                setNextAction(getGlobalState().nextAction);
+                                clearActionLog();
+                            }
                             break;
                         case "approaching": {
                             const player = getCharacter(0);
@@ -162,7 +163,6 @@ function App() {
                                     });
                                     break;
                             }
-                            setPlayer(player);
                             setNextAction();
                             break;
                         }
@@ -174,7 +174,6 @@ function App() {
                             getGlobalState().currentEncounter = null;
                             setCurrentEncounter(null);
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            setPlayer(player);
                             pushLogItem({
                                 result: "escaped",
                                 uuid: v4()
@@ -190,7 +189,6 @@ function App() {
                                 const nextAction = getGlobalState().currentEncounter.pendingActions.shift();
                                 applyAction(nextAction);
                                 setActionLog([...getGlobalState().actionLog]);
-                                setPlayer(getCharacter(0));
                             } else {
                                 setCurrentAction(Actions[changeCurrentAction("fleeing")]);
                             }
@@ -208,16 +206,13 @@ function App() {
                             if (player.currentHp.lt(player.maximumHp)) {
                                 const amountToHeal = player.healing;
                                 player.currentHp = player.currentHp.plus(amountToHeal);
-                                setPlayer(player);
                                 pushLogItem({
-                                    target: {
-                                        name: "You"
-                                    },
+                                    target: player.id,
                                     value: amountToHeal,
                                     result: "healed"
                                 })
                             }
-                            if(player.currentHp.gte(player.maximumHp)) {
+                            if (player.currentHp.gte(player.maximumHp)) {
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
                             }
                             break;
@@ -248,39 +243,24 @@ function App() {
                     <ReincarnationSelectionPage reincarnate={(monster) => {
                         reincarnateAs(monster);
                         getGlobalState().currentAction = "exploring";
-                        setPlayer(getCharacter(0));
                         setCurrentAction(getGlobalState().currentAction);
                         unpause();
                     }}/>
                 </Route>
                 <Route path="/adventuring" exact>
-                    <div className="App" style={styles.root}>
-                        <PlayerStats player={player}/>
-                        <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
-                            <TopSection/>
-                            <BottomSection state={getGlobalState()} actionLog={actionLog}
-                                           nextActionName={nextAction}
-                                           currentAction={currentAction}
-                                           setNextAction={(newAction) => {
-                                               setNextAction(newAction);
-                                               getGlobalState().nextAction = newAction;
-                                           }}
-                                           actionTime={displayedTime}
-                                           startManualSpeedup={() => {
-                                               manualSpeedUpActive.current = config.manualSpeedup.enabled;
-                                           }}
-                                           stopManualSpeedup={() => {
-                                               manualSpeedUpActive.current = false
-                                           }}
-                            />
-                        </div>
-                        <EnemySidebar currentEncounter={currentEncounter} actionLog={actionLog}/>
-                        <Canvas style={{position: "absolute", zIndex: -1}} gl={{antialias: false}}>
-                            <Suspense fallback={null}>
-                                <GameScreen scene={1} state={getGlobalState()}/>
-                            </Suspense>
-                        </Canvas>
-                    </div>
+                    <AdventuringPage player={player.current}
+                                     actionTime={displayedTime}
+                                     currentEncounter={currentEncounter}
+                                     startManualSpeedup={() => {
+                                         manualSpeedUpActive.current = config.manualSpeedup.enabled;
+                                     }}
+                                     stopManualSpeedup={() => {
+                                         manualSpeedUpActive.current = false
+                                     }}
+                                     currentAction={currentAction}
+                                     nextAction={nextAction}
+                                     actionLog={actionLog}
+                    />
                 </Route>
             </Switch>
         </MemoryRouter>
