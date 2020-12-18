@@ -1,9 +1,11 @@
 import {config} from "./config";
 import {Big} from "big.js";
 import {getLevelForPower} from "./engine";
+import {Creatures} from "./data/creatures";
 
 export class Character {
     constructor(props) {
+        this._isPc = props.isPc || props._isPc;
         this.id = props.id;
         this._name = props.name || props._name;
         this._absorbedPower = Big(props.absorbedPower || props._absorbedPower || 0);
@@ -12,6 +14,10 @@ export class Character {
         this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = props.traits || props._traits;
         this._appearance = props.appearance || props._appearance;
+    }
+
+    get isPc(){
+        return this._isPc;
     }
 
     get name() {
@@ -35,7 +41,7 @@ export class Character {
     }
 
     get maximumHp() {
-        return this.powerLevel.mul(5);
+        return this.powerLevel.mul(5).plus(this._isPc ? 5 : 0);
     }
 
     get attributes() {
@@ -61,6 +67,9 @@ export class Character {
 
     gainPower(powerGained) {
         this._absorbedPower = this._absorbedPower.plus(powerGained);
+        Creatures[this.appearance].traits.forEach(trait => {
+            this._traits[trait] = getLevelForPower(this._absorbedPower);
+        });
     }
 
     get healing() {
