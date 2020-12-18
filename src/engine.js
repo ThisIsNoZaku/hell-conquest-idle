@@ -1,10 +1,12 @@
 import * as _ from "lodash";
-import {Creatures} from "./data/creatures";
+import {assertCreatureExists, Creatures} from "./data/creatures";
 import {v4} from "node-uuid";
 import {getTrait} from "./data/Traits";
 import {debugMessage} from "./debugging";
 import Big from "big.js";
 import {Character} from "./character";
+import {config} from "./config";
+import {generateHitCombatResult, generateMissCombatResult} from "./combatResult";
 
 const saveKey = "hell-save";
 
