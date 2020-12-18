@@ -15,6 +15,13 @@ export function generateHitCombatResult(tick, attackingCharacterId, targetCharac
     }
 }
 
-export function generateMissCombatResult() {
-
+export function generateMissCombatResult(tick, attackingCharacterId, targetCharacterId) {
+    return {
+        uuid: v4(),
+        tick,
+        result: "miss",
+        target: targetCharacterId,
+        actor: attackingCharacterId,
+        effects: []
+    }
 }

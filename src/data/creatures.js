@@ -33,3 +33,9 @@ export const Creatures = {
         texture: "10_spider.png"
     }
 }
+
+export function assertCreatureExists(id) {
+    if(!Creatures[id]) {
+        throw new Error(`No creature with id ${id} is defined`);
+    }
+}
