@@ -276,21 +276,11 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         damageToInflict = actingCharacter.combat.maximumDamage;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
     }
-    const attackResult = {
-        uuid: v4(),
-        tick,
-        actor: actingCharacter,
-        target: targetCharacter,
-        result: "hit",
-        effects: [
-            {
-                event: "damage",
-                target: targetCharacter,
-                value: damageToInflict
-            }
-        ]
-    };
-    Object.keys(actingCharacter.traits).forEach(trait => applyTrait(getTrait(trait), actingCharacter.traits[trait], "on_hit", {combat: combatResult, attack: attackResult}, tick));
+    const attackResult = generateHitCombatResult(tick, actingCharacter.id, targetCharacter, damageToInflict);
+    Object.keys(actingCharacter.traits).forEach(trait => applyTrait(getTrait(trait), actingCharacter.traits[trait], "on_hit", {
+        combat: combatResult,
+        attack: attackResult
+    }, tick));
     // Trigger on-hit effects
     combatResult.combatantCombatStats[targetCharacter].hp -= damageToInflict;
     debugMessage(`Tick ${tick}: Hit did ${attackResult.effects.map(effect => {
