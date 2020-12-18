@@ -264,6 +264,12 @@ function assertCharacterExists(id) {
 }
 
 function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
+    if (typeof actingCharacter !== "object") {
+        throw new Error(`Acting character was not an object!`);
+    }
+    if (typeof targetCharacter !== "number") {
+        throw new Error(`Target character was not an object!`);
+    }
     const damageRoll = Math.floor(rng.double() * 100);
     let damageToInflict;
     if (damageRoll <= 20) {
