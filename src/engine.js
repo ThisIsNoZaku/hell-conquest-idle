@@ -408,6 +408,14 @@ export function unpause() {
 
 function stateReviver(key, value) {
     switch (key) {
+        case "startingTraits":
+        case "traits":
+            return Object.keys(value).reduce((traits, nextTrait) => {
+                traits[nextTrait] = Big(value[nextTrait]);
+                return traits;
+            }, {});
+        case "startingPower":
+            return Big(value);
         case "characters":
         case "enemies":
             return Object.keys(value).reduce((characters, id) => {
