@@ -156,7 +156,7 @@ export function loadGlobalState(state) {
         startingPower: Big(0), //The amount of absorbed power the player starts with when they reincarnate
         startingTraits: {},
         currentEncounter: null,
-        manualSpeedMultiplier: 15,
+        manualSpeedMultiplier: config.manualSpeedup.multiplier,
         currentRegion: "forest",
         actionLog: [],
         exploration: {
