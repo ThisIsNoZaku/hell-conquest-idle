@@ -2,7 +2,8 @@ console.log(process.env.REACT_APP_DEBUG_MODE, typeof process.env.REACT_APP_DEBUG
 
 export const config = {
     manualSpeedup: {
-        enabled: true
+        enabled: true,
+        multiplier: 2
     },
     artifacts: {
         enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
