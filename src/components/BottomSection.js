@@ -1,9 +1,9 @@
 import Paper from "@material-ui/core/Paper";
-import React from "react";
+import React, {useRef} from "react";
 import * as _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
-import {getCharacter} from "../engine";
+import {getCharacter, getGlobalState} from "../engine";
 
 const styles = {
     root: {
@@ -42,7 +42,13 @@ export default function BottomSection(props) {
     if (!props.currentAction) {
         throw new Error("No current action");
     }
+    const paused = useRef(getGlobalState().paused);
     return <div style={styles.root} onMouseEnter={props.startManualSpeedup} onMouseLeave={props.stopManualSpeedup}>
+        <Paper style={styles.actions.container}>
+            <Button style={styles.actions.buttons} onClick={() => getGlobalState().paused = !getGlobalState().paused }>
+                { paused.current ? "Unpause" : "Pause"}
+            </Button>
+        </Paper>
         <Paper style={styles.actions.container} >
             {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
             {actionButton("fleeing", "Flee", "Attempt to escape. You will automatically escape from Greater Demons.", props)}
@@ -66,15 +72,15 @@ function printActionItem(item) {
     switch (item.result) {
         case "hit":
             return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.target).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.actor).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
             </div>
         case "miss":
             return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.target).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.actor).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
             </div>
         case "kill":
             return <div key={item.uuid}>
-                <strong>{getCharacter(item.target).name === "You" ? `${item.tick}:${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
+                <strong>{getCharacter(item.actor).name === "You" ? `${item.tick}:${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
             </div>
         case "gainedPower":
             return <div key={item.uuid}>
