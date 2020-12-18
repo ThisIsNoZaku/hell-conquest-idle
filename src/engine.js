@@ -83,7 +83,7 @@ export function resolveCombat(rng, definition) {
                         combatResult.rounds.push({
                             uuid: v4(),
                             tick,
-                            actor: character,
+                            actor: character.id,
                             target: combatantId,
                             result: "kill"
                         });
