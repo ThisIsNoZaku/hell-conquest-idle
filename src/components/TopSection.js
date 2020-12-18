@@ -17,7 +17,7 @@ const styles = {
 export default function TopSection(props) {
     const history = useHistory();
     return <div style={styles.root}>
-        <Button onClick={() => history.push("/")} style={styles.buttons} variant="contained" color="secondary">
+        <Button onClick={() => history.push("/")} style={styles.buttons} variant="contained" color="secondary" disabled={props.character.powerLevel.lte(1)}>
             Reincarnate
         </Button>
     </div>
