@@ -201,16 +201,17 @@ export function loadGlobalState(state) {
 }
 
 export function getCharacter(id) {
-    if (!globalState.characters[id]) {
-        throw new ErrorEvent(`No character with id ${id}`);
-    }
+    assertCharacterExists(id);
     return globalState.characters[id];
 }
 
 let nextMonsterId = 1;
 
 export function generateCreature(id, powerLevel, rng) {
-    assertExists(id);
+    assertCreatureExists(id);
+    if (config.debug) {
+        debugMessage(`Generating creature with id ${id} and level ${powerLevel}`);
+    }
     if (powerLevel === undefined) {
         throw new Error("No powerLevel");
     }
@@ -252,12 +253,12 @@ export function generateCreature(id, powerLevel, rng) {
 
 
 export function getSpriteForCreature(name) {
-    assertExists(name);
+    assertCreatureExists(name);
     return `monsters/${Creatures[name].texture}`;
 }
 
-function assertExists(id) {
-    if (!Creatures[id]) {
+function assertCharacterExists(id) {
+    if (!globalState.characters[id]) {
         throw new Error(`No creature exists for '${id}'`);
     }
 }
