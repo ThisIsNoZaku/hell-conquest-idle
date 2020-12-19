@@ -54,7 +54,7 @@
   }
 }
 
-.MuiTooltip-tooltip > * {
-  font-size: 14pt;
+.MuiTooltip-tooltip {
+  font-size: 14pt !important;
   line-height: 125%;
 }
