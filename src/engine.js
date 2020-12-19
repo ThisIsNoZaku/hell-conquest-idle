@@ -369,7 +369,7 @@ export function getLevelForPower(powerPoints) {
     return Big(0).eq(powerPoints) ? Big(1) : powerPoints.plus(1).div(5).sqrt().round(0, 3);
 }
 
-export function reincarnateAs(monsterId) {
+export function reincarnateAs(monsterId, newAttributes) {
     const player = getCharacter(0);
     // Improve your starting traits
     const currentDemon = Creatures[player.appearance];
@@ -393,6 +393,11 @@ export function reincarnateAs(monsterId) {
             globalState.startingTraits[trait] = player.powerLevel.toNumber();
         }
     });
+
+    // Update player attributes
+    Object.keys(player.attributes).forEach(attribute => {
+        player.attributes[attribute] = Big(newAttributes[attribute.substring(1)]);
+    })
 
     // Add your level to your starting energy.
     globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1));

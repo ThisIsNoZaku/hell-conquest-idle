@@ -240,8 +240,8 @@ function App() {
         ]}>
             <Switch>
                 <Route path="/" exact>
-                    <ReincarnationSelectionPage reincarnate={(monster) => {
-                        reincarnateAs(monster);
+                    <ReincarnationSelectionPage reincarnate={(monster, attributes) => {
+                        reincarnateAs(monster, attributes);
                         getGlobalState().currentAction = "exploring";
                         setCurrentAction(getGlobalState().currentAction);
                         unpause();
