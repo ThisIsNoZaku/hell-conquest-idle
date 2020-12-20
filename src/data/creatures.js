@@ -1,4 +1,4 @@
-const DefinedCreatures = {
+export const Creatures  = {
     bloodthirstyKnight: {
         name: "Bloodthirsty Knight",
         traits: ["bloodrage"],
@@ -8,7 +8,6 @@ const DefinedCreatures = {
     },
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",
-        enabled: false,
         traits: ["cupidity"],
         appearance: "rapaciousHighwayman",
         texture: "02_hunter.png",
@@ -16,7 +15,6 @@ const DefinedCreatures = {
     },
     condemnedSlasher: {
         name: "Condemned Slasher",
-        enabled: false,
         traits: ["murderousFrenzy"],
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
@@ -25,25 +23,16 @@ const DefinedCreatures = {
     crushingSnake: {
         name: "Crushing Snake",
         traits: ["inescapableGrasp"],
-        enabled: false,
         appearance: "crushingSnake",
         texture: "06_snake_01.png"
     },
     skitteringHorror: {
         name: "Skittering Horror",
-        enabled: false,
         traits: ["terrifyingSkitter"],
         appearance: "skitteringHorror",
         texture: "10_spider.png"
     }
 }
-
-export const Creatures = Object.keys(DefinedCreatures).reduce((defined, next) => {
-    if(DefinedCreatures[next].enabled !== false) {
-        defined[next] = DefinedCreatures[next];
-    }
-    return defined;
-}, {})
 
 export function assertCreatureExists(id) {
     if(!Creatures[id]) {
