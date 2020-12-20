@@ -47,6 +47,7 @@ export const Regions = {
                 ]
             },
             rapaciousHighwayman: {
+                enabled: false,
                 type: "combat",
                 enemies: [
                     {
@@ -69,6 +70,6 @@ export const Regions = {
 }
 
 function chooseRandomEncounter(encounters) {
-    const randomKey = Object.keys(encounters)[Math.floor(Math.random() * Object.keys(encounters).length)];
+    const randomKey = Object.keys(encounters).filter(k => encounters[k].enabled !== false)[Math.floor(Math.random() * Object.keys(encounters).length)];
     return encounters[randomKey];
 }
