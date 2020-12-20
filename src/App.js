@@ -24,6 +24,8 @@ import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectio
 import {Big} from "big.js";
 import TopSection from "./components/TopSection";
 import AdventuringPage from "./components/scene/AdventuringPage";
+import DebugUi from "./components/DebugUi";
+import {useHotkeys} from "react-hotkeys-hook";
 
 loadGlobalState();
 
@@ -43,6 +45,7 @@ function pushLogItem(item) {
     getGlobalState().actionLog.unshift(item);
 }
 
+
 function App() {
     const [currentEncounter, setCurrentEncounter] = useState(getGlobalState().currentEncounter);
     const accruedTime = useRef(0);
@@ -52,14 +55,16 @@ function App() {
     const [actionLog, setActionLog] = useState(getGlobalState().actionLog);
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const player = useRef(getCharacter(0));
-
-    useEffect(() => {
-        document.addEventListener("keydown", function (e) {
-            if (e.code === "KeyP") {
-                getGlobalState().paused = !getGlobalState().paused;
+    const [debugUiEnabled, setDebugUiEnabled] = useState(false);
+    useHotkeys("p", () => getGlobalState().paused = !getGlobalState().paused);
+    useHotkeys("`", () => {
+        setDebugUiEnabled(enabled => {
+            if(!enabled) {
+                getGlobalState().paused = true;
             }
+            return !enabled
         })
-    }, []);
+    });
 
     useEffect(() => {
         function applyAction(action) {
@@ -154,8 +159,9 @@ function App() {
                             setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
+                                    const enemies = getGlobalState().currentEncounter.enemies;
                                     resolveCombat(rng, {
-                                        parties: [[player], getGlobalState().currentEncounter.enemies]
+                                        parties: [[player], enemies]
                                     }).onRoundResolved((result, lastRound) => {
                                         if (lastRound !== undefined) {
                                             getGlobalState().currentEncounter.pendingActions.push(lastRound);
@@ -226,8 +232,8 @@ function App() {
                 const passedTime = timestamp - lastTime;
                 const adjustedTime = passedTime * (manualSpeedUpActive.current ? getGlobalState().manualSpeedMultiplier : 1);
                 accruedTime.current = Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration));
-                lastTime = timestamp;
             }
+            lastTime = timestamp;
             requestAnimationFrame(tick);
         }
 
@@ -249,6 +255,7 @@ function App() {
                 </Route>
                 <Route path="/adventuring" exact>
                     <AdventuringPage player={player.current}
+                                     setNextAction={newAction => setNextAction(newAction)}
                                      actionTime={displayedTime}
                                      currentEncounter={currentEncounter}
                                      startManualSpeedup={() => {
@@ -263,6 +270,7 @@ function App() {
                     />
                 </Route>
             </Switch>
+            { debugUiEnabled && <DebugUi/> }
         </MemoryRouter>
     );
 }
