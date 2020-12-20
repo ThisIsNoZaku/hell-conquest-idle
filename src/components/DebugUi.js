@@ -28,12 +28,12 @@ export default function DebugUi(props) {
             </Grid>
             <Grid container item xs={12}>
                 {Object.keys(Creatures).map(id => {
-                    const enabled = creatures[id] !== false;
+                    const enabled = _.get(creatures, [id, "enabled"]) !== false;
                     return <Grid item xs={12}>
                         <Button variant="contained" color={enabled ? "default" : "secondary"}
                                 onClick={() => {
                                     _.set(getGlobalState(), ["creatures", id, "enabled"], !enabled);
-                                    setCreatures({...creatures, [id]: !enabled})
+                                    setCreatures({...creatures, [id]: {enabled: !enabled}})
                                 } }
                         >
                             <img src={`/monsters/${Creatures[id].texture}`}/>
