@@ -1,14 +1,14 @@
 import * as _ from "lodash";
-import {assertCreatureExists, Creatures} from "./data/creatures";
+import {assertCreatureExists, Creatures} from "../data/creatures";
 import {v4} from "node-uuid";
-import {getTrait} from "./data/Traits";
-import {debugMessage} from "./debugging";
+import {getTrait} from "../data/Traits";
+import {debugMessage} from "../debugging";
 import Big from "big.js";
-import {Character} from "./character";
-import {config} from "./config";
-import {generateHitCombatResult, generateMissCombatResult} from "./combatResult";
+import {Character} from "../character";
+import {config} from "../config";
+import {generateHitCombatResult, generateMissCombatResult} from "../combatResult";
 
-const saveKey = "hell-save";
+export const saveKey = "hell-save";
 
 export function resolveCombat(rng, definition) {
     const listeners = [];
@@ -84,7 +84,7 @@ export function resolveCombat(rng, definition) {
                             uuid: v4(),
                             tick,
                             actor: character.id,
-                            target: combatantId,
+                            target: Number.parseInt(combatantId),
                             result: "kill"
                         });
                         listeners.forEach(notifyListener);
@@ -145,9 +145,17 @@ export function saveGlobalState() {
     window.localStorage.setItem(saveKey, JSON.stringify(globalState));
 }
 
+export function resetGlobalState() {
+
+}
+
 export function loadGlobalState(state) {
     const loaded = window.localStorage.getItem(saveKey);
     return loaded ? JSON.parse(loaded, stateReviver) : {
+        debug: {
+            creatures: {},
+            regions: {}
+        },
         unlockedMonsters: {},
         paused: true,
         currentAction: "reincarnating",
@@ -181,10 +189,10 @@ export function loadGlobalState(state) {
                 traits: {},
                 items: [],
                 attributes: {
-                    brutality: 0,
-                    cunning: 0,
-                    deceit: 0,
-                    madness: 0
+                    brutality: Big(0),
+                    cunning: Big(0),
+                    deceit: Big(0),
+                    madness: Big(0)
                 },
                 combat: {
                     fatigue: 0,
@@ -194,9 +202,7 @@ export function loadGlobalState(state) {
                 }
             })
         },
-        tutorials: {
-
-        }
+        tutorials: {}
     }
 }
 
@@ -373,7 +379,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     const player = getCharacter(0);
     // Improve your starting traits
     const currentDemon = Creatures[player.appearance];
-    if(currentDemon) {
+    if (currentDemon) {
         currentDemon.traits.forEach(trait => {
             if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
                 globalState.startingTraits[trait] = player.powerLevel;
@@ -382,7 +388,9 @@ export function reincarnateAs(monsterId, newAttributes) {
     }
 
     if (monsterId === "random") {
-        const options = _.difference(Object.keys(Creatures), Object.keys(globalState.unlockedMonsters)
+        const options = _.difference(Object.keys(Creatures).filter(m => {
+            return _.get(globalState, ["debug", "creatures", m, "enabled"], true)
+        }), Object.keys(globalState.unlockedMonsters)
             .filter(m => globalState.unlockedMonsters[m]));
         monsterId = options[Math.floor(Math.random() * options.length)];
     }
@@ -415,21 +423,34 @@ export function unpause() {
 
 function stateReviver(key, value) {
     switch (key) {
+        case "_attributes":
         case "startingTraits":
         case "traits":
-            return Object.keys(value).reduce((traits, nextTrait) => {
-                traits[nextTrait] = Big(value[nextTrait]);
-                return traits;
+            return Object.keys(value).reduce((all, next) => {
+                all[next] = Big(value[next]);
+                return all;
             }, {});
         case "startingPower":
+        case "minLevel":
+        case "maxLevel":
             return Big(value);
         case "characters":
-        case "enemies":
             return Object.keys(value).reduce((characters, id) => {
                 characters[id] = new Character(value[id]);
                 return characters;
             }, {});
+        case "enemies":
+            return Object.keys(value).map(character => {
+                return new Character(value[character]);
+            });
+        case "paused":
+            return false;
         default:
             return value;
     }
+}
+
+export function resetDebug() {
+    globalState.debug.creatures = {};
+    globalState.debug.regions = {};
 }
