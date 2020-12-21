@@ -348,7 +348,7 @@ function applyTrait(trait, rank, event, state, tick) {
                                     throw new Error("Damage modifier somehow was NaN");
                                 }
                                 debugMessage(`Tick ${tick}: Applying ${damageModifier} percentage modifier to damage`);
-                                effect.value = Math.floor(effect.value * ((100 + damageModifier) / 100));
+                                effect.value = Math.floor(effect.value * ((1 + damageModifier) / 100));
                             }
                         });
                 }
@@ -453,4 +453,10 @@ function stateReviver(key, value) {
 export function resetDebug() {
     globalState.debug.creatures = {};
     globalState.debug.regions = {};
+}
+
+export function getManualSpeedMultiplier() {
+    const debugMultiplier = _.get(globalState, ["debug", "manualSpeedMultiplier"]);
+    const baseMultiplier = globalState.manualSpeedMultiplier;
+    return debugMultiplier || baseMultiplier;
 }
