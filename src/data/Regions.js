@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {generateCreature} from "../engine";
+import {generateCreature, getGlobalState} from "../engine";
 import {config} from "../config";
 import Big from "big.js";
 import {debugMessage} from "../debugging";
@@ -12,17 +12,20 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        const minimumLevel = 1;
-        const maximumLevel = player.powerLevel + config.encounters.greaterLevelScale * 2;
+        const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], Big(1)); // FIXME
+        const maximumLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"], player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
         if(config.debug) {
-            debugMessage(`Generating an encounter between ${minimumLevel} and ${maximumLevel} `);
+            debugMessage(`Generating an encounter between ${minimumLevel.toFixed()} and ${maximumLevel.toFixed()} `);
         }
-        const encounterLevelModifier = minimumLevel + Math.floor(rng.double() * (maximumLevel - minimumLevel));
+        const encounterLevelModifier = minimumLevel.toNumber() + Math.floor(rng.double() * (maximumLevel.toNumber() - minimumLevel.toNumber()));
         const encounterLevel = Big(Math.max(1, encounterLevelModifier));
         if(config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const encounterDef = chooseRandomEncounter(this.encounters);
+        const encounterDef = chooseRandomEncounter(this);
+        if(encounterDef === undefined) {
+            throw new Error("No encounter selected");
+        }
         const encounter = {
             encounterLevel,
             ...encounterDef,
@@ -38,6 +41,7 @@ class Region {
 export const Regions = {
     forest: new Region("The Prey's Lament", true, {
             bloodthirstyKnight: {
+                description: "1 Bloodthirsty Knight",
                 type: "combat",
                 enemies: [
                     {
@@ -47,8 +51,9 @@ export const Regions = {
                 ]
             },
             rapaciousHighwayman: {
-                enabled: false,
+                description: "1 Rapacious Highwayman",
                 type: "combat",
+                enabled: false,
                 enemies: [
                     {
                         name: "rapaciousHighwayman",
@@ -69,7 +74,12 @@ export const Regions = {
     desert: new Region("The Desert of Isolation", false, {}, {})
 }
 
-function chooseRandomEncounter(encounters) {
-    const randomKey = Object.keys(encounters).filter(k => encounters[k].enabled !== false)[Math.floor(Math.random() * Object.keys(encounters).length)];
-    return encounters[randomKey];
+function chooseRandomEncounter(region) {
+    const possibleEncounters = Object.keys(region.encounters).filter(encounterId => {
+        const encounterEnabled = region.encounters[encounterId].enabled !== false;
+        const debugNotDisabled = _.get(getGlobalState(), ["debug", "regions", region.id, "encounters", encounterId]) !== false;
+        return  encounterEnabled && debugNotDisabled;
+    });
+    const randomKey = possibleEncounters[Math.floor(Math.random() * Object.keys(region.encounters).length)];
+    return region.encounters[randomKey];
 }
