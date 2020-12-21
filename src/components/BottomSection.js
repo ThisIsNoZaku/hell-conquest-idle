@@ -1,5 +1,5 @@
 import Paper from "@material-ui/core/Paper";
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import * as _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -42,11 +42,13 @@ export default function BottomSection(props) {
     if (!props.currentAction) {
         throw new Error("No current action");
     }
-    const paused = useRef(getGlobalState().paused);
     return <div style={styles.root} onMouseEnter={props.startManualSpeedup} onMouseLeave={props.stopManualSpeedup}>
         <Paper style={styles.actions.container}>
-            <Button style={styles.actions.buttons} onClick={() => getGlobalState().paused = !getGlobalState().paused }>
-                { paused.current ? "Unpause" : "Pause"}
+            <Button style={styles.actions.buttons} onClick={() => {
+                getGlobalState().paused = !getGlobalState().paused;
+                props.togglePause(getGlobalState().paused);
+            } }>
+                { props.paused ? "Unpause" : "Pause"}
             </Button>
         </Paper>
         <Paper style={styles.actions.container} >
@@ -80,7 +82,7 @@ function printActionItem(item) {
             </div>
         case "kill":
             return <div key={item.uuid}>
-                <strong>{getCharacter(item.actor).name === "You" ? `${item.tick}:${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
+                <strong>{getCharacter(item.actor).target === "You" ? `${item.tick}: ${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
             </div>
         case "gainedPower":
             return <div key={item.uuid}>
