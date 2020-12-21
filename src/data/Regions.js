@@ -76,10 +76,18 @@ export const Regions = {
 
 function chooseRandomEncounter(region) {
     const possibleEncounters = Object.keys(region.encounters).filter(encounterId => {
+        debugMessage(`Determining if '${encounterId}' is enabled.`);
         const encounterEnabled = region.encounters[encounterId].enabled !== false;
+        if(!encounterEnabled) {
+            debugMessage(`Encounter '${encounterId}' disabled`);
+        }
         const debugNotDisabled = _.get(getGlobalState(), ["debug", "regions", region.id, "encounters", encounterId]) !== false;
-        return  encounterEnabled && debugNotDisabled;
+        if(!debugNotDisabled) {
+            debugMessage(`Encounter '${encounterId}' disabled by debug.`);
+        }
+        return encounterEnabled && debugNotDisabled;
     });
-    const randomKey = possibleEncounters[Math.floor(Math.random() * Object.keys(region.encounters).length)];
+    const randomKey = possibleEncounters[Math.floor(Math.random() * Object.keys(possibleEncounters).length)];
+    debugMessage(`Selected encounter '${randomKey}'`);
     return region.encounters[randomKey];
 }
