@@ -9,7 +9,7 @@ export class Character {
         this.id = props.id;
         this._name = props.name || props._name;
         this._absorbedPower = Big(props.absorbedPower || props._absorbedPower || 0);
-        this._currentHp = this.maximumHp;
+        this._currentHp = Big(props._currentHp) || this.maximumHp;
         this._attributes = new Attributes(props.attributes || props._attributes);
         this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = props.traits || props._traits;
