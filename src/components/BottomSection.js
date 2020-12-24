@@ -72,17 +72,21 @@ export default function BottomSection(props) {
 
 function printActionItem(item) {
     switch (item.result) {
+        case "apply_effect":
+            return <div key={item.uuid}>
+                {`${item.tick}: ${getCharacter(item.actor).name}`}
+            </div>
         case "hit":
             return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.actor).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.actor).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}`}
             </div>
         case "miss":
             return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.actor).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect))}`}
+                {`${item.tick}: ${getCharacter(item.actor).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}`}
             </div>
         case "kill":
             return <div key={item.uuid}>
-                <strong>{getCharacter(item.actor).target === "You" ? `${item.tick}: ${getCharacter(item.target).name} Were Killed!` : `${item.tick}:${getCharacter(item.target).name} Was Killed!`}</strong>
+                <strong>{`${item.tick}: ${getCharacter(item.target).name} ${item.target === 0 ? 'Were' : 'Was'} Killed!`}</strong>
             </div>
         case "gainedPower":
             return <div key={item.uuid}>
@@ -103,7 +107,13 @@ function printActionItem(item) {
 function describeEffect(target, effect) {
     switch (effect.event) {
         case "damage":
-            return `${getCharacter(target).name} takes ${effect.value} Damage.`;
+            return `${getCharacter(target).name} takes ${effect.value} Damage`;
+        default:
+            switch (effect.effect) {
+                case "self_speed_bonus_percent":
+                    return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to speed`;
+            }
+
     }
 }
 
