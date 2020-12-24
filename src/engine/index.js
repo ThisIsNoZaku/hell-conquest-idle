@@ -160,10 +160,6 @@ export function saveGlobalState() {
     window.localStorage.setItem(saveKey, JSON.stringify(globalState));
 }
 
-export function resetGlobalState() {
-
-}
-
 export function loadGlobalState(state) {
     const loaded = window.localStorage.getItem(saveKey);
     return loaded ? JSON.parse(loaded, stateReviver) : {
@@ -238,11 +234,6 @@ export function generateCreature(id, powerLevel, rng) {
     }
     if (Number.isNaN(powerLevel)) {
         throw new Error("Level cannot be NaN");
-    }
-    const artifacts = [];
-    const hasItemRoll = Math.floor(rng.double() * 100);
-    if (hasItemRoll < 10) {
-        artifacts.push(generateItem());
     }
     const nextId = nextMonsterId++;
     globalState.characters[nextId] = new Character({
@@ -325,10 +316,6 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 
 function resolveMiss(tick, combatResult, actingCharacter, targetCharacterId, rng) {
     combatResult.rounds.push(generateMissCombatResult(tick, actingCharacter.id, targetCharacterId));
-}
-
-function generateItem() {
-
 }
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick) {
@@ -429,7 +416,8 @@ export function reincarnateAs(monsterId, newAttributes) {
 
     if (monsterId === "random") {
         const options = _.difference(Object.keys(Creatures).filter(m => {
-            return _.get(globalState, ["debug", "creatures", m, "enabled"], true)
+            return _.get(globalState, ["debug", "creatures", m, "enabled"], true) &&
+                Creatures[m].enabled !== false
         }), Object.keys(globalState.unlockedMonsters)
             .filter(m => globalState.unlockedMonsters[m]));
         monsterId = options[Math.floor(Math.random() * options.length)];
