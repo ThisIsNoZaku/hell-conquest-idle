@@ -17,7 +17,7 @@ export const Traits = {
     cupidity: {
         name: "Cupidity",
         icon: "icons/icons-2503.png",
-        description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to take the intimidated demon's Artifacts as though it were killed."),
+        description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to seize the intimidated demon's Artifacts as though it were killed."),
         on_intimidate: {
             effects: {
                 steal_item_chance: "$rank"
@@ -27,10 +27,10 @@ export const Traits = {
     murderousFrenzy: {
         name: "Murderous Frenzy",
         icon: "icons/icons-118.png",
-        description: _.template("When this demon hit an enemy with an attack, it gains a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
-        on_hit: {
+        description: _.template("When this demon hit an enemy with an attack, it frenzies, gaining a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
+        on_hitting: {
             effects: {
-                speed_bonus_percent: "$rank"
+                self_speed_bonus_percent: "$rank"
             },
             duration: {
                 rounds: 5
@@ -40,10 +40,10 @@ export const Traits = {
     inescapableGrasp: {
         name: "Inescapable Grasp",
         icon: "icons/icons-2221.png",
-        description: _.template("You bind your victims, causing a <span style='color: red'>${rank}%</span> penalty to <span style='color: red'>Speed</span> for 5 rounds."),
-        on_hit: {
+        description: _.template("You bind your victims when you strike, causing a <span style='color: red'>${rank}%</span> penalty to their <span style='color: red'>Speed</span> for 5 rounds."),
+        on_hitting: {
             effects: {
-                speed_penalty_percent: "$rank"
+                target_speed_penalty_percent: "$rank"
             },
             duration: {
                 rounds: 5
@@ -53,7 +53,7 @@ export const Traits = {
     terrifyingSkitter: {
         name: "Terrifying Skitter",
         icon: "icons/icons-2260.png",
-        description: _.template("The creepy sound of your feet on the ground unnerves even other demons, giving a ${rank}% chance to gain the Frightened status at the begnning of combat for 5 rounds."),
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: red'>${rank}%</span> chance to gain the Frightened status at the beginning of combat for 5 rounds."),
         on_combat_start: {
             trigger: {
                 percentage_chance: "$rank"
