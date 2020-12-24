@@ -18,7 +18,7 @@ export const Creatures  = {
         traits: ["murderousFrenzy"],
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
-        description: "A madman who gained exquisite pleasure from seeing how many cuts he could perform before his victims died."
+        description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died."
     },
     crushingSnake: {
         name: "Crushing Snake",
