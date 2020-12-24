@@ -7,6 +7,7 @@ import Big from "big.js";
 import {Character} from "../character";
 import {config} from "../config";
 import {generateHitCombatResult, generateMissCombatResult} from "../combatResult";
+import CharacterCombatState from "./CharacterCombatState";
 
 export const saveKey = "hell-save";
 
@@ -24,10 +25,10 @@ export function resolveCombat(rng, definition) {
 
     const combatants = _.flatMap(definition.parties.map((party, partyIndex) => {
         return party.map((character, characterIndex) => {
-            combatResult.combatantCombatStats[character.id] = {
+            combatResult.combatantCombatStats[character.id] = new CharacterCombatState({
                 hp: character.currentHp,
-                fatigue: 0
-            };
+                speed: character.speed,
+            });
             return {
                 character,
                 party: partyIndex
@@ -35,29 +36,36 @@ export function resolveCombat(rng, definition) {
         })
     }));
     debugMessage("Beginning combat")
-    const initiatives = _.uniq(combatants.map(combatant => 100 - combatant.character.attributes.cunning));
     let tick = 0;
     const resolveRound = async function () {
+        const initiatives = _.uniq(combatants.map(combatant => Math.floor(Big(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
+            .sort((a, b) => a - b);
         initiatives.forEach(initiativeCount => {
-            tick += initiativeCount;
-            debugMessage(`Resolving round on tick ${initiativeCount}`);
+            debugMessage(`Resolving round on tick ${tick}`);
             // TODO: Activate/deactivate traits
             const actingCharacters = combatants
-                .filter(wrapped => wrapped.character.alive && (initiativeCount % Math.ceil(100 - wrapped.character.attributes.cunning) === 0));
+                .filter(wrapped => {
+                    const isAlive = wrapped.character.alive;
+                    const characterSpeed = Math.floor(Big(10000).div(combatResult.combatantCombatStats[wrapped.character.id].speed).toNumber());
+                    const matchingSpeed = (initiativeCount % characterSpeed === 0)
+                    return isAlive && matchingSpeed;
+                });
             actingCharacters.forEach(acting => {
                 const character = acting.character;
-                debugMessage(`Tick ${tick}: Character ${character.id} acting on tick ${tick}`);
-                if (combatResult.combatantCombatStats[character.id].hp === 0) {
-                    debugMessage(`Tick ${tick}: ${character.id} was dead when their turn to act came up, skipping their action.`);
+                tick = combatResult.combatantCombatStats[character.id].lastActed + Math.floor(Big(10000).div(combatResult.combatantCombatStats[character.id].speed).toNumber());
+                combatResult.combatantCombatStats[character.id].lastActed = tick;
+                debugMessage(`Tick ${tick}: Resolving action by ${character.id}.`);
+                if (combatResult.combatantCombatStats[character.id].hp.lte(0)) {
+                    debugMessage(`Tick ${tick}: Character ${character.id} was dead when their turn to act came up, skipping their action.`);
                     return;
                 }
                 // The acting character performs an attack.
                 const enemyParty = (acting.party + 1) % 2;
                 const livingEnemies = definition.parties[enemyParty]
-                    .filter(enemy => combatResult.combatantCombatStats[enemy.id].hp > 0);
+                    .filter(enemy => combatResult.combatantCombatStats[enemy.id].hp.gt(0));
                 const target = _.get(livingEnemies[Math.floor(rng.double() * livingEnemies.length)], "id");
                 if (target === undefined) {
-                    debugMessage(`Tick ${tick}: No valid target, skipping attacking`);
+                    debugMessage(`Tick ${tick}: No valid target, skipping action by ${character.id}.`);
                     return;
                 }
                 debugMessage(`Tick ${tick}: Attacking ${target}`);
@@ -68,17 +76,17 @@ export function resolveCombat(rng, definition) {
 
                 // Trigger on-attack effects
                 if (attackRoll >= 50) {
-                    debugMessage(`Tick ${tick}:  Attack roll was ${attackRoll}, a hit`);
+                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRoll}, a hit.`);
                     resolveHit(tick, combatResult, character, target, rng);
                     listeners.forEach(notifyListener);
                 } else {
-                    debugMessage(`Tick ${tick}:  Attack roll was ${attackRoll}, a miss`);
+                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRoll}, a miss.`);
                     resolveMiss(tick, combatResult, character, target, rng);
                     listeners.forEach(notifyListener);
                     // TODO: Trigger on-miss effects
                 }
                 Object.keys(combatResult.combatantCombatStats).forEach(combatantId => {
-                    if (combatResult.combatantCombatStats[combatantId].hp <= 0) {
+                    if (combatResult.combatantCombatStats[combatantId].hp.lte(0)) {
                         debugMessage(`Tick ${tick}: Combatant ${combatantId} died`);
                         combatResult.rounds.push({
                             uuid: v4(),
@@ -93,7 +101,7 @@ export function resolveCombat(rng, definition) {
                 combatResult.combatantCombatStats[acting.character.id].fatigue++;
             });
         });
-        if (definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp <= 0)) {
+        if (definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0))) {
             debugMessage("Every member of party 0 is dead")
             combatResult.rounds.push({
                 uuid: v4(),
@@ -103,7 +111,7 @@ export function resolveCombat(rng, definition) {
             })
             combatResult.winner = 1;
             listeners.forEach(notifyListener);
-        } else if (definition.parties[1].every(character => combatResult.combatantCombatStats[character.id].hp <= 0)) {
+        } else if (definition.parties[1].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0))) {
             debugMessage("Every member of party 1 is dead")
             combatResult.rounds.push({
                 uuid: v4(),
@@ -115,6 +123,7 @@ export function resolveCombat(rng, definition) {
             listeners.forEach(notifyListener);
         } else {
             debugMessage("No winner, combat continues");
+            // TODO: Countdown durations
             setTimeout(resolveRound);
         }
     };
@@ -129,9 +138,15 @@ export function resolveCombat(rng, definition) {
 }
 
 function makeAttackRoll(actingCharacter, target, rng) {
-    const attackAccuracy = getCharacter(target).attributes.cunning;
+    const attackAccuracy = actingCharacter.attributes.cunning;
+    if(attackAccuracy.constructor.name !== "Big") {
+        throw new Error("Accuracy had the wrong type!");
+    }
     const targetEvasion = getCharacter(target).attributes.deceit;
-    debugMessage("Making an attack roll. Attacker Accuracy:", attackAccuracy, "Target Evasion:", targetEvasion);
+    if(targetEvasion.constructor.name !== "Big") {
+        throw new Error("Evasion had the wrong type");
+    }
+    debugMessage("Making an attack roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
     return Math.floor((rng.double() * 100) + attackAccuracy - targetEvasion);
 }
 
@@ -242,10 +257,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: [],
         attributes: {
-            brutality: 0,
-            cunning: 0,
-            deceit: 0,
-            madness: 0
+            brutality: Big(0),
+            cunning: Big(0),
+            deceit: Big(0),
+            madness: Big(0)
         },
         combat: {
             fatigue: 0,
@@ -289,16 +304,18 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
     }
     const attackResult = generateHitCombatResult(tick, actingCharacter.id, targetCharacter, damageToInflict);
-    Object.keys(actingCharacter.traits).forEach(trait => applyTrait(getTrait(trait), actingCharacter.traits[trait], "on_hit", {
+    // Trigger on-hit effects
+    Object.keys(actingCharacter.traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), actingCharacter.traits[trait], "on_hitting", {
         combat: combatResult,
         attack: attackResult
     }, tick));
-    // Trigger on-hit effects
-    combatResult.combatantCombatStats[targetCharacter].hp -= damageToInflict;
+    combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
     debugMessage(`Tick ${tick}: Hit did ${attackResult.effects.map(effect => {
         switch (effect.event) {
             case "damage":
-                return `${effect.value} damage`
+                return `${effect.value} damage`;
+            case "apply_effect":
+                return `Applying effect ${effect.effect} with from ${effect.source} to ${effect.target}.`
         }
 
     }).join(", ")}. Target has ${combatResult.combatantCombatStats[targetCharacter].hp} remaining.`)
@@ -306,15 +323,15 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     combatResult.rounds.push(attackResult);
 }
 
-function resolveMiss(tick, combatResult, actingCharacter, targetCharacter, rng) {
-    combatResult.rounds.push(generateMissCombatResult(tick, targetCharacter, actingCharacter));
+function resolveMiss(tick, combatResult, actingCharacter, targetCharacterId, rng) {
+    combatResult.rounds.push(generateMissCombatResult(tick, actingCharacter.id, targetCharacterId));
 }
 
 function generateItem() {
 
 }
 
-function applyTrait(trait, rank, event, state, tick) {
+function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick) {
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
         const effect = trait[event];
@@ -326,8 +343,10 @@ function applyTrait(trait, rank, event, state, tick) {
                 switch (trigger) {
                     case "target_health_below_percentage":
                         const targetPercent = effect.when[trigger];
-                        const targetHealthPercent = (100 * state.combat.combatantCombatStats[state.attack.target].hp / getCharacter(state.attack.target).maximumHp);
-                        const triggerMet = targetPercent >= targetHealthPercent;
+                        const targetCurrentHealth = state.combat.combatantCombatStats[state.attack.target].hp;
+                        const targetMaxHealth = getCharacter(state.attack.target).maximumHp;
+                        const targetHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
+                        const triggerMet = targetPercent >= targetHealthPercent.toNumber();
                         debugMessage(`Tick ${tick}: Target health percentage is ${targetHealthPercent}, which is ${triggerMet ? "" : "not"} enough to trigger.`);
                         return triggerMet;
                     default:
@@ -351,6 +370,27 @@ function applyTrait(trait, rank, event, state, tick) {
                                 effect.value = Math.floor(effect.value * ((1 + damageModifier) / 100));
                             }
                         });
+                        break;
+                    case "self_speed_bonus_percent":
+                        const percentageSpeedMultiplier = evaluateExpression(trait[event].effects[traitEffect], {
+                            $rank: rank
+                        });
+
+                        state.combat.combatantCombatStats[sourceCharacter.id].modifiers.push({
+                            effect: {
+                                speed_bonus_percent: percentageSpeedMultiplier
+                            },
+                            roundDuration: trait[event].duration.rounds
+                        });
+                        state.attack.effects.push({
+                            event: "apply_effect",
+                            source: sourceCharacter.id,
+                            target: sourceCharacter.id,
+                            effect: traitEffect,
+                            value: percentageSpeedMultiplier
+                        });
+                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${sourceCharacter.id}`);
+                        break;
                 }
             });
         }
