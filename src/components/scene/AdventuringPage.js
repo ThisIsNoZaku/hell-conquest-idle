@@ -23,6 +23,8 @@ export default function AdventuringPage(props) {
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
             <TopSection character={getCharacter(0)}/>
             <BottomSection state={getGlobalState()} actionLog={props.actionLog}
+                           togglePause={props.togglePause}
+                           paused={props.paused}
                            nextActionName={props.nextAction}
                            currentAction={props.currentAction}
                            setNextAction={(newAction) => {
