@@ -24,7 +24,8 @@ export const Creatures  = {
         name: "Crushing Snake",
         traits: ["inescapableGrasp"],
         appearance: "crushingSnake",
-        texture: "06_snake_01.png"
+        texture: "06_snake_01.png",
+        description: "A monstrous reptile which"
     },
     skitteringHorror: {
         name: "Skittering Horror",
