@@ -1,31 +1,25 @@
 import './App.css';
 import {v4} from "node-uuid";
 import * as _ from "lodash";
-import {Canvas} from "react-three-fiber";
 import React, {useEffect, useRef, useState} from "react";
-import {Suspense} from "react";
-import GameScreen from "./components/GameScreen";
-import PlayerStats from "./components/PlayerStats";
-import EnemySidebar from "./components/EnemySidebar";
 import 'react-circular-progressbar/dist/styles.css';
 import {Regions} from "./data/Regions";
 import {Actions} from "./data/Actions";
 import {
     getCharacter,
-    getGlobalState, getLevelForPower,
+    getGlobalState, getManualSpeedMultiplier,
     loadGlobalState, reincarnateAs,
     resolveCombat, saveGlobalState, unpause
 } from "./engine";
 import * as seedrandom from "seedrandom";
-import BottomSection from "./components/BottomSection";
 import {config} from "./config";
 import {MemoryRouter, Route, Switch} from "react-router-dom";
 import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectionPage";
 import {Big} from "big.js";
-import TopSection from "./components/TopSection";
 import AdventuringPage from "./components/scene/AdventuringPage";
 import DebugUi from "./components/DebugUi";
 import {useHotkeys} from "react-hotkeys-hook";
+import {debugMessage} from "./debugging";
 
 loadGlobalState();
 
@@ -40,7 +34,7 @@ function changeCurrentAction(newAction) {
 
 function pushLogItem(item) {
     if (getGlobalState().actionLog.length > (config.actionLog.maxSize || 10)) {
-        getGlobalState().actionLog.pop();
+        getGlobalState().actionLog.shift();
     }
     getGlobalState().actionLog.unshift(item);
 }
@@ -56,14 +50,22 @@ function App() {
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const player = useRef(getCharacter(0));
     const [debugUiEnabled, setDebugUiEnabled] = useState(false);
+    const [paused, setPaused] = useState(getGlobalState().paused);
+
     useHotkeys("p", () => getGlobalState().paused = !getGlobalState().paused);
     useHotkeys("`", () => {
         setDebugUiEnabled(enabled => {
-            if(!enabled) {
-                getGlobalState().paused = true;
+            if(config.debug) {
+                if (!enabled) {
+                    getGlobalState().paused = true;
+                    setPaused(getGlobalState().paused);
+                }
+                saveGlobalState();
+                return !enabled
+            } else {
+                return false;
             }
-            return !enabled
-        })
+        });
     });
 
     useEffect(() => {
@@ -84,19 +86,29 @@ function App() {
                     break;
                 case "kill":
                     if (getGlobalState().currentEncounter.pendingActions[0].result === "combat-end") {
+                        if(getCharacter(0).isDamaged) {
+                            getGlobalState().nextAction = "healing";
+                            setNextAction(getGlobalState().nextAction);
+                        }
                         applyAction(getGlobalState().currentEncounter.pendingActions.shift());
                     }
-                    if (action.actor === getCharacter(0) && action.target !== getCharacter(0)) {
+                    const enemy = getCharacter(action.target);
+                    const enemyIsLesserDemon = enemy.powerLevel.lte(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
+                    if(enemyIsLesserDemon) {
+                        debugMessage(`Not gaining power because enemy ${action.target} was a Lesser Demon.`);
+                    }
+                    if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
+                        debugMessage("Player killed a non-lesser enemy and gained power.");
                         const player = getCharacter(0);
-                        player.gainPower(getCharacter(action.target).powerLevel.mul(2));
+                        player.gainPower(enemy.powerLevel.mul(2));
                     }
                     break;
                 case "hit":
                 case "miss":
                     (action.effects || []).forEach(effect => {
+                        const targetCharacter = getCharacter(effect.target);
                         switch (effect.event) {
                             case "damage":
-                                const targetCharacter = getCharacter(effect.target);
                                 targetCharacter.currentHp = targetCharacter.currentHp.minus(effect.value);
                                 if (targetCharacter.currentHp.lt(Big(0))) {
                                     targetCharacter.currentHp = Big(0);
@@ -105,14 +117,19 @@ function App() {
                                     applyAction(getGlobalState().currentEncounter.pendingActions.shift());
                                 }
                                 break;
-                            default:
-                                debugger;
+                            case "apply_effect":
+                                targetCharacter.addModifier({
+                                    effect: effect.effect,
+                                    magnitude: effect.value
+                                });
+                                break;
                         }
                     });
                     break;
                 default:
                     throw new Error();
             }
+            saveGlobalState();
         }
 
         function clearActionLog() {
@@ -176,7 +193,7 @@ function App() {
                             break;
                         case "fleeing":
                             const player = getCharacter(0);
-                            player.gainPower(1);
+                            const enemy = getGlobalState().currentEncounter.enemies[0];
                             getGlobalState().currentEncounter = null;
                             setCurrentEncounter(null);
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
@@ -184,11 +201,14 @@ function App() {
                                 result: "escaped",
                                 uuid: v4()
                             });
-                            pushLogItem({
-                                result: "gainedPower",
-                                value: 1,
-                                uuid: v4()
-                            });
+                            if(enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
+                                player.gainPower(1);
+                                pushLogItem({
+                                    result: "gainedPower",
+                                    value: 1,
+                                    uuid: v4()
+                                });
+                            }
                             break;
                         case "fighting" : {
                             if (getGlobalState().currentEncounter.pendingActions.length) {
@@ -230,7 +250,7 @@ function App() {
 
                 setDisplayedTime(accruedTime.current);
                 const passedTime = timestamp - lastTime;
-                const adjustedTime = passedTime * (manualSpeedUpActive.current ? getGlobalState().manualSpeedMultiplier : 1);
+                const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);
                 accruedTime.current = Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration));
             }
             lastTime = timestamp;
@@ -251,10 +271,13 @@ function App() {
                         getGlobalState().currentAction = "exploring";
                         setCurrentAction(getGlobalState().currentAction);
                         unpause();
+                        accruedTime.current = 10000000;
                     }}/>
                 </Route>
                 <Route path="/adventuring" exact>
                     <AdventuringPage player={player.current}
+                                     paused={paused}
+                                     togglePause={(newValue) => setPaused(newValue)}
                                      setNextAction={newAction => setNextAction(newAction)}
                                      actionTime={displayedTime}
                                      currentEncounter={currentEncounter}
