@@ -23,7 +23,7 @@ export default function ReincarnationSelectionPage(props) {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
-    const maxAttributeTotal = player.powerLevel.times(config.characters.player.attributesPerLevel);
+    const spendableBonusPoints = player.powerLevel.times(config.characters.player.attributesPerLevel);
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -63,26 +63,28 @@ export default function ReincarnationSelectionPage(props) {
 
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Spend {player.powerLevel.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on
-                    attributes</strong>
+                <strong>Spend {spendableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on bonuses:</strong>
+            </Grid>
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <strong>Attributes</strong>
             </Grid>
             {Object.keys(config.attributes).map(attribute => {
                 return <Grid item xs={3}>
                     <Tooltip title={config.attributes[attribute].description({
-                        rank: attributes[attribute]
+                        rank: attributes[attribute].toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
                             <img src={config.attributes[attribute].icon}/>
                             <div>
-                                <Button disabled={maxAttributeTotal.eq(_.sum(Object.values(attributes)))}
+                                <Button disabled={spendableBonusPoints.eq(_.sum(Object.values(attributes).map(x => x.toNumber())))}
                                         onClick={() => {
-                                            setAttributes({...attributes, [attribute]: attributes[attribute] + 1})
+                                            setAttributes({...attributes, [attribute]: attributes[attribute].plus(1)})
                                         }}>
                                     <AddIcon/>
                                 </Button>
-                                {attributes[attribute]}
-                                <Button disabled={attributes[attribute] === 0} onClick={() => {
-                                    setAttributes({...attributes, [attribute]: attributes[attribute] - 1})
+                                {attributes[attribute].toFixed()}
+                                <Button disabled={attributes[attribute].toNumber() <= 0} onClick={() => {
+                                    setAttributes({...attributes, [attribute]: attributes[attribute].minus(1)})
                                 }}>
                                     <RemoveIcon/>
                                 </Button>
@@ -94,11 +96,14 @@ export default function ReincarnationSelectionPage(props) {
         </Grid>
 
         <Grid container item xs={12} alignItems="stretch" justify="flex-start">
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Choose a demon to reincarnate as.</strong>
             </Grid>
             {
-                Object.keys(Creatures).map(name => {
+                Object.keys(Creatures)
+                    .filter(id => _.get(getGlobalState(), ["creatures", id, "enabled"], true) &&
+                    _.get(getGlobalState(), ["debug", "creatures", id, "enabled"], true))
+                    .map(name => {
                     if (!getGlobalState().unlockedMonsters[name]) {
                         return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
                             <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
@@ -106,7 +111,6 @@ export default function ReincarnationSelectionPage(props) {
                                     title={<div>An unknown type of Demon. Selects a random Demon you have not already
                                         played as.</div>}>
                                     <Button variant="contained" style={{height: "100%", width: "50%"}}
-                                            disabled={!maxAttributeTotal.eq(_.sum(Object.values(attributes)))}
                                             onClick={() => {
                                                 props.reincarnate("random", attributes);
                                                 history.push("/adventuring");
@@ -125,9 +129,8 @@ export default function ReincarnationSelectionPage(props) {
                             <Grid item xs={12} style={{textAlign: "center"}}>
                                 <Tooltip title={<div>{Creatures[name].description}</div>}>
                                     <Button variant="contained" style={{height: "100%", width: "50%"}}
-                                            disabled={!maxAttributeTotal.eq(_.sum(Object.values(attributes)))}
                                             onClick={() => {
-                                                props.reincarnate(name);
+                                                props.reincarnate(name, attributes);
                                                 history.push("/adventuring");
                                             }}>
                                         <Grid container>
@@ -158,6 +161,5 @@ export default function ReincarnationSelectionPage(props) {
                 })
             }
         </Grid>
-
     </Grid>
 }
