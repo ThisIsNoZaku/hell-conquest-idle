@@ -10,7 +10,7 @@ export const config = {
         enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
     },
     actionLog: {
-        maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
+        maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 200,
     },
     encounters: {
         lesserLevelScale: 5, // A demon is "lesser" than another when it's level is this much lower.
