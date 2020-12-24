@@ -9,11 +9,12 @@ export class Character {
         this.id = props.id;
         this._name = props.name || props._name;
         this._absorbedPower = Big(props.absorbedPower || props._absorbedPower || 0);
-        this._currentHp = Big(props._currentHp) || this.maximumHp;
+        this._currentHp = Big(props._currentHp || this.maximumHp);
         this._attributes = new Attributes(props.attributes || props._attributes);
         this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = props.traits || props._traits;
         this._appearance = props.appearance || props._appearance;
+        this._modifiers = props.modifiers || props._modifiers || [];
     }
 
     get isPc(){
@@ -82,6 +83,18 @@ export class Character {
 
     set absorbedPower(value){
         this._absorbedPower = value;
+    }
+
+    get speed() {
+        return Big(100);
+    }
+
+    addModifier(modifier) {
+        this._modifiers.push(modifier);
+    }
+
+    get modifiers() {
+        return this._modifiers;
     }
 }
 
