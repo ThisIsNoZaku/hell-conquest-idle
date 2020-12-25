@@ -173,7 +173,6 @@ function App() {
                             break;
                         case "approaching": {
                             const player = getCharacter(0);
-                            setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
                                     const enemies = getGlobalState().currentEncounter.enemies;
@@ -186,6 +185,7 @@ function App() {
                                     });
                                     break;
                             }
+                            setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
                             setNextAction();
                             break;
                         }
