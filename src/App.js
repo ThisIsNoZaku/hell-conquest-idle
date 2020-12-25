@@ -243,6 +243,10 @@ function App() {
                             }
                             break;
                         }
+                        case "reincarnating":
+                            setCurrentEncounter();
+                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                            break;
                         default:
                             throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
                     }
@@ -269,7 +273,6 @@ function App() {
                 <Route path="/" exact>
                     <ReincarnationSelectionPage reincarnate={(monster, attributes) => {
                         reincarnateAs(monster, attributes);
-                        getGlobalState().currentAction = "exploring";
                         setCurrentAction(getGlobalState().currentAction);
                         unpause();
                         accruedTime.current = 10000000;

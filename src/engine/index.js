@@ -186,6 +186,7 @@ export function loadGlobalState(state) {
             recoveryTime: 2 * 1000,
             fleeingTime: 15 * 1000,
             intimidateTime: 15 * 1000,
+            reincarnationTime: 1
         },
         characters: {
             0: new Character({
@@ -456,8 +457,10 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1));
     globalState.characters[0].absorbedPower = globalState.startingPower;
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
-    globalState.currentAction = "exploring";
     globalState.unlockedMonsters[monsterId] = true;
+
+    globalState.currentEncounter = null;
+    globalState.currentAction = "reincarnating";
 
     saveGlobalState();
 }
