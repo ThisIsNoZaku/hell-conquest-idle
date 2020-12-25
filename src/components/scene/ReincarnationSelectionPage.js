@@ -37,9 +37,7 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with <strong>{player.powerLevel.minus(1).toFixed()}</strong> additional starting
-            energy, letting you start at
-            level {getLevelForPower(newStartingPower).toFixed()}
+            You will reincarnate with <strong>{newStartingPower.toFixed()}</strong> starting power, letting you start at level {getLevelForPower(newStartingPower).toFixed()}
             <br/>
             You will also gain the following Traits as a result of your previous reincarnations:
             <Grid container>
