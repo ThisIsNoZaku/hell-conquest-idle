@@ -31,6 +31,7 @@ export default function DebugUi(props) {
         Big(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2)));
     const [manualSpeedMultiplier, setManualSpeedMultiplier] = useState(_.get(getGlobalState(), ["debug", "manualSpeedMultiplier"],
         getGlobalState().manualSpeedMultiplier));
+    const [playerAbsorbedPower, setPlayerAbsorbedPower] = useState(getCharacter(0).absorbedPower);
 
     function reset() {
         resetDebug();
@@ -54,7 +55,7 @@ export default function DebugUi(props) {
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs={6} style={{textAlign: "center"}}>
-                    <Button variant="contained" color="secondary" onClick={reset} >
+                    <Button variant="contained" color="secondary" onClick={reset}>
                         Reset Debug Settings
                     </Button>
                 </Grid>
@@ -65,11 +66,27 @@ export default function DebugUi(props) {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <TextField type="number" value={manualSpeedMultiplier} onChange={e => {
-                    const newValue = Number.parseInt(e.target.value);
-                    _.set(getGlobalState(), ["debug", "manualSpeedMultiplier"], newValue);
-                    setManualSpeedMultiplier(newValue);
-                }} />
+                <Grid item xs={3}>
+                    <TextField type="number" value={manualSpeedMultiplier} onChange={e => {
+                        const newValue = Number.parseInt(e.target.value);
+                        _.set(getGlobalState(), ["debug", "manualSpeedMultiplier"], newValue);
+                        setManualSpeedMultiplier(newValue);
+                    }} label="Manual speed multiplier"/>
+                </Grid>
+                <Grid item xs={3}>
+                    <TextField type="number" min="0" value={playerAbsorbedPower} onChange={e => {
+                        e.target.value = e.target.value === "" ? 0 : e.target.value;
+                        const newValue = Big(Number.parseInt(e.target.value));
+                        if(newValue.lt(0)) {
+                            getCharacter(0).absorbedPower = Big(0);
+                            setPlayerAbsorbedPower(Big(0));
+                        } else {
+                            getCharacter(0).absorbedPower = newValue;
+                            setPlayerAbsorbedPower(newValue);
+                        }
+
+                    }} label="Current player absorbed power"/>
+                </Grid>
             </Grid>
             <Grid item xs={12}>
                 <h3>Creatures</h3>
@@ -132,7 +149,7 @@ export default function DebugUi(props) {
                         <Button onClick={() => {
                             setMinLevel(minLevel.plus(1));
                             _.set(getGlobalState(), ["debug", "encounters", "minLevel"], minLevel.plus(1));
-                            if(minLevel.plus(1).gt(maxLevel)) {
+                            if (minLevel.plus(1).gt(maxLevel)) {
                                 setMaxLevel(minLevel.plus(1));
                                 _.set(getGlobalState(), ["debug", "encounters", "maxLevel"], minLevel.plus(1));
                             }
@@ -168,7 +185,7 @@ export default function DebugUi(props) {
                         <Button onClick={() => {
                             _.set(getGlobalState(), ["debug", "encounters", "maxLevel"], maxLevel.minus(1));
                             setMaxLevel(maxLevel.minus(1));
-                            if(maxLevel.minus(1).lt(minLevel)) {
+                            if (maxLevel.minus(1).lt(minLevel)) {
                                 setMinLevel(maxLevel.minus(1));
                                 _.set(getGlobalState(), ["debug", "encounters", "minLevel"], maxLevel.minus(1));
                             }
