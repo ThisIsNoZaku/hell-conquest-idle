@@ -246,6 +246,8 @@ function App() {
                         case "reincarnating":
                             setCurrentEncounter();
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                            setActionLog([]);
+                            getGlobalState().actionLog = [];
                             break;
                         default:
                             throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
