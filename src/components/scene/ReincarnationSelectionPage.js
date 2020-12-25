@@ -23,7 +23,8 @@ export default function ReincarnationSelectionPage(props) {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
-    const spendableBonusPoints = player.powerLevel.times(config.characters.player.attributesPerLevel);
+    const newStartingPower = globalState.current.startingPower.plus(player.powerLevel.minus(1));
+    const spendableBonusPoints = getLevelForPower(newStartingPower).times(config.characters.player.attributesPerLevel);
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -38,7 +39,7 @@ export default function ReincarnationSelectionPage(props) {
             <br/>
             You will reincarnate with <strong>{player.powerLevel.minus(1).toFixed()}</strong> additional starting
             energy, letting you start at
-            level {getLevelForPower(globalState.current.startingPower.plus(player.powerLevel)).toFixed()}
+            level {getLevelForPower(newStartingPower).toFixed()}
             <br/>
             You will also gain the following Traits as a result of your previous reincarnations:
             <Grid container>
