@@ -69,7 +69,7 @@ export function resolveCombat(rng, definition) {
                     return;
                 }
                 debugMessage(`Tick ${tick}: Attacking ${target}`);
-                const attackRoll = makeAttackRoll(character, target, rng);
+                const attackRoll = makeAttackRoll(character, target, combatResult, rng);
                 if (_.isNaN(attackRoll)) {
                     throw new Error("Attack roll was NaN")
                 }
@@ -137,12 +137,12 @@ export function resolveCombat(rng, definition) {
 
 }
 
-function makeAttackRoll(actingCharacter, target, rng) {
+function makeAttackRoll(actingCharacter, target, combatState,  rng) {
     const attackAccuracy = actingCharacter.attributes.cunning;
     if(attackAccuracy.constructor.name !== "Big") {
         throw new Error("Accuracy had the wrong type!");
     }
-    const targetEvasion = getCharacter(target).attributes.deceit;
+    const targetEvasion = getCharacter(target).attributes.deceit.minus(combatState.combatantCombatStats[target].fatigue);
     if(targetEvasion.constructor.name !== "Big") {
         throw new Error("Evasion had the wrong type");
     }
