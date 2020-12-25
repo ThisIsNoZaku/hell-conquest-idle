@@ -299,7 +299,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     Object.keys(actingCharacter.traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), actingCharacter.traits[trait], "on_hitting", {
         combat: combatResult,
         attack: attackResult
-    }, tick));
+    }, tick, rng));
     combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
     debugMessage(`Tick ${tick}: Hit did ${attackResult.effects.map(effect => {
         switch (effect.event) {
@@ -318,43 +318,60 @@ function resolveMiss(tick, combatResult, actingCharacter, targetCharacterId, rng
     combatResult.rounds.push(generateMissCombatResult(tick, actingCharacter.id, targetCharacterId));
 }
 
-function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick) {
+function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
         const effect = trait[event];
-        if (effect.when !== undefined) {
-            debugMessage("Trait has triggers");
+        if (effect.conditions !== undefined) {
+            debugMessage("Trait has conditions");
         }
-        const effectTriggers = effect.when === undefined || Object.keys(effect.when)
-            .every(trigger => {
-                switch (trigger) {
-                    case "target_health_below_percentage":
-                        const targetPercent = effect.when[trigger];
-                        const targetCurrentHealth = state.combat.combatantCombatStats[state.attack.target].hp;
-                        const targetMaxHealth = getCharacter(state.attack.target).maximumHp;
-                        const targetHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
-                        const triggerMet = targetPercent >= targetHealthPercent.toNumber();
-                        debugMessage(`Tick ${tick}: Target health percentage is ${targetHealthPercent}, which is ${triggerMet ? "" : "not"} enough to trigger.`);
-                        return triggerMet;
+        const effectConditions = effect.conditions === undefined || Object.keys(effect.conditions)
+            .every(condition => {
+                switch (condition) {
+                    case "health_percentage":
+                        // Fixme: Implement validation
+                        const target = getCharacter(effect.conditions[condition].target === "attacker" ? sourceCharacter : targetCharacter);
+                        const targetPercent = Big(effect.conditions[condition].below);
+                        const targetCurrentHealth = state.combat.combatantCombatStats[target.id].hp;
+                        const targetMaxHealth = target.maximumHp;
+                        const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
+                        const conditionMet = targetPercent.lte(currentHealthPercent);
+                        debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${conditionMet ? "" : "not"} enough to trigger.`);
+                        return conditionMet;
+                    case "chance":
+                        const chanceToTrigger = evaluateExpression(trait[event].conditions[condition], {
+                            $rank: rank
+                        });
+                        const roll = Math.floor(rng.double() * 100) + 1;
+                        if(chanceToTrigger <= roll) {
+                            debugMessage(`Chance to trigger ${chanceToTrigger} with roll ${roll}: success`);
+                            return true;
+                        } else {
+                            debugMessage(`Chance to trigger ${chanceToTrigger} with roll ${roll}: failure.`);
+                            return false;
+                        }
                     default:
                         return false;
                 }
             })
-        if (effectTriggers) {
+        if (effectConditions) {
             debugMessage(`Tick ${tick}: Effect triggered, applying effects`);
             Object.keys(trait[event].effects).forEach(traitEffect => {
                 switch (traitEffect) {
-                    case "damage_bonus_percent":
+                    case "damage_bonus":
                         state.attack.effects.forEach(effect => {
                             if (effect.event == "damage") {
-                                const damageModifier = evaluateExpression(trait[event].effects[traitEffect], {
+                                // FIXME: Validation
+                                const damageModifier = Big(trait[event].effects[traitEffect].percent ? effect.value * (evaluateExpression(trait[event].effects[traitEffect].percent, {
                                     $rank: rank
-                                });
+                                }) / 100) :evaluateExpression(trait[event].effects[traitEffect].static, {
+                                    $rank: rank
+                                }));
                                 if (Number.isNaN(damageModifier)) {
                                     throw new Error("Damage modifier somehow was NaN");
                                 }
-                                debugMessage(`Tick ${tick}: Applying ${damageModifier} percentage modifier to damage`);
-                                effect.value = Math.floor(effect.value * ((1 + damageModifier) / 100));
+                                debugMessage(`Tick ${tick}: Applying ${damageModifier} modifier to damage`);
+                                effect.value = damageModifier.plus(effect.value).round(0, 0);
                             }
                         });
                         break;
