@@ -255,6 +255,7 @@ function App() {
             }
             lastTime = timestamp;
             requestAnimationFrame(tick);
+            setActionLog([...getGlobalState().actionLog]);
         }
 
         requestAnimationFrame(tick)
