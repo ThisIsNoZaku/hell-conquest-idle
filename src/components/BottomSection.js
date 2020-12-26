@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import {getCharacter, getGlobalState} from "../engine";
+import Grid from "@material-ui/core/Grid";
 
 const styles = {
     root: {
@@ -47,11 +48,11 @@ export default function BottomSection(props) {
             <Button style={styles.actions.buttons} onClick={() => {
                 getGlobalState().paused = !getGlobalState().paused;
                 props.togglePause(getGlobalState().paused);
-            } }>
-                { props.paused ? "Unpause" : "Pause"}
+            }}>
+                {props.paused ? "Unpause" : "Pause"}
             </Button>
         </Paper>
-        <Paper style={styles.actions.container} >
+        <Paper style={styles.actions.container}>
             {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
             {actionButton("fleeing", "Flee", "Attempt to escape. You will automatically escape from Greater Demons.", props)}
             {actionButton("intimidating", "Intimidate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
@@ -73,33 +74,39 @@ export default function BottomSection(props) {
 function printActionItem(item) {
     switch (item.result) {
         case "apply_effect":
-            return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.actor).name}`}
-            </div>
+            return <Grid container item xs={12} key={item.uuid}>
+                <Grid item xs={1}>{item.tick}:</Grid>
+                <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
+            </Grid>
         case "hit":
-            return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.actor).name} hit! ${item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}`}
-            </div>
+            return <Grid container xs={12} key={item.uuid}>
+                <Grid item xs={1}>{item.tick}:</Grid>
+                <Grid item xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}</Grid>
+            </Grid>
         case "miss":
-            return <div key={item.uuid}>
-                {`${item.tick}: ${getCharacter(item.actor).name} Missed! ${item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}`}
-            </div>
+            return <Grid container item xs={12} key={item.uuid}>
+                <Grid item xs={1}>{item.tick}:</Grid>
+                <Grid item xs={11}>
+                    {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}
+                </Grid>
+            </Grid>
         case "kill":
-            return <div key={item.uuid}>
-                <strong>{`${item.tick}: ${getCharacter(item.target).name} ${item.target === 0 ? 'Were' : 'Was'} Killed!`}</strong>
-            </div>
+            return <Grid container item xs={12} key={item.uuid}>
+                <Grid item xs={1}>{item.tick}:</Grid>
+                <Grid item xs={11}>{getCharacter(item.target).name} {item.target === 0 ? 'Were' : 'Was'} Killed!</Grid>
+            </Grid>
         case "gainedPower":
-            return <div key={item.uuid}>
+            return <Grid item xs={12} key={item.uuid}>
                 You absorbed {item.value} power.
-            </div>
+            </Grid>
         case "healed":
-            return <div key={item.uuid}>
+            return <Grid item xs={12} key={item.uuid}>
                 {`${getCharacter(item.target).name} gained ${item.value} health.`}
-            </div>
+            </Grid>
         case "escaped":
-            return <div key={item.uuid}>
+            return <Grid item xs={12} key={item.uuid}>
                 You escaped.
-            </div>
+            </Grid>
     }
 
 }
@@ -119,10 +126,11 @@ function describeEffect(target, effect) {
 
 function actionButton(action, text, description, props) {
     return <Tooltip title={description}>
-        <Button onClick={() => props.setNextAction(action)} style={styles.actions.buttons} disabled={props.currentAction.id !== "approaching"}
+        <Button onClick={() => props.setNextAction(action)} style={styles.actions.buttons}
+                disabled={props.currentAction.id !== "approaching"}
                 variant={props.nextActionName === action ? "contained" : "outlined"}
                 color={props.nextActionName === action ? "primary" : "default"}>
-            { text }
+            {text}
         </Button>
     </Tooltip>
 }
