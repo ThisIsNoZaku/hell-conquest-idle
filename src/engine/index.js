@@ -338,7 +338,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         const targetCurrentHealth = state.combat.combatantCombatStats[target.id].hp;
                         const targetMaxHealth = target.maximumHp;
                         const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
-                        const conditionMet = targetPercent.lte(currentHealthPercent);
+                        const conditionMet = targetPercent.gte(currentHealthPercent);
                         debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${conditionMet ? "" : "not"} enough to trigger.`);
                         return conditionMet;
                     case "chance":
