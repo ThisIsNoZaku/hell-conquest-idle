@@ -13,12 +13,33 @@ const styles = {
         display: "flex",
         flex: "1",
         flexDirection: "row",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        overflow: "hidden"
     }
 }
 
 export default function AdventuringPage(props) {
     return <div className="App" style={styles.root}>
+        <img style={{
+            position: "absolute",
+            zIndex: "-1000",
+            height: "100vh"
+        }} src={"/backgrounds/parallax-demon-woods-bg.png"}/>
+        <img style={{
+            position: "absolute",
+            zIndex: "-100",
+            height: "100vh"
+        }} src={"/backgrounds/parallax-demon-woods-far-trees.png"}/>
+        <img style={{
+            position: "absolute",
+            zIndex: "-10",
+            height: "100vh"
+        }} src={"/backgrounds/parallax-demon-woods-mid-trees.png"}/>
+        <img style={{
+            position: "absolute",
+            zIndex: "-1",
+            height: "100vh"
+        }} src={"/backgrounds/parallax-demon-woods-close-trees.png"}/>
         <PlayerStats player={props.player}/>
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
             <TopSection character={getCharacter(0)}/>
@@ -37,10 +58,6 @@ export default function AdventuringPage(props) {
             />
         </div>
         <EnemySidebar currentEncounter={props.currentEncounter} actionLog={props.actionLog}/>
-        <Canvas style={{position: "absolute", zIndex: -1}} gl={{antialias: false}}>
-            <Suspense fallback={null}>
-                <GameScreen scene={1} state={getGlobalState()}/>
-            </Suspense>
-        </Canvas>
+
     </div>
 }
