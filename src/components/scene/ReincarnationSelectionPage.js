@@ -23,7 +23,7 @@ export default function ReincarnationSelectionPage(props) {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
-    const newStartingPower = globalState.current.startingPower.plus(player.powerLevel.minus(1));
+    const newStartingPower = globalState.current.startingPower.plus(player.powerLevel.minus(1).pow(2));
     const spendableBonusPoints = getLevelForPower(newStartingPower).times(config.characters.player.attributesPerLevel);
 
     useEffect(() => {

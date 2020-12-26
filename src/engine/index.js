@@ -378,25 +378,37 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             }
                         });
                         break;
-                    case "self_speed_bonus_percent":
-                        const percentageSpeedMultiplier = evaluateExpression(trait[event].effects[traitEffect], {
+                    case "speed_modifier":
+                        const percentageSpeedMultiplier = evaluateExpression(trait[event].effects[traitEffect].percent, {
                             $rank: rank
                         });
-
-                        state.combat.combatantCombatStats[sourceCharacter.id].modifiers.push({
+                        const affectedCharacter = trait[event].effects[traitEffect].target === "attacked" ? targetCharacter : sourceCharacter;
+                        const effect = {
                             effect: {
                                 speed_bonus_percent: percentageSpeedMultiplier
                             },
-                            roundDuration: trait[event].duration.rounds
+                            roundDuration: trait[event].duration.rounds,
+                            source: {
+                                character: sourceCharacter.id,
+                                ability: trait
+                            }
+                        };
+                        const existingEffect = state.combat.combatantCombatStats[affectedCharacter.id].modifiers.find(modifier => {
+                            return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
                         });
+                        if(existingEffect) {
+                            existingEffect.roundDuration = trait[event].duration.rounds;
+                        } else {
+                            state.combat.combatantCombatStats[affectedCharacter.id].modifiers.push(effect);
+                        }
                         state.attack.effects.push({
                             event: "apply_effect",
                             source: sourceCharacter.id,
-                            target: sourceCharacter.id,
+                            target: affectedCharacter.id,
                             effect: traitEffect,
                             value: percentageSpeedMultiplier
                         });
-                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${sourceCharacter.id}`);
+                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacter}`);
                         break;
                 }
             });
@@ -456,7 +468,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     // Add your level to your starting energy.
-    globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1));
+    globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1).pow(2));
     globalState.characters[0].absorbedPower = globalState.startingPower;
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
