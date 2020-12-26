@@ -37,7 +37,7 @@ export const Traits = {
     murderousFrenzy: {
         name: "Murderous Frenzy",
         icon: "icons/icons-118.png",
-        description: _.template("When this demon hit an enemy with an attack, it frenzies, gaining a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
+        description: _.template("When this demon hits an enemy with an attack it frenzies, gaining a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
                 speed_modifier: {
