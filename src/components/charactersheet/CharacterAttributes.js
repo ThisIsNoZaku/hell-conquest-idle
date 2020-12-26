@@ -31,7 +31,11 @@ export default function CharacterAttributes(props) {
             <Grid item xs={1}>
                 <Tooltip
                     title={<span
-                        dangerouslySetInnerHTML={{__html: ``}}></span>}>
+                        dangerouslySetInnerHTML={{__html: config.attributes.brutality.description(
+                                {
+                                    rank: props.character.attributes.brutality.toNumber()
+                                }
+                            )}}></span>}>
                     <Help/>
                 </Tooltip>
             </Grid>
@@ -47,7 +51,11 @@ export default function CharacterAttributes(props) {
                 <Tooltip
                     title={
                         <span
-                            dangerouslySetInnerHTML={{__html: ``}}></span>
+                            dangerouslySetInnerHTML={{__html: config.attributes.cunning.description(
+                                    {
+                                        rank: props.character.attributes.cunning.toNumber()
+                                    }
+                                )}}></span>
                     }>
                     <Help/>
                 </Tooltip>
@@ -64,7 +72,11 @@ export default function CharacterAttributes(props) {
                 <Tooltip
                     title={
                         <span
-                            dangerouslySetInnerHTML={{__html: ``}}>
+                            dangerouslySetInnerHTML={{__html: config.attributes.deceit.description(
+                                    {
+                                        rank: props.character.attributes.deceit.toNumber()
+                                    }
+                                )}}>
                             </span>}>
                     <Help/>
                 </Tooltip>
@@ -80,7 +92,11 @@ export default function CharacterAttributes(props) {
             <Grid item xs={1}>
                 <Tooltip
                     title={<span
-                        dangerouslySetInnerHTML={{__html: ''}}/>}>
+                        dangerouslySetInnerHTML={{__html: config.attributes.madness.description(
+                                {
+                                    rank: props.character.attributes.madness.toNumber()
+                                }
+                            )}}/>}>
                     <Help/>
                 </Tooltip>
             </Grid>
