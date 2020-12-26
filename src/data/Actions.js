@@ -26,9 +26,9 @@ export const Actions = {
         duration: "exploration.combatTime",
         description: "In Combat!",
     },
-    resurrecting: {
+    reincarnating: {
         id: "resurrecting",
-        duration: "exploration.resurrectionTime",
+        duration: "exploration.reincarnationTime",
         description: "Reincarnating..."
     },
     recovering: {
