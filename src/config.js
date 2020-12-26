@@ -33,6 +33,10 @@ export const config = {
         attackDamage: {
             baseAttribute: "brutality",
             scale: 5
+        },
+        traitRank: {
+            baseAttribute: "madness",
+            scale: 2
         }
     },
     attributes: {
@@ -57,7 +61,7 @@ export const config = {
         madness: {
             label: "Madness",
             globalScaling: 1,
-            description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${5 * rank}% bonus to the effect of wielded Artifacts."),
+            description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${5 * rank}% bonus to the effect of wielded Artifacts and the effects of Traits."),
             icon: "icons/icons-124.png"
         }
     },

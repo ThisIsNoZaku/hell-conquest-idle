@@ -322,6 +322,9 @@ function resolveMiss(tick, combatResult, actingCharacter, targetCharacterId, rng
 }
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
+    const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.scale).div(100);
+    rank = Big(rank).plus(Big(rank).times(rankModifier)).round(0, 0);
+    debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
         const effect = trait[event];
