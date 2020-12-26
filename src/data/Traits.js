@@ -5,12 +5,17 @@ export const Traits = {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
         description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
-        on_hit: {
-            when : {
-                target_health_below_percentage: 50
+        on_hitting: {
+            conditions : {
+                health_percentage: {
+                    target: "target",
+                    below: 50
+                }
             },
             effects: {
-                damage_bonus_percent: "$rank"
+                damage_bonus: {
+                    percent: "$rank"
+                }
             }
         }
     },
@@ -19,8 +24,13 @@ export const Traits = {
         icon: "icons/icons-2503.png",
         description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to seize the intimidated demon's Artifacts as though it were killed."),
         on_intimidate: {
+            conditions: {
+                chance: "$rank"
+            },
             effects: {
-                steal_item_chance: "$rank"
+                steal_item_chance: {
+                    target: "enemies"
+                }
             }
         }
     },
@@ -30,7 +40,10 @@ export const Traits = {
         description: _.template("When this demon hit an enemy with an attack, it frenzies, gaining a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
-                self_speed_bonus_percent: "$rank"
+                speed_modifier: {
+                    target: "attacked",
+                    percent: "$rank"
+                }
             },
             duration: {
                 rounds: 5
@@ -43,7 +56,9 @@ export const Traits = {
         description: _.template("You bind your victims when you strike, causing a <span style='color: red'>${rank}%</span> penalty to their <span style='color: red'>Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
-                target_speed_penalty_percent: "$rank"
+                speed_modifier: {
+                    target: "at"
+                }
             },
             duration: {
                 rounds: 5
@@ -55,8 +70,8 @@ export const Traits = {
         icon: "icons/icons-2260.png",
         description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: red'>${rank}%</span> chance to gain the Frightened status at the beginning of combat for 5 rounds."),
         on_combat_start: {
-            trigger: {
-                percentage_chance: "$rank"
+            conditions: {
+                chance: "$rank"
             },
             effects: {
                 apply_status: {
