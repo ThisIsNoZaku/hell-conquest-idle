@@ -21,29 +21,43 @@ export const config = {
             attributesPerLevel: 2
         }
     },
+    mechanics: {
+        attack: { // Determines how attack rolls work
+            baseAttribute: "deceit",
+            scale: 2
+        },
+        evasion: {
+            baseAttribute: "cunning",
+            scale: 2
+        },
+        attackDamage: {
+            baseAttribute: "brutality",
+            scale: 5
+        }
+    },
     attributes: {
         brutality: {
             label: "Brutality",
             globalScaling: 1,
-            description: _.template("Brutality is how savage and ruthless a Demon is. It gives a ${rank}% bonus to attack damage, defense and intimidation checks."),
+            description: _.template("Brutality is how savage and ruthless a Demon is. It gives a ${2 * rank}% bonus to attack damage, defense and intimidation checks."),
             icon: "icons/icons-92.png"
         },
         cunning: {
             label: "Cunning",
             globalScaling: 1,
-            description: _.template("Cunning is how quick thinking a Demon is. It gives a ${rank}% bonus to Evasion, and non-combat encounters."),
+            description: _.template("Cunning is how quick thinking a Demon is. It gives a ${2 * rank}% bonus to Evasion, and non-combat encounters."),
             icon: "icons/icons-24.png"
         },
         deceit: {
             label: "Deceit",
             globalScaling: 1,
-            description: _.template("Deceit is how underhanded and manipulative a Demon is. It gives a ${rank}% bonus to Accuracy and social encounters."),
+            description: _.template("Deceit is how underhanded and manipulative a Demon is. It gives a ${2 * rank}% bonus to Accuracy and social encounters."),
             icon: "icons/icons-17.png"
         },
         madness: {
             label: "Madness",
             globalScaling: 1,
-            description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${rank}% bonus to the effect of wielded Artifacts."),
+            description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${5 * rank}% bonus to the effect of wielded Artifacts."),
             icon: "icons/icons-124.png"
         }
     },

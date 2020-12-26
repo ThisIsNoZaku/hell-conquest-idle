@@ -138,11 +138,11 @@ export function resolveCombat(rng, definition) {
 }
 
 function makeAttackRoll(actingCharacter, target, combatState,  rng) {
-    const attackAccuracy = actingCharacter.attributes.cunning;
+    const attackAccuracy = actingCharacter.attributes[config.attack.baseAttribute].times(config.attack.scale);
     if(attackAccuracy.constructor.name !== "Big") {
         throw new Error("Accuracy had the wrong type!");
     }
-    const targetEvasion = getCharacter(target).attributes.deceit.minus(combatState.combatantCombatStats[target].fatigue);
+    const targetEvasion = getCharacter(target).attributes[config.evasion.baseAttribute].times(config.evasion.scale).minus(combatState.combatantCombatStats[target].fatigue);
     if(targetEvasion.constructor.name !== "Big") {
         throw new Error("Evasion had the wrong type");
     }
@@ -295,6 +295,8 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         damageToInflict = actingCharacter.combat.maximumDamage;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
     }
+    damageToInflict = damageToInflict
+        .times(Big(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute]).divide(100).round(0, 0));
     const attackResult = generateHitCombatResult(tick, actingCharacter.id, targetCharacter, damageToInflict);
     // Trigger on-hit effects
     Object.keys(actingCharacter.traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), actingCharacter.traits[trait], "on_hitting", {
