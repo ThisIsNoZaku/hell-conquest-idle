@@ -99,6 +99,12 @@ export function resolveCombat(rng, definition) {
                     }
                 });
                 combatResult.combatantCombatStats[acting.character.id].fatigue++;
+                combatResult.combatantCombatStats[acting.character.id].modifiers = combatResult.combatantCombatStats[acting.character.id].modifiers
+                    .filter(modifier => modifier.roundDuration > 0)
+                    .map(modifier => {
+                        modifier.roundDuration -= 1;
+                        return modifier
+                    })
             });
         });
         if (definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0))) {
@@ -123,7 +129,6 @@ export function resolveCombat(rng, definition) {
             listeners.forEach(notifyListener);
         } else {
             debugMessage("No winner, combat continues");
-            // TODO: Countdown durations
             setTimeout(resolveRound);
         }
     };
@@ -411,7 +416,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             effect: traitEffect,
                             value: percentageSpeedMultiplier
                         });
-                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacter}`);
+                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacter.id}`);
                         break;
                 }
             });
