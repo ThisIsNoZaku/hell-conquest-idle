@@ -37,7 +37,7 @@ export const Traits = {
     murderousFrenzy: {
         name: "Murderous Frenzy",
         icon: "icons/icons-118.png",
-        description: _.template("When this demon hits an enemy with an attack it frenzies, gaining a <span style='color: red'>${rank}%</span> bonus to <span style='color: red'>Speed</span> for 5 rounds."),
+        description: _.template("When this demon hits an enemy with an attack it frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
                 speed_modifier: {
@@ -53,7 +53,7 @@ export const Traits = {
     inescapableGrasp: {
         name: "Inescapable Grasp",
         icon: "icons/icons-2221.png",
-        description: _.template("You bind your victims when you strike, causing a <span style='color: red'>${rank}%</span> penalty to their <span style='color: red'>Speed</span> for 5 rounds."),
+        description: _.template("You bind your victims when you strike, causing a <span style='color: orangered'>${rank}%</span> penalty to their <span style='color: lightgreen'>Action Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
                 speed_modifier: {
@@ -68,7 +68,7 @@ export const Traits = {
     terrifyingSkitter: {
         name: "Terrifying Skitter",
         icon: "icons/icons-2260.png",
-        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: red'>${rank}%</span> chance to gain the Frightened status at the beginning of combat for 5 rounds."),
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: orangered'>${rank}%</span> chance to gain <span style='color: lightblue'>Frightened</span> status at the beginning of combat for 5 rounds."),
         on_combat_start: {
             conditions: {
                 chance: "$rank"
