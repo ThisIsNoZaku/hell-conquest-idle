@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-
+// FIXME: Implement validation
 export const Traits = {
     bloodrage: {
         name: "Blood Rage",
