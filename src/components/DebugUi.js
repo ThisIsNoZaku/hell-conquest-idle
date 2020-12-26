@@ -14,11 +14,11 @@ import {Big} from "big.js";
 
 const styles = {
     root: {
-        position: "fixed",
-        width: "100vw",
+        position: "absolute",
         minHeight: "100vh",
         bottom: 0,
-        right: 0
+        left: 0,
+        padding: "20px"
     }
 }
 
