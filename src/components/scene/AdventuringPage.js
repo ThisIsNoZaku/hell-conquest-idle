@@ -2,11 +2,8 @@ import PlayerStats from "../PlayerStats";
 import TopSection from "../TopSection";
 import {getCharacter, getGlobalState} from "../../engine";
 import BottomSection from "../BottomSection";
-import {config} from "../../config";
 import EnemySidebar from "../EnemySidebar";
-import {Canvas} from "react-three-fiber";
-import React, {Suspense} from "react";
-import GameScreen from "../GameScreen";
+import React from "react";
 
 const styles = {
     root: {
