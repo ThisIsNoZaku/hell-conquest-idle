@@ -100,8 +100,12 @@ export default function ReincarnationSelectionPage(props) {
             </Grid>
             {
                 Object.keys(Creatures)
-                    .filter(id => _.get(getGlobalState(), ["creatures", id, "enabled"], true) &&
-                    _.get(getGlobalState(), ["debug", "creatures", id, "enabled"], true))
+                    .filter(id => {
+                            const creatureEnabled = Creatures[id].enabled !== false;
+                            const debugEnabled = _.get(getGlobalState(), ["debug", "creatures", id, "enabled"], true);
+                            return creatureEnabled && debugEnabled;
+                        }
+                    )
                     .map(name => {
                     if (!getGlobalState().unlockedMonsters[name]) {
                         return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
