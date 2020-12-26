@@ -18,6 +18,7 @@ const styles = {
 export default function AdventuringPage(props) {
     return <div className="App" style={styles.root}>
         <img style={{
+            left: "25%",
             position: "absolute",
             zIndex: "-1000",
             height: "100vh"
