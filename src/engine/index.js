@@ -69,18 +69,15 @@ export function resolveCombat(rng, definition) {
                     return;
                 }
                 debugMessage(`Tick ${tick}: Attacking ${target}`);
-                const attackRoll = makeAttackRoll(character, target, combatResult, rng);
-                if (_.isNaN(attackRoll)) {
-                    throw new Error("Attack roll was NaN")
-                }
+                const attackRollResult = makeAttackRoll(character, target, combatResult, rng);
 
                 // Trigger on-attack effects
-                if (attackRoll >= 50) {
-                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRoll}, a hit.`);
+                if (attackRollResult.total >= 50) {
+                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRollResult.total}, a hit.`);
                     resolveHit(tick, combatResult, character, target, rng);
                     listeners.forEach(notifyListener);
                 } else {
-                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRoll}, a miss.`);
+                    debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRollResult.total}, a miss.`);
                     resolveMiss(tick, combatResult, character, target, rng);
                     listeners.forEach(notifyListener);
                     // TODO: Trigger on-miss effects
@@ -152,7 +149,13 @@ function makeAttackRoll(actingCharacter, target, combatState,  rng) {
         throw new Error("Evasion had the wrong type");
     }
     debugMessage("Making an attack roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
-    return Math.floor((rng.double() * 100) + attackAccuracy - targetEvasion);
+    const roll = Math.floor((rng.double() * 100));
+    return {
+        rawRoll: roll,
+        attackAccuracy,
+        targetEvasion,
+        total: roll + attackAccuracy - targetEvasion
+    };
 }
 
 let globalState = loadGlobalState()
@@ -266,6 +269,7 @@ export function generateCreature(id, powerLevel, rng) {
             maximumDamageMultiplier: 1.5
         }
     });
+    saveGlobalState();
     return globalState.characters[nextId];
 }
 
