@@ -81,13 +81,13 @@ function printActionItem(item) {
         case "hit":
             return <Grid container xs={12} key={item.uuid}>
                 <Grid item xs={1}>{item.tick}:</Grid>
-                <Grid item xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}</Grid>
+                <Grid item xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}</Grid>
             </Grid>
         case "miss":
             return <Grid container item xs={12} key={item.uuid}>
                 <Grid item xs={1}>{item.tick}:</Grid>
                 <Grid item xs={11}>
-                    {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(". ")}
+                    {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}
                 </Grid>
             </Grid>
         case "kill":
@@ -114,11 +114,11 @@ function printActionItem(item) {
 function describeEffect(target, effect) {
     switch (effect.event) {
         case "damage":
-            return `${getCharacter(target).name} takes ${effect.value} Damage`;
+            return `${getCharacter(target).name} ${target === 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
         default:
             switch (effect.effect) {
-                case "self_speed_bonus_percent":
-                    return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to speed`;
+                case "speed_modifier":
+                    return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to Speed.`;
             }
 
     }
