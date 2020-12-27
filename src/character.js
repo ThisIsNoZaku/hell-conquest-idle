@@ -132,14 +132,23 @@ class CombatStats {
     }
 
     get minimumDamage() {
-        return this.character().powerLevel.mul(config.combat.defaultMinimumDamageMultiplier).round(0, 3);
+        const characterPowerLevel = this.character().powerLevel;
+        const minimumDamageMultiplier = config.combat.defaultMinimumDamageMultiplier;
+        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
+        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
     }
 
     get medianDamage() {
-        return this.character().powerLevel.mul(config.combat.defaultMedianDamageMultiplier).round(0, 3);
+        const characterPowerLevel = this.character().powerLevel;
+        const minimumDamageMultiplier = config.combat.defaultMedianDamageMultiplier;
+        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
+        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
     }
 
     get maximumDamage() {
-        return this.character().powerLevel.mul(config.combat.defaultMaximumDamageMultiplier).round(0, 3);
+        const characterPowerLevel = this.character().powerLevel;
+        const minimumDamageMultiplier = config.combat.defaultMaximumDamageMultiplier;
+        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
+        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
     }
 }
