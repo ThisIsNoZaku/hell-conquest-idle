@@ -66,6 +66,7 @@ export const config = {
         }
     },
     combat: {
+        attributeDamageModifier: .02,
         defaultMinimumDamageMultiplier: .5,
         defaultMedianDamageMultiplier: 1,
         defaultMaximumDamageMultiplier: 1.5
