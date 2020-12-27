@@ -4,7 +4,7 @@ export const Traits = {
     bloodrage: {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
+        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${10 * rank}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
         on_hitting: {
             conditions : {
                 health_percentage: {
@@ -14,7 +14,7 @@ export const Traits = {
             },
             effects: {
                 damage_bonus: {
-                    percent: "$rank"
+                    percent: "$rank.times(10)"
                 }
             }
         }
