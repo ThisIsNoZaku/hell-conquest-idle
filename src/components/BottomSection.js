@@ -97,7 +97,7 @@ function printActionItem(item) {
             </Grid>
         case "gainedPower":
             return <Grid item xs={12} key={item.uuid}>
-                You absorbed {item.value} power.
+                You absorbed {item.value.toFixed()} power.
             </Grid>
         case "healed":
             return <Grid item xs={12} key={item.uuid}>
