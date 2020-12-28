@@ -154,7 +154,7 @@ function makeAttackRoll(actingCharacter, target, combatState,  rng) {
         rawRoll: roll,
         attackAccuracy,
         targetEvasion,
-        total: roll + attackAccuracy - targetEvasion
+        total: attackAccuracy.minus(targetEvasion).plus(roll)
     };
 }
 
