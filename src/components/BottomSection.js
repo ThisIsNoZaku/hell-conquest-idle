@@ -72,11 +72,14 @@ export default function BottomSection(props) {
 }
 
 function printActionItem(item) {
-    if(item.message) {
+    if (item.message) {
         return <Grid item xs={12} key={item.uuid} style={{textAlign: "center"}}>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={11}>
             <span dangerouslySetInnerHTML={{
                 __html: item.message
             }}></span>
+            </Grid>
         </Grid>
     } else {
         switch (item.result) {
@@ -136,7 +139,12 @@ function describeEffect(target, effect) {
         default:
             switch (effect.effect) {
                 case "speed_modifier":
-                    return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to Speed.`;
+                    if(effect.value.lt(0)) {
+                        return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'suffer' : 'suffers'} a ${effect.value}% penalty to Speed.`;
+                    } else {
+                        return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to Speed.`;
+                    }
+
             }
 
     }
