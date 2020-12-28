@@ -14,16 +14,16 @@ class Region {
     startEncounter(player, rng) {
         const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], Big(1)); // FIXME
         const maximumLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"], player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
-        if(config.debug) {
+        if (config.debug) {
             debugMessage(`Generating an encounter between ${minimumLevel.toFixed()} and ${maximumLevel.toFixed()} `);
         }
         const encounterLevelModifier = minimumLevel.toNumber() + Math.floor(rng.double() * (maximumLevel.toNumber() - minimumLevel.toNumber()));
         const encounterLevel = Big(Math.max(1, encounterLevelModifier));
-        if(config.debug) {
+        if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
         const encounterDef = chooseRandomEncounter(this);
-        if(encounterDef === undefined) {
+        if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
         const encounter = {
@@ -60,6 +60,16 @@ export const Regions = {
                         count: 1
                     }
                 ]
+            },
+            crushingSnake: {
+                description: "1 Crushing Snake",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "crushingSnake",
+                        count: 1
+                    }
+                ]
             }
         },
         {
@@ -78,11 +88,11 @@ function chooseRandomEncounter(region) {
     const possibleEncounters = Object.keys(region.encounters).filter(encounterId => {
         debugMessage(`Determining if '${encounterId}' is enabled.`);
         const encounterEnabled = region.encounters[encounterId].enabled !== false;
-        if(!encounterEnabled) {
+        if (!encounterEnabled) {
             debugMessage(`Encounter '${encounterId}' disabled`);
         }
         const debugNotDisabled = _.get(getGlobalState(), ["debug", "regions", region.id, "encounters", encounterId]) !== false;
-        if(!debugNotDisabled) {
+        if (!debugNotDisabled) {
             debugMessage(`Encounter '${encounterId}' disabled by debug.`);
         }
         return encounterEnabled && debugNotDisabled;
