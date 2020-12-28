@@ -100,7 +100,12 @@ function App() {
                     if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
                         debugMessage("Player killed a non-lesser enemy and gained power.");
                         const player = getCharacter(0);
-                        player.gainPower(enemy.powerLevel.mul(2));
+                        const powerToGain = enemy.powerLevel.mul(2);
+                        player.gainPower(powerToGain);
+                        pushLogItem({
+                            result: "gainedPower",
+                            value: powerToGain
+                        })
                     }
                     break;
                 case "hit":
@@ -205,7 +210,7 @@ function App() {
                                 player.gainPower(1);
                                 pushLogItem({
                                     result: "gainedPower",
-                                    value: 1,
+                                    value: Big(1),
                                     uuid: v4()
                                 });
                             }
