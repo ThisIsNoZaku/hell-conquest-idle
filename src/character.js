@@ -66,6 +66,14 @@ export class Character {
         this._traits = newTraits;
     }
 
+    otherDemonIsGreaterDemon(other) {
+        return other.powerLevel.gte(this.powerLevel.plus(config.encounters.greaterLevelScale));
+    }
+
+    otherDemonIsLesserDemon(other) {
+        return other.powerLevel.lte(this.powerLevel.minus(config.encounters.lesserLevelScale));
+    }
+
     gainPower(powerGained) {
         this._absorbedPower = this._absorbedPower.plus(powerGained);
         Creatures[this.appearance].traits.forEach(trait => {
