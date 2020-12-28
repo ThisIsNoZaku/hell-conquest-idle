@@ -128,6 +128,12 @@ function printActionItem(item) {
                         You escaped.
                     </Grid>
                 </Grid>
+            case "action_skipped":
+                return <Grid item xs={12} key={item.uuid}>
+                    <Grid item xs={1}>{item.tick}</Grid>
+                    <Grid item xs={11}>{getCharacter(item.actor).name} {item.actor === 0 ? 'Skip' : 'Skips'} their action: {item.reason}</Grid>
+                </Grid>
+
         }
     }
 }

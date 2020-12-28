@@ -174,4 +174,8 @@ class CombatStats {
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
         return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
     }
+
+    get canAct() {
+        return true;
+    }
 }
