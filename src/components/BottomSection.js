@@ -74,7 +74,9 @@ export default function BottomSection(props) {
 function printActionItem(item) {
     if(item.message) {
         return <Grid item xs={12} key={item.uuid} style={{textAlign: "center"}}>
-            {item.message}
+            <span dangerouslySetInnerHTML={{
+                __html: item.message
+            }}></span>
         </Grid>
     } else {
         switch (item.result) {
@@ -118,7 +120,10 @@ function printActionItem(item) {
                 </Grid>
             case "escaped":
                 return <Grid item xs={12} key={item.uuid}>
-                    You escaped.
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={11}>
+                        You escaped.
+                    </Grid>
                 </Grid>
         }
     }
