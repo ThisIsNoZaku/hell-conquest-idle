@@ -31,7 +31,6 @@ export const Creatures  = {
     skitteringHorror: {
         name: "Skittering Horror",
         traits: ["terrifyingSkitter"],
-        enabled: false,
         appearance: "skitteringHorror",
         texture: "10_spider.png"
     }
