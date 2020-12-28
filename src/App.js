@@ -56,7 +56,7 @@ function App() {
     useHotkeys("p", () => getGlobalState().paused = !getGlobalState().paused);
     useHotkeys("`", () => {
         setDebugUiEnabled(enabled => {
-            if(config.debug) {
+            if (config.debug) {
                 if (!enabled) {
                     getGlobalState().paused = true;
                     setPaused(getGlobalState().paused);
@@ -87,7 +87,7 @@ function App() {
                     break;
                 case "kill":
                     if (getGlobalState().currentEncounter.pendingActions[0].result === "combat-end") {
-                        if(getCharacter(0).isDamaged) {
+                        if (getCharacter(0).isDamaged) {
                             getGlobalState().nextAction = "healing";
                             setNextAction(getGlobalState().nextAction);
                         }
@@ -95,7 +95,7 @@ function App() {
                     }
                     const enemy = getCharacter(action.target);
                     const enemyIsLesserDemon = enemy.powerLevel.lte(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
-                    if(enemyIsLesserDemon) {
+                    if (enemyIsLesserDemon) {
                         debugMessage(`Not gaining power because enemy ${action.target} was a Lesser Demon.`);
                     }
                     if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
@@ -180,12 +180,12 @@ function App() {
                                 clearActionLog();
                                 const player = getCharacter(0);
                                 const enemies = getGlobalState().currentEncounter.enemies;
-                                if(player.otherDemonIsGreaterDemon(enemies[0])) {
+                                if (player.otherDemonIsGreaterDemon(enemies[0])) {
                                     pushLogItem({
                                         message: `💀Approaching Greater ${enemies[0].name}.💀`,
                                         uuid: v4()
                                     });
-                                } else if(player.otherDemonIsLesserDemon(enemies[0])) {
+                                } else if (player.otherDemonIsLesserDemon(enemies[0])) {
                                     pushLogItem({
                                         message: `Approaching Lesser ${enemies[0].name}.`,
                                         uuid: v4()
@@ -200,6 +200,12 @@ function App() {
                             }
                             break;
                         case "approaching": {
+                            // Since we're starting a new combat, remove any old, dead characters
+                            const deadCharacters = Object.keys(getGlobalState().characters)
+                                .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
+                            deadCharacters.forEach(id => {
+                                delete getGlobalState().characters[id]
+                            });
                             const player = getCharacter(0);
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
@@ -229,7 +235,7 @@ function App() {
                                 result: "escaped",
                                 uuid: v4()
                             });
-                            if(enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
+                            if (enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
                                 player.gainPower(1);
                                 pushLogItem({
                                     result: "gainedPower",
@@ -331,7 +337,7 @@ function App() {
                     />
                 </Route>
             </Switch>
-            { debugUiEnabled && <DebugUi/> }
+            {debugUiEnabled && <DebugUi/>}
         </MemoryRouter>
     );
 }
