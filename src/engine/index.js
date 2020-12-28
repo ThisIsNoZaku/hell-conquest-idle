@@ -97,6 +97,7 @@ export function resolveCombat(rng, definition) {
                     }
                 });
                 combatResult.combatantCombatStats[acting.character.id].fatigue++;
+                // TODO: Add logs for when effects expire.
                 combatResult.combatantCombatStats[acting.character.id].modifiers = combatResult.combatantCombatStats[acting.character.id].modifiers
                     .filter(modifier => modifier.roundDuration > 0)
                     .map(modifier => {
