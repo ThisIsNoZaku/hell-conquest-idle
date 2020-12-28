@@ -22,7 +22,7 @@ export default function TopSection(props) {
         getCharacter(0).powerLevel
     ])
     return <div style={styles.root}>
-        <Button onClick={() => history.push("/")} style={styles.buttons} variant="contained" color="secondary" disabled={!reincarnateEnabled}>
+        <Button onClick={() => history.push("/reincarnating")} style={styles.buttons} variant="contained" color="secondary" disabled={!reincarnateEnabled}>
             Reincarnate
         </Button>
     </div>
