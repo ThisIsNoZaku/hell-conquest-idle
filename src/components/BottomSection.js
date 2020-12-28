@@ -73,8 +73,7 @@ export default function BottomSection(props) {
 
 function printActionItem(item) {
     if (item.message) {
-        return <Grid item xs={12} key={item.uuid} style={{textAlign: "center"}}>
-            <Grid item xs={1}></Grid>
+        return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
             <Grid item xs={11}>
             <span dangerouslySetInnerHTML={{
                 __html: item.message
@@ -84,54 +83,51 @@ function printActionItem(item) {
     } else {
         switch (item.result) {
             case "apply_effect":
-                return <Grid container item xs={12} key={item.uuid}>
-                    <Grid item xs={1}>{item.tick}:</Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
+                    <Grid item xs={1}>{item.tick}:</Grid>
                 </Grid>
             case "hit":
-                return <Grid container xs={12} key={item.uuid}>
-                    <Grid item xs={1}>{item.tick}:</Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item
                           xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}</Grid>
+                    <Grid item xs={1}>{item.tick}:</Grid>
                 </Grid>
             case "miss":
-                return <Grid container item xs={12} key={item.uuid}>
-                    <Grid item xs={1}>{item.tick}:</Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>
                         {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}
                     </Grid>
+                    <Grid item xs={1}>{item.tick}:</Grid>
                 </Grid>
             case "kill":
-                return <Grid container item xs={12} key={item.uuid}>
-                    <Grid item xs={1}>{item.tick}:</Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item
                           xs={11}><strong>{getCharacter(item.target).name} {item.target === 0 ? 'Were' : 'Was'} Killed!</strong></Grid>
+                    <Grid item xs={1}>{item.tick}:</Grid>
                 </Grid>
             case "gainedPower":
-                return <Grid item xs={12} key={item.uuid}>
-                    <Grid item xs={1}></Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>
                         You absorbed {item.value.toFixed()} power.
                     </Grid>
                 </Grid>
             case "healed":
-                return <Grid item xs={12} key={item.uuid}>
-                    <Grid item xs={1}></Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>
                         {`${getCharacter(item.target).name} gained ${item.value} health.`}
                     </Grid>
                 </Grid>
             case "escaped":
-                return <Grid item xs={12} key={item.uuid}>
-                    <Grid item xs={1}></Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>
                         You escaped.
                     </Grid>
                 </Grid>
             case "action_skipped":
-                return <Grid item xs={12} key={item.uuid}>
-                    <Grid item xs={1}>{item.tick}</Grid>
-                    <Grid item xs={11}>{getCharacter(item.actor).name} {item.actor === 0 ? 'Skip' : 'Skips'} their action: {item.reason}</Grid>
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
+                    <Grid item xs={11}>{getCharacter(item.actor).name} {item.actor === 0 ? 'Skip' : 'Skips'} their
+                        action: {item.reason}</Grid>
                 </Grid>
 
         }
@@ -145,7 +141,7 @@ function describeEffect(target, effect) {
         default:
             switch (effect.effect) {
                 case "speed_modifier":
-                    if(effect.value.lt(0)) {
+                    if (effect.value.lt(0)) {
                         return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'suffer' : 'suffers'} a ${effect.value}% penalty to Speed.`;
                     } else {
                         return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to Speed.`;
