@@ -69,15 +69,19 @@ export const Traits = {
     terrifyingSkitter: {
         name: "Terrifying Skitter",
         icon: "icons/icons-2260.png",
-        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: orangered'>${rank}%</span> chance to gain <span style='color: lightblue'>Frightened</span> status at the beginning of combat for 5 rounds."),
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: orangered'>${rank}%</span> chance to gain <span style='color: lightblue'>Terrified</span> status at the beginning of combat for 5 rounds."),
         on_combat_start: {
             conditions: {
                 chance: "$rank"
             },
             effects: {
                 apply_status: {
-                    status: "frightened"
+                    target: "all_enemies",
+                    status: "terrified"
                 }
+            },
+            duration: {
+                rounds: 1
             }
         }
     }
