@@ -57,7 +57,8 @@ export const Traits = {
         on_hitting: {
             effects: {
                 speed_modifier: {
-                    target: "at"
+                    target: "attacked",
+                    percent: "$rank.times(-1)"
                 }
             },
             duration: {
