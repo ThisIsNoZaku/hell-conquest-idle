@@ -520,6 +520,12 @@ function stateReviver(key, value) {
             });
         case "paused":
             return false;
+        case "value":
+            const parsed = Number.parseFloat(value);
+            if(Number.isNaN(parsed)) {
+                return value;
+            }
+            return Big(value);
         default:
             return value;
     }
