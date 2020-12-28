@@ -14,6 +14,7 @@ export default class CharacterCombatState {
                 const multiplier = (modifier.effect.speed_bonus_percent.plus(100))/100
                 return currentValue.mul(multiplier);
             }
+            return currentValue;
         }, baseSpeed);
         return modifiedSpeed;
     }
