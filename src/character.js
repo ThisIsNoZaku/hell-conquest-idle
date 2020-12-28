@@ -139,6 +139,18 @@ class CombatStats {
         this.fatigue = 0;
     }
 
+    get minimumDamageChance() {
+        return Big(config.combat.baseMinimumDamageChance);
+    }
+
+    get medianDamageChance() {
+        return Big(config.combat.baseMedianDamageChance);
+    }
+
+    get maximumDamageChance() {
+        return Big(1).minus(this.minimumDamageChance).minus(this.medianDamageChance);
+    }
+
     get minimumDamage() {
         const characterPowerLevel = this.character().powerLevel;
         const minimumDamageMultiplier = config.combat.defaultMinimumDamageMultiplier;

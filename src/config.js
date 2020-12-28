@@ -69,7 +69,9 @@ export const config = {
         attributeDamageModifier: .02,
         defaultMinimumDamageMultiplier: .5,
         defaultMedianDamageMultiplier: 1,
-        defaultMaximumDamageMultiplier: 1.5
+        defaultMaximumDamageMultiplier: 1.5,
+        baseMinimumDamageChance: .2,
+        baseMedianDamageChance: .6
     },
     debug: process.env.REACT_APP_DEBUG_MODE === "true"
 }

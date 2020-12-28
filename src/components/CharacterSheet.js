@@ -46,26 +46,35 @@ export default function CharacterSheet(props) {
                 <strong>Derived</strong>
             </Grid>
             <Grid container>
-                <Grid item xs={6}>
-                    Min. Damage
+                <Grid item xs={4}>
+                    Glancing Blow
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
+                    {props.character.combat.minimumDamageChance.times(100).toFixed()}%
+                </Grid>
+                <Grid item xs={4}>
                     {props.character.combat.minimumDamage.toFixed()}
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={6}>
-                    Med. Damage
+                <Grid item xs={4}>
+                    Solid Hit
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
+                    {props.character.combat.medianDamageChance.times(100).toFixed()}%
+                </Grid>
+                <Grid item xs={4}>
                     {props.character.combat.medianDamage.toFixed()}
                 </Grid>
             </Grid>
             <Grid container>
-                <Grid item xs={6}>
-                    Max. Damage
+                <Grid item xs={4}>
+                    Critical Hit
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={4}>
+                    {props.character.combat.maximumDamageChance.times(100).toFixed()}%
+                </Grid>
+                <Grid item xs={4}>
                     {props.character.combat.maximumDamage.toFixed()}
                 </Grid>
             </Grid>

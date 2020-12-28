@@ -9,6 +9,7 @@ export const Creatures  = {
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",
         traits: ["cupidity"],
+        enabled: false,
         appearance: "rapaciousHighwayman",
         texture: "02_hunter.png",
         description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants."
@@ -30,6 +31,7 @@ export const Creatures  = {
     skitteringHorror: {
         name: "Skittering Horror",
         traits: ["terrifyingSkitter"],
+        enabled: false,
         appearance: "skitteringHorror",
         texture: "10_spider.png"
     }
