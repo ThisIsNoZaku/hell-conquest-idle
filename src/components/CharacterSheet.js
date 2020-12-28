@@ -18,6 +18,8 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
+    const combinedHitWeights = props.character.combat.minimumDamageWeight.plus(props.character.combat.medianDamageWeight)
+        .plus(props.character.combat.maximumDamageWeight);
 
     return <Grid container>
         <Grid item xs={12}>
@@ -50,7 +52,7 @@ export default function CharacterSheet(props) {
                     Glancing Blow
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.minimumDamageChance.times(100).toFixed()}%
+                    {props.character.combat.minimumDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.minimumDamage.toFixed()}
@@ -61,7 +63,7 @@ export default function CharacterSheet(props) {
                     Solid Hit
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.medianDamageChance.times(100).toFixed()}%
+                    {props.character.combat.medianDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.medianDamage.toFixed()}
@@ -72,7 +74,7 @@ export default function CharacterSheet(props) {
                     Critical Hit
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.maximumDamageChance.times(100).toFixed()}%
+                    {props.character.combat.maximumDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.maximumDamage.toFixed()}

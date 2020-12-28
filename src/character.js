@@ -142,16 +142,16 @@ class CombatStats {
         this.fatigue = 0;
     }
 
-    get minimumDamageChance() {
-        return Big(config.combat.baseMinimumDamageChance);
+    get minimumDamageWeight() {
+        return Big(config.combat.baseMinimumDamageWeight);
     }
 
-    get medianDamageChance() {
-        return Big(config.combat.baseMedianDamageChance);
+    get medianDamageWeight() {
+        return Big(config.combat.baseMedianDamageWeight);
     }
 
-    get maximumDamageChance() {
-        return Big(1).minus(this.minimumDamageChance).minus(this.medianDamageChance);
+    get maximumDamageWeight() {
+        return Big(config.combat.baseMaximumDamageWeight);
     }
 
     get minimumDamage() {
