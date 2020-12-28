@@ -469,13 +469,6 @@ export function reincarnateAs(monsterId, newAttributes) {
         monsterId = options[Math.floor(Math.random() * options.length)];
     }
 
-    // Gain the traits of your new demon
-    Creatures[monsterId].traits.forEach(trait => {
-        if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
-            globalState.startingTraits[trait] = player.powerLevel.toNumber();
-        }
-    });
-
     // Update player attributes
     Object.keys(player.attributes).forEach(attribute => {
         player.attributes[attribute] = Big(newAttributes[attribute.substring(1)]);
@@ -486,6 +479,13 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.characters[0].absorbedPower = globalState.startingPower;
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
+
+    // Gain the traits of your new demon amd your new power level
+    Creatures[monsterId].traits.forEach(trait => {
+        if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
+            globalState.startingTraits[trait] = player.powerLevel;
+        }
+    });
 
     globalState.currentEncounter = null;
     globalState.currentAction = "reincarnating";
