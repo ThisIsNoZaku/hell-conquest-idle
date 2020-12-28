@@ -9,7 +9,6 @@ import {config} from "../config";
 import {generateHitCombatResult, generateMissCombatResult, generateSkipActionResult} from "../combatResult";
 import CharacterCombatState from "./CharacterCombatState";
 import * as Package from "../../package.json";
-import {act} from "@testing-library/react";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -41,7 +40,7 @@ export function resolveCombat(rng, definition) {
     // Trigger start of combat effects.
     combatants.forEach(combatant => Object.keys(combatant.character.traits).forEach(trait => {
         combatants.filter(other => other !== combatant).forEach(otherCombatant => {
-            applyTrait(combatant.character, otherCombatant.id, getTrait(trait), combatant.character.traits[trait], "on_combat_start", {combat:combatResult}, 0, rng);
+            applyTrait(combatant.character, otherCombatant.id, getTrait(trait), combatant.character.traits[trait], "on_combat_start", {combat: combatResult}, 0, rng);
         });
     }))
     let tick = 0;
@@ -117,26 +116,32 @@ export function resolveCombat(rng, definition) {
                     })
             });
         });
-        if (definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0))) {
-            debugMessage("Every member of party 0 is dead")
-            combatResult.rounds.push({
-                uuid: v4(),
-                tick,
-                winner: 1,
-                result: "combat-end"
-            })
-            combatResult.winner = 1;
-            listeners.forEach(notifyListener);
-        } else if (definition.parties[1].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0))) {
-            debugMessage("Every member of party 1 is dead")
-            combatResult.rounds.push({
-                uuid: v4(),
-                tick,
-                winner: 0,
-                result: "combat-end",
-            });
-            combatResult.winner = 0;
-            listeners.forEach(notifyListener);
+        const playerPartyDead = definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0));
+        const enemyPartyDead = definition.parties[1].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0));
+        if (playerPartyDead || enemyPartyDead) {
+            if (playerPartyDead) {
+                debugMessage("Every member of party 0 is dead")
+                combatResult.rounds.push({
+                    uuid: v4(),
+                    tick,
+                    winner: 1,
+                    result: "combat-end"
+                })
+                combatResult.winner = 1;
+                listeners.forEach(notifyListener);
+                // Clear all end of combat
+            } else if (enemyPartyDead) {
+                debugMessage("Every member of party 1 is dead")
+                combatResult.rounds.push({
+                    uuid: v4(),
+                    tick,
+                    winner: 0,
+                    result: "combat-end",
+                });
+                combatResult.winner = 0;
+                listeners.forEach(notifyListener);
+            }
+
         } else {
             debugMessage("No winner, combat continues");
             setTimeout(resolveRound);
