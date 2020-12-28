@@ -174,6 +174,12 @@ function App() {
                                 }, "fighting");
                                 setNextAction(getGlobalState().nextAction);
                                 clearActionLog();
+                                const player = getCharacter(0);
+                                const enemies = getGlobalState().currentEncounter.enemies;
+                                pushLogItem({
+                                    message: `Approaching ${player.otherDemonIsGreaterDemon(enemies[0]) ? "Greater" : (player.otherDemonIsLesserDemon(enemies[0]) ? "Lesser" : "")} ${enemies.map(enemy => enemy.name)}.`,
+                                    uuid: v4()
+                                });
                             }
                             break;
                         case "approaching": {
