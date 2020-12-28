@@ -12,7 +12,10 @@ export class Character {
         this._currentHp = Big(props._currentHp || this.maximumHp);
         this._attributes = new Attributes(props.attributes || props._attributes);
         this._combat = new CombatStats(props.combat || props._combat, this);
-        this._traits = props.traits || props._traits;
+        this._traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
+            transformed[next] = Big((props.traits || props._traits)[next]);
+            return transformed;
+        }, {});
         this._appearance = props.appearance || props._appearance;
         this._modifiers = props.modifiers || props._modifiers || [];
     }
