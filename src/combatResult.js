@@ -25,3 +25,13 @@ export function generateMissCombatResult(tick, attackingCharacterId, targetChara
         effects: []
     }
 }
+
+export function generateSkipActionResult(tick, actingCharacterId) {
+    return {
+        uuid: v4(),
+        tick,
+        result: "action_skipped",
+        actor: actingCharacterId,
+        effects: []
+    }
+}
