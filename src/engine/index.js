@@ -395,7 +395,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         const percentageSpeedMultiplier = evaluateExpression(trait[event].effects[traitEffect].percent, {
                             $rank: rank
                         });
-                        const affectedCharacter = trait[event].effects[traitEffect].target === "attacked" ? targetCharacter : sourceCharacter;
+                        const affectedCharacterId = trait[event].effects[traitEffect].target === "attacked" ? targetCharacter : sourceCharacter.id;
                         const effect = {
                             effect: {
                                 speed_bonus_percent: percentageSpeedMultiplier
@@ -406,22 +406,22 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                 ability: trait
                             }
                         };
-                        const existingEffect = state.combat.combatantCombatStats[affectedCharacter.id].modifiers.find(modifier => {
+                        const existingEffect = state.combat.combatantCombatStats[affectedCharacterId].modifiers.find(modifier => {
                             return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
                         });
                         if(existingEffect) {
                             existingEffect.roundDuration = trait[event].duration.rounds;
                         } else {
-                            state.combat.combatantCombatStats[affectedCharacter.id].modifiers.push(effect);
+                            state.combat.combatantCombatStats[affectedCharacterId].modifiers.push(effect);
                         }
                         state.attack.effects.push({
                             event: "apply_effect",
                             source: sourceCharacter.id,
-                            target: affectedCharacter.id,
+                            target: affectedCharacterId,
                             effect: traitEffect,
                             value: percentageSpeedMultiplier
                         });
-                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacter.id}`);
+                        debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacterId}`);
                         break;
                 }
             });
