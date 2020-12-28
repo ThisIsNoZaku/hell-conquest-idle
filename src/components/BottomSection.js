@@ -104,11 +104,17 @@ function printActionItem(item) {
                 </Grid>
             case "gainedPower":
                 return <Grid item xs={12} key={item.uuid}>
-                    You absorbed {item.value.toFixed()} power.
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={11}>
+                        You absorbed {item.value.toFixed()} power.
+                    </Grid>
                 </Grid>
             case "healed":
                 return <Grid item xs={12} key={item.uuid}>
-                    {`${getCharacter(item.target).name} gained ${item.value} health.`}
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={11}>
+                        {`${getCharacter(item.target).name} gained ${item.value} health.`}
+                    </Grid>
                 </Grid>
             case "escaped":
                 return <Grid item xs={12} key={item.uuid}>
