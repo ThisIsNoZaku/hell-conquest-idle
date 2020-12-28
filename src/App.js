@@ -20,6 +20,7 @@ import AdventuringPage from "./components/scene/AdventuringPage";
 import DebugUi from "./components/DebugUi";
 import {useHotkeys} from "react-hotkeys-hook";
 import {debugMessage} from "./debugging";
+import SplashPage from "./components/scene/SplashPage";
 
 loadGlobalState();
 
@@ -192,7 +193,7 @@ function App() {
                                         uuid: v4()
                                     });
                                 }
-
+                                saveGlobalState();
                             }
                             break;
                         case "approaching": {
@@ -293,10 +294,14 @@ function App() {
 
     return (
         <MemoryRouter initialEntries={[
-            getGlobalState().currentAction === "reincarnating" ? "/" : "/adventuring"
+            getGlobalState().currentAction === "reincarnating" ? "/reincarnatin" : (
+                getGlobalState().currentAction === "adventuring" ? "/adventuring" : "/")
         ]}>
             <Switch>
                 <Route path="/" exact>
+                    <SplashPage/>
+                </Route>
+                <Route path="/reincarnating" exact>
                     <ReincarnationSelectionPage reincarnate={(monster, attributes) => {
                         reincarnateAs(monster, attributes);
                         setCurrentAction(getGlobalState().currentAction);

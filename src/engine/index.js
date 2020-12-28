@@ -8,8 +8,9 @@ import {Character} from "../character";
 import {config} from "../config";
 import {generateHitCombatResult, generateMissCombatResult} from "../combatResult";
 import CharacterCombatState from "./CharacterCombatState";
+import * as Package from "../../package.json";
 
-export const saveKey = "hell-save";
+export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
 export function resolveCombat(rng, definition) {
     const listeners = [];
@@ -177,7 +178,7 @@ export function loadGlobalState(state) {
         },
         unlockedMonsters: {},
         paused: true,
-        currentAction: "reincarnating",
+        currentAction: null,
         nextAction: null,
         id: 0,
         startingPower: Big(0), //The amount of absorbed power the player starts with when they reincarnate
