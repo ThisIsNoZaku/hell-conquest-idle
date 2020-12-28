@@ -72,43 +72,50 @@ export default function BottomSection(props) {
 }
 
 function printActionItem(item) {
-    switch (item.result) {
-        case "apply_effect":
-            return <Grid container item xs={12} key={item.uuid}>
-                <Grid item xs={1}>{item.tick}:</Grid>
-                <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
-            </Grid>
-        case "hit":
-            return <Grid container xs={12} key={item.uuid}>
-                <Grid item xs={1}>{item.tick}:</Grid>
-                <Grid item xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}</Grid>
-            </Grid>
-        case "miss":
-            return <Grid container item xs={12} key={item.uuid}>
-                <Grid item xs={1}>{item.tick}:</Grid>
-                <Grid item xs={11}>
-                    {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}
+    if(item.message) {
+        return <Grid item xs={12} key={item.uuid} style={{textAlign: "center"}}>
+            {item.message}
+        </Grid>
+    } else {
+        switch (item.result) {
+            case "apply_effect":
+                return <Grid container item xs={12} key={item.uuid}>
+                    <Grid item xs={1}>{item.tick}:</Grid>
+                    <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
                 </Grid>
-            </Grid>
-        case "kill":
-            return <Grid container item xs={12} key={item.uuid}>
-                <Grid item xs={1}>{item.tick}:</Grid>
-                <Grid item xs={11}>{getCharacter(item.target).name} {item.target === 0 ? 'Were' : 'Was'} Killed!</Grid>
-            </Grid>
-        case "gainedPower":
-            return <Grid item xs={12} key={item.uuid}>
-                You absorbed {item.value.toFixed()} power.
-            </Grid>
-        case "healed":
-            return <Grid item xs={12} key={item.uuid}>
-                {`${getCharacter(item.target).name} gained ${item.value} health.`}
-            </Grid>
-        case "escaped":
-            return <Grid item xs={12} key={item.uuid}>
-                You escaped.
-            </Grid>
+            case "hit":
+                return <Grid container xs={12} key={item.uuid}>
+                    <Grid item xs={1}>{item.tick}:</Grid>
+                    <Grid item
+                          xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}</Grid>
+                </Grid>
+            case "miss":
+                return <Grid container item xs={12} key={item.uuid}>
+                    <Grid item xs={1}>{item.tick}:</Grid>
+                    <Grid item xs={11}>
+                        {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}
+                    </Grid>
+                </Grid>
+            case "kill":
+                return <Grid container item xs={12} key={item.uuid}>
+                    <Grid item xs={1}>{item.tick}:</Grid>
+                    <Grid item
+                          xs={11}><strong>{getCharacter(item.target).name} {item.target === 0 ? 'Were' : 'Was'} Killed!</strong></Grid>
+                </Grid>
+            case "gainedPower":
+                return <Grid item xs={12} key={item.uuid}>
+                    You absorbed {item.value.toFixed()} power.
+                </Grid>
+            case "healed":
+                return <Grid item xs={12} key={item.uuid}>
+                    {`${getCharacter(item.target).name} gained ${item.value} health.`}
+                </Grid>
+            case "escaped":
+                return <Grid item xs={12} key={item.uuid}>
+                    You escaped.
+                </Grid>
+        }
     }
-
 }
 
 function describeEffect(target, effect) {
