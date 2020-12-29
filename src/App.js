@@ -35,7 +35,7 @@ function changeCurrentAction(newAction) {
 
 function pushLogItem(item) {
     if (getGlobalState().actionLog.length > (config.actionLog.maxSize || 10)) {
-        getGlobalState().actionLog.shift();
+        getGlobalState().actionLog.pop();
     }
     getGlobalState().actionLog.unshift(item);
 }
@@ -156,6 +156,7 @@ function App() {
                         case "exploring":
                             if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
                                 setCurrentAction(Actions[changeCurrentAction("recovering")]);
+                                // TODO: Implement random encounter chance
                             } else {
                                 getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
                                 setCurrentEncounter(getGlobalState().currentEncounter);
@@ -196,16 +197,19 @@ function App() {
                                         uuid: v4()
                                     });
                                 }
+                                if(getGlobalState().passivePowerIncome.gt(0)) {
+                                    getCharacter(0).absorbedPower = getCharacter(0).absorbedPower.plus(getGlobalState().passivePowerIncome);
+                                    pushLogItem({
+                                        result: "gained-power",
+                                        value: getGlobalState().passivePowerIncome,
+                                        uuid: v4()
+                                    })
+                                }
                                 saveGlobalState();
                             }
                             break;
                         case "approaching": {
                             // Since we're starting a new combat, remove any old, dead characters
-                            const deadCharacters = Object.keys(getGlobalState().characters)
-                                .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
-                            deadCharacters.forEach(id => {
-                                delete getGlobalState().characters[id]
-                            });
                             const player = getCharacter(0);
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
@@ -221,9 +225,31 @@ function App() {
                             }
                             setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
                             setNextAction();
+                            const deadCharacters = Object.keys(getGlobalState().characters)
+                                .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
+                            deadCharacters.forEach(id => {
+                                delete getGlobalState().characters[id]
+                            });
                             break;
                         }
                         case "intimidating":
+                            const chanceToIntimidate = Big(5).times(Big(2).pow(getCharacter(0).powerLevel.minus(1).minus(currentEncounter.enemies[0].powerLevel).toNumber()));
+                            const roll = Math.floor(rng.double() * 100) + 1;
+                            if(chanceToIntimidate.gte(roll)) {
+                                const periodicPowerIncreases = Big(1);
+                                pushLogItem({
+                                    result: "intimidated",
+                                    target: currentEncounter.enemies[0].id,
+                                    value: periodicPowerIncreases
+                                });
+                                getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
+                            } else {
+                                pushLogItem({
+                                    result: "enemy-fled",
+                                    target: currentEncounter.enemies[0].id
+                                });
+                            }
+                            setCurrentAction(Actions["exploring"]);
                             break;
                         case "fleeing":
                             const player = getCharacter(0);
@@ -269,7 +295,8 @@ function App() {
                                 pushLogItem({
                                     target: player.id,
                                     value: amountToHeal,
-                                    result: "healed"
+                                    result: "healed",
+                                    uuid: v4()
                                 })
                             }
                             if (player.currentHp.gte(player.maximumHp)) {
@@ -315,6 +342,7 @@ function App() {
                         reincarnateAs(monster, attributes);
                         setCurrentAction(getGlobalState().currentAction);
                         unpause();
+                        setPaused(false);
                         accruedTime.current = 10000000;
                     }}/>
                 </Route>
