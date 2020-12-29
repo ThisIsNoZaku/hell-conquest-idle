@@ -1,6 +1,6 @@
 import {v4} from "node-uuid";
 
-export function generateHitCombatResult(tick, attackingCharacterId, targetCharacterId, damageDone) {
+export function generateHitCombatResult(tick, attackingCharacterId, targetCharacterId, damageDone, otherEffects) {
     return {
         uuid: v4(),
         tick,
@@ -11,7 +11,7 @@ export function generateHitCombatResult(tick, attackingCharacterId, targetCharac
             event: "damage",
             value: damageDone,
             target: targetCharacterId
-        }]
+        }, ...otherEffects]
     }
 }
 
