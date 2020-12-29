@@ -19,7 +19,7 @@ export default function SplashPage(props) {
             </Grid>
             <Grid item container>
                 {Object.keys(changelog).map(version => {
-                    return <Grid item container xs={12}>
+                    return <Grid key={version} item container xs={12}>
                         <Grid item xs={12}>
                             {version}
                         </Grid>
