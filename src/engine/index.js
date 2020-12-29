@@ -458,8 +458,10 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                 }
                             };
                             // Determine targets
-                            Object.keys(state.combat.combatantCombatStats).filter(combatantId => {
+                            const targets = Object.keys(state.combat.combatantCombatStats).filter(combatantId => {
                                 switch (effectTarget) {
+                                    case "attacker":
+                                        return sourceCharacter.id == combatantId;
                                     case "attacked":
                                         return targetCharacter == combatantId;
                                     case "all_enemies":
@@ -468,8 +470,8 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     default:
                                         throw new Error();
                                 }
-                            }).forEach(combatantId => {
-
+                            });
+                            targets.forEach(combatantId => {
                                 const existingEffect = state.combat.combatantCombatStats[combatantId].modifiers.find(modifier => {
                                     return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
                                 });
