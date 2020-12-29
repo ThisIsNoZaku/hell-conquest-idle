@@ -50,7 +50,7 @@ export default function ReincarnationSelectionPage(props) {
                             <Tooltip title={<div dangerouslySetInnerHTML={{
                                 __html:
                                     Traits[trait].description({
-                                        rank: combinedLevel.toFixed()
+                                        rank: combinedLevel
                                     })
                             }}></div>}>
                                 <img src={Traits[trait].icon}/>
@@ -151,7 +151,7 @@ export default function ReincarnationSelectionPage(props) {
                                 Creatures[name].traits.map(trait => <Grid item xs={1}>
                                     <Tooltip title={<div dangerouslySetInnerHTML={{
                                         __html: Traits[trait].description({
-                                            rank: "(rank)"
+                                            rank: getLevelForPower(getGlobalState().startingPower)
                                         })
                                     }}>
                                     </div>}>

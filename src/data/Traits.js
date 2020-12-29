@@ -4,7 +4,7 @@ export const Traits = {
     bloodrage: {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${10 * rank}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
+        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(10)}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
         on_hitting: {
             conditions : {
                 health_percentage: {
@@ -73,10 +73,10 @@ export const Traits = {
     terrifyingSkitter: {
         name: "Terrifying Skitter",
         icon: "icons/icons-2260.png",
-        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: orangered'>${rank}%</span> chance to make the enemy <span style='color: violet'>Terrified</span> for 1 round, stunning them."),
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, giving a <span style='color: orangered'>25%</span> chance to make the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${rank.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them."),
         on_combat_start: {
             conditions: {
-                chance: "$rank"
+                chance: 25
             },
             effects: {
                 add_modifier: {
@@ -86,7 +86,7 @@ export const Traits = {
                 }
             },
             duration: {
-                rounds: 2
+                rounds: "$rank.div(10).round(0, 0).plus(1)"
             }
         }
     },

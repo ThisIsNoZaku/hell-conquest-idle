@@ -60,6 +60,10 @@ export class Character {
         return this._traits;
     }
 
+    set traits(newTraits) {
+        this._traits = newTraits;
+    }
+
     get appearance() {
         return this._appearance;
     }
