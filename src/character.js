@@ -91,7 +91,7 @@ export class Character {
     }
 
     get healing() {
-        return Big(1);
+        return Big(this.powerLevel.times(config.mechanics.hp.healingPerLevel));
     }
 
     get absorbedPower() {
