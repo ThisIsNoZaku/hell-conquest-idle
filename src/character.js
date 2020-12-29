@@ -100,6 +100,9 @@ export class Character {
 
     set absorbedPower(value){
         this._absorbedPower = value;
+        Creatures[this.appearance].traits.forEach(trait => {
+            this._traits[trait] = getLevelForPower(this._absorbedPower);
+        });
     }
 
     get speed() {
