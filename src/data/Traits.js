@@ -93,7 +93,7 @@ export const Traits = {
     piercingStrike: {
         name: "Piercing Strike",
         icon: "icons/icons-113.png",
-        description: _.template("Your relentless attacks are designed to get around the enemy's defenses. Your attacks reduce the enemy <span style='color: lightgreen'>Defense</span> against your attacks by ${rank}%"),
+        description: _.template("Your relentless attacks are designed to get around the enemy's defenses. Against your attacks the enemy's <span style='color: lightgreen'>Defense</span> is reduced by <span style='color: orangered'>${rank}%</span>"),
         on_hitting: {
             effects: {
                 defense_modifier: {
