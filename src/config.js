@@ -37,6 +37,9 @@ export const config = {
         traitRank: {
             baseAttribute: "madness",
             scale: 2
+        },
+        fatigue: {
+            penaltyPerPoint: 2
         }
     },
     attributes: {
