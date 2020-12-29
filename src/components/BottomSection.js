@@ -5,6 +5,7 @@ import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import {getCharacter, getGlobalState} from "../engine";
 import Grid from "@material-ui/core/Grid";
+import {Big} from "big.js";
 
 const styles = {
     root: {
@@ -82,7 +83,7 @@ function printActionItem(item) {
         </Grid>
     } else {
         switch (item.result) {
-            case "apply_effect":
+            case "add_modifier":
                 return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
                     <Grid item xs={1}>{item.tick}:</Grid>
@@ -139,13 +140,20 @@ function describeEffect(target, effect) {
         case "damage":
             return `${getCharacter(target).name} ${target === 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
         default:
-            switch (effect.effect) {
+            return Object.keys(effect.effect.effects).map(mod => {
+                switch (mod) {
+                    case "speed":
+                        const percentModifier = Big(effect.effect.effects.speed.percent); // FIXME: 3 layers, the same name?
+                        if (percentModifier.lt(0)) {
+                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'suffer' : 'suffers'} a ${percentModifier.toFixed()}% penalty to Action Speed.`;
+                        } else {
+                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'gain' : 'gains'} a ${percentModifier.toFixed()}% bonus to Action Speed.`;
+                        }
+                }
+            })
+            switch (effect.effect.modifier) {
                 case "speed_modifier":
-                    if (effect.value.lt(0)) {
-                        return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'suffer' : 'suffers'} a ${effect.value}% penalty to Speed.`;
-                    } else {
-                        return `${getCharacter(effect.target).name} ${effect.target === 0 ? 'gain' : 'gains'} a ${effect.value}% bonus to Speed.`;
-                    }
+
 
             }
 

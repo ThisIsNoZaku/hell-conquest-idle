@@ -362,7 +362,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
         if (effect.conditions !== undefined) {
             debugMessage("Trait has conditions");
         }
-        const effectConditions = effect.conditions === undefined || Object.keys(effect.conditions)
+        const effectTriggers = effect.conditions === undefined || Object.keys(effect.conditions)
             .every(condition => {
                 switch (condition) {
                     case "health_percentage":
@@ -391,25 +391,27 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         return false;
                 }
             })
-        if (effectConditions) {
+        if (effectTriggers) {
             debugMessage(`Tick ${tick}: Effect triggered, applying effects`);
             Object.keys(trait[event].effects).forEach(traitEffect => {
+                // FIXME
                 const affectedCharacterId = trait[event].effects[traitEffect].target === "attacked" ? targetCharacter : sourceCharacter.id;
                 switch (traitEffect) {
                     case "damage_bonus":
                         state.attack.effects.forEach(effect => {
                             if (effect.event == "damage") {
                                 // FIXME: Validation
-                                const damageModifier = Big(trait[event].effects[traitEffect].percent ? effect.value * (evaluateExpression(trait[event].effects[traitEffect].percent, {
+                                const damageModifier = Big(trait[event].effects[traitEffect].percent ? effect.value.times(evaluateExpression(trait[event].effects[traitEffect].percent, {
                                     $rank: rank
-                                }) / 100) : evaluateExpression(trait[event].effects[traitEffect].static, {
+                                }).div(100)) : evaluateExpression(trait[event].effects[traitEffect].static, {
                                     $rank: rank
                                 }));
                                 if (Number.isNaN(damageModifier)) {
                                     throw new Error("Damage modifier somehow was NaN");
                                 }
-                                debugMessage(`Tick ${tick}: Applying ${damageModifier} modifier to damage`);
-                                effect.value = damageModifier.plus(effect.value).round(0, 0);
+                                const newDamage = damageModifier.plus(effect.value).round(0, 0);
+                                debugMessage(`Tick ${tick}: Applying ${damageModifier} modifier to damage, changing damage from ${effect.value.toFixed()} to ${newDamage.toFixed()}`);
+                                effect.value = newDamage;
                             }
                         });
                         break;
@@ -436,45 +438,53 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         } else {
                             state.combat.combatantCombatStats[affectedCharacterId].modifiers.push(effect);
                         }
-                        state.attack.effects.push({
-                            event: "apply_effect",
-                            source: sourceCharacter.id,
-                            target: affectedCharacterId,
-                            effect: traitEffect,
-                            value: percentageSpeedMultiplier
-                        });
                         debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacterId}`);
                         break;
-                    case "apply_status":
-                        const statusToApply = trait[event].effects.apply_status.status;
-                        const targets = [];
-                        // Determine targets
-                        switch (trait[event].effects.apply_status.target) {
-                            case "all_enemies":
-                                Object.keys(state.combat.combatantCombatStats).filter(combatantId => {
-                                    const actingCharacterParty = state.combat.combatantCombatStats[sourceCharacter.id];
-                                    return actingCharacterParty !== state.combat.combatantCombatStats[combatantId].party;
-                                }).forEach(combatantId => {
-                                    const effect = {
-                                        effect: {
-                                            status: statusToApply
-                                        },
-                                        roundDuration: trait[event].duration.rounds,
-                                        source: {
-                                            character: sourceCharacter.id,
-                                            ability: trait
-                                        }
-                                    };
-                                    const existingEffect = state.combat.combatantCombatStats[affectedCharacterId].modifiers.find(modifier => {
-                                        return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
-                                    });
-                                    if (existingEffect) {
-                                        existingEffect.roundDuration = trait[event].duration.rounds;
-                                    } else {
-                                        state.combat.combatantCombatStats[affectedCharacterId].modifiers.push(effect);
+                    case "add_modifier":
+                        const modifierToAddDefinition = trait[event].effects.add_modifier;
+                        Object.keys(modifierToAddDefinition).forEach(effectType => {
+                            const effectTarget = modifierToAddDefinition[effectType].target;
+                            const modifier = {
+                                effects: {
+                                    [effectType]: {
+                                        percent: evaluateExpression(modifierToAddDefinition[effectType].percent, {$rank: rank})
                                     }
+                                },
+                                roundDuration: trait[event].duration.rounds,
+                                source: {
+                                    character: sourceCharacter.id,
+                                    ability: trait
+                                }
+                            };
+                            // Determine targets
+                            Object.keys(state.combat.combatantCombatStats).filter(combatantId => {
+                                switch (effectTarget) {
+                                    case "attacked":
+                                        return targetCharacter == combatantId;
+                                    case "all_enemies":
+                                        const actingCharacterParty = state.combat.combatantCombatStats[sourceCharacter.id];
+                                        return actingCharacterParty !== state.combat.combatantCombatStats[combatantId].party;
+                                    default:
+                                        throw new Error();
+                                }
+                            }).forEach(combatantId => {
+
+                                const existingEffect = state.combat.combatantCombatStats[combatantId].modifiers.find(modifier => {
+                                    return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
                                 });
-                        }
+                                if (existingEffect) {
+                                    existingEffect.roundDuration = trait[event].duration.rounds;
+                                } else {
+                                    state.combat.combatantCombatStats[combatantId].modifiers.push(modifier);
+                                }
+                                state.attack.effects.push({
+                                    event: "add_modifier",
+                                    source: sourceCharacter.id,
+                                    target: combatantId,
+                                    effect: modifier,
+                                });
+                            });
+                        })
                 }
             });
         }

@@ -40,9 +40,11 @@ export const Traits = {
         description: _.template("After hitting an enemy with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
-                speed_modifier: {
-                    target: "attacker",
-                    percent: "$rank"
+                add_modifier: {
+                    speed: {
+                        target: "attacker",
+                        percent: "$rank"
+                    }
                 }
             },
             duration: {
@@ -56,9 +58,11 @@ export const Traits = {
         description: _.template("You bind your victims when you strike, causing a <span style='color: orangered'>${rank}%</span> penalty to their <span style='color: lightgreen'>Action Speed</span> for 5 rounds."),
         on_hitting: {
             effects: {
-                speed_modifier: {
-                    target: "attacked",
-                    percent: "$rank.times(-1)"
+                add_modifier: {
+                    speed: {
+                        target: "attacked",
+                        percent: "$rank.times(-1)"
+                    }
                 }
             },
             duration: {
@@ -82,6 +86,16 @@ export const Traits = {
             },
             duration: {
                 rounds: 2
+            }
+        }
+    },
+    piercingStrike: {
+        name: "Piercing Strike",
+        icon: "icons/icons-113.png",
+        description: _.template("Your relentless attacks are designed to get around the enemy's defenses. Your attacks reduce the enemy <span style='color: lightgreen'>Defense</span> against your attacks by ${rank}%"),
+        on_hitting: {
+            effects: {
+
             }
         }
     }
