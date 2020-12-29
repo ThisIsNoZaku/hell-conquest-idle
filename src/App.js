@@ -158,6 +158,7 @@ function App() {
                                 setCurrentAction(Actions[changeCurrentAction("recovering")]);
                                 // TODO: Implement random encounter chance
                             } else {
+                                const player = getCharacter(0);
                                 getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
                                 setCurrentEncounter(getGlobalState().currentEncounter);
                                 setCurrentAction(Actions[changeCurrentAction("approaching")]);
@@ -166,12 +167,9 @@ function App() {
                                         return actionSoFar;
                                     }
 
-                                    const playerPowerLevel = getCharacter(0).powerLevel;
-                                    const lesserPowerLevel = playerPowerLevel.minus(config.encounters.lesserLevelScale);
-                                    const greaterPowerLevel = playerPowerLevel.plus(config.encounters.greaterLevelScale);
-                                    if (lesserPowerLevel.gte(nextEnemy.powerLevel)) {
+                                    if (player.otherDemonIsLesserDemon(nextEnemy)) {
                                         return "intimidating";
-                                    } else if (greaterPowerLevel.lte(nextEnemy.powerLevel)) {
+                                    } else if (player.otherDemonIsGreaterDemon(nextEnemy)) {
                                         return "fleeing";
                                     } else {
                                         return "fighting";
@@ -186,7 +184,7 @@ function App() {
                                         uuid: v4()
                                     })
                                 }
-                                const player = getCharacter(0);
+
                                 const enemies = getGlobalState().currentEncounter.enemies;
                                 if (player.otherDemonIsGreaterDemon(enemies[0])) {
                                     pushLogItem({
