@@ -200,8 +200,7 @@ function App() {
                                 if(getGlobalState().passivePowerIncome.gt(0)) {
                                     getCharacter(0).absorbedPower = getCharacter(0).absorbedPower.plus(getGlobalState().passivePowerIncome);
                                     pushLogItem({
-                                        result: "gained-power",
-                                        value: getGlobalState().passivePowerIncome,
+                                        message: `Your Bound lesser demons grant you ${getGlobalState().passivePowerIncome.toFixed()} power.`,
                                         uuid: v4()
                                     })
                                 }
