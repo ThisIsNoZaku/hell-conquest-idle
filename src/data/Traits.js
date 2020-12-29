@@ -79,9 +79,10 @@ export const Traits = {
                 chance: "$rank"
             },
             effects: {
-                apply_status: {
-                    target: "all_enemies",
-                    status: "terrified"
+                add_modifier: {
+                    terrified_status: {
+                        target: "all_enemies"
+                    }
                 }
             },
             duration: {
