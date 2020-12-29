@@ -224,7 +224,6 @@ export function loadGlobalState(state) {
                 powerLevel: Big(1),
                 absorbedPower: Big(0),
                 appearance: "",
-                currentHp: Big(5),
                 statuses: {},
                 traits: {},
                 items: [],
