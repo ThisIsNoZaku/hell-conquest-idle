@@ -103,10 +103,10 @@ function App() {
                         const player = getCharacter(0);
                         const powerToGain = enemy.powerLevel.mul(2);
                         player.gainPower(powerToGain);
-                        pushLogItem({
+                        pushLogItem(wrapLogItem({
                             result: "gainedPower",
                             value: powerToGain
-                        })
+                        }))
                     }
                     break;
                 case "hit":
@@ -262,11 +262,10 @@ function App() {
                             });
                             if (enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
                                 player.gainPower(1);
-                                pushLogItem({
+                                pushLogItem(wrapLogItem({
                                     result: "gainedPower",
                                     value: Big(1),
-                                    uuid: v4()
-                                });
+                                }));
                             }
                             break;
                         case "fighting" : {
@@ -370,3 +369,10 @@ function App() {
 }
 
 export default App;
+
+function wrapLogItem(item) {
+    return {
+        uuid: v4(),
+        ...item
+    }
+}
