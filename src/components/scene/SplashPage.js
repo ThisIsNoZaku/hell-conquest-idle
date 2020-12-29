@@ -38,6 +38,7 @@ export default function SplashPage(props) {
                     if(getGlobalState().currentAction === null) {
                         history.push("/reincarnating")
                     } else {
+                        getGlobalState().paused = false;
                         history.push("/adventuring")
                     }
                 }}>
