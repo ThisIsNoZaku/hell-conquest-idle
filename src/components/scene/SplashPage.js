@@ -1,5 +1,5 @@
 import Paper from "@material-ui/core/Paper";
-import React from "react";
+import React, {useEffect} from "react";
 import Button from "@material-ui/core/Button";
 import { useHistory } from "react-router-dom";
 import { Grid } from "@material-ui/core";
@@ -8,6 +8,9 @@ const pkg = require("../../../package.json");
 const changelog = require("../../changelog.json");
 
 export default function SplashPage(props) {
+    useEffect(() => {
+        getGlobalState().paused = true;
+    })
     const history = useHistory();
     return <Paper>
         <Grid container>
