@@ -426,7 +426,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             effect: {
                                 speed_bonus_percent: percentageSpeedMultiplier
                             },
-                            roundDuration: trait[event].duration.rounds,
+                            roundDuration: evaluateExpression(trait[event].duration.rounds, {$rank: rank}),
                             source: {
                                 character: sourceCharacter.id,
                                 ability: trait
@@ -452,7 +452,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                         percent: evaluateExpression(modifierToAddDefinition[effectType].percent, {$rank: rank})
                                     }
                                 },
-                                roundDuration: trait[event].duration.rounds,
+                                roundDuration: evaluateExpression(trait[event].duration.rounds, {$rank: rank}),
                                 source: {
                                     character: sourceCharacter.id,
                                     ability: trait
@@ -477,7 +477,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
                                 });
                                 if (existingEffect) {
-                                    existingEffect.roundDuration = trait[event].duration.rounds;
+                                    existingEffect.roundDuration = evaluateExpression(trait[event].duration.rounds, {$rank: rank});
                                 } else {
                                     state.combat.combatantCombatStats[combatantId].modifiers.push(modifier);
                                 }
@@ -551,6 +551,7 @@ export function reincarnateAs(monsterId, newAttributes) {
             globalState.startingTraits[trait] = player.powerLevel;
         }
     });
+    getCharacter(0).traits = {...globalState.startingTraits};
 
     globalState.currentEncounter = null;
     globalState.currentAction = "reincarnating";
