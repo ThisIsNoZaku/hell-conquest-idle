@@ -26,13 +26,17 @@ export const config = {
             baseAttribute: "deceit",
             scale: 2
         },
+        defense: {
+            baseAttribute: "brutality",
+            scale: 1
+        },
         evasion: {
             baseAttribute: "cunning",
             scale: 2
         },
         attackDamage: {
             baseAttribute: "brutality",
-            scale: 5
+            scale: 2
         },
         traitRank: {
             baseAttribute: "madness",
