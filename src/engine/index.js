@@ -322,8 +322,6 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         damageToInflict = actingCharacter.combat.maximumDamage;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
     }
-    damageToInflict = damageToInflict.plus(damageToInflict
-        .round(0, 0));
     const attackResult = {
         baseDamage: damageToInflict,
         attackerDamageMultiplier: Big(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
@@ -338,6 +336,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         attack: attackResult
     }, tick, rng));
     const finalDamage = attackResult.baseDamage.times(attackResult.attackerDamageMultiplier.minus(attackResult.targetDefenseMultiplier).div(100).plus(1)).round(0, 0);
+    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attacker multiplier of ${attackResult.attackerDamageMultiplier} and a target defense multiplier of ${attackResult.targetDefenseMultiplier}, for a total of ${finalDamage.toFixed()}`);
     combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
