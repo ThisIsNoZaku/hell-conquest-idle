@@ -231,25 +231,27 @@ function App() {
                             });
                             break;
                         }
-                        case "intimidating":
-                            const chanceToIntimidate = Big(5).times(Big(2).pow(getCharacter(0).powerLevel.minus(1).minus(currentEncounter.enemies[0].powerLevel).toNumber()));
+                        case "intimidating": {
+                            const enemy = getGlobalState().currentEncounter.enemies[0];
+                            const chanceToIntimidate = Big(5).times(Big(2).pow(getCharacter(0).powerLevel.minus(1).minus(enemy.powerLevel).toNumber()));
                             const roll = Math.floor(rng.double() * 100) + 1;
-                            if(chanceToIntimidate.gte(roll)) {
+                            if (chanceToIntimidate.gte(roll)) {
                                 const periodicPowerIncreases = Big(1);
-                                pushLogItem({
+                                pushLogItem(wrapLogItem({
                                     result: "intimidated",
-                                    target: currentEncounter.enemies[0].id,
+                                    target: enemy.id,
                                     value: periodicPowerIncreases
-                                });
+                                }));
                                 getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
                             } else {
-                                pushLogItem({
+                                pushLogItem(wrapLogItem({
                                     result: "enemy-fled",
-                                    target: currentEncounter.enemies[0].id
-                                });
+                                    target: enemy.id
+                                }));
                             }
-                            setCurrentAction(Actions["exploring"]);
+                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
                             break;
+                        }
                         case "fleeing":
                             const player = getCharacter(0);
                             const enemy = getGlobalState().currentEncounter.enemies[0];
