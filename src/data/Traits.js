@@ -13,7 +13,7 @@ export const Traits = {
                 }
             },
             effects: {
-                damage_bonus: {
+                damage_modifier: {
                     percent: "$rank.times(10)"
                 }
             }
@@ -37,7 +37,7 @@ export const Traits = {
     murderousFrenzy: {
         name: "Murderous Frenzy",
         icon: "icons/icons-118.png",
-        description: _.template("After hitting an enemy with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 5 rounds."),
+        description: _.template("After hitting an enemy with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
         on_hitting: {
             effects: {
                 add_modifier: {
@@ -48,7 +48,7 @@ export const Traits = {
                 }
             },
             duration: {
-                rounds: 5
+                rounds: 2
             }
         }
     },
@@ -96,7 +96,9 @@ export const Traits = {
         description: _.template("Your relentless attacks are designed to get around the enemy's defenses. Your attacks reduce the enemy <span style='color: lightgreen'>Defense</span> against your attacks by ${rank}%"),
         on_hitting: {
             effects: {
-
+                defense_modifier: {
+                    percent: "$rank.times(-1)"
+                }
             }
         }
     }
