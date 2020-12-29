@@ -45,7 +45,9 @@ export class Character {
     }
 
     get maximumHp() {
-        return this.powerLevel.mul(5).plus(this._isPc ? 5 : 0);
+        return this.powerLevel
+            .mul(config.mechanics.hp.pointsPerLevel)
+            .plus(this._isPc ? 5 : 0);
     }
 
     get attributes() {
@@ -162,21 +164,30 @@ class CombatStats {
         const characterPowerLevel = this.character().powerLevel;
         const minimumDamageMultiplier = config.combat.defaultMinimumDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
+        return characterPowerLevel
+            .times(config.mechanics.attackDamage.pointsPerLevel)
+            .times(minimumDamageMultiplier)
+            .times(1 + attributeModifier).round(0, 3);
     }
 
     get medianDamage() {
         const characterPowerLevel = this.character().powerLevel;
         const minimumDamageMultiplier = config.combat.defaultMedianDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
+        return characterPowerLevel
+            .times(config.mechanics.attackDamage.pointsPerLevel)
+            .times(minimumDamageMultiplier)
+            .times(1 + attributeModifier).round(0, 3);
     }
 
     get maximumDamage() {
         const characterPowerLevel = this.character().powerLevel;
         const minimumDamageMultiplier = config.combat.defaultMaximumDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel.mul(minimumDamageMultiplier).times(1 + attributeModifier).round(0, 3);
+        return characterPowerLevel
+            .times(config.mechanics.attackDamage.pointsPerLevel)
+            .times(minimumDamageMultiplier)
+            .times(1 + attributeModifier).round(0, 3);
     }
 
     get canAct() {

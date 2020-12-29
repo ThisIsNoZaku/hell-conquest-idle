@@ -35,6 +35,7 @@ export const config = {
             scale: 2
         },
         attackDamage: {
+            pointsPerLevel: 5,
             baseAttribute: "brutality",
             scale: 2
         },
@@ -44,6 +45,9 @@ export const config = {
         },
         fatigue: {
             penaltyPerPoint: 2
+        },
+        hp: {
+            pointsPerLevel: 25
         }
     },
     attributes: {
