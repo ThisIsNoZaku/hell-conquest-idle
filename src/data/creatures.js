@@ -33,6 +33,12 @@ export const Creatures  = {
         traits: ["terrifyingSkitter"],
         appearance: "skitteringHorror",
         texture: "10_spider.png"
+    },
+    deadlyHornet: {
+        name: "Deadly Hornet",
+        traits: ["piercingStrike"],
+        appearance: "deadlyHornet",
+        texture: "12_wasp.png"
     }
 }
 
