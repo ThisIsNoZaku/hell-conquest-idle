@@ -151,7 +151,7 @@ export default function ReincarnationSelectionPage(props) {
                                 Creatures[name].traits.map(trait => <Grid item xs={1}>
                                     <Tooltip title={<div dangerouslySetInnerHTML={{
                                         __html: Traits[trait].description({
-                                            rank: getLevelForPower(getGlobalState().startingPower)
+                                            rank: getLevelForPower(newStartingPower)
                                         })
                                     }}>
                                     </div>}>
