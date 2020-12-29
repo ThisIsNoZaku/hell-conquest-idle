@@ -12,32 +12,34 @@ const styles = {
         flexDirection: "row",
         justifyContent: "space-between",
         overflow: "hidden"
+    },
+    image: {
+        position: "absolute",
+        height: "100%",
+        left: 0
+    },
+    background: {
+        position: "absolute",
+        height: "100%",
+        width: "100%",
+        left: 0
     }
 }
 
 export default function AdventuringPage(props) {
     return <div className="App" style={styles.root}>
-        <img style={{
-            left: "25%",
-            position: "absolute",
-            zIndex: "-1000",
-            height: "100vh"
-        }} src={"/backgrounds/parallax-demon-woods-bg.png"}/>
-        <img style={{
-            position: "absolute",
-            zIndex: "-100",
-            height: "100vh"
-        }} src={"/backgrounds/parallax-demon-woods-far-trees.png"}/>
-        <img style={{
+        <div id="background" style={{
             position: "absolute",
             zIndex: "-10",
-            height: "100vh"
-        }} src={"/backgrounds/parallax-demon-woods-mid-trees.png"}/>
-        <img style={{
-            position: "absolute",
-            zIndex: "-1",
-            height: "100vh"
-        }} src={"/backgrounds/parallax-demon-woods-close-trees.png"}/>
+            overflow: "hidden",
+            height: "100vh",
+            width: "100vw"
+        }}>
+            <img style={styles.background} src={"/backgrounds/parallax-demon-woods-bg.png"}/>
+            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-far-trees.png"}/>
+            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-mid-trees.png"}/>
+            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-close-trees.png"}/>
+        </div>
         <PlayerStats player={props.player}/>
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
             <TopSection character={getCharacter(0)}/>
