@@ -327,8 +327,10 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         .round(0, 0));
     const attackResult = {
         baseDamage: damageToInflict,
-        attackerDamageMultiplier: Big(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute]),
-        targetDefenseMultiplier: Big(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute]),
+        attackerDamageMultiplier: Big(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
+            .times(config.mechanics.attackDamage.scale),
+        targetDefenseMultiplier: Big(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute])
+            .times(config.mechanics.defense.scale),
         otherEffects: []
     }
     // Trigger on-hit effects
