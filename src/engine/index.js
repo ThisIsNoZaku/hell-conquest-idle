@@ -194,6 +194,7 @@ export function loadGlobalState(state) {
             creatures: {},
             regions: {}
         },
+        passivePowerIncome: Big(0),
         unlockedMonsters: {},
         paused: true,
         currentAction: null,
@@ -586,6 +587,8 @@ function stateReviver(key, value) {
             });
         case "paused":
             return false;
+        case "passivePowerIncome":
+            return Big(value);
         case "value":
             const parsed = Number.parseFloat(value);
             if (Number.isNaN(parsed)) {
