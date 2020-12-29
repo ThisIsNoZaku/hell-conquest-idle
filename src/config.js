@@ -13,8 +13,8 @@ export const config = {
         maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 200,
     },
     encounters: {
-        lesserLevelScale: 5, // A demon is "lesser" than another when it's level is this much lower.
-        greaterLevelScale: 2 // A demon is "greater" than another when it's level is this much higher.
+        lesserLevelScale: 2, // A demon is "lesser" than another when its level is this much lower.
+        greaterLevelScale: 1 // A demon is "greater" than another when its level is this much higher.
     },
     characters: {
         player: {
