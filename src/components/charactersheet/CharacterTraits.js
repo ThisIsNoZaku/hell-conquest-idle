@@ -4,7 +4,7 @@ import React from "react";
 
 export default function CharacterTraits(props) {
     return <React.Fragment>
-        {Object.keys(props.character.traits).map(trait => <Tooltip title={
+        {Object.keys(props.character.traits).map(trait => <Tooltip key={trait} title={
             <React.Fragment>
                 <span>Rank {props.character.traits[trait].toFixed()}: </span>
             <span dangerouslySetInnerHTML={{
