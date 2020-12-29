@@ -130,7 +130,14 @@ function printActionItem(item) {
                     <Grid item xs={11}>{getCharacter(item.actor).name} {item.actor === 0 ? 'Skip' : 'Skips'} their
                         action: {item.reason}</Grid>
                 </Grid>
-
+            case "intimidated":
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
+                    <Grid item xs={11}>{getCharacter(item.target).name} was Bound to you, granting you {item.value.toFixed()} power while you explore. </Grid>
+                </Grid>
+            case "enemy-fled":
+                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
+                    <Grid item xs={11}>{getCharacter(item.target).name} Fled!</Grid>
+                </Grid>
         }
     }
 }
