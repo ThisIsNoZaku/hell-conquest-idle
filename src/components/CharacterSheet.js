@@ -33,7 +33,7 @@ export default function CharacterSheet(props) {
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
             <progress
-                value={powerForCurrentLevel.div(powerToNextLevel).mul(100).toNumber()}
+                value={props.character.absorbedPower.div(powerToNextLevel).mul(100).toNumber()}
                 max={100}
                 title={`${props.character.absorbedPower.toFixed()}/${getPowerNeededForLevel(props.character.powerLevel.plus(1)).toFixed()}`}
             ></progress>
