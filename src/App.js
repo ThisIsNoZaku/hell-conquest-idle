@@ -133,7 +133,6 @@ function App() {
                     });
                     break;
                 case "action_skipped":
-                    pushLogItem(action);
                     break;
                 default:
                     throw new Error();
