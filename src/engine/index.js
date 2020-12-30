@@ -161,11 +161,9 @@ export function resolveCombat(rng, definition) {
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
     const attackAccuracy = actingCharacter.attributes[config.mechanics.attack.baseAttribute].times(config.mechanics.attack.scale);
-    if (attackAccuracy.constructor.name !== "Big") {
-        throw new Error("Accuracy had the wrong type!");
-    }
     const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.scale)
         .minus(Big(config.mechanics.fatigue.penaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
+    // TODO: Validation
     if (targetEvasion.constructor.name !== "Big") {
         throw new Error("Evasion had the wrong type");
     }
