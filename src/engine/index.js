@@ -209,7 +209,7 @@ export function loadGlobalState(state) {
         exploration: {
             explorationTime: 15 * 1000,
             approachTime: 15 * 1000,
-            combatTime: 10 * 1000,
+            combatTime: 5 * 1000,
             lootingTime: 15 * 1000,
             recoveryTime: 2 * 1000,
             fleeingTime: 15 * 1000,
