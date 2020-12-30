@@ -12,7 +12,7 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], Big(1)); // FIXME
+        const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], player.powerLevel.minus(config.encounters.lesserLevelScale * 2));
         const candidateMaxLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"],
             player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
         const maximumLevel = candidateMaxLevel.gte(config.mechanics.maxLevel) ? Big(config.mechanics.maxLevel - 1) : candidateMaxLevel;
