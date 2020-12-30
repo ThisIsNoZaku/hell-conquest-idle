@@ -12,6 +12,8 @@ import * as Package from "../../package.json";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
+const expressionCache = {};
+
 export function resolveCombat(rng, definition) {
     const listeners = [];
     const combatResult = {
@@ -501,24 +503,26 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
     return state;
 }
 
-const expressionCache = {};
-
 function evaluateExpression(expression, context) {
     if(expression === null || expression === undefined) {
         return expression;
     }
     if (!expressionCache[expression]) {
-        expressionCache[expression] = new Function("$rank", `return ${expression}`);
+        expressionCache[expression] = new Function("$rank", "$level", "$powerPoints", "Big", `return ${expression}`);
     }
-    return expressionCache[expression].call(null, context.$rank);
+    return expressionCache[expression].call(null, context.$rank, context.$level, context.$powerPoints, Big);
 }
 
 export function getPowerNeededForLevel(level) {
-    return Big(level.minus(1).pow(2).times(5));
+    return evaluateExpression(config.mechanics.levelToPowerEquation, {
+        $level: Big(level)
+    });
 }
 
 export function getLevelForPower(powerPoints) {
-    return Big(0).eq(powerPoints) ? Big(1) : powerPoints.plus(1).div(5).sqrt().round(0, 3);
+    return evaluateExpression(config.mechanics.powerToLevelEquation, {
+        $powerPoints: Big(powerPoints)
+    });
 }
 
 export function reincarnateAs(monsterId, newAttributes) {

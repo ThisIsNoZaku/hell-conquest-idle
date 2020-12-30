@@ -22,6 +22,8 @@ export const config = {
         }
     },
     mechanics: {
+        levelToPowerEquation: "Big(10).pow(Math.floor($level.minus(1).toNumber()))",
+        powerToLevelEquation: "Big(0).eq($powerPoints) ? Big(1) : $powerPoints.pow(-1).round(0, 3)",
         maxLevel: 100,
         attack: { // Determines how attack rolls work
             baseAttribute: "deceit",
