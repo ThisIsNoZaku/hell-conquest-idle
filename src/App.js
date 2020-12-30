@@ -288,7 +288,7 @@ function App() {
                             const player = getCharacter(0);
                             if (player.currentHp.lt(player.maximumHp)) {
                                 const amountToHeal = player.currentHp.plus(player.healing).gt(player.maximumHp) ?
-                                    player.maximumHp.minus(player.currentHp) : player.currentHp.plus(player.healing);
+                                    player.maximumHp.minus(player.currentHp) : player.healing;
                                 player.currentHp = player.currentHp.plus(amountToHeal);
                                 pushLogItem({
                                     target: player.id,
