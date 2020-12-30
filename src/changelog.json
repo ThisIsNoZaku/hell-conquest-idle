@@ -1,6 +1,3 @@
 {
-  "0.1.0" : ["Initial version"],
-  "0.1.1" : [
-    "Changed XP to level equation, level 2 required 10 XP and each level needs 10x more."
-  ]
+  "0.1.0" : ["Initial version"]
 }
