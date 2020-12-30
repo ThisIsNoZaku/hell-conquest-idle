@@ -330,7 +330,7 @@ function App() {
         <MemoryRouter initialEntries={[
             getGlobalState().currentAction === "reincarnating" ? "/reincarnatin" : (
                 getGlobalState().currentAction === "adventuring" ? "/adventuring" : "/")
-        ]}>
+        ]} basename="%PUBLIC_URL%">
             <Switch>
                 <Route path="/" exact>
                     <SplashPage/>

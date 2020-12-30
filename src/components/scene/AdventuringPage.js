@@ -35,10 +35,10 @@ export default function AdventuringPage(props) {
             height: "100vh",
             width: "100vw"
         }}>
-            <img style={styles.background} src={"/backgrounds/parallax-demon-woods-bg.png"}/>
-            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-far-trees.png"}/>
-            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-mid-trees.png"}/>
-            <img style={styles.image} src={"/backgrounds/parallax-demon-woods-close-trees.png"}/>
+            <img style={styles.background} src={"./backgrounds/parallax-demon-woods-bg.png"}/>
+            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-far-trees.png"}/>
+            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
+            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
         <PlayerStats player={props.player}/>
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
