@@ -129,6 +129,9 @@ function printActionItem(item) {
                 return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
                     <Grid item xs={11}>{getCharacter(item.actor).name} {item.actor === 0 ? 'Skip' : 'Skips'} their
                         action: {item.reason}</Grid>
+                    <Grid item xs={1}>
+                        {item.tick}
+                    </Grid>
                 </Grid>
             case "intimidated":
                 return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
