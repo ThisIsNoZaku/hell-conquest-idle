@@ -260,10 +260,10 @@ function App() {
                                 uuid: v4()
                             });
                             if (enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
-                                player.gainPower(1);
+                                player.gainPower(player.powerLevel);
                                 pushLogItem(wrapLogItem({
                                     result: "gainedPower",
-                                    value: Big(1),
+                                    value: player.powerLevel,
                                 }));
                             }
                             break;
