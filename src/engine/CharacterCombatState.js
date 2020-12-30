@@ -1,5 +1,6 @@
 export default class CharacterCombatState {
     constructor(props) {
+        this.party = props.party;
         this.hp = props.hp;
         this._speed = props.speed;
         this._fatigue = 0;
@@ -27,4 +28,13 @@ export default class CharacterCombatState {
         this._fatigue = fatigue;
     }
 
+    get canAct() {
+        return this.modifiers.reduce((canAct, nextModifier) => {
+            if(nextModifier.effects.stunned !== undefined) {
+                return false;
+            } else {
+                return canAct;
+            }
+        }, true)
+    }
 }

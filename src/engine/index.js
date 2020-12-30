@@ -29,6 +29,7 @@ export function resolveCombat(rng, definition) {
             combatResult.combatantCombatStats[character.id] = new CharacterCombatState({
                 hp: character.currentHp,
                 speed: character.speed,
+                party: partyIndex
             });
             return {
                 character,
@@ -75,7 +76,7 @@ export function resolveCombat(rng, definition) {
                     debugMessage(`Tick ${tick}: No valid target, skipping action by ${character.id}.`);
                     return;
                 }
-                if (character.combat.canAct) {
+                if (combatResult.combatantCombatStats[character.id].canAct) {
                     debugMessage(`Tick ${tick}: Attacking ${target}`);
                     const attackRollResult = makeAttackRoll(character, target, combatResult, rng);
 
@@ -470,7 +471,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                         case "attacked":
                                             return targetCharacter == combatantId;
                                         case "all_enemies":
-                                            const actingCharacterParty = state.combat.combatantCombatStats[sourceCharacter.id];
+                                            const actingCharacterParty = sourceCharacter.id === 0 ? 0 : 1;
                                             return actingCharacterParty !== state.combat.combatantCombatStats[combatantId].party;
                                         default:
                                             throw new Error();
