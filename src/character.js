@@ -37,7 +37,11 @@ export class Character {
     }
 
     set currentHp(newHealth) {
-        this._currentHp = newHealth;
+        if(this.maximumHp.lt(newHealth)) {
+            this._currentHp = this.maximumHp;
+        } else {
+            this._currentHp = newHealth;
+        }
     }
 
     get alive() {
@@ -100,9 +104,11 @@ export class Character {
 
     set absorbedPower(value){
         this._absorbedPower = value;
-        Creatures[this.appearance].traits.forEach(trait => {
-            this._traits[trait] = getLevelForPower(this._absorbedPower);
-        });
+        if(this.appearance) {
+            Creatures[this.appearance].traits.forEach(trait => {
+                this._traits[trait] = getLevelForPower(this._absorbedPower);
+            });
+        }
     }
 
     get speed() {
