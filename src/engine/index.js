@@ -565,6 +565,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.currentEncounter = null;
     globalState.currentAction = "reincarnating";
     getCharacter(0).currentHp = getCharacter(0).maximumHp;
+    getGlobalState().passivePowerIncome = Big(0);
 
     saveGlobalState();
 }
