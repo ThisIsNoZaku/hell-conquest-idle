@@ -1,6 +1,6 @@
 import {config} from "./config";
 import {Big} from "big.js";
-import {getLevelForPower} from "./engine";
+import {getLevelForPower, getPowerNeededForLevel} from "./engine";
 import {Creatures} from "./data/creatures";
 
 export class Character {
@@ -89,6 +89,9 @@ export class Character {
 
     gainPower(powerGained) {
         this._absorbedPower = this._absorbedPower.plus(powerGained);
+        if(getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
+            this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
+        }
         Creatures[this.appearance].traits.forEach(trait => {
             this._traits[trait] = getLevelForPower(this._absorbedPower);
         });
@@ -104,6 +107,9 @@ export class Character {
 
     set absorbedPower(value){
         this._absorbedPower = value;
+        if(getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
+            this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
+        }
         if(this.appearance) {
             Creatures[this.appearance].traits.forEach(trait => {
                 this._traits[trait] = getLevelForPower(this._absorbedPower);

@@ -22,6 +22,7 @@ export const config = {
         }
     },
     mechanics: {
+        maxLevel: 666,
         attack: { // Determines how attack rolls work
             baseAttribute: "deceit",
             scale: 2
