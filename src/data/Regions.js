@@ -70,7 +70,28 @@ export const Regions = {
                         count: 1
                     }
                 ]
+            },
+            skitteringHorror: {
+                description: "1 Skittering Horror",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "skitteringHorror",
+                        count: 1
+                    }
+                ]
+            },
+            deadlyHornet: {
+                description: "1 Deadly Hornet",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "deadlyHornet",
+                        count: 1
+                    }
+                ]
             }
+
         },
         {
             background: "backgrounds/parallax-demon-woods-bg.png",
