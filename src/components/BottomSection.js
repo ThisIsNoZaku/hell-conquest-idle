@@ -6,6 +6,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {getCharacter, getGlobalState} from "../engine";
 import Grid from "@material-ui/core/Grid";
 import {Big} from "big.js";
+import { config } from "../config";
 
 const styles = {
     root: {
@@ -56,8 +57,8 @@ export default function BottomSection(props) {
         <Paper style={styles.actions.container}>
             {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
             {actionButton("fleeing", "Flee", "Attempt to escape. You will automatically escape from Greater Demons.", props)}
-            {actionButton("intimidating", "Intimidate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
-            {actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
+            {actionButton("intimidating", "Intimidate", "Try to cow the enemy, compelling them to continuously provide you a portion of their life force.", props)}
+            {_.get(config, "features.negotiating.enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
         </Paper>
         <Paper style={styles.action}>
             <strong>{props.currentAction.description}</strong>
