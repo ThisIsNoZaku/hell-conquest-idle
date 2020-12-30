@@ -20,6 +20,9 @@ export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
     const combinedHitWeights = props.character.combat.minimumDamageWeight.plus(props.character.combat.medianDamageWeight)
         .plus(props.character.combat.maximumDamageWeight);
+    const powerForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
+    const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
+    const powerToNextLevel = powerNeededForNextLevel.minus(powerForCurrentLevel);
 
     return <Grid container>
         <Grid item xs={12}>
@@ -30,7 +33,7 @@ export default function CharacterSheet(props) {
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
             <progress
-                value={props.character.absorbedPower.minus(getPowerNeededForLevel(props.character.powerLevel)).div(getPowerNeededForLevel(props.character.powerLevel.plus(1))).mul(100).toNumber()}
+                value={powerForCurrentLevel.div(powerToNextLevel).mul(100).toNumber()}
                 max={100}
                 title={`${props.character.absorbedPower.toFixed()}/${getPowerNeededForLevel(props.character.powerLevel.plus(1)).toFixed()}`}
             ></progress>

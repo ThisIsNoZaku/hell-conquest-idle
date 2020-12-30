@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 import {generateCreature, getGlobalState} from "../engine";
 import {config} from "../config";
-import Big from "big.js";
 import {debugMessage} from "../debugging";
+import {Decimal} from "decimal.js";
 
 class Region {
     constructor(name, available, encounters, background) {
@@ -15,13 +15,13 @@ class Region {
         const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], player.powerLevel.minus(config.encounters.lesserLevelScale * 2));
         const candidateMaxLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"],
             player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
-        const maximumLevel = candidateMaxLevel.gte(config.mechanics.maxLevel) ? Big(config.mechanics.maxLevel - 1) : candidateMaxLevel;
+        const maximumLevel = candidateMaxLevel.gte(config.mechanics.maxLevel) ? Decimal(config.mechanics.maxLevel - 1) : candidateMaxLevel;
 
         if (config.debug) {
             debugMessage(`Generating an encounter between ${minimumLevel.toFixed()} and ${maximumLevel.toFixed()} `);
         }
         const encounterLevelModifier = minimumLevel.toNumber() + Math.floor(rng.double() * (maximumLevel.toNumber() - minimumLevel.toNumber()));
-        const encounterLevel = Big(Math.max(1, encounterLevelModifier));
+        const encounterLevel = Decimal(Math.max(1, encounterLevelModifier));
         if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }

@@ -5,8 +5,8 @@ import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
 import {getCharacter, getGlobalState} from "../engine";
 import Grid from "@material-ui/core/Grid";
-import {Big} from "big.js";
 import { config } from "../config";
+import { Decimal } from "decimal.js";
 
 const styles = {
     root: {
@@ -154,7 +154,7 @@ function describeEffect(target, effect) {
             return Object.keys(effect.effect.effects).map(mod => {
                 switch (mod) {
                     case "speed":
-                        const percentModifier = Big(effect.effect.effects.speed.percent); // FIXME: 3 layers, the same name?
+                        const percentModifier = Decimal(effect.effect.effects.speed.percent); // FIXME: 3 layers, the same name?
                         if (percentModifier.lt(0)) {
                             return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'suffer' : 'suffers'} a ${percentModifier.toFixed()}% penalty to Action Speed.`;
                         } else {

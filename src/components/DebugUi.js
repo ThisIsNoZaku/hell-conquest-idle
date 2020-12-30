@@ -10,7 +10,6 @@ import {getCharacter, getGlobalState, resetDebug, saveKey} from "../engine";
 import * as _ from "lodash";
 import {Regions} from "../data/Regions";
 import {config} from "../config";
-import {Big} from "big.js";
 
 const styles = {
     root: {

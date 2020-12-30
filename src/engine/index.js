@@ -3,7 +3,7 @@ import {assertCreatureExists, Creatures} from "../data/creatures";
 import {v4} from "node-uuid";
 import {getTrait} from "../data/Traits";
 import {debugMessage} from "../debugging";
-import Big from "big.js";
+import { Decimal } from "decimal.js";
 import {Character} from "../character";
 import {config} from "../config";
 import {generateHitCombatResult, generateMissCombatResult, generateSkipActionResult} from "../combatResult";
@@ -48,7 +48,7 @@ export function resolveCombat(rng, definition) {
     }))
     let tick = 0;
     const resolveRound = async function () {
-        const initiatives = _.uniq(combatants.map(combatant => Math.floor(Big(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
+        const initiatives = _.uniq(combatants.map(combatant => Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
             .sort((a, b) => a - b);
         initiatives.forEach(initiativeCount => {
             debugMessage(`Resolving round on tick ${tick}`);
@@ -56,13 +56,13 @@ export function resolveCombat(rng, definition) {
             const actingCharacters = combatants
                 .filter(wrapped => {
                     const isAlive = wrapped.character.alive;
-                    const characterSpeed = Math.floor(Big(10000).div(combatResult.combatantCombatStats[wrapped.character.id].speed).toNumber());
+                    const characterSpeed = Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[wrapped.character.id].speed).toNumber());
                     const matchingSpeed = (initiativeCount % characterSpeed === 0);
                     return isAlive && matchingSpeed;
                 });
             actingCharacters.forEach(acting => {
                 const character = acting.character;
-                tick = combatResult.combatantCombatStats[character.id].lastActed + Math.floor(Big(10000).div(combatResult.combatantCombatStats[character.id].speed).toNumber());
+                tick = combatResult.combatantCombatStats[character.id].lastActed + Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[character.id].speed).toNumber());
                 combatResult.combatantCombatStats[character.id].lastActed = tick;
                 debugMessage(`Tick ${tick}: Resolving action by ${character.id}.`);
                 if (combatResult.combatantCombatStats[character.id].hp.lte(0)) {
@@ -113,10 +113,10 @@ export function resolveCombat(rng, definition) {
                 // TODO: Add logs for when effects expire.
                 combatResult.combatantCombatStats[acting.character.id].modifiers = combatResult.combatantCombatStats[acting.character.id].modifiers
                     .map(modifier => {
-                        modifier.roundDuration = Big(modifier.roundDuration).minus(1);
+                        modifier.roundDuration = Decimal(modifier.roundDuration).minus(1);
                         return modifier;
                     })
-                    .filter(modifier => Big(modifier.roundDuration).gt(0))
+                    .filter(modifier => Decimal(modifier.roundDuration).gt(0))
 
             });
         });
@@ -164,9 +164,9 @@ export function resolveCombat(rng, definition) {
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
     const attackAccuracy = actingCharacter.attributes[config.mechanics.attack.baseAttribute].times(config.mechanics.attack.scale);
     const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.scale)
-        .minus(Big(config.mechanics.fatigue.penaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
+        .minus(Decimal(config.mechanics.fatigue.penaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
     // TODO: Validation
-    if (targetEvasion.constructor.name !== "Big") {
+    if (targetEvasion.constructor.name !== "Decimal") {
         throw new Error("Evasion had the wrong type");
     }
     debugMessage("Making an attack roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
@@ -196,13 +196,13 @@ export function loadGlobalState(state) {
             creatures: {},
             regions: {}
         },
-        passivePowerIncome: Big(0),
+        passivePowerIncome: Decimal(0),
         unlockedMonsters: {},
         paused: true,
         currentAction: null,
         nextAction: null,
         id: 0,
-        startingPower: Big(0), //The amount of absorbed power the player starts with when they reincarnate
+        startingPower: Decimal(0), //The amount of absorbed power the player starts with when they reincarnate
         startingTraits: {},
         currentEncounter: null,
         manualSpeedMultiplier: config.manualSpeedup.multiplier,
@@ -223,17 +223,17 @@ export function loadGlobalState(state) {
                 id: 0,
                 isPc: true,
                 name: "You",
-                powerLevel: Big(1),
-                absorbedPower: Big(0),
+                powerLevel: Decimal(1),
+                absorbedPower: Decimal(0),
                 appearance: "",
                 statuses: {},
                 traits: {},
                 items: [],
                 attributes: {
-                    brutality: Big(0),
-                    cunning: Big(0),
-                    deceit: Big(0),
-                    madness: Big(0)
+                    brutality: Decimal(0),
+                    cunning: Decimal(0),
+                    deceit: Decimal(0),
+                    madness: Decimal(0)
                 },
                 combat: {
                     fatigue: 0,
@@ -277,10 +277,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: [],
         attributes: {
-            brutality: Big(0),
-            cunning: Big(0),
-            deceit: Big(0),
-            madness: Big(0)
+            brutality: Decimal(0),
+            cunning: Decimal(0),
+            deceit: Decimal(0),
+            madness: Decimal(0)
         },
         combat: {
             fatigue: 0,
@@ -326,9 +326,9 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     }
     const attackResult = {
         baseDamage: damageToInflict,
-        attackerDamageMultiplier: Big(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
+        attackerDamageMultiplier: Decimal(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
             .times(config.mechanics.attackDamage.scale),
-        targetDefenseMultiplier: Big(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute])
+        targetDefenseMultiplier: Decimal(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute])
             .times(config.mechanics.defense.scale),
         otherEffects: []
     }
@@ -361,7 +361,7 @@ function resolveSkippedAction(tick, combatResult, actingCharacter) {
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
     const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.scale).div(100);
-    rank = Big(rank).plus(Big(rank).times(rankModifier)).round(0, 0);
+    rank = Decimal(rank).plus(Decimal(rank).times(rankModifier)).round(0, 0);
     debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
@@ -375,7 +375,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                     case "health_percentage":
                         // Fixme: Implement validation
                         const target = getCharacter(effect.conditions[condition].target === "attacker" ? sourceCharacter : targetCharacter);
-                        const targetPercent = Big(effect.conditions[condition].below);
+                        const targetPercent = Decimal(effect.conditions[condition].below);
                         const targetCurrentHealth = state.combat.combatantCombatStats[target.id].hp;
                         const targetMaxHealth = target.maximumHp;
                         const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
@@ -508,20 +508,20 @@ function evaluateExpression(expression, context) {
         return expression;
     }
     if (!expressionCache[expression]) {
-        expressionCache[expression] = new Function("$rank", "$level", "$powerPoints", "Big", `return ${expression}`);
+        expressionCache[expression] = new Function("$rank", "$level", "$powerPoints", "Decimal", `return ${expression}`);
     }
-    return expressionCache[expression].call(null, context.$rank, context.$level, context.$powerPoints, Big);
+    return expressionCache[expression].call(null, context.$rank, context.$level, context.$powerPoints, Decimal);
 }
 
 export function getPowerNeededForLevel(level) {
     return evaluateExpression(config.mechanics.levelToPowerEquation, {
-        $level: Big(level)
+        $level: Decimal(level)
     });
 }
 
 export function getLevelForPower(powerPoints) {
     return evaluateExpression(config.mechanics.powerToLevelEquation, {
-        $powerPoints: Big(powerPoints)
+        $powerPoints: Decimal(powerPoints)
     });
 }
 
@@ -548,7 +548,7 @@ export function reincarnateAs(monsterId, newAttributes) {
 
     // Update player attributes
     Object.keys(player.attributes).forEach(attribute => {
-        player.attributes[attribute] = Big(newAttributes[attribute.substring(1)]);
+        player.attributes[attribute] = Decimal(newAttributes[attribute.substring(1)]);
     })
 
     // Add your level to your starting energy.
@@ -568,7 +568,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.currentEncounter = null;
     globalState.currentAction = "reincarnating";
     getCharacter(0).currentHp = getCharacter(0).maximumHp;
-    getGlobalState().passivePowerIncome = Big(0);
+    getGlobalState().passivePowerIncome = Decimal(0);
 
     saveGlobalState();
 }
@@ -583,13 +583,13 @@ function stateReviver(key, value) {
         case "startingTraits":
         case "traits":
             return Object.keys(value).reduce((all, next) => {
-                all[next] = Big(value[next]);
+                all[next] = Decimal(value[next]);
                 return all;
             }, {});
         case "startingPower":
         case "minLevel":
         case "maxLevel":
-            return Big(value);
+            return Decimal(value);
         case "characters":
             return Object.keys(value).reduce((characters, id) => {
                 characters[id] = new Character(value[id]);
@@ -602,13 +602,13 @@ function stateReviver(key, value) {
         case "paused":
             return false;
         case "passivePowerIncome":
-            return Big(value);
+            return Decimal(value);
         case "value":
             const parsed = Number.parseFloat(value);
             if (Number.isNaN(parsed)) {
                 return value;
             }
-            return Big(value);
+            return Decimal(value);
         default:
             return value;
     }

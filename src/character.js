@@ -1,19 +1,19 @@
 import {config} from "./config";
-import {Big} from "big.js";
 import {getLevelForPower, getPowerNeededForLevel} from "./engine";
 import {Creatures} from "./data/creatures";
+import {Decimal} from "decimal.js";
 
 export class Character {
     constructor(props) {
         this._isPc = props.isPc || props._isPc;
         this.id = props.id;
         this._name = props.name || props._name;
-        this._absorbedPower = Big(props.absorbedPower || props._absorbedPower || 0);
-        this._currentHp = Big(props._currentHp || this.maximumHp);
+        this._absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
+        this._currentHp = Decimal(props._currentHp || this.maximumHp);
         this._attributes = new Attributes(props.attributes || props._attributes);
         this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
-            transformed[next] = Big((props.traits || props._traits)[next]);
+            transformed[next] = Decimal((props.traits || props._traits)[next]);
             return transformed;
         }, {});
         this._appearance = props.appearance || props._appearance;
@@ -98,7 +98,7 @@ export class Character {
     }
 
     get healing() {
-        return Big(this.powerLevel.times(config.mechanics.hp.healingPerLevel));
+        return Decimal(this.powerLevel.times(config.mechanics.hp.healingPerLevel));
     }
 
     get absorbedPower() {
@@ -118,7 +118,7 @@ export class Character {
     }
 
     get speed() {
-        return Big(100);
+        return Decimal(100);
     }
 
     addModifier(modifier) {
@@ -164,15 +164,15 @@ class CombatStats {
     }
 
     get minimumDamageWeight() {
-        return Big(config.combat.baseMinimumDamageWeight);
+        return Decimal(config.combat.baseMinimumDamageWeight);
     }
 
     get medianDamageWeight() {
-        return Big(config.combat.baseMedianDamageWeight);
+        return Decimal(config.combat.baseMedianDamageWeight);
     }
 
     get maximumDamageWeight() {
-        return Big(config.combat.baseMaximumDamageWeight);
+        return Decimal(config.combat.baseMaximumDamageWeight);
     }
 
     get minimumDamage() {

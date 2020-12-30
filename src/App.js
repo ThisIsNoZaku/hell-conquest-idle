@@ -5,6 +5,7 @@ import React, {useEffect, useRef, useState} from "react";
 import 'react-circular-progressbar/dist/styles.css';
 import {Regions} from "./data/Regions";
 import {Actions} from "./data/Actions";
+import { Decimal } from "decimal.js";
 import {
     getCharacter,
     getGlobalState, getManualSpeedMultiplier,
@@ -15,7 +16,6 @@ import * as seedrandom from "seedrandom";
 import {config} from "./config";
 import {MemoryRouter, Route, Switch} from "react-router-dom";
 import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectionPage";
-import {Big} from "big.js";
 import AdventuringPage from "./components/scene/AdventuringPage";
 import DebugUi from "./components/DebugUi";
 import {useHotkeys} from "react-hotkeys-hook";
@@ -116,8 +116,8 @@ function App() {
                         switch (effect.event) {
                             case "damage":
                                 targetCharacter.currentHp = targetCharacter.currentHp.minus(effect.value);
-                                if (targetCharacter.currentHp.lt(Big(0))) {
-                                    targetCharacter.currentHp = Big(0);
+                                if (targetCharacter.currentHp.lt(Decimal(0))) {
+                                    targetCharacter.currentHp = Decimal(0);
                                 }
                                 if (getGlobalState().currentEncounter.pendingActions[0].result === "kill") {
                                     applyAction(getGlobalState().currentEncounter.pendingActions.shift());
@@ -230,10 +230,10 @@ function App() {
                         }
                         case "intimidating": {
                             const enemy = getGlobalState().currentEncounter.enemies[0];
-                            const chanceToIntimidate = Big(5).times(Big(2).pow(getCharacter(0).powerLevel.minus(1).minus(enemy.powerLevel).toNumber()));
+                            const chanceToIntimidate = Decimal(5).times(Decimal(2).pow(getCharacter(0).powerLevel.minus(1).minus(enemy.powerLevel).toNumber()));
                             const roll = Math.floor(rng.double() * 100) + 1;
                             if (chanceToIntimidate.gte(roll)) {
-                                const periodicPowerIncreases = Big(1);
+                                const periodicPowerIncreases = Decimal(1);
                                 pushLogItem(wrapLogItem({
                                     result: "intimidated",
                                     target: enemy.id,

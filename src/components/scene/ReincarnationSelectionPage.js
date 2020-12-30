@@ -9,7 +9,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../data/Traits";
 import * as _ from "lodash";
 import {useHistory} from "react-router-dom";
-import {Big} from "big.js";
 import {config} from "../../config";
 import "../../App.css";
 
@@ -44,7 +43,7 @@ export default function ReincarnationSelectionPage(props) {
                 {_.uniq(Object.keys(globalState.current.startingTraits).concat(currentCreature.traits || []))
                     .map(trait => {
                         const player = getCharacter(0);
-                        const currentStartingRank = _.get(globalState.current.startingTraits, trait, Big(0));
+                        const currentStartingRank = _.get(globalState.current.startingTraits, trait, Decimal(0));
                         const combinedLevel = player.powerLevel.gt(currentStartingRank) ? player.powerLevel : currentStartingRank;
                         return <Grid item xs={1}>
                             <Tooltip title={<div dangerouslySetInnerHTML={{

@@ -22,29 +22,29 @@ export const config = {
         }
     },
     mechanics: {
-        levelToPowerEquation: "Big(10).pow(Math.floor($level.minus(1).toNumber()))",
-        powerToLevelEquation: "Big(0).eq($powerPoints) ? Big(1) : $powerPoints.pow(-1).round(0, 3)",
+        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(10).pow($level.minus(1).toNumber())",
+        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : $powerPoints.log(10).ceil()",
         maxLevel: 100,
         attack: { // Determines how attack rolls work
             baseAttribute: "deceit",
-            scale: 2
+            scale: 5
         },
         defense: {
             baseAttribute: "brutality",
-            scale: 1
+            scale: 5
         },
         evasion: {
             baseAttribute: "cunning",
-            scale: 2
+            scale: 5
         },
         attackDamage: {
             pointsPerLevel: 5,
             baseAttribute: "brutality",
-            scale: 2
+            scale: 5
         },
         traitRank: {
             baseAttribute: "madness",
-            scale: 2
+            scale: 5
         },
         fatigue: {
             penaltyPerPoint: 2
@@ -58,19 +58,19 @@ export const config = {
         brutality: {
             label: "Brutality",
             globalScaling: 1,
-            description: _.template("Brutality is how savage and ruthless a Demon is. It gives a ${2 * rank}% bonus to attack damage, defense and intimidation checks."),
+            description: _.template(`Brutality is how savage and ruthless a Demon is. It gives a \${5 * rank}% bonus to attack damage, defense and intimidation checks.`),
             icon: "icons/icons-92.png"
         },
         cunning: {
             label: "Cunning",
             globalScaling: 1,
-            description: _.template("Cunning is how quick thinking a Demon is. It gives a ${2 * rank}% bonus to Evasion, and non-combat encounters."),
+            description: _.template("Cunning is how quick thinking a Demon is. It gives a ${5 * rank}% bonus to Evasion, and non-combat encounters."),
             icon: "icons/icons-24.png"
         },
         deceit: {
             label: "Deceit",
             globalScaling: 1,
-            description: _.template("Deceit is how underhanded and manipulative a Demon is. It gives a ${2 * rank}% bonus to Accuracy and social encounters."),
+            description: _.template("Deceit is how underhanded and manipulative a Demon is. It gives a ${5 * rank}% bonus to Accuracy and social encounters."),
             icon: "icons/icons-17.png"
         },
         madness: {
