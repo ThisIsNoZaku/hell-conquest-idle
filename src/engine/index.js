@@ -110,11 +110,12 @@ export function resolveCombat(rng, definition) {
                 combatResult.combatantCombatStats[acting.character.id].fatigue++;
                 // TODO: Add logs for when effects expire.
                 combatResult.combatantCombatStats[acting.character.id].modifiers = combatResult.combatantCombatStats[acting.character.id].modifiers
-                    .filter(modifier => modifier.roundDuration > 0)
                     .map(modifier => {
-                        modifier.roundDuration -= 1;
-                        return modifier
+                        modifier.roundDuration = Big(modifier.roundDuration).minus(1);
+                        return modifier;
                     })
+                    .filter(modifier => Big(modifier.roundDuration).gt(0))
+
             });
         });
         const playerPartyDead = definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0));
