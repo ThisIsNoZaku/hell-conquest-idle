@@ -45,6 +45,8 @@ export default function AdventuringPage(props) {
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
             <TopSection character={getCharacter(0)}/>
             <BottomSection state={getGlobalState()} actionLog={props.actionLog}
+                           player={getCharacter(0)}
+                           enemy={_.get(props, ["currentEncounter", "enemies", 0])}
                            togglePause={props.togglePause}
                            paused={props.paused}
                            nextActionName={props.nextAction}

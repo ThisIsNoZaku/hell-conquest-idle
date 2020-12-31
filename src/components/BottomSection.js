@@ -39,6 +39,9 @@ const styles = {
         height: "15%",
         flexDirection: "column",
         overflowY: "scroll"
+    },
+    combat: {
+
     }
 }
 export default function BottomSection(props) {
@@ -59,6 +62,26 @@ export default function BottomSection(props) {
             {actionButton("fleeing", "Flee", "Attempt to escape. You will automatically escape from Greater Demons.", props)}
             {actionButton("intimidating", "Intimidate", "Try to cow the enemy, compelling them to continuously provide you a portion of their life force.", props)}
             {_.get(config, "features.negotiating.enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
+        </Paper>
+        <Paper style={styles.combat.details}>
+            <Grid container>
+                <Grid item container xs={6} direction="row">
+                    <Grid item xs={6}>
+                        Player
+                    </Grid>
+                    <Grid item xs={6}>
+                        <meter style={{width: "80%"}} low={25} optimum={50} min={0} max={100} value={props.player.currentHp.div(props.player.maximumHp).times(100).floor().toNumber()} max={100}></meter>
+                    </Grid>
+                </Grid>
+                <Grid item container xs={6} direction="row">
+                    <Grid item xs={6}>
+                        <meter style={{width: "80%"}} low={25} optimum={50} min={0} max={100} value={_.get(props.enemy,["currentHp"], Decimal(0)).div(_.get(props.enemy,["maximumHp"], Decimal(1))).times(100).floor().toNumber()} max={100}></meter>
+                    </Grid>
+                    <Grid item xs={6}>
+                        {_.get(props.enemy, "name")}
+                    </Grid>
+                </Grid>
+            </Grid>
         </Paper>
         <Paper style={styles.action}>
             <strong>{props.currentAction.description}</strong>
