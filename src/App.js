@@ -179,9 +179,9 @@ function App() {
                                 setNextAction(getGlobalState().nextAction);
                                 clearActionLog();
                                 if(getGlobalState().passivePowerIncome.gt(0)) {
-                                    getCharacter(0).absorbedPower = getCharacter(0).absorbedPower.plus(getGlobalState().passivePowerIncome);
+                                    const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
                                     pushLogItem({
-                                        message: `Your Bound lesser demons grant you ${getGlobalState().passivePowerIncome.toFixed()} power.`,
+                                        message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
                                         uuid: v4()
                                     })
                                 }
@@ -233,7 +233,7 @@ function App() {
                             const chanceToIntimidate = Decimal(5).times(Decimal(2).pow(getCharacter(0).powerLevel.minus(1).minus(enemy.powerLevel).toNumber()));
                             const roll = Math.floor(rng.double() * 100) + 1;
                             if (chanceToIntimidate.gte(roll)) {
-                                const periodicPowerIncreases = Decimal(1);
+                                const periodicPowerIncreases = enemy.powerLevel;
                                 pushLogItem(wrapLogItem({
                                     result: "intimidated",
                                     target: enemy.id,
