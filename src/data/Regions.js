@@ -113,8 +113,17 @@ export const Regions = {
                         count: 1
                     }
                 ]
+            },
+            tormentedDead: {
+                description: "1 Tormented Dead",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "tormentedDead",
+                        count: 1
+                    }
+                ]
             }
-
         },
         {
             background: "backgrounds/parallax-demon-woods-bg.png",
