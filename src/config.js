@@ -25,7 +25,7 @@ export const config = {
         xpFromGreaterDemon: "$enemy.powerLevel",
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(5).pow($level.minus(1).toNumber())",
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
-        latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(5)",
+        latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(10)",
         maxLevel: 100,
         accuracy: { // Determines how accuracy rolls work
             baseAttribute: "deceit",
@@ -40,7 +40,7 @@ export const config = {
             attributeBonusScale: 10
         },
         attackDamage: {
-            pointsPerLevel: 5,
+            pointsPerLevel: 15,
             baseAttribute: "brutality",
             attributeBonusScale: 10
         },
@@ -52,8 +52,9 @@ export const config = {
             evasionPenaltyPerPoint: 2
         },
         hp: {
-            pointsPerLevel: 20,
-            healingPerLevel: 2
+            base: 50,
+            pointsPerLevel: 50,
+            healingPerLevel: 100
         }
     },
     attributes: {
@@ -83,7 +84,7 @@ export const config = {
         }
     },
     combat: {
-        baseHitChance: 75,
+        baseHitChance: 90,
         attributeDamageModifier: .02,
         defaultMinimumDamageMultiplier: .5,
         defaultMedianDamageMultiplier: 1,
