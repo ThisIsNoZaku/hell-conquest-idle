@@ -83,6 +83,7 @@ export const config = {
         }
     },
     combat: {
+        baseHitChance: 75,
         attributeDamageModifier: .02,
         defaultMinimumDamageMultiplier: .5,
         defaultMedianDamageMultiplier: 1,
