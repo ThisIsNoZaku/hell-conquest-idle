@@ -106,6 +106,7 @@ export class Character {
     }
 
     gainPower(powerGained) {
+        powerGained = powerGained.times(this.latentPower.div(100).plus(1)).floor();
         this._absorbedPower = this._absorbedPower.plus(powerGained);
         if(getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
             this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
@@ -113,6 +114,7 @@ export class Character {
         Creatures[this.appearance].traits.forEach(trait => {
             this._traits[trait] = getLevelForPower(this._absorbedPower);
         });
+        return powerGained;
     }
 
     get healing() {

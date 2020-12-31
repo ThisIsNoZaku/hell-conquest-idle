@@ -102,11 +102,11 @@ function App() {
                     if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
                         debugMessage("Player killed a non-lesser enemy and gained power.");
                         const player = getCharacter(0);
-                        const powerToGain = enemy.powerLevel.mul(2).times(player.latentPower.div(100).plus(1)).floor();
-                        player.gainPower(powerToGain);
+                        const powerToGain = enemy.powerLevel.mul(2);
+                        const powerGained = player.gainPower(powerToGain);
                         pushLogItem(wrapLogItem({
                             result: "gainedPower",
-                            value: powerToGain
+                            value: powerGained
                         }))
                     }
                     break;
@@ -264,10 +264,10 @@ function App() {
                                 const powerToGain = evaluateExpression(config.mechanics.xpFromGreaterDemon, {
                                     $enemy: enemy
                                 });
-                                player.gainPower(powerToGain);
+                                const powerGained = player.gainPower(powerToGain);
                                 pushLogItem(wrapLogItem({
                                     result: "gainedPower",
-                                    value: powerToGain,
+                                    value: powerGained,
                                 }));
                             }
                             break;
