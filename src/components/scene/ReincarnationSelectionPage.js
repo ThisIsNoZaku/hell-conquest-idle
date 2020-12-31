@@ -92,7 +92,7 @@ export default function ReincarnationSelectionPage(props) {
                                 disabled={spendableBonusPoints.lt(4)}
                                 onClick={() => {
                                     getGlobalState().startingTraits[traitId] = !getGlobalState().startingTraits[traitId];
-                                    setStartingTraits(getGlobalState.startingTraits);
+                                    setStartingTraits(getGlobalState().startingTraits);
                                 } }
                         >
                             <Tooltip title={<div dangerouslySetInnerHTML={{
