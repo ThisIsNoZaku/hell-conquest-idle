@@ -34,7 +34,7 @@ export function loadGlobalState(state) {
         currentAction: null,
         nextAction: null,
         id: 0,
-        highestLevelReached: Decimal(0),
+        highestLevelReached: Decimal(1),
         startingTraits: {},
         currentEncounter: null,
         manualSpeedMultiplier: config.manualSpeedup.multiplier,

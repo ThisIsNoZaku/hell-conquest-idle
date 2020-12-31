@@ -27,7 +27,7 @@ export default function ReincarnationSelectionPage(props) {
         evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
             player
         }));
-    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.characters.player.attributesPerLevel);
+    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.bonusPointsForHighestLevel);
     const availableBonusPoints= spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
         .minus(Object.keys(startingTraits).length * 4);

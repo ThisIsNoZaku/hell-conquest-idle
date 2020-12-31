@@ -13,5 +13,10 @@
       "Added a summary section above the action log to easily keep track of player and enemy HP.",
       "Encounter generation logic chooses fights against approximately equal level enemies more often."
     ]
+  },
+  "0.1.2" : {
+    "changes": [
+      "The player starts with bonus points instead of earning them on the first reincarnation"
+    ]
   }
 }
