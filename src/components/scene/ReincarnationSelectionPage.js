@@ -11,6 +11,7 @@ import * as _ from "lodash";
 import {useHistory} from "react-router-dom";
 import {config} from "../../config";
 import "../../App.css";
+import { Decimal } from "decimal.js";
 
 export default function ReincarnationSelectionPage(props) {
     const globalState = useRef(getGlobalState());
