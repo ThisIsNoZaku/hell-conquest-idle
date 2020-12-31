@@ -490,7 +490,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     } else {
                                         state.combat.combatantCombatStats[combatantId].modifiers.push(modifier);
                                     }
-                                    _.get(state, "accuracy.otherEffects", []).push({
+                                    _.get(state, "attack.otherEffects", []).push({
                                         event: "add_modifier",
                                         source: sourceCharacter.id,
                                         target: combatantId,
