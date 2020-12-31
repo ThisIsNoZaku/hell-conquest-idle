@@ -161,13 +161,10 @@ export function resolveCombat(rng, definition) {
 }
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
-    const attackAccuracy = actingCharacter.attributes[config.mechanics.accuracy.baseAttribute].times(config.mechanics.accuracy.attributeBonusScale);
-    const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.attributeBonusScale)
+    const attackAccuracy = Decimal(actingCharacter.attributes[config.mechanics.accuracy.baseAttribute]).times(config.mechanics.accuracy.attributeBonusScale);
+    const targetEvasion = Decimal(getCharacter(target).attributes[config.mechanics.evasion.baseAttribute]).times(config.mechanics.evasion.attributeBonusScale)
         .minus(Decimal(config.mechanics.fatigue.evasionPenaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
     // TODO: Validation
-    if (targetEvasion.constructor.name !== "Decimal") {
-        throw new Error("Evasion had the wrong type");
-    }
     debugMessage("Making an accuracy roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
     const roll = Math.floor((rng.double() * 100));
     return {
