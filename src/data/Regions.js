@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {generateCreature, getGlobalState} from "../engine";
+import {evaluateExpression, generateCreature, getGlobalState} from "../engine";
 import {config} from "../config";
 import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
@@ -12,7 +12,10 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        const minimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], player.powerLevel.minus(config.encounters.lesserLevelScale * 2));
+
+        const candidateMinimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], player.powerLevel.minus(config.encounters.lesserLevelScale * 2));
+        const minimumLevel = candidateMinimumLevel.lt(1) ? Decimal(1) : candidateMinimumLevel;
+
         const candidateMaxLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"],
             player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
         const maximumLevel = candidateMaxLevel.gte(config.mechanics.maxLevel) ? Decimal(config.mechanics.maxLevel - 1) : candidateMaxLevel;
