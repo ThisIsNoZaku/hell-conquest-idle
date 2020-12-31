@@ -4,17 +4,17 @@ export const Traits = {
     bloodrage: {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(10)}%</span> bonus to Damage against enemies with <span style='color: red'>50% or less</span> health."),
+        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(25)}%</span> bonus to Damage against enemies with <span style='color: red'>25% or less</span> health."),
         on_hitting: {
             conditions : {
                 health_percentage: {
                     target: "target",
-                    below: 50
+                    below: 25
                 }
             },
             effects: {
                 damage_modifier: {
-                    percent: "$rank.times(10)"
+                    percent: "$rank.times(25)"
                 }
             }
         }
@@ -37,7 +37,7 @@ export const Traits = {
     murderousFrenzy: {
         name: "Murderous Frenzy",
         icon: "icons/icons-118.png",
-        description: _.template("After hitting an enemy with an accuracy this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
+        description: _.template("After hitting with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
         on_hitting: {
             effects: {
                 add_modifier: {
