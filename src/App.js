@@ -108,7 +108,8 @@ function App() {
                         pushLogItem(wrapLogItem({
                             result: "gainedPower",
                             value: powerGained
-                        }))
+                        }));
+                        getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                     }
                     break;
                 case "hit":
@@ -183,7 +184,8 @@ function App() {
                                     pushLogItem({
                                         message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
                                         uuid: v4()
-                                    })
+                                    });
+                                    getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                 }
 
                                 const enemies = getGlobalState().currentEncounter.enemies;
@@ -263,6 +265,7 @@ function App() {
                                     $enemy: enemy
                                 });
                                 const powerGained = player.gainPower(powerToGain);
+                                getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                 pushLogItem(wrapLogItem({
                                     result: "gainedPower",
                                     value: powerGained,

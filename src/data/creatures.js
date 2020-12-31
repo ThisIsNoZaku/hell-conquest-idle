@@ -41,6 +41,13 @@ export const Creatures  = {
         appearance: "deadlyHornet",
         texture: "12_wasp.png",
         description: "An insect whose stinger is able to pierce even metal protection."
+    },
+    tormentedDead: {
+        name: "Tormented Dead",
+        traits: ["sharedPain"],
+        appearance: "tormentedDead",
+        texture: "29_zombie.png",
+        description: "A human denied eternal rest and in agony from its ruined flesh."
     }
 }
 

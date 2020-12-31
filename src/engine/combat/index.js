@@ -36,7 +36,7 @@ export function resolveCombat(rng, definition) {
         });
     }))
     let tick = 0;
-    while(combatResult.winner === null) {
+    while (combatResult.winner === null) {
         const initiatives = _.uniq(combatants.map(combatant => Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
             .sort((a, b) => a - b);
         initiatives.forEach(initiativeCount => {
@@ -178,6 +178,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 
     debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackerDamageMultiplier} and a target defense factor of ${attackResult.targetDefenseMultiplier}, for a total factor of ${damageFactor} and a final damage of ${finalDamage.toFixed()}`);
     combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
+    attackResult.finalDamage = finalDamage;
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
             case "apply_effect":
@@ -186,6 +187,17 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 
     }).join(", ")}. Target has ${combatResult.combatantCombatStats[targetCharacter].hp} remaining.`)
     // TODO: Trigger on-damage effects
+    Object.keys(getCharacter(targetCharacter).traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), getCharacter(targetCharacter).traits[trait], "on_taking_damage", {
+        combat: combatResult,
+        attack: attackResult
+    }, tick, rng));
+    attackResult.otherEffects.forEach(effect => {
+        switch (effect.event) {
+            case "damage":
+                combatResult.combatantCombatStats[effect.target].hp = combatResult.combatantCombatStats[effect.target].hp.minus(effect.value);
+                break;
+        }
+    })
     combatResult.rounds.push(generateHitCombatResult(tick, actingCharacter.id, targetCharacter, finalDamage, attackResult.otherEffects));
 }
 
@@ -246,10 +258,28 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             const percentDamageModifier = evaluateExpression(trait[event].effects[traitEffect].percent, {
                                 $rank: rank
                             });
-                            if(percentDamageModifier) {
+                            if (percentDamageModifier) {
                                 const newMultiplier = state.attack.attackerDamageMultiplier.plus(percentDamageModifier);
                                 debugMessage(`Tick ${tick}: Applying ${percentDamageModifier.toFixed()} modifier to damage, changing damage multiplier from ${state.attack.attackerDamageMultiplier.div(100).toFixed()} to ${newMultiplier.div(100).toFixed()}`);
                                 state.attack.attackerDamageMultiplier = newMultiplier;
+                            }
+                            break;
+                        case "damage":
+                            const target = trait[event].effects.target
+                            const damageToInflict = evaluateExpression(trait[event].effects.damage, {
+                                $rank: Decimal(rank),
+                                attackDamage: state.attack.finalDamage
+                            }).floor();
+                            debugMessage(`Inflicting ${damageToInflict} damage to ${target}`);
+                            if(damageToInflict.gt(0)) {
+                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.keys(state.combat.combatantCombatStats), target, state);
+                                targets.forEach(target => {
+                                    state.attack.otherEffects.push({
+                                        event: "damage",
+                                        value: damageToInflict,
+                                        target: target
+                                    });
+                                });
                             }
                             break;
                         case "defense_modifier": {
@@ -261,31 +291,6 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             state.attack.targetDefenseMultiplier = newMultiplier;
                             break;
                         }
-                        // case "speed_modifier" :
-                        //     const percentageSpeedMultiplier = evaluateExpression(trait[event].effects[traitEffect].percent, {
-                        //         $rank: rank
-                        //     });
-                        //
-                        //     const effect = {
-                        //         effect: {
-                        //             speed_bonus_percent: percentageSpeedMultiplier
-                        //         },
-                        //         roundDuration: evaluateExpression(trait[event].duration.rounds, {$rank: rank}),
-                        //         source: {
-                        //             character: sourceCharacter.id,
-                        //             ability: trait
-                        //         }
-                        //     };
-                        //     const existingEffect = state.combat.combatantCombatStats[affectedCharacterId].modifiers.find(modifier => {
-                        //         return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
-                        //     });
-                        //     if (existingEffect) {
-                        //         existingEffect.roundDuration = trait[event].duration.rounds;
-                        //     } else {
-                        //         state.combat.combatantCombatStats[affectedCharacterId].modifiers.push(effect);
-                        //     }
-                        //     debugMessage(`Applied ${percentageSpeedMultiplier}% modifier to speed of ${affectedCharacterId}`);
-                        //     break;
                         case "add_modifier":
                             const modifierToAddDefinition = trait[event].effects.add_modifier;
                             Object.keys(modifierToAddDefinition).forEach(effectType => {
@@ -303,19 +308,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     }
                                 };
                                 // Determine targets
-                                const targets = Object.keys(state.combat.combatantCombatStats).filter(combatantId => {
-                                    switch (effectTarget) {
-                                        case "attacker":
-                                            return sourceCharacter.id == combatantId;
-                                        case "attacked":
-                                            return targetCharacter == combatantId;
-                                        case "all_enemies":
-                                            const actingCharacterParty = sourceCharacter.id === 0 ? 0 : 1;
-                                            return actingCharacterParty !== state.combat.combatantCombatStats[combatantId].party;
-                                        default:
-                                            throw new Error();
-                                    }
-                                });
+                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.keys(state.combat.combatantCombatStats), effectTarget, state);
                                 targets.forEach(combatantId => {
                                     const existingEffect = state.combat.combatantCombatStats[combatantId].modifiers.find(modifier => {
                                         return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
@@ -351,4 +344,20 @@ function makeAttackRoll(actingCharacter, target, combatState, rng) {
         attackAccuracy,
         total: attackAccuracy.plus(roll)
     };
+}
+
+function selectTargets(sourceCharacter, targetCharacterId, combatants, targetType, state) {
+    return combatants.filter(combatant => {
+        switch (targetType) {
+            case "attacker":
+                return sourceCharacter.id == combatant;
+            case "attacked":
+                return targetCharacterId == combatant;
+            case "all_enemies":
+                const actingCharacterParty = sourceCharacter.id === 0 ? 0 : 1;
+                return actingCharacterParty !== state.combat.combatantCombatStats[combatant].party;
+            default:
+                throw new Error();
+        }
+    });
 }
