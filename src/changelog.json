@@ -1,3 +1,14 @@
 {
-  "0.1.0" : ["Initial version"]
+  "0.1.0" : {
+    "changes":["Initial version"]
+  },
+  "0.1.1" : {
+    "changes": [
+      "Increased default hit chance from 50% to 90%",
+      "Increased latent power base gain from 5 to 10.",
+      "Changed hp formula to 50 + (50 * level)",
+      "Changed damage formula to 15 * level",
+      "Accuracy now increases chance of getting a more damaging type of hit and Evasion now reduces it."
+    ]
+  }
 }
