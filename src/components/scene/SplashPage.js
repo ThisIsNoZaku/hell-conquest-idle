@@ -15,7 +15,7 @@ export default function SplashPage(props) {
     return <Paper>
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                Conquest of Hell Ver. {pkg.version}
+                Conquest of Hell Ver. {pkg.version} Save Compatibility NOT Guaranteed
             </Grid>
             <Grid item container>
                 {Object.keys(changelog).map(version => {
