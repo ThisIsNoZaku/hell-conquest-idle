@@ -1,5 +1,6 @@
 import Paper from "@material-ui/core/Paper";
 import React, {useState} from "react";
+import { Decimal } from "decimal.js";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import {Creatures} from "../data/creatures";
@@ -24,10 +25,10 @@ const styles = {
 export default function DebugUi(props) {
     const [creatures, setCreatures] = useState(_.get(getGlobalState(), ["debug", "creatures"]));
     const [regions, setRegions] = useState(_.get(getGlobalState(), ["debug", "regions"]));
-    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Big(1)) ?
-        Big(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale)));
+    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Decimal(1)) ?
+        Decimal(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale)));
     const [maxLevel, setMaxLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "maxLevel"], getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale).gt(100) ?
-        Big(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2)));
+        Decimal(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2)));
     const [manualSpeedMultiplier, setManualSpeedMultiplier] = useState(_.get(getGlobalState(), ["debug", "manualSpeedMultiplier"],
         getGlobalState().manualSpeedMultiplier));
     const [playerAbsorbedPower, setPlayerAbsorbedPower] = useState(getCharacter(0).absorbedPower);
@@ -36,10 +37,10 @@ export default function DebugUi(props) {
         resetDebug();
         setCreatures(_.get(getGlobalState(), ["debug", "creatures"]));
         setRegions(_.get(getGlobalState(), ["debug", "regions"]));
-        setMinLevel(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Big(1)) ?
-            Big(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
+        setMinLevel(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Decimal(1)) ?
+            Decimal(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
         setMaxLevel(getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale).gt(100) ?
-            Big(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2));
+            Decimal(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2));
     }
 
     function clearSave() {
@@ -75,10 +76,10 @@ export default function DebugUi(props) {
                 <Grid item xs={3}>
                     <TextField type="number" min="0" value={playerAbsorbedPower} onChange={e => {
                         e.target.value = e.target.value === "" ? 0 : e.target.value;
-                        const newValue = Big(Number.parseInt(e.target.value));
+                        const newValue = Decimal(Number.parseInt(e.target.value));
                         if(newValue.lt(0)) {
-                            getCharacter(0).absorbedPower = Big(0);
-                            setPlayerAbsorbedPower(Big(0));
+                            getCharacter(0).absorbedPower = Decimal(0);
+                            setPlayerAbsorbedPower(Decimal(0));
                         } else {
                             getCharacter(0).absorbedPower = newValue;
                             setPlayerAbsorbedPower(newValue);
@@ -101,7 +102,7 @@ export default function DebugUi(props) {
                                     setCreatures({...creatures, [id]: {enabled: !enabled}})
                                 }}
                         >
-                            <img src={`/monsters/${Creatures[id].texture}`}/>
+                            <img src={`./monsters/${Creatures[id].texture}`}/>
                             {Creatures[id].name}
                         </Button>
                     </Grid>
