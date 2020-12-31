@@ -133,7 +133,7 @@ export default function ReincarnationSelectionPage(props) {
                     )
                     .map(name => {
                         if (!getGlobalState().unlockedMonsters[name]) {
-                            return <Grid container xs={3} justify="space-around" style={{height: "138px"}}>
+                            return <Grid container xs={3} justify="space-around" style={{height: "150px"}}>
                                 <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
                                     <Tooltip
                                         title={<div>An unknown type of Demon. Selects a random Demon you have not
@@ -155,9 +155,9 @@ export default function ReincarnationSelectionPage(props) {
                             </Grid>
                         } else {
                             return <Grid container xs={3} justify="space-around">
-                                <Grid item xs={12} style={{textAlign: "center"}}>
+                                <Grid item xs={12} style={{textAlign: "center", height: "150px"}}>
                                     <Tooltip title={<div>{Creatures[name].description}</div>}>
-                                        <Button variant="contained" style={{height: "100%", width: "50%"}}
+                                        <Button variant="contained" style={{height: "75%", width: "50%"}}
                                                 onClick={() => {
                                                     props.reincarnate(name, attributes);
                                                     history.push("/adventuring");
