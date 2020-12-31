@@ -203,36 +203,27 @@ class CombatStats {
     }
 
     get minimumDamage() {
-        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
-        const minimumDamageMultiplier = config.combat.defaultMinimumDamageMultiplier;
-        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel
-            .times(config.mechanics.attackDamage.pointsPerLevel)
-            .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).ceil();
+        return calculateDamage(config.combat.defaultMinimumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
     }
 
     get medianDamage() {
-        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
-        const minimumDamageMultiplier = config.combat.defaultMedianDamageMultiplier;
-        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel
-            .times(config.mechanics.attackDamage.pointsPerLevel)
-            .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).ceil();
+        return calculateDamage(config.combat.defaultMedianDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
     }
 
     get maximumDamage() {
-        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
-        const minimumDamageMultiplier = config.combat.defaultMaximumDamageMultiplier;
-        const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
-        return characterPowerLevel
-            .times(config.mechanics.attackDamage.pointsPerLevel)
-            .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).ceil();
+        return calculateDamage(config.combat.defaultMaximumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
     }
 
     get canAct() {
         return true;
     }
+}
+
+function calculateDamage(hitTypeDamageMultiplier, powerLevel, latentPower, attributeScore) {
+    const effectivePowerLevel = powerLevel.times(latentPower.div(100).plus(1));
+    const attributeModifier = attributeScore.times(config.combat.attributeDamageModifier).div(100).plus(1);
+    return effectivePowerLevel
+        .times(config.mechanics.attackDamage.pointsPerLevel)
+        .times(hitTypeDamageMultiplier)
+        .times(attributeModifier).ceil();
 }
