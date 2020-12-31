@@ -201,7 +201,7 @@ export function loadGlobalState(state) {
         currentAction: null,
         nextAction: null,
         id: 0,
-        startingPower: Decimal(0), //The amount of absorbed power the player starts with when they reincarnate
+        highestLevelReached: Decimal(0),
         startingTraits: {},
         currentEncounter: null,
         manualSpeedMultiplier: config.manualSpeedup.multiplier,
@@ -540,6 +540,10 @@ export function reincarnateAs(monsterId, newAttributes) {
         });
     }
 
+    if(Decimal(globalState.highestLevelReached).lt(player.powerLevel)) {
+        globalState.highestLevelReached = player.powerLevel;
+    }
+
     if (monsterId === "random") {
         const options = _.difference(Object.keys(Creatures).filter(m => {
             return _.get(globalState, ["debug", "creatures", m, "enabled"], true) &&
@@ -555,11 +559,11 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     // Add your level to your starting energy.
-    globalState.startingPower = globalState.startingPower
-        .plus(evaluateExpression(config.mechanics.startingXpGainOnReincarnate, {
-            player: globalState.characters[0]
-        }));
-    globalState.characters[0].absorbedPower = globalState.startingPower;
+    const latentPowerGain = evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
+        player
+    })
+    globalState.characters[0].latentPower = globalState.characters[0].absorbedPower.plus(latentPowerGain);
+    globalState.characters[0].absorbedPower = Decimal(0);
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
 

@@ -25,7 +25,7 @@ export const config = {
         xpFromGreaterDemon: "$enemy.powerLevel",
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(5).pow($level.minus(1).toNumber())",
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
-        startingXpGainOnReincarnate: "Decimal(2).pow(player.powerLevel.minus(1))",
+        latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(5)",
         maxLevel: 100,
         accuracy: { // Determines how accuracy rolls work
             baseAttribute: "deceit",

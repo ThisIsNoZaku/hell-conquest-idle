@@ -9,8 +9,9 @@ export class Character {
         this.id = props.id;
         this._name = props.name || props._name;
         this._absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
+        this._latentPower = Decimal(props.latentPower || props._latentPower || 0);
         this._currentHp = Decimal(props._currentHp || this.maximumHp);
-        this._attributes = new Attributes(props.attributes || props._attributes);
+        this._attributes = new Attributes(props.attributes || props._attributes, this);
         this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
             transformed[next] = Decimal((props.traits || props._traits)[next]);
@@ -48,10 +49,18 @@ export class Character {
         return this.currentHp > 0;
     }
 
+    get latentPower() {
+        return this._latentPower;
+    }
+
+    set latentPower(newLatentPower) {
+        this._latentPower = newLatentPower;
+    }
+
     get maximumHp() {
         return this.powerLevel
-            .mul(config.mechanics.hp.pointsPerLevel)
-            .plus(this._isPc ? 5 : 0);
+            .mul(this.latentPower.plus(1))
+            .mul(config.mechanics.hp.pointsPerLevel);
     }
 
     get attributes() {
@@ -139,27 +148,34 @@ export class Character {
 }
 
 class Attributes {
-    constructor(attributes) {
+    constructor(attributes, character) {
         this._brutality = attributes.brutality || attributes._brutality || 0;
         this._cunning = attributes.cunning || attributes._cunning || 0;
         this._deceit = attributes.deceit || attributes._deceit || 0;
         this._madness = attributes.madness || attributes._madness || 0;
+        Object.defineProperty(this, "character", {
+            value: () => character
+        })
     }
 
     get brutality() {
-        return this._brutality;
+        const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
+        return this._brutality.times(latentPowerMultiplier).floor();
     }
 
     get cunning() {
-        return this._cunning;
+        const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
+        return this._cunning.times(latentPowerMultiplier).floor();
     }
 
     get deceit() {
-        return this._deceit;
+        const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
+        return this._deceit.times(latentPowerMultiplier).floor();
     }
 
     get madness() {
-        return this._madness;
+        const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
+        return this._madness.times(latentPowerMultiplier).floor();
     }
 }
 
@@ -184,33 +200,33 @@ class CombatStats {
     }
 
     get minimumDamage() {
-        const characterPowerLevel = this.character().powerLevel;
+        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
         const minimumDamageMultiplier = config.combat.defaultMinimumDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
         return characterPowerLevel
             .times(config.mechanics.attackDamage.pointsPerLevel)
             .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).round(0, 3);
+            .times(1 + attributeModifier).ceil();
     }
 
     get medianDamage() {
-        const characterPowerLevel = this.character().powerLevel;
+        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
         const minimumDamageMultiplier = config.combat.defaultMedianDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
         return characterPowerLevel
             .times(config.mechanics.attackDamage.pointsPerLevel)
             .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).round(0, 3);
+            .times(1 + attributeModifier).ceil();
     }
 
     get maximumDamage() {
-        const characterPowerLevel = this.character().powerLevel;
+        const characterPowerLevel = this.character().powerLevel.times(this.character().latentPower.div(100).plus(1));
         const minimumDamageMultiplier = config.combat.defaultMaximumDamageMultiplier;
         const attributeModifier = this.character().attributes.brutality * config.combat.attributeDamageModifier;
         return characterPowerLevel
             .times(config.mechanics.attackDamage.pointsPerLevel)
             .times(minimumDamageMultiplier)
-            .times(1 + attributeModifier).round(0, 3);
+            .times(1 + attributeModifier).ceil();
     }
 
     get canAct() {

@@ -23,11 +23,11 @@ export default function ReincarnationSelectionPage(props) {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
-    const newStartingPower = globalState.current.startingPower.plus(
-        evaluateExpression(config.mechanics.startingXpGainOnReincarnate, {
+    const newLatentPower = getCharacter(0).latentPower.plus(
+        evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
             player
         }));
-    const spendableBonusPoints = getLevelForPower(newStartingPower).times(config.characters.player.attributesPerLevel);
+    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.characters.player.attributesPerLevel);
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -40,7 +40,7 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with <strong>{newStartingPower.toFixed()}</strong> starting power, letting you start at level {getLevelForPower(newStartingPower).toFixed()}
+            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes and Damage due to your Latent Power acquired from previous reincarnations.
             <br/>
             You will also gain the following Traits as a result of your previous reincarnations:
             <Grid container>
@@ -65,7 +65,7 @@ export default function ReincarnationSelectionPage(props) {
 
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Spend {spendableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on bonuses:</strong>
+                <strong>Spend {spendableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on bonuses </strong> (Reach higher levels to gain more points)
             </Grid>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
@@ -78,7 +78,9 @@ export default function ReincarnationSelectionPage(props) {
                         <div style={{textAlign: "center"}}>
                             <img src={config.attributes[attribute].icon}/>
                             <div>
-                                <Button disabled={spendableBonusPoints.eq(_.sum(Object.values(attributes).map(x => x.toNumber())))}
+                                <Button disabled={spendableBonusPoints.eq(_.sum(Object.values(attributes).map(x => {
+                                    return x.toNumber()
+                                })))}
                                         onClick={() => {
                                             setAttributes({...attributes, [attribute]: attributes[attribute].plus(1)})
                                         }}>
@@ -154,7 +156,7 @@ export default function ReincarnationSelectionPage(props) {
                                 Creatures[name].traits.map(trait => <Grid item xs={1}>
                                     <Tooltip title={<div dangerouslySetInnerHTML={{
                                         __html: Traits[trait].description({
-                                            rank: getLevelForPower(newStartingPower)
+                                            rank: getLevelForPower(newLatentPower)
                                         })
                                     }}>
                                     </div>}>

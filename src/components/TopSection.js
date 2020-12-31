@@ -17,8 +17,7 @@ const styles = {
 
 export default function TopSection(props) {
     const history = useHistory();
-    const reincarnateEnabled = useMemo(() => getLevelForPower(getGlobalState().startingPower).lt(getCharacter(0).powerLevel), [
-        getGlobalState().powerLevel,
+    const reincarnateEnabled = useMemo(() => getCharacter(0).powerLevel.gt(1), [
         getCharacter(0).powerLevel
     ])
     return <div style={styles.root}>
