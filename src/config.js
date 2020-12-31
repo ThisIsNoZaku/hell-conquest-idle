@@ -53,7 +53,7 @@ export const config = {
         },
         hp: {
             base: 50,
-            pointsPerLevel: 50,
+            pointsPerLevel: 25,
             healingPerLevel: 100
         }
     },
