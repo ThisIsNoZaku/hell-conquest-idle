@@ -336,8 +336,11 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         combat: combatResult,
         attack: attackResult
     }, tick, rng));
-    const finalDamage = attackResult.baseDamage.times(attackResult.attackerDamageMultiplier.minus(attackResult.targetDefenseMultiplier).div(100).plus(1)).round(0, 0);
-    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attacker multiplier of ${attackResult.attackerDamageMultiplier.div(100)} and a target defense multiplier of ${attackResult.targetDefenseMultiplier.div(100)}, for a total of ${finalDamage.toFixed()}`);
+    const damageFactor = attackResult.attackerDamageMultiplier.plus(100) // FIXME: Evaluable expression
+        .div(attackResult.targetDefenseMultiplier.plus(100));
+    const finalDamage = attackResult.baseDamage.times(damageFactor).floor()
+
+    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackerDamageMultiplier} and a target defense factor of ${attackResult.targetDefenseMultiplier}, for a total factor of ${damageFactor} and a final damage of ${finalDamage.toFixed()}`);
     combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
