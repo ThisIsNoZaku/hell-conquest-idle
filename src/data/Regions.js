@@ -33,13 +33,13 @@ class Region {
             }
             case "lesser": {
                 const encounterOffset = Math.floor(rng.double() * config.encounters.lesserLevelScale);
-                encounterLevel = encounterLevel.minus(encounterOffset);
+                encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
             case "even": {
                 const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) + 1;
                 const encounterOffset = Math.floor(rng.double() * difference) - difference;
-                encounterLevel = encounterLevel.plus(encounterOffset);
+                encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
         if (config.debug) {
