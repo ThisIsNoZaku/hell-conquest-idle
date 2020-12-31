@@ -552,7 +552,10 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     // Add your level to your starting energy.
-    globalState.startingPower = globalState.startingPower.plus(globalState.characters[0].powerLevel.minus(1).pow(2));
+    globalState.startingPower = globalState.startingPower
+        .plus(evaluateExpression(config.mechanics.startingXpGainOnReincarnate, {
+            player: globalState.characters[0]
+        }));
     globalState.characters[0].absorbedPower = globalState.startingPower;
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
