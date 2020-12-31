@@ -1,5 +1,5 @@
 import {config} from "./config";
-import {evaluateExpression, getLevelForPower, getPowerNeededForLevel} from "./engine";
+import {evaluateExpression, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 
@@ -21,7 +21,7 @@ export class Character {
         this._modifiers = props.modifiers || props._modifiers || [];
     }
 
-    get isPc(){
+    get isPc() {
         return this._isPc;
     }
 
@@ -38,7 +38,7 @@ export class Character {
     }
 
     set currentHp(newHealth) {
-        if(this.maximumHp.lt(newHealth)) {
+        if (this.maximumHp.lt(newHealth)) {
             this._currentHp = this.maximumHp;
         } else {
             this._currentHp = newHealth;
@@ -108,11 +108,12 @@ export class Character {
     gainPower(powerGained) {
         powerGained = powerGained.times(this.latentPower.div(100).plus(1)).floor();
         this._absorbedPower = this._absorbedPower.plus(powerGained);
-        if(getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
+        if (getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
             this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
         }
         Creatures[this.appearance].traits.forEach(trait => {
             this._traits[trait] = getLevelForPower(this._absorbedPower);
+            getGlobalState().unlockedTraits[trait] = getLevelForPower(this._absorbedPower);
         });
         return powerGained;
     }
@@ -125,14 +126,15 @@ export class Character {
         return this._absorbedPower;
     }
 
-    set absorbedPower(value){
+    set absorbedPower(value) {
         this._absorbedPower = value;
-        if(getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
+        if (getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
             this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
         }
-        if(this.appearance) {
+        if (this.appearance) {
             Creatures[this.appearance].traits.forEach(trait => {
                 this._traits[trait] = getLevelForPower(this._absorbedPower);
+                getGlobalState().unlockedTraits[trait] = getLevelForPower(this._absorbedPower);
             });
         }
     }
@@ -163,28 +165,28 @@ class Attributes {
 
     get brutality() {
         const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
-        return this._brutality.times(latentPowerMultiplier).floor();
+        return Decimal(this._brutality).times(latentPowerMultiplier).floor();
     }
 
     get cunning() {
         const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
-        return this._cunning.times(latentPowerMultiplier).floor();
+        return Decimal(this._cunning).times(latentPowerMultiplier).floor();
     }
 
     get deceit() {
         const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
-        return this._deceit.times(latentPowerMultiplier).floor();
+        return Decimal(this._deceit).times(latentPowerMultiplier).floor();
     }
 
     get madness() {
         const latentPowerMultiplier = this.character().latentPower.div(100).plus(1);
-        return this._madness.times(latentPowerMultiplier).floor();
+        return Decimal(this._madness).times(latentPowerMultiplier).floor();
     }
 }
 
 class CombatStats {
     constructor(props, character) {
-        this.character = function() {
+        this.character = function () {
             return character;
         }
         this.fatigue = 0;
@@ -192,7 +194,7 @@ class CombatStats {
 
     getHitChancesAgainst(targetCharacter) {
         const targetEvasionModifier = targetCharacter !== undefined ? targetCharacter.attributes[config.mechanics.evasion.baseAttribute]
-                .times(config.mechanics.evasion.attributeBonusScale) : Decimal(0);
+            .times(config.mechanics.evasion.attributeBonusScale) : Decimal(0);
         const selfAccuracyModifier = this.character().attributes[config.mechanics.accuracy.baseAttribute]
             .times(config.mechanics.accuracy.attributeBonusScale);
         return {
