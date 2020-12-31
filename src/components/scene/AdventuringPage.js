@@ -4,6 +4,7 @@ import {getCharacter, getGlobalState} from "../../engine";
 import BottomSection from "../BottomSection";
 import EnemySidebar from "../EnemySidebar";
 import React from "react";
+import * as _ from "lodash";
 
 const styles = {
     root: {
@@ -40,7 +41,7 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
-        <PlayerStats player={props.player}/>
+        <PlayerStats player={props.player} enemy={_.get(props, "currentEncounter.enemies[0]")}/>
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
             <TopSection character={getCharacter(0)}/>
             <BottomSection state={getGlobalState()} actionLog={props.actionLog}
@@ -57,7 +58,7 @@ export default function AdventuringPage(props) {
                            stopManualSpeedup={props.stopManualSpeedup}
             />
         </div>
-        <EnemySidebar currentEncounter={props.currentEncounter} actionLog={props.actionLog}/>
+        <EnemySidebar player={props.player} currentEncounter={props.currentEncounter} actionLog={props.actionLog}/>
 
     </div>
 }
