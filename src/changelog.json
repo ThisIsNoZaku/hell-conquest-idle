@@ -8,7 +8,9 @@
       "Increased latent power base gain from 5 to 10.",
       "Changed hp formula to 50 + (25 * level)",
       "Changed damage formula to 15 * level",
-      "Accuracy now increases chance of getting a more damaging type of hit and Evasion now reduces it."
+      "Accuracy now increases chance of getting a more damaging type of hit and Evasion reduces it.",
+      "Player can choose bonus traits as a reincarnation bonus instead of automatically getting all previous traits",
+      "Added a summary section above the action log to easily keep track of player and enemy HP"
     ]
   }
 }
