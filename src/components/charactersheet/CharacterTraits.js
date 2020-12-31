@@ -1,6 +1,7 @@
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../data/Traits";
 import React from "react";
+import {Decimal} from "decimal.js";
 
 export default function CharacterTraits(props) {
     return <React.Fragment>
@@ -9,7 +10,7 @@ export default function CharacterTraits(props) {
                 <span>Rank {props.character.traits[trait].toFixed()}: </span>
             <span dangerouslySetInnerHTML={{
                 __html: Traits[trait].description({
-                    rank: props.character.traits[trait]
+                    rank: Decimal(props.character.traits[trait])
                 })
             }}></span>
             </React.Fragment>}>

@@ -29,6 +29,7 @@ export function loadGlobalState(state) {
         },
         passivePowerIncome: Decimal(0),
         unlockedMonsters: {},
+        unlockedTraits: {},
         paused: true,
         currentAction: null,
         nextAction: null,
@@ -100,7 +101,11 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: powerLevel.minus(1).pow(2).times(5),
+        latentPower: evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
+            player: {
+                powerLevel
+            }
+        }).times(5),
         traits: Creatures[id].traits.reduce((traits, next) => {
             traits[next] = powerLevel;
             return traits;
@@ -166,8 +171,8 @@ export function reincarnateAs(monsterId, newAttributes) {
     const currentDemon = Creatures[player.appearance];
     if (currentDemon) {
         currentDemon.traits.forEach(trait => {
-            if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
-                globalState.startingTraits[trait] = player.powerLevel;
+            if (!globalState.unlockedTraits[trait] || player.powerLevel.gt(globalState.unlockedTraits[trait])) {
+                globalState.unlockedTraits[trait] = player.powerLevel;
             }
         });
     }
@@ -199,13 +204,13 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
 
-    // Gain the traits of your new demon amd your new power level
+    getCharacter(0).traits = Object.keys(globalState.startingTraits).reduce((startingTraits, trait) => {
+        startingTraits[trait] = globalState.unlockedTraits[trait];
+        return startingTraits;
+    }, {});
     Creatures[monsterId].traits.forEach(trait => {
-        if (!globalState.startingTraits[trait] || player.powerLevel.gt(globalState.startingTraits[trait])) {
-            globalState.startingTraits[trait] = player.powerLevel;
-        }
-    });
-    getCharacter(0).traits = {...globalState.startingTraits};
+        getCharacter(0).traits[trait] = 1;
+    })
 
     globalState.currentEncounter = null;
     globalState.currentAction = "reincarnating";
@@ -221,17 +226,6 @@ export function unpause() {
 
 function stateReviver(key, value) {
     switch (key) {
-        case "_attributes":
-        case "startingTraits":
-        case "traits":
-            return Object.keys(value).reduce((all, next) => {
-                all[next] = Decimal(value[next]);
-                return all;
-            }, {});
-        case "startingPower":
-        case "minLevel":
-        case "maxLevel":
-            return Decimal(value);
         case "characters":
             return Object.keys(value).reduce((characters, id) => {
                 characters[id] = new Character(value[id]);

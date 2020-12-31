@@ -11,23 +11,26 @@ import * as _ from "lodash";
 import {useHistory} from "react-router-dom";
 import {config} from "../../config";
 import "../../App.css";
-import { Decimal } from "decimal.js";
+import {Decimal} from "decimal.js";
 
 export default function ReincarnationSelectionPage(props) {
     const globalState = useRef(getGlobalState());
     const history = useHistory();
     const player = getCharacter(0);
-    const currentCreature = Creatures[player.appearance] || {};
     const [attributes, setAttributes] = useState(Object.keys(player.attributes)
         .reduce((attributes, next) => {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
+    const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
     const newLatentPower = getCharacter(0).latentPower.plus(
         evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
             player
         }));
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.characters.player.attributesPerLevel);
+    const availableBonusPoints= spendableBonusPoints
+        .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
+        .minus(Object.keys(startingTraits).length * 4);
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -40,32 +43,15 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes, Damage and absorbed power due to your Latent Power acquired from previous reincarnations.
+            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes, Damage and
+            absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
-            You will also gain the following Traits as a result of your previous reincarnations:
-            <Grid container>
-                {_.uniq(Object.keys(globalState.current.startingTraits).concat(currentCreature.traits || []))
-                    .map(trait => {
-                        const player = getCharacter(0);
-                        const currentStartingRank = _.get(globalState.current.startingTraits, trait, Decimal(0));
-                        const combinedLevel = player.powerLevel.gt(currentStartingRank) ? player.powerLevel : currentStartingRank;
-                        return <Grid item xs={1}>
-                            <Tooltip title={<div dangerouslySetInnerHTML={{
-                                __html:
-                                    Traits[trait].description({
-                                        rank: combinedLevel
-                                    })
-                            }}></div>}>
-                                <img src={Traits[trait].icon}/>
-                            </Tooltip>
-                        </Grid>
-                    })}
-            </Grid>
         </Grid>
 
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Spend {spendableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on bonuses </strong> (Reach higher levels to gain more points)
+                <strong>Spend {availableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on
+                    bonuses </strong> (Reach higher levels to gain more points)
             </Grid>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
@@ -73,28 +59,62 @@ export default function ReincarnationSelectionPage(props) {
             {Object.keys(config.attributes).map(attribute => {
                 return <Grid item xs={3}>
                     <Tooltip title={config.attributes[attribute].description({
-                        rank: attributes[attribute].toFixed()
+                        rank: Decimal(attributes[attribute]).toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
                             <img src={config.attributes[attribute].icon}/>
                             <div>
-                                <Button disabled={spendableBonusPoints.eq(_.sum(Object.values(attributes).map(x => {
-                                    return x.toNumber()
-                                })))}
+                                <Button disabled={availableBonusPoints.lte(0)}
                                         onClick={() => {
-                                            setAttributes({...attributes, [attribute]: attributes[attribute].plus(1)})
+                                            setAttributes({...attributes, [attribute]: Decimal(attributes[attribute]).plus(1)})
                                         }}>
                                     <AddIcon/>
                                 </Button>
-                                {attributes[attribute].toFixed()}
-                                <Button disabled={attributes[attribute].toNumber() <= 0} onClick={() => {
-                                    setAttributes({...attributes, [attribute]: attributes[attribute].minus(1)})
+                                {Decimal(attributes[attribute]).toFixed()}
+                                <Button disabled={Decimal(attributes[attribute]).lte(0)} onClick={() => {
+                                    setAttributes({...attributes, [attribute]: Decimal(attributes[attribute]).minus(1)})
                                 }}>
                                     <RemoveIcon/>
                                 </Button>
                             </div>
                         </div>
                     </Tooltip>
+                </Grid>
+            })}
+            {Object.keys(getGlobalState().unlockedTraits).length > 0 &&
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon form)
+            </Grid>}
+            {Object.keys(getGlobalState().unlockedTraits).map(traitId => {
+                return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
+                    <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
+                        <Button variant="contained" color={getGlobalState().startingTraits[traitId] ? "secondary" : "default" }
+                                disabled={spendableBonusPoints.lt(4)}
+                                onClick={() => {
+                                    getGlobalState().startingTraits[traitId] = !getGlobalState().startingTraits[traitId];
+                                    setStartingTraits(getGlobalState.startingTraits);
+                                } }
+                        >
+                            <Tooltip title={<div dangerouslySetInnerHTML={{
+                                __html: `Rank ${Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}: ${Traits[traitId].description({
+                                    rank: Decimal(getGlobalState().unlockedTraits[traitId])
+                                })}`
+                            }}>
+                            </div>}>
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        <img src={Traits[traitId].icon}/>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        {Traits[traitId].name} {Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <em>4 pts</em>
+                                    </Grid>
+                                </Grid>
+                            </Tooltip>
+                        </Button>
+                    </Grid>
                 </Grid>
             })}
         </Grid>
@@ -112,61 +132,50 @@ export default function ReincarnationSelectionPage(props) {
                         }
                     )
                     .map(name => {
-                    if (!getGlobalState().unlockedMonsters[name]) {
-                        return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
-                            <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
-                                <Tooltip
-                                    title={<div>An unknown type of Demon. Selects a random Demon you have not already
-                                        played as.</div>}>
-                                    <Button variant="contained" style={{height: "100%", width: "50%"}}
-                                            onClick={() => {
-                                                props.reincarnate("random", attributes);
-                                                history.push("/adventuring");
-                                            }}>
-                                        <Grid container>
-                                            <Grid item xs={12}>
-                                                ???
+                        if (!getGlobalState().unlockedMonsters[name]) {
+                            return <Grid container xs={3} justify="space-around" style={{height: "138px"}}>
+                                <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
+                                    <Tooltip
+                                        title={<div>An unknown type of Demon. Selects a random Demon you have not
+                                            already
+                                            played as.</div>}>
+                                        <Button variant="contained" style={{height: "100%", width: "50%"}}
+                                                onClick={() => {
+                                                    props.reincarnate("random", attributes);
+                                                    history.push("/adventuring");
+                                                }}>
+                                            <Grid container>
+                                                <Grid item xs={12}>
+                                                    ???
+                                                </Grid>
                                             </Grid>
-                                        </Grid>
-                                    </Button>
-                                </Tooltip>
-                            </Grid>
-                        </Grid>
-                    } else {
-                        return <Grid item container xs={3} justify="space-around">
-                            <Grid item xs={12} style={{textAlign: "center"}}>
-                                <Tooltip title={<div>{Creatures[name].description}</div>}>
-                                    <Button variant="contained" style={{height: "100%", width: "50%"}}
-                                            onClick={() => {
-                                                props.reincarnate(name, attributes);
-                                                history.push("/adventuring");
-                                            }}>
-                                        <Grid container>
-                                            <Grid item xs={12}>
-                                                <img src={getSpriteForCreature(name)}/>
-                                            </Grid>
-                                            <Grid item xs={12}>
-                                                {Creatures[name].name}
-                                            </Grid>
-                                        </Grid>
-                                    </Button>
-                                </Tooltip>
-                            </Grid>
-                            {
-                                Creatures[name].traits.map(trait => <Grid item xs={1}>
-                                    <Tooltip title={<div dangerouslySetInnerHTML={{
-                                        __html: Traits[trait].description({
-                                            rank: getLevelForPower(newLatentPower)
-                                        })
-                                    }}>
-                                    </div>}>
-                                        <img src={Traits[trait].icon}/>
+                                        </Button>
                                     </Tooltip>
-                                </Grid>)
-                            }
-                        </Grid>
-                    }
-                })
+                                </Grid>
+                            </Grid>
+                        } else {
+                            return <Grid container xs={3} justify="space-around">
+                                <Grid item xs={12} style={{textAlign: "center"}}>
+                                    <Tooltip title={<div>{Creatures[name].description}</div>}>
+                                        <Button variant="contained" style={{height: "100%", width: "50%"}}
+                                                onClick={() => {
+                                                    props.reincarnate(name, attributes);
+                                                    history.push("/adventuring");
+                                                }}>
+                                            <Grid container>
+                                                <Grid item xs={12}>
+                                                    <img src={getSpriteForCreature(name)}/>
+                                                </Grid>
+                                                <Grid item xs={12}>
+                                                    {Creatures[name].name}
+                                                </Grid>
+                                            </Grid>
+                                        </Button>
+                                    </Tooltip>
+                                </Grid>
+                            </Grid>
+                        }
+                    })
             }
         </Grid>
     </Grid>
