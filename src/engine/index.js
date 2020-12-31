@@ -268,6 +268,7 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
+        latentPower: powerLevel.minus(1).pow(2).times(5),
         traits: Creatures[id].traits.reduce((traits, next) => {
             traits[next] = powerLevel;
             return traits;
@@ -562,7 +563,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     const latentPowerGain = evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
         player
     })
-    globalState.characters[0].latentPower = globalState.characters[0].absorbedPower.plus(latentPowerGain);
+    globalState.characters[0].latentPower = globalState.characters[0].latentPower.plus(latentPowerGain);
     globalState.characters[0].absorbedPower = Decimal(0);
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
