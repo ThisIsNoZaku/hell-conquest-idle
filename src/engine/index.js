@@ -364,7 +364,7 @@ function resolveSkippedAction(tick, combatResult, actingCharacter) {
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
     const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.attributeBonusScale).div(100);
-    rank = Decimal(rank).plus(Decimal(rank).times(rankModifier)).round(0, 0);
+    rank = Decimal.min(Decimal(rank).plus(Decimal(rank).times(rankModifier)).floor(), 100);
     debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
     if (trait[event]) {
