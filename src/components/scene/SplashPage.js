@@ -24,7 +24,7 @@ export default function SplashPage(props) {
                             {version}
                         </Grid>
                         <ul>
-                        {changelog[version].map(entry => {
+                        {changelog[version].changes.map(entry => {
                             return <li key={entry}>
                                 {entry}
                             </li>
