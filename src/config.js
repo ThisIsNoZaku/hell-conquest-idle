@@ -27,26 +27,26 @@ export const config = {
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
         startingXpGainOnReincarnate: "Decimal(2).pow(player.powerLevel.minus(1))",
         maxLevel: 100,
-        attack: { // Determines how attack rolls work
+        accuracy: { // Determines how accuracy rolls work
             baseAttribute: "deceit",
-            attributeBonusScale: 5
+            attributeBonusScale: 10
         },
         defense: {
             baseAttribute: "brutality",
-            attributeBonusScale: 5
+            attributeBonusScale: 10
         },
         evasion: {
             baseAttribute: "cunning",
-            attributeBonusScale: 5
+            attributeBonusScale: 10
         },
         attackDamage: {
             pointsPerLevel: 5,
             baseAttribute: "brutality",
-            attributeBonusScale: 5
+            attributeBonusScale: 10
         },
         traitRank: {
             baseAttribute: "madness",
-            attributeBonusScale: 5
+            attributeBonusScale: 10
         },
         fatigue: {
             evasionPenaltyPerPoint: 2

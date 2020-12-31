@@ -68,7 +68,7 @@ export function resolveCombat(rng, definition) {
                     debugMessage(`Tick ${tick}: Character ${character.id} was dead when their turn to act came up, skipping their action.`);
                     return;
                 }
-                // The acting character performs an attack.
+                // The acting character performs an accuracy.
                 const enemyParty = (acting.party + 1) % 2;
                 const livingEnemies = definition.parties[enemyParty]
                     .filter(enemy => combatResult.combatantCombatStats[enemy.id].hp.gt(0));
@@ -81,7 +81,7 @@ export function resolveCombat(rng, definition) {
                     debugMessage(`Tick ${tick}: Attacking ${target}`);
                     const attackRollResult = makeAttackRoll(character, target, combatResult, rng);
 
-                    // Trigger on-attack effects
+                    // Trigger on-accuracy effects
                     if (attackRollResult.total >= 50) {
                         debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRollResult.total}, a hit.`);
                         resolveHit(tick, combatResult, character, target, rng);
@@ -161,14 +161,14 @@ export function resolveCombat(rng, definition) {
 }
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
-    const attackAccuracy = actingCharacter.attributes[config.mechanics.attack.baseAttribute].times(config.mechanics.attack.attributeBonusScale);
+    const attackAccuracy = actingCharacter.attributes[config.mechanics.accuracy.baseAttribute].times(config.mechanics.accuracy.attributeBonusScale);
     const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.attributeBonusScale)
         .minus(Decimal(config.mechanics.fatigue.evasionPenaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
     // TODO: Validation
     if (targetEvasion.constructor.name !== "Decimal") {
         throw new Error("Evasion had the wrong type");
     }
-    debugMessage("Making an attack roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
+    debugMessage("Making an accuracy roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
     const roll = Math.floor((rng.double() * 100));
     return {
         rawRoll: roll,
@@ -489,7 +489,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     } else {
                                         state.combat.combatantCombatStats[combatantId].modifiers.push(modifier);
                                     }
-                                    _.get(state, "attack.otherEffects", []).push({
+                                    _.get(state, "accuracy.otherEffects", []).push({
                                         event: "add_modifier",
                                         source: sourceCharacter.id,
                                         target: combatantId,
