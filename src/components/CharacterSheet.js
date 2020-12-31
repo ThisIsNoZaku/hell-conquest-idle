@@ -1,11 +1,7 @@
 import Grid from "@material-ui/core/Grid";
-import Tooltip from "@material-ui/core/Tooltip";
-import {Help} from "@material-ui/icons";
 import React, {useMemo} from "react";
 import {getPowerNeededForLevel, getSpriteForCreature} from "../engine";
-import {Traits} from "../data/Traits";
 import {config} from "../config";
-import {useMediaQuery} from "@material-ui/core";
 import PowerLevelDisplay from "./charactersheet/PowerLevelDisplay";
 import CharacterAttributes from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
@@ -20,9 +16,9 @@ export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
     const combinedHitWeights = props.character.combat.minimumDamageWeight.plus(props.character.combat.medianDamageWeight)
         .plus(props.character.combat.maximumDamageWeight);
-    const powerForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
+    const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
-    const powerToNextLevel = powerNeededForNextLevel.minus(powerForCurrentLevel);
+    const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
 
     return <Grid container>
         <Grid item xs={12}>
@@ -33,9 +29,9 @@ export default function CharacterSheet(props) {
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
             <progress
-                value={props.character.absorbedPower.div(powerToNextLevel).mul(100).toNumber()}
+                value={progressToNextLevel.div(powerNeededForNextLevel).times(100).toNumber()}
                 max={100}
-                title={`${props.character.absorbedPower.toFixed()}/${getPowerNeededForLevel(props.character.powerLevel.plus(1)).toFixed()}`}
+                title={`${progressToNextLevel.toFixed()}/${powerNeededForNextLevel.toFixed()}`}
             ></progress>
         </Grid>}
         <Grid container>
