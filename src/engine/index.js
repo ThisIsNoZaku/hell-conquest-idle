@@ -51,7 +51,6 @@ export function resolveCombat(rng, definition) {
         const initiatives = _.uniq(combatants.map(combatant => Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
             .sort((a, b) => a - b);
         initiatives.forEach(initiativeCount => {
-            debugMessage(`Resolving round on tick ${tick}`);
             // TODO: Activate/deactivate traits
             const actingCharacters = combatants
                 .filter(wrapped => {
@@ -64,7 +63,7 @@ export function resolveCombat(rng, definition) {
                 const character = acting.character;
                 tick = combatResult.combatantCombatStats[character.id].lastActed + Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[character.id].speed).toNumber());
                 combatResult.combatantCombatStats[character.id].lastActed = tick;
-                debugMessage(`Tick ${tick}: Resolving action by ${character.id}.`);
+                debugMessage(`Tick ${tick}: Resolving action by character '${character.id}'.`);
                 if (combatResult.combatantCombatStats[character.id].hp.lte(0)) {
                     debugMessage(`Tick ${tick}: Character ${character.id} was dead when their turn to act came up, skipping their action.`);
                     return;
