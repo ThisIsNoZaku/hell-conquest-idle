@@ -23,33 +23,33 @@ export const config = {
     },
     mechanics: {
         xpFromGreaterDemon: "$enemy.powerLevel",
-        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(10).pow($level.minus(1).toNumber())",
-        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 10).plus(1).floor()",
+        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(5).pow($level.minus(1).toNumber())",
+        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
         startingXpGainOnReincarnate: "Decimal(2).pow(player.powerLevel.minus(1))",
         maxLevel: 100,
         attack: { // Determines how attack rolls work
             baseAttribute: "deceit",
-            scale: 5
+            attributeBonusScale: 5
         },
         defense: {
             baseAttribute: "brutality",
-            scale: 5
+            attributeBonusScale: 5
         },
         evasion: {
             baseAttribute: "cunning",
-            scale: 5
+            attributeBonusScale: 5
         },
         attackDamage: {
             pointsPerLevel: 5,
             baseAttribute: "brutality",
-            scale: 5
+            attributeBonusScale: 5
         },
         traitRank: {
             baseAttribute: "madness",
-            scale: 5
+            attributeBonusScale: 5
         },
         fatigue: {
-            penaltyPerPoint: 2
+            evasionPenaltyPerPoint: 2
         },
         hp: {
             pointsPerLevel: 25,

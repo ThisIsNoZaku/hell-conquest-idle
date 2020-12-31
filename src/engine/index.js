@@ -161,9 +161,9 @@ export function resolveCombat(rng, definition) {
 }
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
-    const attackAccuracy = actingCharacter.attributes[config.mechanics.attack.baseAttribute].times(config.mechanics.attack.scale);
-    const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.scale)
-        .minus(Decimal(config.mechanics.fatigue.penaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
+    const attackAccuracy = actingCharacter.attributes[config.mechanics.attack.baseAttribute].times(config.mechanics.attack.attributeBonusScale);
+    const targetEvasion = getCharacter(target).attributes[config.mechanics.evasion.baseAttribute].times(config.mechanics.evasion.attributeBonusScale)
+        .minus(Decimal(config.mechanics.fatigue.evasionPenaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
     // TODO: Validation
     if (targetEvasion.constructor.name !== "Decimal") {
         throw new Error("Evasion had the wrong type");
@@ -276,10 +276,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: [],
         attributes: {
-            brutality: Decimal(0),
-            cunning: Decimal(0),
-            deceit: Decimal(0),
-            madness: Decimal(0)
+            brutality: powerLevel.div(2).floor(),
+            cunning: powerLevel.div(2).floor(),
+            deceit: powerLevel.div(2).floor(),
+            madness: powerLevel.div(2).floor(),
         },
         combat: {
             fatigue: 0,
@@ -326,9 +326,9 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     const attackResult = {
         baseDamage: damageToInflict,
         attackerDamageMultiplier: Decimal(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
-            .times(config.mechanics.attackDamage.scale),
+            .times(config.mechanics.attackDamage.attributeBonusScale),
         targetDefenseMultiplier: Decimal(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute])
-            .times(config.mechanics.defense.scale),
+            .times(config.mechanics.defense.attributeBonusScale),
         otherEffects: []
     }
     // Trigger on-hit effects
@@ -337,7 +337,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         attack: attackResult
     }, tick, rng));
     const finalDamage = attackResult.baseDamage.times(attackResult.attackerDamageMultiplier.minus(attackResult.targetDefenseMultiplier).div(100).plus(1)).round(0, 0);
-    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attacker multiplier of ${attackResult.attackerDamageMultiplier} and a target defense multiplier of ${attackResult.targetDefenseMultiplier}, for a total of ${finalDamage.toFixed()}`);
+    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attacker multiplier of ${attackResult.attackerDamageMultiplier.div(100)} and a target defense multiplier of ${attackResult.targetDefenseMultiplier.div(100)}, for a total of ${finalDamage.toFixed()}`);
     combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
@@ -359,7 +359,7 @@ function resolveSkippedAction(tick, combatResult, actingCharacter) {
 }
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
-    const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.scale).div(100);
+    const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.attributeBonusScale).div(100);
     rank = Decimal(rank).plus(Decimal(rank).times(rankModifier)).round(0, 0);
     debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
@@ -416,8 +416,8 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         case "defense_modifier": {
                             const defenseModifier = evaluateExpression(trait[event].effects[traitEffect].percent, {
                                 $rank: rank
-                            }).div(100);
-                            const newMultiplier = state.attack.targetDefenseMultiplier.plus(defenseModifier);
+                            }).div(100).plus(1);
+                            const newMultiplier = state.attack.targetDefenseMultiplier.times(defenseModifier);
                             debugMessage(`Tick ${tick}: Applying ${defenseModifier} modifier to defense, changing defense multiplier from ${state.attack.targetDefenseMultiplier.toFixed()} to ${newMultiplier.toFixed()}`);
                             state.attack.targetDefenseMultiplier = newMultiplier;
                             break;
