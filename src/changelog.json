@@ -4,13 +4,14 @@
   },
   "0.1.1" : {
     "changes": [
-      "Increased default hit chance from 50% to 90%",
+      "Increased default hit chance from 50% to 90%.",
       "Increased latent power base gain from 5 to 10.",
-      "Changed hp formula to 50 + (25 * level)",
-      "Changed damage formula to 15 * level",
+      "Changed hp formula to 50 + (25 * level).",
+      "Changed damage formula to 15 * level.",
       "Accuracy now increases chance of getting a more damaging type of hit and Evasion reduces it.",
-      "Player can choose bonus traits as a reincarnation bonus instead of automatically getting all previous traits",
-      "Added a summary section above the action log to easily keep track of player and enemy HP"
+      "Player can choose bonus traits as a reincarnation bonus instead of automatically getting all previous traits.",
+      "Added a summary section above the action log to easily keep track of player and enemy HP.",
+      "Encounter generation logic chooses fights against approximately equal level enemies more often."
     ]
   }
 }
