@@ -40,7 +40,7 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes and Damage due to your Latent Power acquired from previous reincarnations.
+            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes, Damage and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
             You will also gain the following Traits as a result of your previous reincarnations:
             <Grid container>
