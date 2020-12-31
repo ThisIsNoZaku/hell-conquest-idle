@@ -59,8 +59,9 @@ export class Character {
 
     get maximumHp() {
         return this.powerLevel
-            .mul(this.latentPower.plus(1))
-            .mul(config.mechanics.hp.pointsPerLevel);
+            .mul(this.latentPower.div(100).plus(1))
+            .mul(config.mechanics.hp.pointsPerLevel)
+            .floor();
     }
 
     get attributes() {
