@@ -14,7 +14,7 @@ export const config = {
     },
     encounters: {
         lesserLevelScale: 2, // A demon is "lesser" than another when its level is this much lower.
-        greaterLevelScale: 1 // A demon is "greater" than another when its level is this much higher.
+        greaterLevelScale: 2 // A demon is "greater" than another when its level is this much higher.
     },
     characters: {
         player: {
@@ -22,6 +22,7 @@ export const config = {
         }
     },
     mechanics: {
+        xpFromGreaterDemon: "$enemy.powerLevel",
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(10).pow($level.minus(1).toNumber())",
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 10).plus(1).floor()",
         maxLevel: 100,

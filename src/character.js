@@ -1,5 +1,5 @@
 import {config} from "./config";
-import {getLevelForPower, getPowerNeededForLevel} from "./engine";
+import {evaluateExpression, getLevelForPower, getPowerNeededForLevel} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 
@@ -80,11 +80,19 @@ export class Character {
     }
 
     otherDemonIsGreaterDemon(other) {
-        return other.powerLevel.gte(this.powerLevel.plus(config.encounters.greaterLevelScale));
+        const greaterDemonScale = evaluateExpression(config.encounters.greaterLevelScale, {
+            player: this,
+            enemy: other
+        });
+        return other.powerLevel.gte(this.powerLevel.plus(greaterDemonScale));
     }
 
     otherDemonIsLesserDemon(other) {
-        return other.powerLevel.lte(this.powerLevel.minus(config.encounters.lesserLevelScale));
+        const lesserDemonScale = evaluateExpression(config.encounters.lesserLevelScale, {
+            player: this,
+            enemy: other
+        });
+        return other.powerLevel.lte(this.powerLevel.minus(lesserDemonScale));
     }
 
     gainPower(powerGained) {

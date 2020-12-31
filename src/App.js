@@ -7,6 +7,7 @@ import {Regions} from "./data/Regions";
 import {Actions} from "./data/Actions";
 import { Decimal } from "decimal.js";
 import {
+    evaluateExpression,
     getCharacter,
     getGlobalState, getManualSpeedMultiplier,
     loadGlobalState, reincarnateAs,
@@ -94,7 +95,7 @@ function App() {
                         applyAction(getGlobalState().currentEncounter.pendingActions.shift());
                     }
                     const enemy = getCharacter(action.target);
-                    const enemyIsLesserDemon = enemy.powerLevel.lte(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
+                    const enemyIsLesserDemon = getCharacter(0).otherDemonIsLesserDemon(enemy);
                     if (enemyIsLesserDemon) {
                         debugMessage(`Not gaining power because enemy ${action.target} was a Lesser Demon.`);
                     }
@@ -259,11 +260,14 @@ function App() {
                                 result: "escaped",
                                 uuid: v4()
                             });
-                            if (enemy.powerLevel.gte(player.powerLevel.plus(config.encounters.greaterLevelScale))) {
-                                player.gainPower(player.powerLevel);
+                            if (player.otherDemonIsGreaterDemon(enemy)) {
+                                const powerToGain = evaluateExpression(config.mechanics.xpFromGreaterDemon, {
+                                    $enemy: enemy
+                                });
+                                player.gainPower(powerToGain);
                                 pushLogItem(wrapLogItem({
                                     result: "gainedPower",
-                                    value: player.powerLevel,
+                                    value: powerToGain,
                                 }));
                             }
                             break;
