@@ -146,12 +146,13 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     if (typeof targetCharacter !== "number") {
         throw new Error(`Target character was not an object!`);
     }
+    const hitTypeChances = actingCharacter.combat.getHitChancesAgainst(getCharacter(targetCharacter));
     const damageRoll = Math.floor(rng.double() * 100);
     let damageToInflict;
-    if (damageRoll <= 20) {
+    if (damageRoll <= hitTypeChances.minimum) {
         damageToInflict = actingCharacter.combat.minimumDamage;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a glancing hit for ${damageToInflict}.`);
-    } else if (damageRoll <= 80) {
+    } else if (damageRoll <= hitTypeChances.median.plus(hitTypeChances.minimum)) {
         damageToInflict = actingCharacter.combat.medianDamage;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a solid hit for ${damageToInflict}.`);
     } else {
@@ -342,15 +343,12 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
     const attackAccuracy = Decimal(actingCharacter.attributes[config.mechanics.accuracy.baseAttribute]).times(config.mechanics.accuracy.attributeBonusScale);
-    const targetEvasion = Decimal(getCharacter(target).attributes[config.mechanics.evasion.baseAttribute]).times(config.mechanics.evasion.attributeBonusScale)
-        .minus(Decimal(config.mechanics.fatigue.evasionPenaltyPerPoint).times(combatState.combatantCombatStats[target].fatigue));
     // TODO: Validation
-    debugMessage("Making an accuracy roll. Attacker Accuracy:", attackAccuracy.toFixed(), "Target Evasion:", targetEvasion.toFixed());
+    debugMessage("Making an accuracy roll. Attacker Accuracy:", attackAccuracy.toFixed());
     const roll = Math.floor((rng.double() * 100));
     return {
         rawRoll: roll,
         attackAccuracy,
-        targetEvasion,
-        total: attackAccuracy.minus(targetEvasion).plus(roll)
+        total: attackAccuracy.plus(roll)
     };
 }

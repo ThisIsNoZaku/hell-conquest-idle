@@ -190,16 +190,20 @@ class CombatStats {
         this.fatigue = 0;
     }
 
-    get minimumDamageWeight() {
-        return Decimal(config.combat.baseMinimumDamageWeight);
-    }
-
-    get medianDamageWeight() {
-        return Decimal(config.combat.baseMedianDamageWeight);
-    }
-
-    get maximumDamageWeight() {
-        return Decimal(config.combat.baseMaximumDamageWeight);
+    getHitChancesAgainst(targetCharacter) {
+        const targetEvasionModifier = targetCharacter !== undefined ? targetCharacter.attributes[config.mechanics.evasion.baseAttribute]
+                .times(config.mechanics.evasion.attributeBonusScale) : Decimal(0);
+        const selfAccuracyModifier = this.character().attributes[config.mechanics.accuracy.baseAttribute]
+            .times(config.mechanics.accuracy.attributeBonusScale);
+        return {
+            minimum: Decimal(config.combat.baseMinimumDamageWeight)
+                .plus(targetEvasionModifier.times(2)).floor(),
+            median: Decimal(config.combat.baseMedianDamageWeight)
+                .plus(targetEvasionModifier).plus(selfAccuracyModifier).floor(),
+            max: Decimal(config.combat.baseMaximumDamageWeight)
+                .plus(selfAccuracyModifier.times(2))
+                .floor()
+        }
     }
 
     get minimumDamage() {

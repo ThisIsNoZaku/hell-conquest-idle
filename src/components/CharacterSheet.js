@@ -14,8 +14,8 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
-    const combinedHitWeights = props.character.combat.minimumDamageWeight.plus(props.character.combat.medianDamageWeight)
-        .plus(props.character.combat.maximumDamageWeight);
+    const hitChances = props.character.combat.getHitChancesAgainst(props.enemy);
+    const combinedHitWeights = Object.values(hitChances).reduce((total, next) => total.plus(next));
     const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
     const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
@@ -51,7 +51,7 @@ export default function CharacterSheet(props) {
                     Glancing Blow
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.minimumDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
+                    {hitChances.minimum.div(combinedHitWeights).times(100).round().toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.minimumDamage.toFixed()}
@@ -62,7 +62,7 @@ export default function CharacterSheet(props) {
                     Solid Hit
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.medianDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
+                    {hitChances.median.div(combinedHitWeights).times(100).round().toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.medianDamage.toFixed()}
@@ -70,10 +70,10 @@ export default function CharacterSheet(props) {
             </Grid>
             <Grid container>
                 <Grid item xs={4}>
-                    Critical Hit
+                    Serious Hit
                 </Grid>
                 <Grid item xs={4}>
-                    {props.character.combat.maximumDamageWeight.div(combinedHitWeights).times(100).toFixed()}%
+                    {hitChances.max.div(combinedHitWeights).times(100).round().toFixed()}%
                 </Grid>
                 <Grid item xs={4}>
                     {props.character.combat.maximumDamage.toFixed()}

@@ -11,6 +11,6 @@ const styles = {
 
 export default function PlayerStats(props) {
     return <Paper style={styles.root} elevation={2}>
-        <CharacterSheet character={props.player}/>
+        <CharacterSheet character={props.player} enemy={props.enemy}/>
     </Paper>
 }
