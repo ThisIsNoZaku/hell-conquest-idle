@@ -12,19 +12,36 @@ class Region {
     }
 
     startEncounter(player, rng) {
-
-        const candidateMinimumLevel = _.get(getGlobalState(), ["debug", "encounters", "minLevel"], player.powerLevel.minus(config.encounters.lesserLevelScale * 2));
-        const minimumLevel = candidateMinimumLevel.lt(1) ? Decimal(1) : candidateMinimumLevel;
-
-        const candidateMaxLevel = _.get(getGlobalState(), ["debug", "encounters", "maxLevel"],
-            player.powerLevel.plus(config.encounters.greaterLevelScale * 2));
-        const maximumLevel = candidateMaxLevel.gte(config.mechanics.maxLevel) ? Decimal(config.mechanics.maxLevel - 1) : candidateMaxLevel;
-
-        if (config.debug) {
-            debugMessage(`Generating an encounter between ${minimumLevel.toFixed()} and ${maximumLevel.toFixed()} `);
+        let encounterType;
+        const combinedEncounterChances = config.encounters.lesserEncounterChanceWeight +
+            config.encounters.greaterLevelScale +
+            config.encounters.evenEncounterChanceWeight;
+        const encounterTypeRoll = Math.floor(rng.double() * combinedEncounterChances) + 1;
+        if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight) {
+            encounterType = "lesser";
+        } else if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight) {
+            encounterType = "even";
+        } else {
+            encounterType = "greater";
         }
-        const encounterLevelModifier = minimumLevel.toNumber() + Math.floor(rng.double() * (maximumLevel.toNumber() - minimumLevel.toNumber()));
-        const encounterLevel = Decimal(Math.max(1, encounterLevelModifier));
+        let encounterLevel = player.powerLevel;
+        switch (encounterType) {
+            case "greater": {
+                const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelScale);
+                encounterLevel = encounterLevel.plus(encounterOffset);
+                break;
+            }
+            case "lesser": {
+                const encounterOffset = Math.floor(rng.double() * config.encounters.lesserLevelScale);
+                encounterLevel = encounterLevel.minus(encounterOffset);
+                break;
+            }
+            case "even": {
+                const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) + 1;
+                const encounterOffset = Math.floor(rng.double() * difference) - difference;
+                encounterLevel = encounterLevel.plus(encounterOffset);
+            }
+        }
         if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }

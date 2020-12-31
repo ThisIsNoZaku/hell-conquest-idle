@@ -13,7 +13,10 @@ export const config = {
         maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
     },
     encounters: {
-        lesserLevelScale: 2, // A demon is "lesser" than another when its level is this much lower.
+        lesserEncounterChanceWeight: 10,
+        greaterEncounterChanceWeight: 10,
+        evenEncounterChanceWeight: 80,
+        lesserLevelScale: 3, // A demon is "lesser" than another when its level is this much lower.
         greaterLevelScale: 1 // A demon is "greater" than another when its level is this much higher.
     },
     characters: {
