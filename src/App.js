@@ -243,8 +243,7 @@ function App() {
                                 getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
                             } else {
                                 pushLogItem(wrapLogItem({
-                                    result: "enemy-fled",
-                                    target: enemy.id
+                                    message: `${getCharacter(enemy.id).name} escaped! (You rolled ${roll} vs ${chanceToIntimidate} chance to Bind).`
                                 }));
                             }
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
