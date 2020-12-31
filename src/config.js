@@ -23,7 +23,7 @@ export const config = {
     },
     mechanics: {
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(10).pow($level.minus(1).toNumber())",
-        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : $powerPoints.log(10).ceil()",
+        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 10).plus(1).floor()",
         maxLevel: 100,
         attack: { // Determines how attack rolls work
             baseAttribute: "deceit",
