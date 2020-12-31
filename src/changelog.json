@@ -16,7 +16,9 @@
   },
   "0.1.2" : {
     "changes": [
-      "The player starts with bonus points instead of earning them on the first reincarnation"
+      "The player starts with bonus points instead of earning them on the first reincarnation.",
+      "Fixed the bonus point calculation and starting traits on the reincarnation page.",
+      "Added a new demon: Tormented Dead which inflicts the pain it suffers back on their enemies."
     ]
   }
 }
