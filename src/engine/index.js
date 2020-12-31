@@ -503,14 +503,15 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
     return state;
 }
 
-function evaluateExpression(expression, context) {
+export function evaluateExpression(expression, context) {
     if(expression === null || expression === undefined) {
         return expression;
     }
     if (!expressionCache[expression]) {
-        expressionCache[expression] = new Function("$rank", "$level", "$powerPoints", "Decimal", `return ${expression}`);
+        expressionCache[expression] = new Function("context", `with(context) {return ${expression}}`);
     }
-    return expressionCache[expression].call(null, context.$rank, context.$level, context.$powerPoints, Decimal);
+    context.Decimal = Decimal;
+    return expressionCache[expression].call(null, context);
 }
 
 export function getPowerNeededForLevel(level) {
