@@ -52,8 +52,8 @@ export const config = {
             evasionPenaltyPerPoint: 2
         },
         hp: {
-            pointsPerLevel: 25,
-            healingPerLevel: 5
+            pointsPerLevel: 20,
+            healingPerLevel: 2
         }
     },
     attributes: {
