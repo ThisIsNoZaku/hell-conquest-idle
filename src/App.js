@@ -11,7 +11,7 @@ import {
     getCharacter,
     getGlobalState, getManualSpeedMultiplier,
     loadGlobalState, reincarnateAs,
-    resolveCombat, saveGlobalState, unpause
+     saveGlobalState, unpause
 } from "./engine";
 import * as seedrandom from "seedrandom";
 import {config} from "./config";
@@ -22,6 +22,7 @@ import DebugUi from "./components/DebugUi";
 import {useHotkeys} from "react-hotkeys-hook";
 import {debugMessage} from "./debugging";
 import SplashPage from "./components/scene/SplashPage";
+import {resolveCombat} from "./engine/combat";
 
 loadGlobalState();
 
@@ -211,13 +212,11 @@ function App() {
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
                                     const enemies = getGlobalState().currentEncounter.enemies;
-                                    resolveCombat(rng, {
+                                    const combatResult = resolveCombat(rng, {
                                         parties: [[player], enemies]
-                                    }).onRoundResolved((result, lastRound) => {
-                                        if (lastRound !== undefined) {
-                                            getGlobalState().currentEncounter.pendingActions.push(lastRound);
-                                        }
                                     });
+                                    getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
+
                                     break;
                             }
                             setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
