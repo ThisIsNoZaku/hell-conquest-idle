@@ -40,7 +40,7 @@ export const config = {
             attributeBonusScale: 10
         },
         attackDamage: {
-            pointsPerLevel: 15,
+            pointsPerLevel: 10,
             baseAttribute: "brutality",
             attributeBonusScale: 10
         },
@@ -53,7 +53,7 @@ export const config = {
         },
         hp: {
             base: 50,
-            pointsPerLevel: 25,
+            pointsPerLevel: 50,
             healingPerLevel: 100
         }
     },
