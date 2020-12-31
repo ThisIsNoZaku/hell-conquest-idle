@@ -338,7 +338,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         attack: attackResult
     }, tick, rng));
     const damageFactor = attackResult.attackerDamageMultiplier.plus(100) // FIXME: Evaluable expression
-        .div(attackResult.targetDefenseMultiplier.plus(100));
+        .div(Decimal.max(attackResult.targetDefenseMultiplier.plus(100), 1));
     const finalDamage = attackResult.baseDamage.times(damageFactor).floor()
 
     debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackerDamageMultiplier} and a target defense factor of ${attackResult.targetDefenseMultiplier}, for a total factor of ${damageFactor} and a final damage of ${finalDamage.toFixed()}`);
