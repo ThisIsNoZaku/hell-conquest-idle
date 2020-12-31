@@ -171,7 +171,7 @@ function printActionItem(item) {
 function describeEffect(target, effect) {
     switch (effect.event) {
         case "damage":
-            return `${getCharacter(target).name} ${target === 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
+            return `${getCharacter(effect.target).name} ${target == 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
         default:
             return Object.keys(effect.effect.effects).map(mod => {
                 switch (mod) {
