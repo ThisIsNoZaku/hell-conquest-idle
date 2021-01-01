@@ -11,6 +11,11 @@ export const Actions = {
         duration: "exploration.approachTime",
         description: "Approaching Enemy..."
     },
+    dead: {
+        id: "dead",
+        duration: 100000000,
+        description: "Rotting, time to reincarnate..."
+    },
     looting: {
         id: "looting",
         duration: "exploration.lootingTime",
