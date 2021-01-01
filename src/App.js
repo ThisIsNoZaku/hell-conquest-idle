@@ -152,6 +152,7 @@ function App() {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
                 if (accruedTime.current >= _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) {
+                    const player = getCharacter(0);
                     saveGlobalState();
                     accruedTime.current = 0;
                     switch (getGlobalState().currentAction) {
@@ -180,7 +181,6 @@ function App() {
                                 proceedingToEncounter = true;
                             }
                             if (proceedingToEncounter) {
-                                const player = getCharacter(0);
                                 getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
                                 setCurrentEncounter(getGlobalState().currentEncounter);
                                 setCurrentAction(Actions[changeCurrentAction("approaching")]);
@@ -230,7 +230,6 @@ function App() {
                             break;
                         case "approaching": {
                             // Since we're starting a new combat, remove any old, dead characters
-                            const player = getCharacter(0);
                             switch (getGlobalState().nextAction) {
                                 case "fighting":
                                     const enemies = getGlobalState().currentEncounter.enemies;
@@ -277,7 +276,6 @@ function App() {
                             break;
                         }
                         case "fleeing":
-                            const player = getCharacter(0);
                             const enemy = getGlobalState().currentEncounter.enemies[0];
                             const chanceToFlee = evaluateExpression(config.encounters.chanceToEscapeGreater, {
                                 enemy,
