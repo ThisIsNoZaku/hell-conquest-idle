@@ -159,7 +159,6 @@ function App() {
                         case "exploring":
                             let proceedingToEncounter = false;
                             if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
-                                setCurrentAction(Actions[changeCurrentAction("recovering")]);
                                 const amountToHeal = getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
                                     getCharacter(0).maximumHp
                                 ) ? getCharacter(0).maximumHp.minus(getCharacter(0).currentHp) : getCharacter(0).healing;
