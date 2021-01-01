@@ -37,7 +37,7 @@ export const config = {
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
         maxLevel: 100,
         combat: {
-            randomEncounterChance: "50",
+            randomEncounterChance: "player.powerLevel",
             determineHit: "roll <= config.mechanics.combat.baseHitChance ? 'hit' : 'miss'",
             precision: { // Determines how precision rolls work
                 baseAttribute: "deceit",
