@@ -66,7 +66,7 @@ export const config = {
             hp: {
                 base: 50,
                 pointsPerLevel: 50,
-                healingPerLevel: 100
+                healingPerLevel: 5
             },
             baseHitChance: 75,
             attributeDamageModifier: .02,
