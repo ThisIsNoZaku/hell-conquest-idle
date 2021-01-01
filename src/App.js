@@ -330,7 +330,13 @@ function App() {
                             getGlobalState().actionLog = [];
                             break;
                         default:
-                            throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
+                            if(config.debug) {
+                                throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
+                            } else {
+                                setCurrentEncounter();
+                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                setActionLog([]);
+                            }
                     }
                 }
 
