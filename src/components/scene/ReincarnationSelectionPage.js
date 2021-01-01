@@ -23,6 +23,7 @@ export default function ReincarnationSelectionPage(props) {
             attributes[next.substring(1)] = player.attributes[next];
             return attributes;
         }, {}));
+    const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
     const newLatentPower = getCharacter(0).latentPower.plus(
         evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
@@ -128,7 +129,7 @@ export default function ReincarnationSelectionPage(props) {
             <Grid container item xs={12} justify="space-around" direction="row">
                 {Object.keys(Tactics).map(tactic =>
                     <Grid item>
-                        <Button variant="contained" onClick={() => getCharacter(0).tactics = tactic}
+                        <Button variant="contained" onClick={() => {setPlayerTactics(getCharacter(0).tactics = tactic)}}
                                 color={player.tactics === tactic ? "primary" : "default"}
                         >{Tactics[tactic].title}</Button>
                     </Grid>
@@ -142,7 +143,7 @@ export default function ReincarnationSelectionPage(props) {
                 <ul>
                     {Tactics[player.tactics].modifiers.damage_modifier &&
                     <li style={{color: "green", textAlign: "left"}}>
-                        +{Tactics[player.tactics].modifiers.damage_modifier * 100}% attack damage
+                        +{Tactics[player.tactics].modifiers.damage_modifier * 100}% Power
                     </li>}
                     {Tactics[player.tactics].modifiers.speed_modifier &&
                     <li style={{color: "green", textAlign: "left"}}>
