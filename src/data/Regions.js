@@ -17,12 +17,18 @@ class Region {
             config.encounters.greaterLevelScale +
             config.encounters.evenEncounterChanceWeight;
         const encounterTypeRoll = Math.floor(rng.double() * combinedEncounterChances) + 1;
+        const lesserChance = config.encounters.lesserEncounterChanceWeight;
+        const evenChance = config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight;
+        debugMessage(`Determine encounter. Roll ${encounterTypeRoll} vs lesser (<=${lesserChance}), even (<=${evenChance})`);
         if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight) {
             encounterType = "lesser";
+            debugMessage(`Lesser triggered`)
         } else if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight) {
             encounterType = "even";
+            debugMessage(`Even level encounter triggered`);
         } else {
             encounterType = "greater";
+            debugMessage(`Greater encounter triggered`);
         }
         let encounterLevel = player.powerLevel;
         switch (encounterType) {
@@ -37,7 +43,7 @@ class Region {
                 break;
             }
             case "even": {
-                const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) + 1;
+                const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale);
                 const encounterOffset = Math.floor(rng.double() * difference) - difference;
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
