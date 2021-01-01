@@ -54,8 +54,8 @@ export class Character {
         }
     }
 
-    get alive() {
-        return this.currentHp > 0;
+    get isAlive() {
+        return Decimal(this.currentHp).gt(0);
     }
 
     get latentPower() {
