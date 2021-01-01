@@ -173,7 +173,7 @@ function App() {
                                 const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {});
                                 const encounterRoll = Math.floor(rng.double() * 100) + 1;
                                 debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
-                                if (encounterRoll <= encounterChance.toNumber()) {
+                                if (encounterRoll <= encounterChance) {
                                     proceedingToEncounter = true;
                                 }
                             } else {
