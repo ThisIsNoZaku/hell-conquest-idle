@@ -4,7 +4,7 @@ export const Traits = {
     bloodrage: {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(25)}%</span> bonus to Damage against enemies with <span style='color: red'>25% or less</span> health."),
+        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(25)}%</span> bonus to Damage against enemies with <span style='color: red'>25% or less</span> health. However, after intimidating a lesser demon there is a <span style='color: orangered'>${rank}%</span> chance of killing it."),
         on_hitting: {
             conditions : {
                 health_percentage: {
@@ -34,23 +34,10 @@ export const Traits = {
             }
         }
     },
-    murderousFrenzy: {
-        name: "Murderous Frenzy",
-        icon: "icons/icons-118.png",
-        description: _.template("After hitting with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
-        on_hitting: {
-            effects: {
-                add_modifier: {
-                    speed: {
-                        target: "attacker",
-                        percent: "$rank"
-                    }
-                }
-            },
-            duration: {
-                rounds: 2
-            }
-        }
+    exhaustingTouch: {
+        name: "Strangulation",
+        icon: "icons/icons-115.png",
+        description: _.template("The demon's touch saps the strength from the victims limbs, reducing both Damage and Defense by <span>${rank.times(5)}%</span> for 1 round.")
     },
     inescapableGrasp: {
         name: "Inescapable Grasp",
@@ -70,20 +57,21 @@ export const Traits = {
             }
         }
     },
-    terrifyingSkitter: {
-        name: "Terrifying Skitter",
-        icon: "icons/icons-2260.png",
-        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, making the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${rank.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them."),
-        on_combat_start: {
+    murderousFrenzy: {
+        name: "Murderous Frenzy",
+        icon: "icons/icons-118.png",
+        description: _.template("After hitting with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
+        on_hitting: {
             effects: {
                 add_modifier: {
-                    stunned: {
-                        target: "all_enemies"
+                    speed: {
+                        target: "attacker",
+                        percent: "$rank"
                     }
                 }
             },
             duration: {
-                rounds: "$rank.div(10).round(0, 0).plus(1)"
+                rounds: 2
             }
         }
     },
@@ -109,7 +97,24 @@ export const Traits = {
                 damage: "$rank.times(5).div(100).times(attackDamage)"
             }
         }
-    }
+    },
+    terrifyingSkitter: {
+        name: "Terrifying Skitter",
+        icon: "icons/icons-2260.png",
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, making the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${rank.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them."),
+        on_combat_start: {
+            effects: {
+                add_modifier: {
+                    stunned: {
+                        target: "all_enemies"
+                    }
+                }
+            },
+            duration: {
+                rounds: "$rank.div(10).round(0, 0).plus(1)"
+            }
+        }
+    },
 }
 
 export function getTrait(traitId) {

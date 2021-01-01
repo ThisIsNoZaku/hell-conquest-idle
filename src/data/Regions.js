@@ -87,6 +87,7 @@ export const Regions = {
             crushingSnake: {
                 description: "1 Crushing Snake",
                 type: "combat",
+                enabled: false,
                 enemies: [
                     {
                         name: "crushingSnake",
@@ -97,6 +98,7 @@ export const Regions = {
             skitteringHorror: {
                 description: "1 Skittering Horror",
                 type: "combat",
+                enabled: false,
                 enemies: [
                     {
                         name: "skitteringHorror",
@@ -107,6 +109,7 @@ export const Regions = {
             deadlyHornet: {
                 description: "1 Deadly Hornet",
                 type: "combat",
+                enabled: false,
                 enemies: [
                     {
                         name: "deadlyHornet",
@@ -117,6 +120,7 @@ export const Regions = {
             tormentedDead: {
                 description: "1 Tormented Dead",
                 type: "combat",
+                enabled: false,
                 enemies: [
                     {
                         name: "tormentedDead",

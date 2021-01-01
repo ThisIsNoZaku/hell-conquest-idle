@@ -17,6 +17,7 @@ export const Creatures  = {
     condemnedSlasher: {
         name: "Condemned Slasher",
         traits: ["murderousFrenzy"],
+        enabled: false,
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
         description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died.",
@@ -24,6 +25,7 @@ export const Creatures  = {
     crushingSnake: {
         name: "Crushing Snake",
         traits: ["inescapableGrasp"],
+        enabled: false,
         appearance: "crushingSnake",
         texture: "06_snake_01.png",
         description: "A monstrous reptile which",
@@ -31,6 +33,7 @@ export const Creatures  = {
     skitteringHorror: {
         name: "Skittering Horror",
         traits: ["terrifyingSkitter"],
+        enabled: false,
         appearance: "skitteringHorror",
         texture: "10_spider.png",
         description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs."
@@ -38,6 +41,7 @@ export const Creatures  = {
     deadlyHornet: {
         name: "Deadly Hornet",
         traits: ["piercingStrike"],
+        enabled: false,
         appearance: "deadlyHornet",
         texture: "12_wasp.png",
         description: "An insect whose stinger is able to pierce even metal protection."
@@ -45,9 +49,18 @@ export const Creatures  = {
     tormentedDead: {
         name: "Tormented Dead",
         traits: ["sharedPain"],
+        enabled: false,
         appearance: "tormentedDead",
         texture: "29_zombie.png",
         description: "A human denied eternal rest and in agony from its ruined flesh."
+    },
+    wheezingApparition: {
+        name: "Wheezing Apparition",
+        traits: ["exhaustingTouch"],
+        enabled: false,
+        appearance: "wheezingApparition",
+        texture: "128_sorrowsworn.png",
+        description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate."
     }
 }
 

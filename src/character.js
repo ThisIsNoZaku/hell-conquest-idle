@@ -19,6 +19,15 @@ export class Character {
         }, {});
         this._appearance = props.appearance || props._appearance;
         this._modifiers = props.modifiers || props._modifiers || [];
+        this._tactics = props.tactics || props._tactics || "defensive";
+    }
+
+    get tactics() {
+        return this._tactics;
+    }
+
+    set tactics(newTactics) {
+        this._tactics = newTactics;
     }
 
     get isPc() {
@@ -60,7 +69,7 @@ export class Character {
     get maximumHp() {
         return this.powerLevel
             .mul(this.latentPower.div(100).plus(1))
-            .mul(config.mechanics.hp.pointsPerLevel)
+            .mul(config.mechanics.combat.hp.pointsPerLevel)
             .floor();
     }
 
@@ -112,7 +121,7 @@ export class Character {
     }
 
     get healing() {
-        return Decimal(this.powerLevel.times(config.mechanics.hp.healingPerLevel));
+        return Decimal(this.powerLevel.times(config.mechanics.combat.hp.healingPerLevel));
     }
 
     get absorbedPower() {
@@ -145,7 +154,7 @@ export class Character {
     }
 }
 
-class Attributes {
+export class Attributes {
     constructor(attributes, character) {
         this._brutality = attributes.brutality || attributes._brutality || 0;
         this._cunning = attributes.cunning || attributes._cunning || 0;
@@ -182,47 +191,48 @@ class CombatStats {
         this.character = function () {
             return character;
         }
-        this.fatigue = 0;
-    }
-
-    getHitChancesAgainst(targetCharacter) {
-        const targetEvasionModifier = targetCharacter !== undefined ? targetCharacter.attributes[config.mechanics.evasion.baseAttribute]
-            .times(config.mechanics.evasion.attributeBonusScale) : Decimal(0);
-        const selfAccuracyModifier = this.character().attributes[config.mechanics.accuracy.baseAttribute]
-            .times(config.mechanics.accuracy.attributeBonusScale);
-        return {
-            minimum: Decimal(config.combat.baseMinimumDamageWeight)
-                .plus(targetEvasionModifier.times(2)).floor(),
-            median: Decimal(config.combat.baseMedianDamageWeight)
-                .plus(targetEvasionModifier).plus(selfAccuracyModifier).floor(),
-            max: Decimal(config.combat.baseMaximumDamageWeight)
-                .plus(selfAccuracyModifier.times(2))
-                .floor()
-        }
     }
 
     get minimumDamage() {
-        return calculateDamage(config.combat.defaultMinimumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
+        return calculateDamage(config.mechanics.combat.defaultMinimumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
     }
 
     get medianDamage() {
-        return calculateDamage(config.combat.defaultMedianDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
+        return calculateDamage(config.mechanics.combat.defaultMedianDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
     }
 
     get maximumDamage() {
-        return calculateDamage(config.combat.defaultMaximumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
+        return calculateDamage(config.mechanics.combat.defaultMaximumDamageMultiplier, this.character().powerLevel, this.character().latentPower, this.character().attributes.brutality);
+    }
+
+    get evasion() {
+
+    }
+
+    get precision() {
+
+    }
+
+    get resilience() {
+
+    }
+
+    get power() {
+
     }
 
     get canAct() {
         return true;
     }
+
+
 }
 
 function calculateDamage(hitTypeDamageMultiplier, powerLevel, latentPower, attributeScore) {
     const effectivePowerLevel = powerLevel.times(latentPower.div(100).plus(1));
-    const attributeModifier = attributeScore.times(config.combat.attributeDamageModifier).div(100).plus(1);
+    const attributeModifier = attributeScore.times(config.mechanics.combat.attributeDamageModifier).div(100).plus(1);
     return effectivePowerLevel
-        .times(config.mechanics.attackDamage.pointsPerLevel)
+        .times(config.mechanics.combat.attackDamage.pointsPerLevel)
         .times(hitTypeDamageMultiplier)
         .times(attributeModifier).ceil();
 }

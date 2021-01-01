@@ -7,81 +7,65 @@ import {v4} from "node-uuid";
 import {generateHitCombatResult, generateMissCombatResult, generateSkipActionResult} from "../../combatResult";
 import {evaluateExpression, getCharacter} from "../index";
 import * as _ from "lodash";
+import {act} from "@testing-library/react";
+import getHitChanceBy from "./getHitChanceBy";
 
 export function resolveCombat(rng, definition) {
     const combatResult = {
         rounds: [],
         winner: null,
-        combatantCombatStats: {}
+        combatantCombatStats: {},
     }
 
-    const combatants = _.flatMap(definition.parties.map((party, partyIndex) => {
-        return party.map((character, characterIndex) => {
-            combatResult.combatantCombatStats[character.id] = new CharacterCombatState({
-                hp: character.currentHp,
-                speed: character.speed,
-                party: partyIndex
-            });
-            return {
-                character,
-                party: partyIndex
-            }
+    _.flatMap(definition.parties.map((party, partyIndex) => {
+        return party.map((character) => {
+            combatResult.combatantCombatStats[character.id] = new CharacterCombatState(character, partyIndex);
         })
     }));
     debugMessage("Beginning combat")
     // Trigger start of combat effects.
-    combatants.forEach(combatant => Object.keys(combatant.character.traits).forEach(trait => {
-        combatants.filter(other => other !== combatant).forEach(otherCombatant => {
-            applyTrait(combatant.character, otherCombatant.id, getTrait(trait), combatant.character.traits[trait], "on_combat_start", {combat: combatResult}, 0, rng);
-        });
-    }))
+    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, combatResult, rng);
+
     let tick = 0;
     while (combatResult.winner === null) {
-        const initiatives = _.uniq(combatants.map(combatant => Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[combatant.character.id].speed).toNumber())))
-            .sort((a, b) => a - b);
-        initiatives.forEach(initiativeCount => {
-            // TODO: Activate/deactivate traits
-            const actingCharacters = combatants
-                .filter(wrapped => {
-                    const isAlive = wrapped.character.alive;
-                    const characterSpeed = Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[wrapped.character.id].speed).toNumber());
-                    const matchingSpeed = (initiativeCount % characterSpeed === 0);
-                    return isAlive && matchingSpeed;
-                });
-            actingCharacters.forEach(acting => {
-                const character = acting.character;
-                tick = combatResult.combatantCombatStats[character.id].lastActed + Math.floor(Decimal(10000).div(combatResult.combatantCombatStats[character.id].speed).toNumber());
-                combatResult.combatantCombatStats[character.id].lastActed = tick;
-                debugMessage(`Tick ${tick}: Resolving action by character '${character.id}'.`);
-                if (combatResult.combatantCombatStats[character.id].hp.lte(0)) {
-                    debugMessage(`Tick ${tick}: Character ${character.id} was dead when their turn to act came up, skipping their action.`);
+        const initiatives = determineInitiatives(combatResult);
+        Object.keys(initiatives).forEach(initiativeCount => {
+            const actingCharacters = initiatives[initiativeCount];
+            actingCharacters.forEach(actingCharacter => {
+                tick = actingCharacter.lastActed + actingCharacter.speed.toNumber();
+                actingCharacter.lastActed = tick;
+                debugMessage(`Tick ${tick}: Resolving action by character '${actingCharacter.id}'.`);
+                if (actingCharacter.hp.lte(0)) {
+                    debugMessage(`Tick ${tick}: Character ${actingCharacter.id} was dead when their turn to act came up, skipping their action.`);
                     return;
                 }
-                // The acting character performs an accuracy.
-                const enemyParty = (acting.party + 1) % 2;
+                const enemyParty = (actingCharacter.party + 1) % 2;
                 const livingEnemies = definition.parties[enemyParty]
                     .filter(enemy => combatResult.combatantCombatStats[enemy.id].hp.gt(0));
-                const target = _.get(livingEnemies[Math.floor(rng.double() * livingEnemies.length)], "id");
+                const target = combatResult.combatantCombatStats[_.get(livingEnemies[Math.floor(rng.double() * livingEnemies.length)], "id")];
                 if (target === undefined) {
-                    debugMessage(`Tick ${tick}: No valid target, skipping action by ${character.id}.`);
+                    debugMessage(`Tick ${tick}: No valid target, skipping action by ${actingCharacter.id}.`);
                     return;
                 }
-                if (combatResult.combatantCombatStats[character.id].canAct) {
+                if (actingCharacter.canAct) {
                     debugMessage(`Tick ${tick}: Attacking ${target}`);
-                    const attackRollResult = makeAttackRoll(character, target, combatResult, rng);
-
-                    // Trigger on-accuracy effects
-                    if (attackRollResult.total >= (100 - config.combat.baseHitChance)) {
-                        debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRollResult.total}, a hit.`);
-                        resolveHit(tick, combatResult, character, target, rng);
-                    } else {
-                        debugMessage(`Tick ${tick}: ${character.id} rolled ${attackRollResult.total}, a miss.`);
-                        resolveMiss(tick, combatResult, character, target, rng);
+                    const attackRollResult = makeAttackRoll(actingCharacter, target, combatResult, rng);
+                    const attackOutcome = evaluateExpression(config.mechanics.combat.determineHit, {
+                        roll: attackRollResult.total
+                    });
+                    switch (attackOutcome) {
+                        case "hit":
+                            debugMessage(`Tick ${tick}: ${actingCharacter.id} rolled ${attackRollResult.total}, a hit.`);
+                            resolveHit(tick, combatResult, actingCharacter, target, rng);
+                            break;
+                        default:
+                            debugMessage(`Tick ${tick}: ${actingCharacter.id} rolled ${attackRollResult.total}, a miss.`);
+                            resolveMiss(tick, combatResult, actingCharacter, target, rng);
                         // TODO: Trigger on-miss effects
                     }
                 } else {
                     debugMessage(`${tick}: Character skips their action.`);
-                    resolveSkippedAction(tick, combatResult, character);
+                    resolveSkippedAction(tick, combatResult, actingCharacter);
                 }
                 Object.keys(combatResult.combatantCombatStats).forEach(combatantId => {
                     if (combatResult.combatantCombatStats[combatantId].hp.lte(0)) {
@@ -89,7 +73,7 @@ export function resolveCombat(rng, definition) {
                         combatResult.rounds.push({
                             uuid: v4(),
                             tick,
-                            actor: character.id,
+                            actor: actingCharacter.id,
                             target: Number.parseInt(combatantId),
                             result: "kill"
                         });
@@ -97,7 +81,7 @@ export function resolveCombat(rng, definition) {
                 });
 
                 // TODO: Add logs for when effects expire.
-                combatResult.combatantCombatStats[acting.character.id].modifiers = combatResult.combatantCombatStats[acting.character.id].modifiers
+                actingCharacter.modifiers = actingCharacter.modifiers
                     .map(modifier => {
                         modifier.roundDuration = Decimal(modifier.roundDuration).minus(1);
                         return modifier;
@@ -138,33 +122,30 @@ export function resolveCombat(rng, definition) {
 
 }
 
-
 function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     if (typeof actingCharacter !== "object") {
         throw new Error(`Acting character was not an object!`);
     }
-    if (typeof targetCharacter !== "number") {
+    if (typeof targetCharacter !== "object") {
         throw new Error(`Target character was not an object!`);
     }
-    const hitTypeChances = actingCharacter.combat.getHitChancesAgainst(getCharacter(targetCharacter));
+    const hitTypeChances = getHitChanceBy(actingCharacter).against(targetCharacter);
     const damageRoll = Math.floor(rng.double() * 100);
     let damageToInflict;
     if (damageRoll <= hitTypeChances.minimum) {
-        damageToInflict = actingCharacter.combat.minimumDamage;
+        damageToInflict = actingCharacter.damage.min;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a glancing hit for ${damageToInflict}.`);
     } else if (damageRoll <= hitTypeChances.median.plus(hitTypeChances.minimum)) {
-        damageToInflict = actingCharacter.combat.medianDamage;
+        damageToInflict = actingCharacter.damage.med;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a solid hit for ${damageToInflict}.`);
     } else {
-        damageToInflict = actingCharacter.combat.maximumDamage;
+        damageToInflict = actingCharacter.damage.max;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
     }
     const attackResult = {
         baseDamage: damageToInflict,
-        attackerDamageMultiplier: Decimal(actingCharacter.attributes[config.mechanics.attackDamage.baseAttribute])
-            .times(config.mechanics.attackDamage.attributeBonusScale),
-        targetDefenseMultiplier: Decimal(getCharacter(targetCharacter).attributes[config.mechanics.defense.baseAttribute])
-            .times(config.mechanics.defense.attributeBonusScale),
+        attackerDamageMultiplier: actingCharacter.power,
+        targetDefenseMultiplier: targetCharacter.resilience,
         otherEffects: []
     }
     // Trigger on-hit effects
@@ -177,20 +158,21 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     const finalDamage = attackResult.baseDamage.times(damageFactor).floor()
 
     debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackerDamageMultiplier} and a target defense factor of ${attackResult.targetDefenseMultiplier}, for a total factor of ${damageFactor} and a final damage of ${finalDamage.toFixed()}`);
-    combatResult.combatantCombatStats[targetCharacter].hp = combatResult.combatantCombatStats[targetCharacter].hp.minus(damageToInflict);
+    targetCharacter.hp = targetCharacter.hp.minus(damageToInflict);
     attackResult.finalDamage = finalDamage;
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
             case "apply_effect":
-                return `Applying effect ${effect.effect} with from ${effect.source} to ${effect.target}.`
+                return `Applying effect ${effect.effect} with from ${effect.source} to ${effect.target.id}.`
         }
 
-    }).join(", ")}. Target has ${combatResult.combatantCombatStats[targetCharacter].hp} remaining.`)
+    }).join(", ")}. Target has ${targetCharacter.hp} remaining.`)
     // TODO: Trigger on-damage effects
-    Object.keys(getCharacter(targetCharacter).traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), getCharacter(targetCharacter).traits[trait], "on_taking_damage", {
-        combat: combatResult,
-        attack: attackResult
-    }, tick, rng));
+    triggerEvent(Object.values(combatResult.combatantCombatStats), {
+        type:"on_taking_damage",
+        attacker: actingCharacter,
+        target: targetCharacter
+    }, tick, combatResult, rng);
     attackResult.otherEffects.forEach(effect => {
         switch (effect.event) {
             case "damage":
@@ -198,11 +180,11 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
                 break;
         }
     })
-    combatResult.rounds.push(generateHitCombatResult(tick, actingCharacter.id, targetCharacter, finalDamage, attackResult.otherEffects));
+    combatResult.rounds.push(generateHitCombatResult(tick, actingCharacter.id, targetCharacter.id, finalDamage, attackResult.otherEffects));
 }
 
-function resolveMiss(tick, combatResult, actingCharacter, targetCharacterId, rng) {
-    combatResult.rounds.push(generateMissCombatResult(tick, actingCharacter.id, targetCharacterId));
+function resolveMiss(tick, combatResult, actingCharacter, targetCharacter, rng) {
+    combatResult.rounds.push(generateMissCombatResult(tick, actingCharacter.id, targetCharacter.id));
 }
 
 function resolveSkippedAction(tick, combatResult, actingCharacter) {
@@ -210,7 +192,7 @@ function resolveSkippedAction(tick, combatResult, actingCharacter) {
 }
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
-    const rankModifier = sourceCharacter.attributes[config.mechanics.traitRank.baseAttribute].times(config.mechanics.traitRank.attributeBonusScale).div(100);
+    const rankModifier = Decimal(sourceCharacter.attributes[config.mechanics.combat.traitRank.baseAttribute]).times(config.mechanics.combat.traitRank.attributeBonusScale).div(100);
     rank = Decimal.min(Decimal(rank).plus(Decimal(rank).times(rankModifier)).floor(), 100);
     debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
@@ -224,9 +206,9 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                 switch (condition) {
                     case "health_percentage":
                         // Fixme: Implement validation
-                        const target = getCharacter(effect.conditions[condition].target === "attacker" ? sourceCharacter : targetCharacter);
+                        const target = effect.conditions[condition].target === "attacker" ? sourceCharacter : targetCharacter;
                         const targetPercent = Decimal(effect.conditions[condition].below);
-                        const targetCurrentHealth = state.combat.combatantCombatStats[target.id].hp;
+                        const targetCurrentHealth = targetCharacter.hp;
                         const targetMaxHealth = target.maximumHp;
                         const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
                         const conditionMet = targetPercent.gte(currentHealthPercent);
@@ -335,9 +317,9 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
 }
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
-    const attackAccuracy = Decimal(actingCharacter.attributes[config.mechanics.accuracy.baseAttribute]).times(config.mechanics.accuracy.attributeBonusScale);
+    const attackAccuracy = Decimal(actingCharacter.attributes[config.mechanics.combat.precision.baseAttribute]).times(config.mechanics.combat.precision.attributeBonusScale);
     // TODO: Validation
-    debugMessage("Making an accuracy roll. Attacker Accuracy:", attackAccuracy.toFixed());
+    debugMessage("Making an precision roll. Attacker Accuracy:", attackAccuracy.toFixed());
     const roll = Math.floor((rng.double() * 100));
     return {
         rawRoll: roll,
@@ -360,4 +342,24 @@ function selectTargets(sourceCharacter, targetCharacterId, combatants, targetTyp
                 throw new Error();
         }
     });
+}
+
+function triggerEvent(combatants, event, tick, state, rng) {
+    combatants.forEach(combatant => Object.keys(combatant.traits).forEach(trait => {
+        combatants.filter(other => other !== combatant).forEach(otherCombatant => {
+            applyTrait(combatant, otherCombatant.id, getTrait(trait), combatant.traits[trait], event, state, 0, rng);
+        });
+    }));
+}
+
+function determineInitiatives(state) {
+    const combatants = Object.values(state.combatantCombatStats);
+    return combatants.reduce((initiatives, combatant) => {
+        if(initiatives[combatant.speed.toNumber()]) {
+            initiatives[combatant.speed.toNumber()].push(combatant);
+        } else {
+            initiatives[combatant.speed.toNumber()] = [combatant];
+        }
+        return initiatives;
+    }, {});
 }

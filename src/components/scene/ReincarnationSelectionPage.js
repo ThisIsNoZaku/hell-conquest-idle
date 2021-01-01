@@ -12,6 +12,7 @@ import {useHistory} from "react-router-dom";
 import {config} from "../../config";
 import "../../App.css";
 import {Decimal} from "decimal.js";
+import {Tactics} from "../../data/Tactics";
 
 export default function ReincarnationSelectionPage(props) {
     const globalState = useRef(getGlobalState());
@@ -24,10 +25,10 @@ export default function ReincarnationSelectionPage(props) {
         }, {}));
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
     const newLatentPower = getCharacter(0).latentPower.plus(
-        evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
+        evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player
         }));
-    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.bonusPointsForHighestLevel);
+    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints= spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
         .minus(Object.values(startingTraits).filter(x => x).length * 4);
@@ -117,6 +118,54 @@ export default function ReincarnationSelectionPage(props) {
                     </Grid>
                 </Grid>
             })}
+        </Grid>
+        <Grid container item>
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <Tooltip title="Tactics provide modifiers based on your fighting style">
+                    <strong>Choose Tactics</strong>
+                </Tooltip>
+            </Grid>
+            <Grid container item xs={12} justify="space-around" direction="row">
+                {Object.keys(Tactics).map(tactic =>
+                    <Grid item>
+                        <Button variant="contained" onClick={() => getCharacter(0).tactics = tactic}
+                                color={player.tactics === tactic ? "primary" : "default"}
+                        >{Tactics[tactic].title}</Button>
+                    </Grid>
+                )}
+            </Grid>
+            <Grid item style={{textAlign: "center"}}>
+                <em>{Tactics[player.tactics].description}</em>
+            </Grid>
+
+            <Grid container>
+                <ul>
+                    {Tactics[player.tactics].modifiers.damage_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        +{Tactics[player.tactics].modifiers.damage_modifier * 100}% attack damage
+                    </li>}
+                    {Tactics[player.tactics].modifiers.speed_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        +{Tactics[player.tactics].modifiers.speed_modifier * 100}% bonus to action speed
+                    </li>}
+                    {Tactics[player.tactics].modifiers.damage_resistance_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        +{Tactics[player.tactics].modifiers.damage_resistance_modifier * 100}% bonus to damage resistance
+                    </li>}
+                    {Tactics[player.tactics].modifiers.evasion_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        +{Tactics[player.tactics].modifiers.evasion_modifier * 100}% bonus to evasion
+                    </li>}
+                    {Tactics[player.tactics].modifiers.enemy_accuracy_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        {Tactics[player.tactics].modifiers.enemy_accuracy_modifier * 100}% penalty to enemy Accuracy
+                    </li>}
+                    {Tactics[player.tactics].modifiers.enemy_evasion_modifier &&
+                    <li style={{color: "green", textAlign: "left"}}>
+                        {Tactics[player.tactics].modifiers.enemy_evasion_modifier * 100}% penalty to enemy Evasion
+                    </li>}
+                </ul>
+            </Grid>
         </Grid>
 
         <Grid container item xs={12} alignItems="stretch" justify="flex-start">

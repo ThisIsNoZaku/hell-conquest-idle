@@ -6,9 +6,7 @@ export const config = {
         enabled: true,
         multiplier: 2
     },
-    artifacts: {
-        enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
-    },
+
     actionLog: {
         maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
     },
@@ -16,44 +14,68 @@ export const config = {
         lesserEncounterChanceWeight: 10,
         greaterEncounterChanceWeight: 10,
         evenEncounterChanceWeight: 80,
-        lesserLevelScale: 3, // A demon is "lesser" than another when its level is this much lower.
-        greaterLevelScale: 1 // A demon is "greater" than another when its level is this much higher.
+        lesserLevelScale: 1, // A demon is "lesser" than another when its level is this much lower.
+        greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
+        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10)",
+        chanceToEscapeGreater: "enemy.powerLevel.minus(player.powerLevel).pow(2).times(10)"
     },
     mechanics: {
-        bonusPointsForHighestLevel: 2,
-        xpFromGreaterDemon: "$enemy.powerLevel",
+        artifacts: {
+            enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
+        },
+        reincarnation: {
+            bonusPointsForHighestLevel: 2,
+            // latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(10)",
+            latentPowerGainOnReincarnate: 0
+        },
+        xp: {
+            gainedFromGreaterDemon: "enemy.powerLevel",
+            gainedFromLesserDemon: "enemy.powerLevel",
+            gainedFromOtherDemon: "enemy.powerLevel.times(5)"
+        },
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(5).pow($level.minus(1).toNumber())",
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
-        latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(10)",
         maxLevel: 100,
-        accuracy: { // Determines how accuracy rolls work
-            baseAttribute: "deceit",
-            attributeBonusScale: 10
-        },
-        defense: {
-            baseAttribute: "brutality",
-            attributeBonusScale: 10
-        },
-        evasion: {
-            baseAttribute: "cunning",
-            attributeBonusScale: 10
-        },
-        attackDamage: {
-            pointsPerLevel: 10,
-            baseAttribute: "brutality",
-            attributeBonusScale: 10
-        },
-        traitRank: {
-            baseAttribute: "madness",
-            attributeBonusScale: 10
-        },
-        fatigue: {
-            evasionPenaltyPerPoint: 2
-        },
-        hp: {
-            base: 50,
-            pointsPerLevel: 50,
-            healingPerLevel: 100
+        combat: {
+            randomEncounterChance: "50",
+            determineHit: "roll <= config.mechanics.combat.baseHitChance ? 'hit' : 'miss'",
+            precision: { // Determines how precision rolls work
+                baseAttribute: "deceit",
+                attributeBonusScale: 10
+            },
+            defense: {
+                baseAttribute: "brutality",
+                attributeBonusScale: 10
+            },
+            evasion: {
+                baseAttribute: "cunning",
+                attributeBonusScale: 10
+            },
+            attackDamage: {
+                pointsPerLevel: 10,
+                baseAttribute: "brutality",
+                attributeBonusScale: 10
+            },
+            traitRank: {
+                baseAttribute: "madness",
+                attributeBonusScale: 10
+            },
+            fatigue: {
+                evasionPenaltyPerPoint: 2
+            },
+            hp: {
+                base: 50,
+                pointsPerLevel: 50,
+                healingPerLevel: 100
+            },
+            baseHitChance: 75,
+            attributeDamageModifier: .02,
+            defaultMinimumDamageMultiplier: .25,
+            defaultMedianDamageMultiplier: 1,
+            defaultMaximumDamageMultiplier: 1.5,
+            baseMinimumDamageWeight: 5,
+            baseMedianDamageWeight: 90,
+            baseMaximumDamageWeight: 5
         }
     },
     attributes: {
@@ -81,16 +103,6 @@ export const config = {
             description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${5 * rank}% bonus to the effect of wielded Artifacts and the effects of Traits."),
             icon: "icons/icons-124.png"
         }
-    },
-    combat: {
-        baseHitChance: 90,
-        attributeDamageModifier: .02,
-        defaultMinimumDamageMultiplier: .5,
-        defaultMedianDamageMultiplier: 1,
-        defaultMaximumDamageMultiplier: 1.5,
-        baseMinimumDamageWeight: 20,
-        baseMedianDamageWeight: 60,
-        baseMaximumDamageWeight: 20
     },
     debug: process.env.REACT_APP_DEBUG_MODE === "true"
 }

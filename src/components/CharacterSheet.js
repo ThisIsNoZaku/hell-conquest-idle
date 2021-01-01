@@ -1,10 +1,14 @@
 import Grid from "@material-ui/core/Grid";
 import React, {useMemo} from "react";
-import {getPowerNeededForLevel, getSpriteForCreature} from "../engine";
+import {getCharacter, getPowerNeededForLevel, getSpriteForCreature} from "../engine";
 import {config} from "../config";
 import PowerLevelDisplay from "./charactersheet/PowerLevelDisplay";
 import CharacterAttributes from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
+import Tooltip from "@material-ui/core/Tooltip";
+import Button from "@material-ui/core/Button";
+import TacticsSection from "./charactersheet/TacticsSection";
+import getHitChanceBy from "../engine/combat/getHitChanceBy";
 
 const styles = {
     tooltip: {
@@ -14,7 +18,7 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
-    const hitChances = props.character.combat.getHitChancesAgainst(props.enemy);
+    const hitChances = getHitChanceBy(props.character).against(props.enemy);
     const combinedHitWeights = Object.values(hitChances).reduce((total, next) => total.plus(next));
     const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
@@ -86,7 +90,7 @@ export default function CharacterSheet(props) {
             </Grid>
             <CharacterTraits character={props.character}/>
         </Grid>
-        {config.artifacts.enabled && <Grid container>
+        {config.mechanics.artifacts.enabled && <Grid container>
             <Grid item xs={12}>
                 <strong>Artifacts</strong>
             </Grid>
@@ -96,6 +100,7 @@ export default function CharacterSheet(props) {
                 }
             </Grid>
         </Grid>}
+        <TacticsSection character={props.character}/>
     </Grid>
 
 }

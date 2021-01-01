@@ -60,6 +60,7 @@ export function loadGlobalState(state) {
                 appearance: "",
                 statuses: {},
                 traits: {},
+                tactics: "defensive",
                 items: [],
                 attributes: {
                     brutality: Decimal(0),
@@ -101,11 +102,11 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
+        latentPower: Decimal(evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player: {
                 powerLevel
             }
-        }).times(5),
+        })).times(5),
         traits: Creatures[id].traits.reduce((traits, next) => {
             traits[next] = powerLevel;
             return traits;
@@ -150,6 +151,7 @@ export function evaluateExpression(expression, context) {
         expressionCache[expression] = new Function("context", `with(context) {return ${expression}}`);
     }
     context.Decimal = Decimal;
+    context.config = config;
     return expressionCache[expression].call(null, context);
 }
 
@@ -196,7 +198,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     // Add your level to your starting energy.
-    const latentPowerGain = evaluateExpression(config.mechanics.latentPowerGainOnReincarnate, {
+    const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
         player
     })
     globalState.characters[0].latentPower = globalState.characters[0].latentPower.plus(latentPowerGain);

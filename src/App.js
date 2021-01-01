@@ -5,13 +5,13 @@ import React, {useEffect, useRef, useState} from "react";
 import 'react-circular-progressbar/dist/styles.css';
 import {Regions} from "./data/Regions";
 import {Actions} from "./data/Actions";
-import { Decimal } from "decimal.js";
+import {Decimal} from "decimal.js";
 import {
     evaluateExpression,
     getCharacter,
     getGlobalState, getManualSpeedMultiplier,
     loadGlobalState, reincarnateAs,
-     saveGlobalState, unpause
+    saveGlobalState, unpause
 } from "./engine";
 import * as seedrandom from "seedrandom";
 import {config} from "./config";
@@ -76,14 +76,10 @@ function App() {
             pushLogItem(action);
             switch (action.result) {
                 case "combat-end":
-                    if (player.current.currentHp < player.current.maximumHp) {
-                        setCurrentAction(Actions[changeCurrentAction("recovering")]);
+                    if (config.mechanics.artifacts.enabled) {
+                        setCurrentAction(Actions[changeCurrentAction("looting")]);
                     } else {
-                        if (config.artifacts.enabled) {
-                            setCurrentAction(Actions[changeCurrentAction("looting")]);
-                        } else {
-                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                        }
+                        setCurrentAction(Actions[changeCurrentAction("exploring")]);
                     }
                     setCurrentEncounter(getGlobalState().currentEncounter = null);
                     break;
@@ -103,13 +99,17 @@ function App() {
                     if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
                         debugMessage("Player killed a non-lesser enemy and gained power.");
                         const player = getCharacter(0);
-                        const powerToGain = enemy.powerLevel.mul(2);
+                        const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromOtherDemon, {
+                            enemy: getCharacter(action.target)
+                        });
                         const powerGained = player.gainPower(powerToGain);
                         pushLogItem(wrapLogItem({
                             result: "gainedPower",
                             value: powerGained
                         }));
                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
+                    } else if (action.target === 0) {
+                        setCurrentAction(getGlobalState().currentAction = "reincarnating");
                     }
                     break;
                 case "hit":
@@ -156,10 +156,30 @@ function App() {
                     accruedTime.current = 0;
                     switch (getGlobalState().currentAction) {
                         case "exploring":
+                            let proceedingToEncounter = false;
                             if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
                                 setCurrentAction(Actions[changeCurrentAction("recovering")]);
+                                const amountToHeal = getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
+                                    getCharacter(0).maximumHp
+                                ) ? getCharacter(0).maximumHp.minus(getCharacter(0).currentHp) : getCharacter(0).healing;
+                                getCharacter(0).currentHp = getCharacter(0).currentHp.plus(amountToHeal);
+                                pushLogItem({
+                                    target: player.id,
+                                    value: amountToHeal,
+                                    result: "healed",
+                                    uuid: v4()
+                                })
                                 // TODO: Implement random encounter chance
+                                const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {});
+                                const encounterRoll = Math.floor(rng.double() * 100) + 1;
+                                debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
+                                if (encounterRoll <= encounterChance.toNumber()) {
+                                    proceedingToEncounter = true;
+                                }
                             } else {
+                                proceedingToEncounter = true;
+                            }
+                            if (proceedingToEncounter) {
                                 const player = getCharacter(0);
                                 getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
                                 setCurrentEncounter(getGlobalState().currentEncounter);
@@ -179,7 +199,7 @@ function App() {
                                 }, "fighting");
                                 setNextAction(getGlobalState().nextAction);
                                 clearActionLog();
-                                if(getGlobalState().passivePowerIncome.gt(0)) {
+                                if (getGlobalState().passivePowerIncome.gt(0)) {
                                     const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
                                     pushLogItem({
                                         message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
@@ -232,10 +252,15 @@ function App() {
                         }
                         case "intimidating": {
                             const enemy = getGlobalState().currentEncounter.enemies[0];
-                            const chanceToIntimidate = Decimal(5).times(Decimal(2).pow(getCharacter(0).powerLevel.minus(1).minus(enemy.powerLevel).toNumber()));
+                            const chanceToIntimidate = evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+                                enemy,
+                                player: getCharacter(0)
+                            });
                             const roll = Math.floor(rng.double() * 100) + 1;
                             if (chanceToIntimidate.gte(roll)) {
-                                const periodicPowerIncreases = enemy.powerLevel;
+                                const periodicPowerIncreases = evaluateExpression(config.mechanics.xp.gainedFromLesserDemon, {
+                                    enemy
+                                });
                                 pushLogItem(wrapLogItem({
                                     result: "intimidated",
                                     target: enemy.id,
@@ -246,6 +271,7 @@ function App() {
                                 pushLogItem(wrapLogItem({
                                     message: `${getCharacter(enemy.id).name} escaped! (You rolled ${roll} vs ${chanceToIntimidate} chance to Bind).`
                                 }));
+                                setCurrentEncounter(getGlobalState().currentEncounter = null);
                             }
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
                             break;
@@ -253,15 +279,17 @@ function App() {
                         case "fleeing":
                             const player = getCharacter(0);
                             const enemy = getGlobalState().currentEncounter.enemies[0];
-                            getGlobalState().currentEncounter = null;
-                            setCurrentEncounter(null);
-                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            pushLogItem({
-                                result: "escaped",
-                                uuid: v4()
+                            const chanceToFlee = evaluateExpression(config.encounters.chanceToEscapeGreater, {
+                                enemy,
+                                player: getCharacter(0)
                             });
-                            if (player.otherDemonIsGreaterDemon(enemy)) {
-                                const powerToGain = evaluateExpression(config.mechanics.xpFromGreaterDemon, {
+                            const roll = Math.floor(rng.double() * 100) + 1;
+                            if (chanceToFlee.gte(roll)) {
+                                pushLogItem({
+                                    result: "escaped",
+                                    uuid: v4()
+                                });
+                                const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromGreaterDemon, {
                                     $enemy: enemy
                                 });
                                 const powerGained = player.gainPower(powerToGain);
@@ -270,7 +298,17 @@ function App() {
                                     result: "gainedPower",
                                     value: powerGained,
                                 }));
+                                getGlobalState().currentEncounter = null;
+                                setCurrentEncounter(null);
+                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                            } else {
+                                pushLogItem({
+                                    message: `The Greater ${enemy.name} caught you!`,
+                                    uuid: v4()
+                                });
+                                setCurrentAction(Actions[changeCurrentAction("fighting")]);
                             }
+
                             break;
                         case "fighting" : {
                             if (getGlobalState().currentEncounter.pendingActions.length) {
@@ -289,24 +327,6 @@ function App() {
                             }
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
                             break;
-                        case "recovering": {
-                            const player = getCharacter(0);
-                            if (player.currentHp.lt(player.maximumHp)) {
-                                const amountToHeal = player.currentHp.plus(player.healing).gt(player.maximumHp) ?
-                                    player.maximumHp.minus(player.currentHp) : player.healing;
-                                player.currentHp = player.currentHp.plus(amountToHeal);
-                                pushLogItem({
-                                    target: player.id,
-                                    value: amountToHeal,
-                                    result: "healed",
-                                    uuid: v4()
-                                })
-                            }
-                            if (player.currentHp.gte(player.maximumHp)) {
-                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            }
-                            break;
-                        }
                         case "reincarnating":
                             setCurrentEncounter();
                             setCurrentAction(Actions[changeCurrentAction("exploring")]);
@@ -333,7 +353,7 @@ function App() {
 
     return (
         <MemoryRouter initialEntries={[
-            getGlobalState().currentAction === "reincarnating" ? "/reincarnatin" : (
+            getGlobalState().currentAction === "reincarnating" ? "/reincarnating" : (
                 getGlobalState().currentAction === "adventuring" ? "/adventuring" : "/")
         ]} basename="%PUBLIC_URL%">
             <Switch>
