@@ -197,7 +197,6 @@ function App() {
                                     }
                                 }, "fighting");
                                 setNextAction(getGlobalState().nextAction);
-                                clearActionLog();
                                 if (getGlobalState().passivePowerIncome.gt(0)) {
                                     const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
                                     pushLogItem({
