@@ -3,10 +3,10 @@ import React, {useEffect, useRef, useState} from "react";
 import * as _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
-import {getCharacter, getGlobalState} from "../engine";
+import {evaluateExpression, getCharacter, getGlobalState} from "../engine";
 import Grid from "@material-ui/core/Grid";
-import { config } from "../config";
-import { Decimal } from "decimal.js";
+import {config} from "../config";
+import {Decimal} from "decimal.js";
 
 const styles = {
     root: {
@@ -40,14 +40,20 @@ const styles = {
         flexDirection: "column",
         overflowY: "scroll"
     },
-    combat: {
-
-    }
+    combat: {}
 }
 export default function BottomSection(props) {
     if (!props.currentAction) {
         throw new Error("No current action");
     }
+    const escapeChance = props.enemy ? evaluateExpression(config.encounters.chanceToEscapeGreater, {
+        player: props.player,
+        enemy: props.enemy
+    }) : Decimal(100);
+    const intimidateChance = props.enemy ? evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+        player: props.player,
+        enemy: props.enemy
+    }) : Decimal(100);
     return <div style={styles.root} onMouseEnter={props.startManualSpeedup} onMouseLeave={props.stopManualSpeedup}>
         <Paper style={styles.actions.container}>
             <Button style={styles.actions.buttons} onClick={() => {
@@ -59,8 +65,8 @@ export default function BottomSection(props) {
         </Paper>
         <Paper style={styles.actions.container}>
             {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
-            {actionButton("fleeing", "Flee", "Attempt to escape. You will automatically escape from Greater Demons.", props)}
-            {actionButton("intimidating", "Intimidate", "Try to cow the enemy, compelling them to continuously provide you a portion of their life force.", props)}
+            {actionButton("fleeing", "Flee", `Attempt to escape. Your chance is  ${escapeChance}%.`, props)}
+            {actionButton("intimidating", "Intimidate", `Try to cow the enemy, compelling them to continuously provide you a portion of their life force. Your chance is ${intimidateChance}%`, props)}
             {_.get(config, "features.negotiating.enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
         </Paper>
         <Paper style={styles.combat.details}>
@@ -70,12 +76,16 @@ export default function BottomSection(props) {
                         Player
                     </Grid>
                     <Grid item xs={6}>
-                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100} value={props.player.currentHp.div(props.player.maximumHp).times(100).floor().toNumber()} max={100}></meter>
+                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100}
+                               value={props.player.currentHp.div(props.player.maximumHp).times(100).floor().toNumber()}
+                               max={100}></meter>
                     </Grid>
                 </Grid>
                 <Grid item container xs={6} direction="row">
                     <Grid item xs={6}>
-                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100} value={_.get(props.enemy,["currentHp"], Decimal(0)).div(_.get(props.enemy,["maximumHp"], Decimal(1))).times(100).floor().toNumber()} max={100}></meter>
+                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100}
+                               value={_.get(props.enemy, ["currentHp"], Decimal(0)).div(_.get(props.enemy, ["maximumHp"], Decimal(1))).times(100).floor().toNumber()}
+                               max={100}></meter>
                     </Grid>
                     <Grid item xs={6}>
                         {_.get(props.enemy, "name")}
@@ -97,100 +107,14 @@ export default function BottomSection(props) {
 }
 
 function printActionItem(item) {
-    if (item.message) {
-        return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-            <Grid item xs={11}>
-            <span dangerouslySetInnerHTML={{
-                __html: item.message
-            }}></span>
-            </Grid>
+    return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
+        <Grid item xs={11}>
+                <span dangerouslySetInnerHTML={{
+                    __html: item.message
+                }}></span>
         </Grid>
-    } else {
-        switch (item.result) {
-            case "add_modifier":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>{`${getCharacter(item.actor).name}`}</Grid>
-                    <Grid item xs={1}>{item.tick}:</Grid>
-                </Grid>
-            case "hit":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item
-                          xs={11}>{getCharacter(item.actor).name} hit! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}</Grid>
-                    <Grid item xs={1}>{item.tick}:</Grid>
-                </Grid>
-            case "miss":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>
-                        {getCharacter(item.actor).name} Missed! {item.effects.map(effect => describeEffect(item.target, effect)).join(" ")}
-                    </Grid>
-                    <Grid item xs={1}>{item.tick}:</Grid>
-                </Grid>
-            case "kill":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item
-                          xs={11}><strong>{getCharacter(item.target).name} {item.target === 0 ? 'Were' : 'Was'} Killed!</strong></Grid>
-                    <Grid item xs={1}>{item.tick}:</Grid>
-                </Grid>
-            case "gainedPower":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>
-                        You absorbed {item.value.toFixed()} power.
-                    </Grid>
-                </Grid>
-            case "healed":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>
-                        {`${getCharacter(item.target).name} gained ${item.value} health.`}
-                    </Grid>
-                </Grid>
-            case "escaped":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>
-                        You escaped.
-                    </Grid>
-                </Grid>
-            case "action_skipped":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>{getCharacter(item.actor).name} lost {item.actor === 0 ? 'your' : 'their'} action.</Grid>
-                    <Grid item xs={1}>
-                        {item.tick}
-                    </Grid>
-                </Grid>
-            case "intimidated":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>{getCharacter(item.target).name} was Bound to you, granting you {item.value.toFixed()} power while you explore. </Grid>
-                </Grid>
-            case "enemy-fled":
-                return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-                    <Grid item xs={11}>{getCharacter(item.target).name} Fled!</Grid>
-                </Grid>
-        }
-    }
-}
-
-function describeEffect(target, effect) {
-    switch (effect.event) {
-        case "damage":
-            return `${getCharacter(effect.target).name} ${target == 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
-        default:
-            return Object.keys(effect.effect.effects).map(mod => {
-                switch (mod) {
-                    case "speed":
-                        const percentModifier = Decimal(effect.effect.effects.speed.percent); // FIXME: 3 layers, the same name?
-                        if (percentModifier.lt(0)) {
-                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'suffer' : 'suffers'} a ${percentModifier.toFixed()}% penalty to Action Speed.`;
-                        } else {
-                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'gain' : 'gains'} a ${percentModifier.toFixed()}% bonus to Action Speed.`;
-                        }
-                }
-            })
-            switch (effect.effect.modifier) {
-                case "speed_modifier":
-
-
-            }
-
-    }
+        {item.tick && <Grid item={1}>{item.tick}: </Grid>}
+    </Grid>
 }
 
 function actionButton(action, text, description, props) {
