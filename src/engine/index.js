@@ -27,6 +27,7 @@ export function loadGlobalState(state) {
             creatures: {},
             regions: {}
         },
+        reincarnationCount: 0,
         passivePowerIncome: Decimal(0),
         unlockedMonsters: {},
         unlockedTraits: {},
@@ -41,13 +42,13 @@ export function loadGlobalState(state) {
         currentRegion: "forest",
         actionLog: [],
         exploration: {
-            explorationTime: 15 * 1000,
-            approachTime: 15 * 1000,
+            explorationTime: 5 * 1000,
+            approachTime: 5 * 1000,
             combatTime: 5 * 1000,
-            lootingTime: 15 * 1000,
+            lootingTime: 5 * 1000,
             recoveryTime: 2 * 1000,
-            fleeingTime: 15 * 1000,
-            intimidateTime: 15 * 1000,
+            fleeingTime: 5 * 1000,
+            intimidateTime: 5 * 1000,
             reincarnationTime: 1
         },
         characters: {
@@ -104,7 +105,7 @@ export function generateCreature(id, powerLevel, rng) {
         ...Creatures[id],
         latentPower: Decimal(evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player: {
-                powerLevel
+                powerLevel: powerLevel.minus(1)
             }
         })).times(5),
         traits: Creatures[id].traits.reduce((traits, next) => {
@@ -196,12 +197,15 @@ export function reincarnateAs(monsterId, newAttributes) {
     Object.keys(player.attributes).forEach(attribute => {
         player.attributes[attribute] = Decimal(newAttributes[attribute.substring(1)]);
     })
+    if(globalState.reincarnationCount !== 0) {
+        // Add your level to your starting energy.
+        const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
+            player
+        });
+        globalState.characters[0].latentPower = globalState.characters[0].latentPower.plus(latentPowerGain);
+    }
 
-    // Add your level to your starting energy.
-    const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
-        player
-    })
-    globalState.characters[0].latentPower = globalState.characters[0].latentPower.plus(latentPowerGain);
+
     globalState.characters[0].absorbedPower = Decimal(0);
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
@@ -218,6 +222,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.currentAction = "reincarnating";
     getCharacter(0).currentHp = getCharacter(0).maximumHp;
     getGlobalState().passivePowerIncome = Decimal(0);
+    globalState.reincarnationCount++;
 
     saveGlobalState();
 }

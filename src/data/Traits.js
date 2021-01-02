@@ -4,17 +4,20 @@ export const Traits = {
     bloodrage: {
         name: "Blood Rage",
         icon: "icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood gives a <span style='color: red'>${rank.times(25)}%</span> bonus to Damage against enemies with <span style='color: red'>25% or less</span> health. However, after intimidating a lesser demon there is a <span style='color: orangered'>${rank}%</span> chance of killing it."),
-        on_hitting: {
+        description: _.template("This demon's unquenchable thirst for blood causes it to gain ${rank} stacks of Berserk when an enemy has 50% or less health."),
+        on_round_end: {
             conditions : {
                 health_percentage: {
-                    target: "target",
-                    below: 25
+                    target: "any_enemy",
+                    below: 50
                 }
             },
             effects: {
-                damage_modifier: {
-                    percent: "$rank.times(25)"
+                add_statuses: {
+                    berserk: {
+                        target: "attacker",
+                        rank: "rank.div(10).ceil()"
+                    }
                 }
             }
         }

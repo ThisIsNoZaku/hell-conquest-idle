@@ -20,7 +20,6 @@ import {Regions} from "../../data/Regions";
 import {resolveCombat} from "../../engine/combat";
 import {useHotkeys} from "react-hotkeys-hook";
 import generateLogItem from "../../generateLogItem";
-import { useHistory } from "react-router-dom";
 
 const styles = {
     root: {
@@ -59,12 +58,14 @@ function pushLogItem(item) {
 
 export default function AdventuringPage(props) {
     const accruedTime = useRef(0);
+    const [enemy, setEnemy] = useState(_.get(getGlobalState(), ["currentEncounter", "enemies", 0]));
     const [actionLog, setActionLog] = useState(getGlobalState().actionLog);
     const [currentEncounter, setCurrentEncounter] = useState(getGlobalState().currentEncounter);
     const [currentAction, setCurrentAction] = useState(Actions[getGlobalState().currentAction]);
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const [paused, setPaused] = useState(getGlobalState().paused);
     const [displayedTime, setDisplayedTime] = useState(0);
+    const [player, setPlayer] = useState(getCharacter(0));
     const manualSpeedUpActive = useRef(false);
     function togglePause() {
         getGlobalState().paused = !getGlobalState().paused;
@@ -74,7 +75,12 @@ export default function AdventuringPage(props) {
     useHotkeys("p", () => getGlobalState().paused = !getGlobalState().paused);
 
     useEffect(() => {
-        function applyAction(action) {
+        let lastFrame;
+        function applyAction(action, lastTick) {
+            if(lastTick && action.tick && action.tick !== lastTick) {
+                debugMessage(`Not consuming an action for tick ${action.tick} on tick ${lastTick}`);
+                return;
+            }
             pushLogItem(action);
             switch (action.result) {
                 case "combat-end":
@@ -83,7 +89,11 @@ export default function AdventuringPage(props) {
                     } else {
                         setCurrentAction(Actions[changeCurrentAction("exploring")]);
                     }
-                    setCurrentEncounter(getGlobalState().currentEncounter = null);
+                    if(getCharacter(0).isAlive) {
+                        setCurrentEncounter(getGlobalState().currentEncounter = null);
+                        setEnemy(null);
+                    }
+                    return;
                     break;
                 case "kill":
                     if (getGlobalState().currentEncounter.pendingActions[0].result === "combat-end") {
@@ -91,18 +101,13 @@ export default function AdventuringPage(props) {
                             getGlobalState().nextAction = "healing";
                             setNextAction(getGlobalState().nextAction);
                         }
-                        applyAction(getGlobalState().currentEncounter.pendingActions.shift());
                     }
                     const enemy = getCharacter(action.target);
-                    const enemyIsLesserDemon = getCharacter(0).otherDemonIsLesserDemon(enemy);
-                    if (enemyIsLesserDemon) {
-                        debugMessage(`Not gaining power because enemy ${action.target} was a Lesser Demon.`);
-                    }
-                    if (action.actor === 0 && action.target !== 0 && !enemyIsLesserDemon) {
+                    if (action.actor === 0 && action.target !== 0) {
                         debugMessage("Player killed a non-lesser enemy and gained power.");
                         const player = getCharacter(0);
                         const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromOtherDemon, {
-                            enemy: getCharacter(action.target)
+                            enemy
                         });
                         const powerGained = player.gainPower(powerToGain);
                         pushLogItem(generateLogItem({
@@ -111,6 +116,7 @@ export default function AdventuringPage(props) {
                         }));
                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                     } else if (action.target === 0) {
+                        getCharacter(0).currentHp = Decimal(0);
                         setCurrentAction(getGlobalState().currentAction = "dead");
                         setPaused(getGlobalState().paused = true);
                     }
@@ -125,9 +131,6 @@ export default function AdventuringPage(props) {
                                 if (targetCharacter.currentHp.lt(Decimal(0))) {
                                     targetCharacter.currentHp = Decimal(0);
                                 }
-                                if (getGlobalState().currentEncounter.pendingActions[0].result === "kill") {
-                                    applyAction(getGlobalState().currentEncounter.pendingActions.shift());
-                                }
                                 break;
                             case "apply_effect":
                                 targetCharacter.addModifier({
@@ -138,12 +141,22 @@ export default function AdventuringPage(props) {
                         }
                     });
                     break;
+                case "add_statuses":
+                    const characterStatuses = getCharacter(action.target).statuses;
+                    characterStatuses[action.status] = action.level;
+                    break;
                 case "action_skipped":
                     break;
                 default:
                     throw new Error();
             }
+            // Consume action
+            getGlobalState().currentEncounter.pendingActions.shift()
             saveGlobalState();
+            const nextAction = getGlobalState().currentEncounter.pendingActions[0];
+            if(nextAction) {
+                applyAction(nextAction, action.tick);
+            }
         }
 
         function tick(timestamp) {
@@ -157,9 +170,13 @@ export default function AdventuringPage(props) {
                         accruedTime.current = 0;
                         switch (getGlobalState().currentAction) {
                             case "exploring":
+                                getCharacter(0).clearStatuses();
                                 let proceedingToEncounter = false;
                                 if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
-                                    const amountToHeal = getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
+                                    const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {
+                                        player
+                                    });
+                                    const amountToHeal = encounterChance.lte(0) || getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
                                         getCharacter(0).maximumHp
                                     ) ? getCharacter(0).maximumHp.minus(getCharacter(0).currentHp) : getCharacter(0).healing;
                                     getCharacter(0).currentHp = getCharacter(0).currentHp.plus(amountToHeal);
@@ -167,10 +184,6 @@ export default function AdventuringPage(props) {
                                         message: `You naturally healed ${amountToHeal} health`,
                                         uuid: v4()
                                     })
-                                    // TODO: Implement random encounter chance
-                                    const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {
-                                        player
-                                    });
                                     const encounterRoll = Math.floor(props.rng.double() * 100) + 1;
                                     debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
                                     if (encounterRoll <= encounterChance) {
@@ -187,6 +200,7 @@ export default function AdventuringPage(props) {
                                 if (proceedingToEncounter) {
                                     getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), props.rng);
                                     setCurrentEncounter(getGlobalState().currentEncounter);
+                                    setEnemy(getGlobalState().currentEncounter.enemies[0]);
                                     setCurrentAction(Actions[changeCurrentAction("approaching")]);
                                     getGlobalState().nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
                                         if (actionSoFar !== "fighting") {
@@ -240,7 +254,7 @@ export default function AdventuringPage(props) {
                                             parties: [[player], enemies]
                                         });
                                         getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
-
+                                        setEnemy(enemies[0]);
                                         break;
                                 }
                                 setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
@@ -313,7 +327,7 @@ export default function AdventuringPage(props) {
                                 break;
                             case "fighting" : {
                                 if (getGlobalState().currentEncounter.pendingActions.length) {
-                                    const nextAction = getGlobalState().currentEncounter.pendingActions.shift();
+                                    const nextAction = getGlobalState().currentEncounter.pendingActions[0];
                                     applyAction(nextAction);
                                     setActionLog([...getGlobalState().actionLog]);
                                 } else {
@@ -351,15 +365,31 @@ export default function AdventuringPage(props) {
                     setDisplayedTime(accruedTime.current);
                     const passedTime = timestamp - lastTime;
                     const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);
+                    if(Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) === 0) {
+                        if(accruedTime.current + adjustedTime === 0) {
+                            debugMessage(`Timestamp ${timestamp}, last time ${lastTime}`);
+                        } else {
+                            debugMessage("Action duration was 0");
+                        }
+
+                    }
                     accruedTime.current = Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration));
                 }
             }
+            if(lastTime === timestamp) {
+                debugMessage("New and previous timestamp were identical");
+            }
             lastTime = timestamp;
-            requestAnimationFrame(tick);
+            lastFrame = requestAnimationFrame(tick);
             setActionLog([...getGlobalState().actionLog]);
         }
 
-        requestAnimationFrame(tick)
+        console.log("Adventuring Page");
+        lastFrame = requestAnimationFrame(tick)
+        return ()=> {
+            console.log("Cancel frame");
+            cancelAnimationFrame(lastFrame);
+        }
     }, []);
     return <div className="App" style={styles.root}
                 onMouseOver={() => manualSpeedUpActive.current = true}
@@ -377,12 +407,12 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
-        <PlayerStats player={props.player} enemy={_.get(props, "currentEncounter.enemies[0]")}/>
+        <PlayerStats player={player} enemy={enemy}/>
         <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
-            <TopSection character={getCharacter(0)}/>
+            <TopSection character={player}/>
             <BottomSection state={getGlobalState()} actionLog={actionLog}
-                           player={getCharacter(0)}
-                           enemy={_.get(currentEncounter, ["enemies", 0])}
+                           player={player}
+                           enemy={enemy}
                            togglePause={togglePause}
                            paused={paused}
                            nextActionName={nextAction}
@@ -396,7 +426,7 @@ export default function AdventuringPage(props) {
                            togglePause={p => setPaused(p)}
             />
         </div>
-        <EnemySidebar player={props.player} currentEncounter={currentEncounter} actionLog={props.actionLog}/>
+        <EnemySidebar player={player} enemy={enemy}/>
 
     </div>
 }

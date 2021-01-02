@@ -13,9 +13,9 @@ import {config} from "../../config";
 import "../../App.css";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../../data/Tactics";
+import { Attributes } from "../../data/Attributes";
 
 export default function ReincarnationSelectionPage(props) {
-    const globalState = useRef(getGlobalState());
     const history = useHistory();
     const player = getCharacter(0);
     const [attributes, setAttributes] = useState(Object.keys(player.attributes)
@@ -30,7 +30,7 @@ export default function ReincarnationSelectionPage(props) {
             player
         }));
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
-    const availableBonusPoints= spendableBonusPoints
+    const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
         .minus(Object.values(startingTraits).filter(x => x).length * 4);
 
@@ -45,8 +45,7 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes, Damage and
-            absorbed power due to your Latent Power acquired from previous reincarnations.
+            You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>
 
@@ -58,17 +57,20 @@ export default function ReincarnationSelectionPage(props) {
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
             </Grid>
-            {Object.keys(config.attributes).map(attribute => {
+            {Object.keys(Attributes).map(attribute => {
                 return <Grid item xs={3}>
-                    <Tooltip title={config.attributes[attribute].description({
+                    <Tooltip title={Attributes[attribute].description({
                         rank: Decimal(attributes[attribute]).toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
-                            <img src={config.attributes[attribute].icon}/>
+                            <img src={Attributes[attribute].icon}/>
                             <div>
                                 <Button disabled={availableBonusPoints.lte(0)}
                                         onClick={() => {
-                                            setAttributes({...attributes, [attribute]: Decimal(attributes[attribute]).plus(1)})
+                                            setAttributes({
+                                                ...attributes,
+                                                [attribute]: Decimal(attributes[attribute]).plus(1)
+                                            })
                                         }}>
                                     <AddIcon/>
                                 </Button>
@@ -85,17 +87,19 @@ export default function ReincarnationSelectionPage(props) {
             })}
             {Object.keys(getGlobalState().unlockedTraits).length > 0 &&
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon form)
+                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon
+                form)
             </Grid>}
             {Object.keys(getGlobalState().unlockedTraits).map(traitId => {
                 return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
                     <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
-                        <Button variant="contained" color={getGlobalState().startingTraits[traitId] ? "secondary" : "default" }
+                        <Button variant="contained"
+                                color={getGlobalState().startingTraits[traitId] ? "secondary" : "default"}
                                 disabled={availableBonusPoints.lt(4) && !startingTraits[traitId]}
                                 onClick={() => {
                                     getGlobalState().startingTraits[traitId] = !getGlobalState().startingTraits[traitId];
                                     setStartingTraits(getGlobalState().startingTraits);
-                                } }
+                                }}
                         >
                             <Tooltip title={<div dangerouslySetInnerHTML={{
                                 __html: `Rank ${Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}: ${Traits[traitId].description({
@@ -129,7 +133,9 @@ export default function ReincarnationSelectionPage(props) {
             <Grid container item xs={12} justify="space-around" direction="row">
                 {Object.keys(Tactics).map(tactic =>
                     <Grid item>
-                        <Button variant="contained" onClick={() => {setPlayerTactics(getCharacter(0).tactics = tactic)}}
+                        <Button variant="contained" onClick={() => {
+                            setPlayerTactics(getCharacter(0).tactics = tactic)
+                        }}
                                 color={player.tactics === tactic ? "primary" : "default"}
                         >{Tactics[tactic].title}</Button>
                     </Grid>
@@ -141,30 +147,43 @@ export default function ReincarnationSelectionPage(props) {
 
             <Grid container>
                 <ul>
-                    {Tactics[player.tactics].modifiers.damage_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        +{Tactics[player.tactics].modifiers.damage_modifier * 100}% Power
-                    </li>}
-                    {Tactics[player.tactics].modifiers.speed_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        +{Tactics[player.tactics].modifiers.speed_modifier * 100}% bonus to action speed
-                    </li>}
-                    {Tactics[player.tactics].modifiers.damage_resistance_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        +{Tactics[player.tactics].modifiers.damage_resistance_modifier * 100}% bonus to damage resistance
-                    </li>}
+                    {Tactics[player.tactics].modifiers.power_modifier &&
+                    <Tooltip title="Power makes your hits deal additional damage.">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            +{Tactics[player.tactics].modifiers.power_modifier * 100}% to Power
+                        </li>
+                    </Tooltip>}
+                    {Tactics[player.tactics].modifiers.precision_modifier &&
+                    <Tooltip title="Precision makes your hits more severe.">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            +{Tactics[player.tactics].modifiers.precision_modifier * 100}% to Precision
+                        </li>
+                    </Tooltip>}
+                    {Tactics[player.tactics].modifiers.resilience_modifier &&
+                    <Tooltip title="Resilience makes you more resistant to damage.">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            +{Tactics[player.tactics].modifiers.resilience_modifier * 100}% to Resilience
+                        </li>
+                    </Tooltip>}
+                    {Tactics[player.tactics].modifiers.healing_modifier &&
+                    <Tooltip title="Healing increases how quickly you recover from injury.">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            +{Tactics[player.tactics].modifiers.healing_modifier * 100}% to Healing
+                        </li>
+                    </Tooltip>}
                     {Tactics[player.tactics].modifiers.evasion_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        +{Tactics[player.tactics].modifiers.evasion_modifier * 100}% bonus to evasion
-                    </li>}
-                    {Tactics[player.tactics].modifiers.enemy_accuracy_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        {Tactics[player.tactics].modifiers.enemy_accuracy_modifier * 100}% penalty to enemy Accuracy
-                    </li>}
-                    {Tactics[player.tactics].modifiers.enemy_evasion_modifier &&
-                    <li style={{color: "green", textAlign: "left"}}>
-                        {Tactics[player.tactics].modifiers.enemy_evasion_modifier * 100}% penalty to enemy Evasion
-                    </li>}
+                    <Tooltip title="Evasion makes incoming attacks less severe.">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            +{Tactics[player.tactics].modifiers.evasion_modifier * 100}% to Evasion
+                        </li>
+                    </Tooltip>}
+                    {Tactics[player.tactics].modifiers.critical_hit_damage_modifier &&
+                    <Tooltip title="Critical hits deal extra damage">
+                        <li style={{color: "green", textAlign: "left"}}>
+                            {Tactics[player.tactics].modifiers.critical_hit_damage_modifier * 100}% to Critical hit
+                            damage
+                        </li>
+                    </Tooltip>}
                 </ul>
             </Grid>
         </Grid>

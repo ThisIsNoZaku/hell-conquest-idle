@@ -11,6 +11,6 @@ const styles = {
 
 export default function EnemySidebar(props) {
     return <Paper style={styles.root}>
-        {props.currentEncounter && <CharacterSheet enemy={props.player} character={props.currentEncounter.enemies[0]} /> }
+        {props.enemy && <CharacterSheet enemy={props.player} character={props.enemy} /> }
     </Paper>
 }

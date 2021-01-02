@@ -17,8 +17,9 @@ const styles = {
 
 export default function TopSection(props) {
     const history = useHistory();
-    const reincarnateEnabled = useMemo(() => getCharacter(0).powerLevel.gt(1), [
-        getCharacter(0).powerLevel
+    const reincarnateEnabled = useMemo(() => getCharacter(0).powerLevel.gt(1) || !getCharacter(0).isAlive, [
+        getCharacter(0).powerLevel,
+        getCharacter(0).isAlive
     ])
     return <div style={styles.root}>
         <Button onClick={() => history.push("/reincarnating")} style={styles.buttons} variant="contained" color="secondary" disabled={!reincarnateEnabled}>

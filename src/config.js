@@ -19,56 +19,59 @@ export const config = {
         chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10)",
         chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : enemy.powerLevel.minus(player.powerLevel).pow(2).times(10)"
     },
+
     mechanics: {
         artifacts: {
             enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
         },
         reincarnation: {
             bonusPointsForHighestLevel: 2,
-            // latentPowerGainOnReincarnate: "player.powerLevel.minus(1).pow(2).times(10)",
-            latentPowerGainOnReincarnate: 0
+            latentPowerGainOnReincarnate: "player.powerLevel.pow(2).times(5)",
+            latentPowerEffectScale: .01
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
             gainedFromLesserDemon: "enemy.powerLevel",
             gainedFromOtherDemon: "enemy.powerLevel.times(5)"
         },
-        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal(5).pow($level.minus(1).toNumber())",
-        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.log($powerPoints, 5).plus(1).floor()",
+        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal($level.minus(1).toNumber()).pow(2).times(5)",
+        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.sqrt($powerPoints.div(5)).plus(1).floor()",
         maxLevel: 100,
         combat: {
-            randomEncounterChance: "player.powerLevel",
+            randomEncounterChance: "player.powerLevel.div(10).floor().times(10)",
             determineHit: "roll <= config.mechanics.combat.baseHitChance ? 'hit' : 'miss'",
             precision: { // Determines how precision rolls work
                 baseAttribute: "deceit",
-                attributeBonusScale: 10
+                effectPerPoint: .1
             },
-            defense: {
+            resilience: {
                 baseAttribute: "brutality",
-                attributeBonusScale: 10
+                effectPerPoint: .1
             },
             evasion: {
                 baseAttribute: "cunning",
-                attributeBonusScale: 10
+                effectPerPoint: .1
             },
-            attackDamage: {
-                pointsPerLevel: 10,
+            power: {
                 baseAttribute: "brutality",
-                attributeBonusScale: 10
+                effectPerPoint: .1
             },
             traitRank: {
                 baseAttribute: "madness",
-                attributeBonusScale: 10
+                effectPerPoint: .05
             },
             fatigue: {
                 evasionPenaltyPerPoint: 2
             },
             hp: {
-                base: 50,
-                pointsPerLevel: 50,
-                healingPerLevel: 5
+                base: 25,
+                pointsPerLevel: 25,
+                healingPerLevel: 5,
+                baseAttribute: "madness",
+                effectPerPoint: .05
             },
             baseHitChance: 75,
+            baseDamage: "player.powerLevel.times(10)",
             attributeDamageModifier: .02,
             defaultMinimumDamageMultiplier: .25,
             defaultMedianDamageMultiplier: 1,
@@ -76,32 +79,6 @@ export const config = {
             baseMinimumDamageWeight: 5,
             baseMedianDamageWeight: 90,
             baseMaximumDamageWeight: 5
-        }
-    },
-    attributes: {
-        brutality: {
-            label: "Brutality",
-            globalScaling: 1,
-            description: _.template(`Brutality is how savage and ruthless a Demon is. It gives a \${5 * rank}% bonus to attack damage, defense and intimidation checks.`),
-            icon: "icons/icons-92.png"
-        },
-        cunning: {
-            label: "Cunning",
-            globalScaling: 1,
-            description: _.template("Cunning is how quick thinking a Demon is. It gives a ${5 * rank}% bonus to Evasion, and non-combat encounters."),
-            icon: "icons/icons-24.png"
-        },
-        deceit: {
-            label: "Deceit",
-            globalScaling: 1,
-            description: _.template("Deceit is how underhanded and manipulative a Demon is. It gives a ${5 * rank}% bonus to Accuracy and social encounters."),
-            icon: "icons/icons-17.png"
-        },
-        madness: {
-            label: "Madness",
-            globalScaling: 1,
-            description: _.template("Madness is how disconnected from the limits of reality the Demon is. It gives a ${5 * rank}% bonus to the effect of wielded Artifacts and the effects of Traits."),
-            icon: "icons/icons-124.png"
         }
     },
     debug: process.env.REACT_APP_DEBUG_MODE === "true"

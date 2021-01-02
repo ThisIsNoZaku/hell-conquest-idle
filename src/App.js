@@ -61,7 +61,7 @@ function App() {
                     }}/>
                 </Route>
                 <Route path="/adventuring" exact>
-                    <AdventuringPage player={getCharacter(0)}
+                    <AdventuringPage
                                      rng={rng}
                     />
                 </Route>

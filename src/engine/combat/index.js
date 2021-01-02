@@ -7,8 +7,8 @@ import {v4} from "node-uuid";
 import {generateHitCombatResult, generateMissCombatResult, generateSkipActionResult} from "../../combatResult";
 import {evaluateExpression, getCharacter} from "../index";
 import * as _ from "lodash";
-import {act} from "@testing-library/react";
 import getHitChanceBy from "./getHitChanceBy";
+import calculateDamageBy from "./calculateDamageBy";
 
 export function resolveCombat(rng, definition) {
     const combatResult = {
@@ -24,7 +24,7 @@ export function resolveCombat(rng, definition) {
     }));
     debugMessage("Beginning combat")
     // Trigger start of combat effects.
-    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, combatResult, rng);
+    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, {combat: combatResult, round: {effects: []}}, rng);
 
     let tick = 0;
     while (combatResult.winner === null) {
@@ -32,6 +32,11 @@ export function resolveCombat(rng, definition) {
         Object.keys(initiatives).forEach(initiativeCount => {
             const actingCharacters = initiatives[initiativeCount];
             actingCharacters.forEach(actingCharacter => {
+                const beginningOfRoundEffects = [];
+                triggerEvent(Object.values(combatResult.combatantCombatStats), {type: "on_round_start"}, tick, {combat: combatResult, round: {effects: beginningOfRoundEffects}}, rng);
+                beginningOfRoundEffects.forEach(effect => {
+                    combatResult.rounds.push(effect);
+                });
                 tick = actingCharacter.lastActed + actingCharacter.speed.toNumber();
                 actingCharacter.lastActed = tick;
                 debugMessage(`Tick ${tick}: Resolving action by character '${actingCharacter.id}'.`);
@@ -86,8 +91,15 @@ export function resolveCombat(rng, definition) {
                         modifier.roundDuration = Decimal(modifier.roundDuration).minus(1);
                         return modifier;
                     })
-                    .filter(modifier => Decimal(modifier.roundDuration).gt(0))
-
+                    .filter(modifier => Decimal(modifier.roundDuration).gt(0));
+                const endOfRoundEffects = [];
+                triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_round_end"}, tick, {
+                    combat: combatResult,
+                    round: {effects: endOfRoundEffects}
+                }, rng);
+                endOfRoundEffects.forEach(event => {
+                    combatResult.rounds.push(event);
+                })
             });
         });
         const playerPartyDead = definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0));
@@ -129,13 +141,13 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     if (typeof targetCharacter !== "object") {
         throw new Error(`Target character was not an object!`);
     }
-    const hitTypeChances = getHitChanceBy(actingCharacter).against(targetCharacter);
+    const hitTypeChances = getHitChanceBy(getCharacter(actingCharacter.id)).against(getCharacter(targetCharacter.id));
     const damageRoll = Math.floor(rng.double() * 100);
     let damageToInflict;
-    if (damageRoll <= hitTypeChances.minimum) {
+    if (damageRoll <= hitTypeChances.min) {
         damageToInflict = actingCharacter.damage.min;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a glancing hit for ${damageToInflict}.`);
-    } else if (damageRoll <= hitTypeChances.median.plus(hitTypeChances.minimum)) {
+    } else if (damageRoll <= hitTypeChances.med.plus(hitTypeChances.min)) {
         damageToInflict = actingCharacter.damage.med;
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a solid hit for ${damageToInflict}.`);
     } else {
@@ -144,35 +156,33 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     }
     const attackResult = {
         baseDamage: damageToInflict,
-        attackerDamageMultiplier: actingCharacter.power,
-        targetDefenseMultiplier: targetCharacter.resilience,
+        attackMultiplier: actingCharacter.power.times(config.mechanics.combat.power.effectPerPoint),
+        defenseDivisor: targetCharacter.resilience.times(config.mechanics.combat.resilience.effectPerPoint),
         otherEffects: []
     }
     // Trigger on-hit effects
-    Object.keys(actingCharacter.traits).forEach(trait => applyTrait(actingCharacter, targetCharacter, getTrait(trait), actingCharacter.traits[trait], "on_hitting", {
-        combat: combatResult,
-        attack: attackResult
-    }, tick, rng));
-    const damageFactor = attackResult.attackerDamageMultiplier.plus(100) // FIXME: Evaluable expression
-        .div(Decimal.max(attackResult.targetDefenseMultiplier.plus(100), 1));
-    const finalDamage = attackResult.baseDamage.times(damageFactor).floor()
+    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_hitting"}, tick, {combat: combatResult, attack: attackResult}, rng);
+    const damageMultiplier = attackResult.attackMultiplier.plus(100).div(attackResult.defenseDivisor.plus(100));
+    const finalDamage = attackResult.baseDamage.times(damageMultiplier).ceil();
 
-    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackerDamageMultiplier} and a target defense factor of ${attackResult.targetDefenseMultiplier}, for a total factor of ${damageFactor} and a final damage of ${finalDamage.toFixed()}`);
-    targetCharacter.hp = targetCharacter.hp.minus(damageToInflict);
+    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackMultiplier} and a target defense factor of ${attackResult.defenseDivisor}, for a total factor of ${damageMultiplier} and a final damage of ${finalDamage.toFixed()}`);
+    targetCharacter.hp = targetCharacter.hp.minus(finalDamage);
     attackResult.finalDamage = finalDamage;
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
         switch (effect.event) {
             case "apply_effect":
                 return `Applying effect ${effect.effect} with from ${effect.source} to ${effect.target.id}.`
+            case "add_statuses":
+                return `Adding status ${effect.status} with rank ${effect.rank} to ${effect.target}`;
         }
 
-    }).join(", ")}. Target has ${targetCharacter.hp} remaining.`)
+    }).join(", ")}. Character ${targetCharacter.id} has ${targetCharacter.hp} remaining.`)
     // TODO: Trigger on-damage effects
     triggerEvent(Object.values(combatResult.combatantCombatStats), {
         type:"on_taking_damage",
         attacker: actingCharacter,
         target: targetCharacter
-    }, tick, combatResult, rng);
+    }, tick, {combat: combatResult, attack: attackResult}, rng);
     attackResult.otherEffects.forEach(effect => {
         switch (effect.event) {
             case "damage":
@@ -192,12 +202,14 @@ function resolveSkippedAction(tick, combatResult, actingCharacter) {
 }
 
 function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state, tick, rng) {
-    const rankModifier = Decimal(sourceCharacter.attributes[config.mechanics.combat.traitRank.baseAttribute]).times(config.mechanics.combat.traitRank.attributeBonusScale).div(100);
+    const eventType = event.type;
+    const recordedEffects = roundEvents.includes(eventType) ? state.round.effects : state.attack.effects;
+    const rankModifier = Decimal(sourceCharacter.attributes[config.mechanics.combat.traitRank.baseAttribute]).times(config.mechanics.combat.traitRank.effectPerPoint).div(100);
     rank = Decimal.min(Decimal(rank).plus(Decimal(rank).times(rankModifier)).floor(), 100);
     debugMessage(`Character has a bonus to rank of ${sourceCharacter.attributes.madness.toFixed()}% from madness, for an effective rank of ${rank}`);
     debugMessage(`Tick ${tick}: Determining if trait ${trait.name} applies`);
-    if (trait[event]) {
-        const effect = trait[event];
+    if (trait[eventType]) {
+        const effect = trait[eventType];
         if (effect.conditions !== undefined) {
             debugMessage("Trait has conditions");
         }
@@ -215,7 +227,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${conditionMet ? "" : "not"} enough to trigger.`);
                         return conditionMet;
                     case "chance":
-                        const chanceToTrigger = evaluateExpression(trait[event].conditions[condition], {
+                        const chanceToTrigger = evaluateExpression(trait[eventType].conditions[condition], {
                             $rank: rank
                         });
                         const roll = Math.floor(rng.double() * 100) + 1;
@@ -232,31 +244,31 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
             })
         if (effectTriggers) {
             debugMessage(`Tick ${tick}: Effect triggered, applying effects`);
-            Object.keys(trait[event].effects).forEach(traitEffect => {
+            Object.keys(trait[eventType].effects).forEach(traitEffect => {
                     // FIXME
                     switch (traitEffect) {
                         case "damage_modifier":
                             // FIXME: Validation
-                            const percentDamageModifier = evaluateExpression(trait[event].effects[traitEffect].percent, {
+                            const percentDamageModifier = evaluateExpression(trait[eventType].effects[traitEffect].percent, {
                                 $rank: rank
                             });
                             if (percentDamageModifier) {
-                                const newMultiplier = state.attack.attackerDamageMultiplier.plus(percentDamageModifier);
-                                debugMessage(`Tick ${tick}: Applying ${percentDamageModifier.toFixed()} modifier to damage, changing damage multiplier from ${state.attack.attackerDamageMultiplier.div(100).toFixed()} to ${newMultiplier.div(100).toFixed()}`);
-                                state.attack.attackerDamageMultiplier = newMultiplier;
+                                const newMultiplier = state.attack.attackMultiplier.plus(percentDamageModifier);
+                                debugMessage(`Tick ${tick}: Applying ${percentDamageModifier.toFixed()} modifier to damage, changing damage multiplier from ${state.attack.attackMultiplier.div(100).toFixed()} to ${newMultiplier.div(100).toFixed()}`);
+                                state.attack.attackMultiplier = newMultiplier;
                             }
                             break;
                         case "damage":
-                            const target = trait[event].effects.target
-                            const damageToInflict = evaluateExpression(trait[event].effects.damage, {
+                            const target = trait[eventType].effects.target
+                            const damageToInflict = evaluateExpression(trait[eventType].effects.damage, {
                                 $rank: Decimal(rank),
                                 attackDamage: state.attack.finalDamage
                             }).floor();
                             debugMessage(`Inflicting ${damageToInflict} damage to ${target}`);
                             if(damageToInflict.gt(0)) {
-                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.keys(state.combat.combatantCombatStats), target, state);
+                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), target, state);
                                 targets.forEach(target => {
-                                    state.attack.otherEffects.push({
+                                    recordedEffects.push({
                                         event: "damage",
                                         value: damageToInflict,
                                         target: target
@@ -265,47 +277,36 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             }
                             break;
                         case "defense_modifier": {
-                            const defenseModifier = evaluateExpression(trait[event].effects[traitEffect].percent, {
+                            const defenseModifier = evaluateExpression(trait[eventType].effects[traitEffect].percent, {
                                 $rank: rank
                             }).div(100).plus(1);
-                            const newMultiplier = state.attack.targetDefenseMultiplier.times(defenseModifier);
-                            debugMessage(`Tick ${tick}: Applying ${defenseModifier} modifier to defense, changing defense multiplier from ${state.attack.targetDefenseMultiplier.toFixed()} to ${newMultiplier.toFixed()}`);
-                            state.attack.targetDefenseMultiplier = newMultiplier;
+                            const newMultiplier = state.attack.defenseDivisor.times(defenseModifier);
+                            debugMessage(`Tick ${tick}: Applying ${defenseModifier} modifier to defense, changing defense multiplier from ${state.attack.defenseDivisor.toFixed()} to ${newMultiplier.toFixed()}`);
+                            state.attack.defenseDivisor = newMultiplier;
                             break;
                         }
-                        case "add_modifier":
-                            const modifierToAddDefinition = trait[event].effects.add_modifier;
-                            Object.keys(modifierToAddDefinition).forEach(effectType => {
-                                const effectTarget = modifierToAddDefinition[effectType].target;
-                                const modifier = {
-                                    effects: {
-                                        [effectType]: {
-                                            percent: evaluateExpression(modifierToAddDefinition[effectType].percent, {$rank: rank})
-                                        }
-                                    },
-                                    roundDuration: evaluateExpression(trait[event].duration.rounds, {$rank: rank}),
-                                    source: {
-                                        character: sourceCharacter.id,
-                                        ability: trait
-                                    }
-                                };
+                        case "add_statuses":
+                            const statusesDefinition = trait[eventType].effects.add_statuses;
+                            Object.keys(statusesDefinition).forEach(statusType => {
+                                const effectTarget = statusesDefinition[statusType].target;
                                 // Determine targets
-                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.keys(state.combat.combatantCombatStats), effectTarget, state);
-                                targets.forEach(combatantId => {
-                                    const existingEffect = state.combat.combatantCombatStats[combatantId].modifiers.find(modifier => {
-                                        return modifier.source.character === sourceCharacter.id && modifier.source.ability === trait;
-                                    });
-                                    if (existingEffect) {
-                                        existingEffect.roundDuration = evaluateExpression(trait[event].duration.rounds, {$rank: rank});
-                                    } else {
-                                        state.combat.combatantCombatStats[combatantId].modifiers.push(modifier);
+                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), effectTarget, state);
+                                const statusLevel = evaluateExpression(statusesDefinition[statusType].rank, {
+                                    rank
+                                });
+                                targets.forEach(combatant => {
+                                    const existingLevel = Decimal(combatant.statuses[statusType] || 0);
+                                    if(existingLevel.lt(statusLevel)) {
+                                        combatant.statuses[statusType] = statusLevel;
+                                        recordedEffects.push({
+                                            result: "add_statuses",
+                                            source: sourceCharacter.id,
+                                            target: combatant.id,
+                                            status: statusType,
+                                            level: statusLevel,
+                                            tick
+                                        });
                                     }
-                                    _.get(state, "attack.otherEffects", []).push({
-                                        event: "add_modifier",
-                                        source: sourceCharacter.id,
-                                        target: combatantId,
-                                        effect: modifier,
-                                    });
                                 });
                             })
                     }
@@ -317,24 +318,21 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
 }
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
-    const attackAccuracy = Decimal(actingCharacter.attributes[config.mechanics.combat.precision.baseAttribute]).times(config.mechanics.combat.precision.attributeBonusScale);
     // TODO: Validation
-    debugMessage("Making an precision roll. Attacker Accuracy:", attackAccuracy.toFixed());
     const roll = Math.floor((rng.double() * 100));
     return {
         rawRoll: roll,
-        attackAccuracy,
-        total: attackAccuracy.plus(roll)
+        total: roll
     };
 }
 
-function selectTargets(sourceCharacter, targetCharacterId, combatants, targetType, state) {
+function selectTargets(sourceCharacter, targetCharacter, combatants, targetType, state) {
     return combatants.filter(combatant => {
         switch (targetType) {
             case "attacker":
-                return sourceCharacter.id == combatant;
+                return sourceCharacter.id == combatant.id;
             case "attacked":
-                return targetCharacterId == combatant;
+                return targetCharacter.id == combatant.id;
             case "all_enemies":
                 const actingCharacterParty = sourceCharacter.id === 0 ? 0 : 1;
                 return actingCharacterParty !== state.combat.combatantCombatStats[combatant].party;
@@ -345,9 +343,10 @@ function selectTargets(sourceCharacter, targetCharacterId, combatants, targetTyp
 }
 
 function triggerEvent(combatants, event, tick, state, rng) {
+    debugMessage(`Triggering event ${event.type}`);
     combatants.forEach(combatant => Object.keys(combatant.traits).forEach(trait => {
         combatants.filter(other => other !== combatant).forEach(otherCombatant => {
-            applyTrait(combatant, otherCombatant.id, getTrait(trait), combatant.traits[trait], event, state, 0, rng);
+            applyTrait(combatant, otherCombatant, getTrait(trait), combatant.traits[trait], event, state, tick, rng);
         });
     }));
 }
@@ -363,3 +362,5 @@ function determineInitiatives(state) {
         return initiatives;
     }, {});
 }
+
+const roundEvents = ["on_round_start", "on_combat_start", "on_round_end"];

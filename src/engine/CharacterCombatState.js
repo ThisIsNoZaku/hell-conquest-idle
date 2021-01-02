@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import {Attributes} from "../character";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../data/Tactics";
+import {Statuses} from "../data/Statuses";
 
 export default class CharacterCombatState {
     constructor(originalCharacter, party) {
@@ -18,12 +19,12 @@ export default class CharacterCombatState {
         this.modifiers = [];
         this.tactics = originalCharacter.tactics;
         this.traits = {...originalCharacter.traits};
-        this.lastActed = 0;
         this.damage = {
             min: originalCharacter.combat.minimumDamage,
             med: originalCharacter.combat.medianDamage,
             max: originalCharacter.combat.maximumDamage
         }
+        this.statuses = {...originalCharacter.statuses};
     }
 
     set speed(newSpeed) {
@@ -57,23 +58,42 @@ export default class CharacterCombatState {
     }
 
     get power() {
-        const attributeBase = this.attributes[config.mechanics.combat.attackDamage.baseAttribute];
-        return attributeBase;
+        const attributeBase = this.attributes[config.mechanics.combat.power.baseAttribute];
+        const tacticsModifier = Decimal(1).plus(Tactics[this.tactics].power_modifier || 0);
+        const statusesModifier = Object.keys(this.statuses).reduce((currentValue, nextStatus) => {
+            const statusDefinition = Statuses[nextStatus];
+            return currentValue.plus(statusDefinition.effects.power_multiplier || 0).minus(1);
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier));
     }
 
     get resilience() {
-        const attributeBase = this.attributes[config.mechanics.combat.defense.baseAttribute];
-        return attributeBase;
+        const attributeBase = this.attributes[config.mechanics.combat.resilience.baseAttribute];
+        const tacticsModifier = Decimal(1).plus(Tactics[this.tactics].resilience_modifier || 0);
+        const statusesModifier = Object.keys(this.statuses).reduce((currentValue, nextStatus) => {
+            const statusDefinition = Statuses[nextStatus];
+            return currentValue.plus(statusDefinition.effects.resilience_multiplier || 0).minus(1);
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier));
     }
 
     get precision() {
         const attributeBase = this.attributes[config.mechanics.combat.precision.baseAttribute];
-        return attributeBase;
+        const tacticsModifier = Decimal(1).plus(Tactics[this.tactics].precison_modifier || 0);
+        const statusesModifier = Object.keys(this.statuses).reduce((currentValue, nextStatus) => {
+            const statusDefinition = Statuses[nextStatus];
+            return currentValue.plus(statusDefinition.effects.precision_multiplier || 0).minus(1);
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier));
     }
 
     get evasion() {
         const attributeBase = this.attributes[config.mechanics.combat.evasion.baseAttribute];
         const tacticsModifier = Decimal(1).plus(Tactics[this.tactics].evasion_modifier || 0);
-        return attributeBase.times(tacticsModifier);
+        const statusesModifier = Object.keys(this.statuses).reduce((currentValue, nextStatus) => {
+            const statusDefinition = Statuses[nextStatus];
+            return currentValue.plus(statusDefinition.effects.evasion_multiplier || 0).minus(1);
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier));
     }
 }

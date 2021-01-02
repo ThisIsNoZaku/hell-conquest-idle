@@ -7,6 +7,7 @@ import {evaluateExpression, getCharacter, getGlobalState} from "../engine";
 import Grid from "@material-ui/core/Grid";
 import {config} from "../config";
 import {Decimal} from "decimal.js";
+import CharacterCombatSummary from "./CharacterCombatSummary";
 
 const styles = {
     root: {
@@ -71,26 +72,14 @@ export default function BottomSection(props) {
         </Paper>
         <Paper style={styles.combat.details}>
             <Grid container>
-                <Grid item container xs={6} direction="row">
-                    <Grid item xs={6}>
-                        Player
-                    </Grid>
-                    <Grid item xs={6}>
-                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100}
-                               value={props.player.currentHp.div(props.player.maximumHp).times(100).floor().toNumber()}
-                               max={100}></meter>
-                    </Grid>
-                </Grid>
-                <Grid item container xs={6} direction="row">
-                    <Grid item xs={6}>
-                        <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100}
-                               value={_.get(props.enemy, ["currentHp"], Decimal(0)).div(_.get(props.enemy, ["maximumHp"], Decimal(1))).times(100).floor().toNumber()}
-                               max={100}></meter>
-                    </Grid>
-                    <Grid item xs={6}>
-                        {_.get(props.enemy, "name")}
-                    </Grid>
-                </Grid>
+                <CharacterCombatSummary name="Player" currentHp={props.player.currentHp}
+                                        maximumHp={props.player.maximumHp}
+                                        statuses={_.get(props.player, "statuses")}
+                                        direction="row"/>
+                <CharacterCombatSummary name={_.get(props.enemy, "name")} currentHp={_.get(props.enemy, "currentHp", Decimal(0))}
+                                        maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
+                                        statuses={_.get(props.enemy, "statuses")}
+                                        direction="row-reverse"/>
             </Grid>
         </Paper>
         <Paper style={styles.action}>

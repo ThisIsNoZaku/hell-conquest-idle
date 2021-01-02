@@ -3,6 +3,7 @@ import {getCharacter} from "./engine";
 import React from "react";
 import {Decimal} from "decimal.js";
 import {debugMessage} from "./debugging";
+import {Statuses} from "./data/Statuses";
 
 export default function generateLogItem(item) {
     const result = {
@@ -43,6 +44,8 @@ export default function generateLogItem(item) {
         case "combat-end":
             result.message = `Battle ended`;
             break;
+        case "add_statuses":
+            result.message = `${getCharacter(item.target).name} ${item.target === 0 ? 'gain' : 'gained'} ${item.level.toFixed()} levels of ${Statuses[item.status].name}`
         default:
             debugMessage(`${JSON.stringify(item)}`);
     }
