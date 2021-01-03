@@ -28,7 +28,9 @@ export function resolveCombat(rng, definition) {
     Object.values(combatResult.combatantCombatStats).forEach(combatant => {
         const startOfCombatEffects = [];
         // Trigger start of combat effects.
-        triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {type: "on_combat_start"}, 0, {
+        triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {
+            type: "on_combat_start",
+            actor: combatant}, 0, {
             combat: combatResult,
             round: {effects: startOfCombatEffects}
         }, rng);
@@ -109,7 +111,10 @@ export function resolveCombat(rng, definition) {
                     })
                     .filter(modifier => Decimal(modifier.roundDuration).gt(0));
                 const endOfRoundEffects = [];
-                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type: "on_round_end"}, tick, {
+                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {
+                    type: "on_round_end",
+                    actor: actingCharacter
+                }, tick, {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
@@ -171,7 +176,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         throw new Error(`Target character was not an object!`);
     }
     const hitTypeChances = getHitChanceBy(actingCharacter).against(targetCharacter);
-    const damageCategories = calculateDamageBy(actingCharacter).against(targetCharacter);
+    const damageCategories = calculateDamageBy(actingCharacter).against(targetCharacter, config.debug.enabled);
     const damageRoll = Math.floor(rng.double() * 100);
     let hitType;
     if (damageRoll <= hitTypeChances.min) {
@@ -184,23 +189,27 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         hitType = "max";
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit.`);
     }
-    const damageToInflict = damageCategories[hitType];
+    const baseDamageToInflict = damageCategories[hitType];
     const attackResult = {
-        baseDamage: damageToInflict,
+        baseDamage: baseDamageToInflict,
         hitType,
         attackMultiplier: Decimal(0),
         defenseDivisor: Decimal(0),
         effects: []
     }
     // Trigger on-hit effects
-    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {type: "on_hitting"}, tick, {
+    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {
+        type: "on_hitting",
+        actor: actingCharacter,
+        target: targetCharacter
+    }, tick, {
         combat: combatResult,
         attack: attackResult
     }, rng);
     const damageMultiplier = Decimal.max(0.01, attackResult.attackMultiplier.minus(attackResult.defenseDivisor).plus(1));
-    const finalDamage = attackResult.baseDamage.times(damageMultiplier).ceil();
+    const finalDamage = baseDamageToInflict.times(damageMultiplier).ceil();
 
-    debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackMultiplier} and a target defense factor of ${attackResult.defenseDivisor}, for a total factor of ${damageMultiplier} and a final damage of ${finalDamage.toFixed()}`);
+    debugMessage(`Damage started off as ${baseDamageToInflict.toFixed()}, with an attack factor of ${attackResult.attackMultiplier} and a target defense factor of ${attackResult.defenseDivisor}, for a total factor of ${damageMultiplier} and a final damage of ${finalDamage.toFixed()}`);
     targetCharacter.hp = targetCharacter.hp.minus(finalDamage);
     attackResult.finalDamage = finalDamage;
     debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.effects.map(effect => {
@@ -213,9 +222,9 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 
     }).join(", ")}. Character ${targetCharacter.id} has ${targetCharacter.hp} remaining.`)
     // TODO: Trigger on-damage effects
-    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {
+    triggerEvent(targetCharacter, actingCharacter, Object.values(combatResult.combatantCombatStats), {
         type: "on_taking_damage",
-        attacker: actingCharacter,
+        actor: actingCharacter,
         target: targetCharacter
     }, tick, {combat: combatResult, attack: attackResult}, rng);
     attackResult.effects.forEach(effect => {
@@ -255,7 +264,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                         return state.attack.hitType === "max";
                     case "health_percentage":
                         // Fixme: Implement validation
-                        const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), "all_enemies", state);
+                        const targets = selectTargets(event.actor, event.target, Object.values(state.combat.combatantCombatStats), "all_enemies", state);
                         return targets.reduce((previousValue, combatant) => {
                             const targetPercent = Decimal(effect.conditions[condition].below);
                             const targetCurrentHealth = combatant.hp;
@@ -306,7 +315,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             }).floor();
                             debugMessage(`Inflicting ${damageToInflict} damage to ${target}`);
                             if (damageToInflict.gt(0)) {
-                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), target, state);
+                                const targets = selectTargets(event.actor, event.target, Object.values(state.combat.combatantCombatStats), target, state);
                                 targets.forEach(target => {
                                     recordedEffects.push({
                                         event: "damage",
@@ -330,7 +339,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             Object.keys(statusesDefinition).forEach(statusType => {
                                 const effectTarget = statusesDefinition[statusType].target;
                                 // Determine targets
-                                const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), effectTarget, state);
+                                const targets = selectTargets(event.actor, event.target, Object.values(state.combat.combatantCombatStats), effectTarget, state);
                                 const statusLevel = evaluateExpression(statusesDefinition[statusType].rank, {
                                     rank
                                 });
