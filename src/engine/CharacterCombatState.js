@@ -48,13 +48,9 @@ export default class CharacterCombatState {
     }
 
     get canAct() {
-        return this.modifiers.reduce((canAct, nextModifier) => {
-            if(nextModifier.effects.stunned !== undefined) {
-                return false;
-            } else {
-                return canAct;
-            }
-        }, true)
+        return Object.keys(this.statuses).reduce((canAct, nextStatus) => {
+            return canAct && !Statuses[nextStatus].effects.skip_turn;
+        }, true);
     }
 
     get power() {

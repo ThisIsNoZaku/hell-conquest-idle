@@ -7,5 +7,13 @@ export const Statuses = {
             power_multiplier: 1.2,
             evasion_multiplier: .9
         }
+    },
+    terrified: {
+        name: "Terrified",
+        icon: "",
+        effects: {
+            skip_turn: true
+        },
+        decays: true
     }
 }

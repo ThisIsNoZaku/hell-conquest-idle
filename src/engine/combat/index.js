@@ -9,6 +9,7 @@ import {evaluateExpression, getCharacter} from "../index";
 import * as _ from "lodash";
 import getHitChanceBy from "./getHitChanceBy";
 import calculateDamageBy from "./calculateDamageBy";
+import {Statuses} from "../../data/Statuses";
 
 export function resolveCombat(rng, definition) {
     const combatResult = {
@@ -97,6 +98,15 @@ export function resolveCombat(rng, definition) {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
+                Object.values(combatResult.combatantCombatStats).forEach(combatant => {
+                    Object.keys(combatant.statuses).filter(x => Statuses[x].decays).forEach(status => {
+                        if(Decimal(0).lt(combatant.statuses[status] || 0)) {
+                            combatant.statuses[status] = combatant.statuses[status].minus(1);
+                        } else {
+                            delete combatant.statuses[status]
+                        }
+                    })
+                });
                 endOfRoundEffects.forEach(event => {
                     combatResult.rounds.push(event);
                 })
@@ -335,7 +345,7 @@ function selectTargets(sourceCharacter, targetCharacter, combatants, targetType,
                 return targetCharacter.id == combatant.id;
             case "all_enemies":
                 const actingCharacterParty = sourceCharacter.id === 0 ? 0 : 1;
-                return actingCharacterParty !== state.combat.combatantCombatStats[combatant].party;
+                return actingCharacterParty !== combatant.party;
             default:
                 throw new Error();
         }

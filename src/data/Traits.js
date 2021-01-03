@@ -99,9 +99,10 @@ export const Traits = {
         description: _.template("The sickening sound of your feet on the ground unnerves even other demons, making the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${rank.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them."),
         on_combat_start: {
             effects: {
-                add_modifier: {
-                    stunned: {
-                        target: "all_enemies"
+                add_statuses: {
+                    terrified: {
+                        target: "all_enemies",
+                        rank: "rank"
                     }
                 }
             },
