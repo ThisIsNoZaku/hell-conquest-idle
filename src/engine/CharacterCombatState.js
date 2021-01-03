@@ -74,15 +74,15 @@ export default class CharacterCombatState {
     }
 
     get power() {
-        return calculateCombatStat(this, "evasion");
+        return calculateCombatStat(this, "power");
     }
 
     get resilience() {
-        return calculateCombatStat(this, "evasion");
+        return calculateCombatStat(this, "resilience");
     }
 
     get precision() {
-        return calculateCombatStat(this, "evasion");
+        return calculateCombatStat(this, "precision");
     }
 
     get evasion() {
