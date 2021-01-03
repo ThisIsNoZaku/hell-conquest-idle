@@ -195,7 +195,7 @@ export default function AdventuringPage(props) {
                                     } else {
                                         if(encounterChance.eq(0)) {
                                             pushLogItem({
-                                                message: "You weak spiritual energy keeps you hidden while you heal.",
+                                                message: "Your weak spiritual energy keeps you hidden while you heal.",
                                                 uuid: v4()
                                             });
                                         } else {
