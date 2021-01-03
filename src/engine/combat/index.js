@@ -189,8 +189,8 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     const attackResult = {
         baseDamage: damageToInflict,
         hitType,
-        attackMultiplier: actingCharacter.power.times(config.mechanics.combat.power.effectPerPoint),
-        defenseDivisor: targetCharacter.resilience.times(config.mechanics.combat.resilience.effectPerPoint),
+        attackMultiplier: Decimal(0),
+        defenseDivisor: Decimal(0),
         effects: []
     }
     // Trigger on-hit effects
