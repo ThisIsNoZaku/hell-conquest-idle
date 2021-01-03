@@ -14,6 +14,7 @@ import "../../App.css";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../../data/Tactics";
 import { Attributes } from "../../data/Attributes";
+import TacticsDescription from "../charactersheet/TacticsDescription";
 
 export default function ReincarnationSelectionPage(props) {
     const history = useHistory();
@@ -32,7 +33,13 @@ export default function ReincarnationSelectionPage(props) {
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
-        .minus(2 * (Object.values(startingTraits).filter(x => x).length));
+        .minus(
+            Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
+                return previousValue.plus(evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
+                    traitsOwned: Decimal(i)
+                }))
+            }, Decimal(0))
+        );
     const nextBonusTraitCost = evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
     });
@@ -148,47 +155,8 @@ export default function ReincarnationSelectionPage(props) {
                 <em>{Tactics[player.tactics].description}</em>
             </Grid>
 
-            <Grid container>
-                <ul>
-                    {Tactics[player.tactics].modifiers.power_modifier &&
-                    <Tooltip title="Power makes your hits deal additional damage.">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            +{Tactics[player.tactics].modifiers.power_modifier * 100}% to Power
-                        </li>
-                    </Tooltip>}
-                    {Tactics[player.tactics].modifiers.precision_modifier &&
-                    <Tooltip title="Precision makes your hits more severe.">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            +{Tactics[player.tactics].modifiers.precision_modifier * 100}% to Precision
-                        </li>
-                    </Tooltip>}
-                    {Tactics[player.tactics].modifiers.resilience_modifier &&
-                    <Tooltip title="Resilience makes you more resistant to damage.">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            +{Tactics[player.tactics].modifiers.resilience_modifier * 100}% to Resilience
-                        </li>
-                    </Tooltip>}
-                    {Tactics[player.tactics].modifiers.healing_modifier &&
-                    <Tooltip title="Healing increases how quickly you recover from injury.">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            +{Tactics[player.tactics].modifiers.healing_modifier * 100}% to Healing
-                        </li>
-                    </Tooltip>}
-                    {Tactics[player.tactics].modifiers.evasion_modifier &&
-                    <Tooltip title="Evasion makes incoming attacks less severe.">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            +{Tactics[player.tactics].modifiers.evasion_modifier * 100}% to Evasion
-                        </li>
-                    </Tooltip>}
-                    {Tactics[player.tactics].modifiers.critical_hit_damage_modifier &&
-                    <Tooltip title="Critical hits deal extra damage">
-                        <li style={{color: "green", textAlign: "left"}}>
-                            {Tactics[player.tactics].modifiers.critical_hit_damage_modifier * 100}% to Critical hit
-                            damage
-                        </li>
-                    </Tooltip>}
-                </ul>
-            </Grid>
+            <TacticsDescription tactic={player.tactics}/>
+
         </Grid>
 
         <Grid container item xs={12} alignItems="stretch" justify="flex-start">
