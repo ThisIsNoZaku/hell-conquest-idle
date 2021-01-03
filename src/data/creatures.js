@@ -2,6 +2,7 @@ export const Creatures  = {
     bloodthirstyKnight: {
         name: "Bloodthirsty Knight",
         traits: ["bloodrage"],
+        enabled: true,
         appearance: "bloodthirstyKnight",
         texture: "01_warrior.png",
         description: "A ruthless warrior who delighted in slaughtering whoever they encounter on the battlefield.",
@@ -17,6 +18,7 @@ export const Creatures  = {
     condemnedSlasher: {
         name: "Condemned Slasher",
         traits: ["sadisticJoy"],
+        enabled: true,
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
         description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died.",
@@ -24,7 +26,7 @@ export const Creatures  = {
     crushingSnake: {
         name: "Crushing Snake",
         traits: ["inescapableGrasp"],
-        enabled: false,
+        enabled: true,
         appearance: "crushingSnake",
         texture: "06_snake_01.png",
         description: "A monstrous reptile which",
@@ -32,7 +34,7 @@ export const Creatures  = {
     skitteringHorror: {
         name: "Skittering Horror",
         traits: ["terrifyingSkitter"],
-        enabled: false,
+        enabled: true,
         appearance: "skitteringHorror",
         texture: "10_spider.png",
         description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs."
@@ -40,7 +42,7 @@ export const Creatures  = {
     deadlyHornet: {
         name: "Deadly Hornet",
         traits: ["piercingStrike"],
-        enabled: false,
+        enabled: true,
         appearance: "deadlyHornet",
         texture: "12_wasp.png",
         description: "An insect whose stinger is able to pierce even metal protection."
@@ -48,7 +50,7 @@ export const Creatures  = {
     tormentedDead: {
         name: "Tormented Dead",
         traits: ["sharedPain"],
-        enabled: false,
+        enabled: true,
         appearance: "tormentedDead",
         texture: "29_zombie.png",
         description: "A human denied eternal rest and in agony from its ruined flesh."

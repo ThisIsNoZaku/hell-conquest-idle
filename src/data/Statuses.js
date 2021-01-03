@@ -15,5 +15,13 @@ export const Statuses = {
             skip_turn: true
         },
         decays: true
+    },
+    restrained: {
+        name: "Restrained",
+        icon: "",
+        effects: {
+            accuracy_modifier: .9
+        },
+        decays: true
     }
 }

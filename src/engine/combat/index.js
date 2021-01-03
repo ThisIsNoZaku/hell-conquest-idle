@@ -156,19 +156,21 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     }
     const hitTypeChances = getHitChanceBy(getCharacter(actingCharacter.id)).against(getCharacter(targetCharacter.id));
     const damageRoll = Math.floor(rng.double() * 100);
-    let damageToInflict;
+    let hitType;
     if (damageRoll <= hitTypeChances.min) {
-        damageToInflict = actingCharacter.damage.min;
-        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a glancing hit for ${damageToInflict}.`);
+        hitType = "min";
+        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a glancing hit.`);
     } else if (damageRoll <= hitTypeChances.med.plus(hitTypeChances.min)) {
-        damageToInflict = actingCharacter.damage.med;
-        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a solid hit for ${damageToInflict}.`);
+        hitType = "med";
+        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a solid hit.`);
     } else {
-        damageToInflict = actingCharacter.damage.max;
-        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit for ${damageToInflict}.`);
+        hitType = "max";
+        debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit.`);
     }
+    const damageToInflict = actingCharacter.damage[hitType];
     const attackResult = {
         baseDamage: damageToInflict,
+        hitType,
         attackMultiplier: actingCharacter.power.times(config.mechanics.combat.power.effectPerPoint),
         defenseDivisor: targetCharacter.resilience.times(config.mechanics.combat.resilience.effectPerPoint),
         effects: []
@@ -229,6 +231,8 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
         const effectTriggers = effect.conditions === undefined || Object.keys(effect.conditions)
             .every(condition => {
                 switch (condition) {
+                    case "critical_hit":
+                        return state.attack.hitType === "max";
                     case "health_percentage":
                         // Fixme: Implement validation
                         const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), "all_enemies", state);
@@ -315,7 +319,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     if(existingLevel.lt(statusLevel)) {
                                         combatant.statuses[statusType] = statusLevel;
                                         recordedEffects.push({
-                                            result: "add_statuses",
+                                            event: "add_statuses",
                                             source: sourceCharacter.id,
                                             target: combatant.id,
                                             status: statusType,

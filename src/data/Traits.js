@@ -45,13 +45,18 @@ export const Traits = {
     inescapableGrasp: {
         name: "Inescapable Grasp",
         icon: "icons/icons-2221.png",
-        description: _.template("You bind your victims when you strike, causing a <span style='color: orangered'>${rank}%</span> penalty to their <span style='color: lightgreen'>Action Speed</span> for 2 rounds."),
+        description: _.template("You bind your victims when you strike, causing ${rank} levels of Restrained when you hit with an attack."),
         on_hitting: {
+            conditions: {
+                critical_hit: {
+                    chance: 100
+                }
+            },
             effects: {
-                add_modifier: {
-                    speed: {
+                add_statuses: {
+                    restrained: {
                         target: "attacked",
-                        percent: "$rank.times(-1)"
+                        rank: "rank"
                     }
                 }
             },
