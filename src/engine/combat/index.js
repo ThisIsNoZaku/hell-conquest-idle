@@ -319,7 +319,8 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     if(existingLevel.lt(statusLevel)) {
                                         combatant.statuses[statusType] = statusLevel;
                                         recordedEffects.push({
-                                            event: "add_statuses",
+                                            event: "add_statuses", // FIXME: Shouldn't require both event and result.
+                                            result: "add_statuses",
                                             source: sourceCharacter.id,
                                             target: combatant.id,
                                             status: statusType,
