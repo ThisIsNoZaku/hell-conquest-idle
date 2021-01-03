@@ -27,7 +27,10 @@ export function resolveCombat(rng, definition) {
     debugMessage("Beginning combat")
     Object.values(combatResult.combatantCombatStats).forEach(combatant => {
         // Trigger start of combat effects.
-        triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, {combat: combatResult, round: {effects: []}}, rng);
+        triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {type: "on_combat_start"}, 0, {
+            combat: combatResult,
+            round: {effects: []}
+        }, rng);
     })
 
 
@@ -38,7 +41,10 @@ export function resolveCombat(rng, definition) {
             const actingCharacters = initiatives[initiativeCount];
             actingCharacters.forEach(actingCharacter => {
                 const beginningOfRoundEffects = [];
-                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type: "on_round_start"}, tick, {combat: combatResult, round: {effects: beginningOfRoundEffects}}, rng);
+                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type: "on_round_start"}, tick, {
+                    combat: combatResult,
+                    round: {effects: beginningOfRoundEffects}
+                }, rng);
                 beginningOfRoundEffects.forEach(effect => {
                     combatResult.rounds.push(effect);
                 });
@@ -99,7 +105,7 @@ export function resolveCombat(rng, definition) {
                     })
                     .filter(modifier => Decimal(modifier.roundDuration).gt(0));
                 const endOfRoundEffects = [];
-                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type:"on_round_end"}, tick, {
+                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type: "on_round_end"}, tick, {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
@@ -184,8 +190,11 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         effects: []
     }
     // Trigger on-hit effects
-    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {type:"on_hitting"}, tick, {combat: combatResult, attack: attackResult}, rng);
-    const damageMultiplier = attackResult.attackMultiplier.plus(100).div(attackResult.defenseDivisor.plus(100));
+    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {type: "on_hitting"}, tick, {
+        combat: combatResult,
+        attack: attackResult
+    }, rng);
+    const damageMultiplier = Decimal.max(0.01, attackResult.attackMultiplier.minus(attackResult.defenseDivisor).plus(1));
     const finalDamage = attackResult.baseDamage.times(damageMultiplier).ceil();
 
     debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackMultiplier} and a target defense factor of ${attackResult.defenseDivisor}, for a total factor of ${damageMultiplier} and a final damage of ${finalDamage.toFixed()}`);
@@ -202,7 +211,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     }).join(", ")}. Character ${targetCharacter.id} has ${targetCharacter.hp} remaining.`)
     // TODO: Trigger on-damage effects
     triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {
-        type:"on_taking_damage",
+        type: "on_taking_damage",
         attacker: actingCharacter,
         target: targetCharacter
     }, tick, {combat: combatResult, attack: attackResult}, rng);
@@ -293,7 +302,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                 attackDamage: state.attack.finalDamage
                             }).floor();
                             debugMessage(`Inflicting ${damageToInflict} damage to ${target}`);
-                            if(damageToInflict.gt(0)) {
+                            if (damageToInflict.gt(0)) {
                                 const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), target, state);
                                 targets.forEach(target => {
                                     recordedEffects.push({
@@ -324,7 +333,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                 });
                                 targets.forEach(combatant => {
                                     const existingLevel = Decimal(combatant.statuses[statusType] || 0);
-                                    if(existingLevel.lt(statusLevel)) {
+                                    if (existingLevel.lt(statusLevel)) {
                                         combatant.statuses[statusType] = statusLevel;
                                         recordedEffects.push({
                                             event: "add_statuses", // FIXME: Shouldn't require both event and result.
@@ -382,7 +391,7 @@ function triggerEvent(sourceCharacter, targetCharacter, combatants, event, tick,
 function determineInitiatives(state) {
     const combatants = Object.values(state.combatantCombatStats);
     return combatants.reduce((initiatives, combatant) => {
-        if(initiatives[combatant.speed.toNumber()]) {
+        if (initiatives[combatant.speed.toNumber()]) {
             initiatives[combatant.speed.toNumber()].push(combatant);
         } else {
             initiatives[combatant.speed.toNumber()] = [combatant];
