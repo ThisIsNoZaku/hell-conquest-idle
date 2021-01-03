@@ -27,6 +27,18 @@ export default class CharacterCombatState {
         this.statuses = {...originalCharacter.statuses};
     }
 
+    get combat() {
+        return {
+            precision: Decimal(this.precision),
+            evasion: Decimal(this.evasion),
+            power: Decimal(this.power),
+            resilience: Decimal(this.resilience),
+            minimumDamage: Decimal(this.damage.min),
+            medianDamage: Decimal(this.damage.med),
+            maximumDamage: Decimal(this.damage.max)
+        }
+    }
+
     set speed(newSpeed) {
         this._speed = newSpeed;
     }
