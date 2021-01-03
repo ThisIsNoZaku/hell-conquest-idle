@@ -4,6 +4,8 @@ import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
 import {Statuses} from "./data/Statuses";
+import * as _ from "lodash";
+import {Traits} from "./data/Traits";
 
 export class Character {
     constructor(props) {
@@ -237,7 +239,16 @@ class CombatStats {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.evasion_multiplier || 0).minus(1);
         }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier));
+        const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
+            const traitDefinition = Traits[trait];
+            if(_.get(traitDefinition, ["continuous", "effects", "evasion_modifier", "target"]) === "self") {
+                return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "effects", "evasion_modifier", "modifier"]), {
+                    rank: Decimal(this.character().traits[trait])
+                }));
+            }
+            return previousValue;
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
     }
 
     get precision() {
@@ -247,7 +258,16 @@ class CombatStats {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.precision_multiplier || 0).minus(1);
         }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier));
+        const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
+            const traitDefinition = Traits[trait];
+            if(_.get(traitDefinition, ["continuous", "effects", "precision_modifier", "target"]) === "self") {
+                return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "effects", "precision_modifier", "modifier"]), {
+                    rank: Decimal(this.character().traits[trait])
+                }));
+            }
+            return previousValue;
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
     }
 
     get resilience() {
@@ -257,7 +277,16 @@ class CombatStats {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.resilience_multiplier || 0).minus(1);
         }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier));
+        const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
+            const traitDefinition = Traits[trait];
+            if(_.get(traitDefinition, ["continuous", "effects", "resilience_modifier", "target"]) === "self") {
+                return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "effects", "resilience_modifier", "modifier"]), {
+                    rank: Decimal(this.character().traits[trait])
+                }));
+            }
+            return previousValue;
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
     }
 
     get power() {
@@ -267,7 +296,16 @@ class CombatStats {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.power_multiplier || 0).minus(1);
         }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier));
+        const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
+            const traitDefinition = Traits[trait];
+            if(_.get(traitDefinition, ["continuous", "effects", "power_modifier", "target"]) === "self") {
+                return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "effects", "power_modifier", "modifier"]), {
+                    rank: Decimal(this.character().traits[trait])
+                }));
+            }
+            return previousValue;
+        }, Decimal(1));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
     }
 
 }

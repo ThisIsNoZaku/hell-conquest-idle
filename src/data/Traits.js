@@ -73,11 +73,12 @@ export const Traits = {
     piercingStrike: {
         name: "Piercing Strike",
         icon: "icons/icons-113.png",
-        description: _.template("Your relentless attacks are designed to get around the enemy's defenses. Against your attacks the enemy's <span style='color: lightgreen'>Defense</span> is reduced by <span style='color: orangered'>${rank}%</span>"),
-        on_hitting: {
+        description: _.template("Your fierce attacks can punch right through even armor. Your <span style='color: lightgreen'>Precision</span> is increased by <span style='color: orangered'>${rank.times(25)}%</span>"),
+        continuous: {
             effects: {
-                defense_modifier: {
-                    percent: "$rank.times(-1)"
+                precision_modifier: {
+                    target: "self",
+                    modifier: "rank.times(.1)"
                 }
             }
         }
