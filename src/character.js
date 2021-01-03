@@ -80,9 +80,8 @@ export class Character {
 
     get maximumHp() {
         const attributeMultiplier = this.attributes.madness.times(config.mechanics.combat.hp.effectPerPoint);
-        const latentPowerMultiplier = this.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
         return this.powerLevel
-            .times(attributeMultiplier.plus(latentPowerMultiplier).plus(1))
+            .times(attributeMultiplier.plus(1))
             .mul(config.mechanics.combat.hp.pointsPerLevel)
             .floor();
     }
