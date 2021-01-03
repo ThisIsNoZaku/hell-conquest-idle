@@ -10,6 +10,7 @@ import * as _ from "lodash";
 import getHitChanceBy from "./getHitChanceBy";
 import {Statuses} from "../../data/Statuses";
 import {act} from "@testing-library/react";
+import calculateDamageBy from "./calculateDamageBy";
 
 export function resolveCombat(rng, definition) {
     const combatResult = {
@@ -155,7 +156,8 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
     if (typeof targetCharacter !== "object") {
         throw new Error(`Target character was not an object!`);
     }
-    const hitTypeChances = getHitChanceBy(getCharacter(actingCharacter.id)).against(getCharacter(targetCharacter.id));
+    const hitTypeChances = getHitChanceBy(actingCharacter).against(targetCharacter);
+    const damageCategories = calculateDamageBy(actingCharacter).against(targetCharacter);
     const damageRoll = Math.floor(rng.double() * 100);
     let hitType;
     if (damageRoll <= hitTypeChances.min) {
@@ -168,7 +170,7 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         hitType = "max";
         debugMessage(`Tick ${tick}: Damage roll ${damageRoll}, a critical hit.`);
     }
-    const damageToInflict = actingCharacter.damage[hitType];
+    const damageToInflict = damageCategories[hitType];
     const attackResult = {
         baseDamage: damageToInflict,
         hitType,
@@ -245,7 +247,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                             const thisConditionMet = targetPercent.gte(currentHealthPercent);
                             debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${thisConditionMet ? "" : "not"} enough to trigger.`);
                             return previousValue && thisConditionMet;
-                        })
+                        }, true);
 
                     case "chance":
                         const chanceToTrigger = evaluateExpression(trait[eventType].conditions[condition], {
