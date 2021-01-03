@@ -38,7 +38,7 @@ export function loadGlobalState(state) {
         highestLevelReached: Decimal(1),
         startingTraits: {},
         currentEncounter: null,
-        manualSpeedMultiplier: config.manualSpeedup.multiplier,
+        manualSpeedMultiplier: config.manualSpeedup.enabled ? config.manualSpeedup.multiplier : 1,
         currentRegion: "forest",
         actionLog: [],
         exploration: {
@@ -109,7 +109,7 @@ export function generateCreature(id, powerLevel, rng) {
             }
         })).times(5),
         traits: Creatures[id].traits.reduce((traits, next) => {
-            traits[next] = powerLevel;
+            traits[next] = powerLevel.div(10).ceil();
             return traits;
         }, {}),
         absorbedPower: getPowerNeededForLevel(powerLevel),
