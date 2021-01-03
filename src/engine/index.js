@@ -117,7 +117,7 @@ export function generateCreature(id, powerLevel, rng) {
         }, {}),
         absorbedPower: getPowerNeededForLevel(powerLevel),
         artifacts: [],
-        statuses: [],
+        statuses: {},
         attributes: {
             brutality: powerLevel.div(2).floor(),
             cunning: powerLevel.div(2).floor(),
