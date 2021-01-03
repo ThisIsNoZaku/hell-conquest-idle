@@ -8,8 +8,8 @@ import {generateHitCombatResult, generateMissCombatResult, generateSkipActionRes
 import {evaluateExpression, getCharacter} from "../index";
 import * as _ from "lodash";
 import getHitChanceBy from "./getHitChanceBy";
-import calculateDamageBy from "./calculateDamageBy";
 import {Statuses} from "../../data/Statuses";
+import {act} from "@testing-library/react";
 
 export function resolveCombat(rng, definition) {
     const combatResult = {
