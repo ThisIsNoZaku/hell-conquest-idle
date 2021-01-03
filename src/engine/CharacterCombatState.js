@@ -9,7 +9,12 @@ export default class CharacterCombatState {
     constructor(originalCharacter, party) {
         this.id = originalCharacter.id;
         // FIXME: Symbols?
-        this.attributes = new Attributes(originalCharacter.attributes, originalCharacter);
+        this.attributes = new Attributes({
+            brutality: originalCharacter.attributes.baseBrutality,
+            deceit: originalCharacter.attributes.baseDeceit,
+            cunning: originalCharacter.attributes.baseCunning,
+            madness: originalCharacter.attributes.baseMadness
+        }, originalCharacter);
         this.party = party;
         this.hp = originalCharacter.currentHp;
         this._speed = originalCharacter.speed;
