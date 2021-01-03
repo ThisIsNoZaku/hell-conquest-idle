@@ -27,7 +27,8 @@
       "Added tactics, which allows demons to emphasize certain attributes and customize their fighting style.",
       "Reduced timer duration for almost all actions",
       "Combat actions which occur on the same round now print at the same time",
-      "Added several additional tooltips."
+      "Added several additional tooltips.",
+      "Traits are now leveled from 1 to 10 instead of 1 to 100, with the level increasing every 10 levels."
     ]
   }
 }
