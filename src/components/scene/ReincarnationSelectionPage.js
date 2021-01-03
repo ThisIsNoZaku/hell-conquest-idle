@@ -52,12 +52,12 @@ export default function ReincarnationSelectionPage(props) {
         <Grid item xs={12} style={{textAlign: "center"}}>
             <strong>Reincarnate</strong>
         </Grid>
-        <Grid item xs={12} style={{textAlign: "center"}}>
+        {getGlobalState().reincarnationCount !== 0 && <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a <strong>{newLatentPower.toFixed()}%</strong> bonus to Attributes and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
-        </Grid>
+        </Grid>}
 
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
