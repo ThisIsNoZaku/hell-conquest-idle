@@ -5,6 +5,7 @@ import { Decimal } from "decimal.js";
 import {Character} from "../character";
 import {config} from "../config";
 import * as Package from "../../package.json";
+import {Tactics} from "../data/Tactics";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -99,6 +100,7 @@ export function generateCreature(id, powerLevel, rng) {
     if (Number.isNaN(powerLevel)) {
         throw new Error("Level cannot be NaN");
     }
+    const tactics = Object.keys(Tactics)[Math.floor(rng.double() * 3)];
     const nextId = nextMonsterId++;
     globalState.characters[nextId] = new Character({
         id: nextId,
@@ -108,6 +110,7 @@ export function generateCreature(id, powerLevel, rng) {
                 powerLevel: powerLevel.minus(1)
             }
         })).times(5),
+        tactics,
         traits: Creatures[id].traits.reduce((traits, next) => {
             traits[next] = powerLevel.div(10).ceil();
             return traits;
