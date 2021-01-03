@@ -90,10 +90,6 @@ export default function AdventuringPage(props) {
                     } else {
                         setCurrentAction(Actions[changeCurrentAction("exploring")]);
                     }
-                    if(getCharacter(0).isAlive) {
-                        setCurrentEncounter(getGlobalState().currentEncounter = null);
-                        setEnemy(null);
-                    }
                     return;
                     break;
                 case "kill":
@@ -174,6 +170,10 @@ export default function AdventuringPage(props) {
                         accruedTime.current = 0;
                         switch (getGlobalState().currentAction) {
                             case "exploring":
+                                if(getCharacter(0).isAlive) {
+                                    setCurrentEncounter(getGlobalState().currentEncounter = null);
+                                    setEnemy(null);
+                                }
                                 getCharacter(0).clearStatuses();
                                 let proceedingToEncounter = false;
                                 if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
