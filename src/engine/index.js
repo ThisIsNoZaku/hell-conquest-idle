@@ -23,7 +23,7 @@ export function saveGlobalState() {
     window.localStorage.setItem(saveKey, JSON.stringify(globalState));
 }
 
-export function loadGlobalState(state) {
+export function loadGlobalState() {
     let loaded = window.localStorage.getItem(saveKey);
     if(!loaded) {
         // try to load previous versions
@@ -283,4 +283,11 @@ export function getManualSpeedMultiplier() {
     const debugMultiplier = _.get(globalState, ["debug", "manualSpeedMultiplier"]);
     const baseMultiplier = globalState.manualSpeedMultiplier;
     return debugMultiplier || baseMultiplier;
+}
+
+export function clearGlobalState() {
+    const previousCompatibleVersions = changelog[pkg.version].compatiblePreviousVersions;
+    previousCompatibleVersions.forEach(version => window.localStorage.removeItem(require("md5")(`hell-conquest-${version}`)));
+    window.localStorage.removeItem(require("md5")(`hell-conquest-${pkg.version}`));
+    globalState = loadGlobalState()
 }

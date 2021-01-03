@@ -3,7 +3,8 @@ import React, {useEffect} from "react";
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router-dom";
 import {Grid} from "@material-ui/core";
-import {getGlobalState} from "../../engine";
+import {clearGlobalState, getGlobalState} from "../../engine";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const pkg = require("../../../package.json");
 const changelog = require("../../changelog.json");
@@ -44,6 +45,25 @@ export default function SplashPage(props) {
                     </ul>
                 </Grid>
             </Grid>
+        </Grid>
+        <Grid item xs style={{textAlign: "center"}}>
+            <Tooltip title="Delete your previous data and start the game">
+                <Button onClick={() => {
+                    // eslint-disable-next-line no-restricted-globals
+                    const confirmed = confirm("This will wipe all your previous progress.");
+                    if(confirmed) {
+                        clearGlobalState();
+                        if (getGlobalState().currentAction === null) {
+                            history.push("/reincarnating")
+                        } else {
+                            getGlobalState().paused = false;
+                            history.push("/adventuring")
+                        }
+                    }
+                }} variant="contained" color="secondary">
+                    Hard Reset and Start
+                </Button>
+            </Tooltip>
         </Grid>
     </Paper>
 }
