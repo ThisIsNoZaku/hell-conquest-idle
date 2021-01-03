@@ -11,6 +11,7 @@ import getHitChanceBy from "../engine/combat/getHitChanceBy";
 import calculateDamageBy from "../engine/combat/calculateDamageBy";
 import * as _ from "lodash";
 import {Help} from "@material-ui/icons";
+import {Decimal} from "decimal.js";
 
 const styles = {
     tooltip: {
@@ -74,7 +75,7 @@ export default function CharacterSheet(props) {
                 <strong>Combat Statistics</strong>
             </Grid>
             <Grid container>
-                <Tooltip title={`Your Power increases the damage your attacks deal.`}>
+                <Tooltip title={`Your Power increases the damage your attacks deal by ${Decimal(config.mechanics.combat.power.effectPerPoint).times(props.character.combat.power).times(100).toFixed()}%.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Power
@@ -84,7 +85,7 @@ export default function CharacterSheet(props) {
                         </Grid>
                     </Grid>
                 </Tooltip>
-                <Tooltip title={`Your Resilience reduces the damage attacks deal to you.`}>
+                <Tooltip title={`Your Resilience reduces the damage your attacks deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.character.combat.resilience).times(100).toFixed()}%.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Resilience
