@@ -234,11 +234,11 @@ class CombatStats {
 
     get evasion() {
         const attributeBase = this.character().attributes[config.mechanics.combat.evasion.baseAttribute];
-        const tacticsModifier = Decimal(1).plus(Tactics[this.character().tactics].evasion_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].evasion_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.evasion_multiplier || 0).minus(1);
-        }, Decimal(1));
+        }, Decimal(0));
         const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
             const traitDefinition = Traits[trait];
             if(_.get(traitDefinition, ["continuous", "effects", "evasion_modifier", "target"]) === "self") {
@@ -247,17 +247,17 @@ class CombatStats {
                 }));
             }
             return previousValue;
-        }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
+        }, Decimal(0));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
     }
 
     get precision() {
         const attributeBase = this.character().attributes[config.mechanics.combat.precision.baseAttribute];
-        const tacticsModifier = Decimal(1).plus(Tactics[this.character().tactics].precison_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].precison_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.precision_multiplier || 0).minus(1);
-        }, Decimal(1));
+        }, Decimal(0));
         const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
             const traitDefinition = Traits[trait];
             if(_.get(traitDefinition, ["continuous", "effects", "precision_modifier", "target"]) === "self") {
@@ -266,17 +266,17 @@ class CombatStats {
                 }));
             }
             return previousValue;
-        }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
+        }, Decimal(0));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
     }
 
-    get resilience() {
+    get resilience() { // TODO: Refactor all these into a shared method.
         const attributeBase = this.character().attributes[config.mechanics.combat.resilience.baseAttribute];
-        const tacticsModifier = Decimal(1).plus(Tactics[this.character().tactics].resilience_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].resilience_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.resilience_multiplier || 0).minus(1);
-        }, Decimal(1));
+        }, Decimal(0));
         const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
             const traitDefinition = Traits[trait];
             if(_.get(traitDefinition, ["continuous", "effects", "resilience_modifier", "target"]) === "self") {
@@ -285,17 +285,17 @@ class CombatStats {
                 }));
             }
             return previousValue;
-        }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
+        }, Decimal(0));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
     }
 
     get power() {
         const attributeBase = this.character().attributes[config.mechanics.combat.power.baseAttribute];
-        const tacticsModifier = Decimal(1).plus(Tactics[this.character().tactics].power_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].power_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.power_multiplier || 0).minus(1);
-        }, Decimal(1));
+        }, Decimal(0));
         const traitModifier = Object.keys(this.character().traits).reduce((previousValue, trait) => {
             const traitDefinition = Traits[trait];
             if(_.get(traitDefinition, ["continuous", "effects", "power_modifier", "target"]) === "self") {
@@ -304,8 +304,8 @@ class CombatStats {
                 }));
             }
             return previousValue;
-        }, Decimal(1));
-        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier));
+        }, Decimal(0));
+        return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
     }
 
 }
@@ -314,8 +314,6 @@ function calculateDamage(hitTypeDamageMultiplier, character) {
     const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
         player: character
     });
-    const multiplierFromPower = character.combat.power.div(100).plus(1);
     return baseDamage
-        .times(hitTypeDamageMultiplier)
-        .times(multiplierFromPower).ceil();
+        .times(hitTypeDamageMultiplier).ceil();
 }
