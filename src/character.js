@@ -184,6 +184,22 @@ export class Attributes {
         })
     }
 
+    get baseBrutality() {
+        return Decimal(this._brutality).floor();
+    }
+
+    get baseCunning() {
+        return Decimal(this._cunning).floor();
+    }
+
+    get baseDeceit() {
+        return Decimal(this._deceit).floor();
+    }
+
+    get baseMadness() {
+        return Decimal(this._madness).floor();
+    }
+
     get brutality() {
         const latentPowerMultiplier = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
             .plus(1);
