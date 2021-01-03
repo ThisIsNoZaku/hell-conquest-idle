@@ -15,13 +15,6 @@ export default function CharacterAttributes(props) {
             <Grid item xs={5}>
                 {props.character.currentHp.toFixed()} / {props.character.maximumHp.toFixed()}
             </Grid>
-            <Grid item xs={1}>
-                <Tooltip
-                    title={
-                        <span>Health is how much damage needed to destroy you. If you die, you forcibly reincarnate.</span>}>
-                    <Help/>
-                </Tooltip>
-            </Grid>
         </Grid>
         <Grid container direction="row">
             {Object.keys(Attributes).map(attribute => {
