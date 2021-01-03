@@ -21,11 +21,7 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
-    const hitChances = useMemo(() => getHitChanceBy(props.character).against(props.enemy),
-        [
-            props.character,
-            props.enemy
-        ]);
+    const hitChances = getHitChanceBy(props.character).against(props.enemy)
     const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy),
         [
             props.character,
