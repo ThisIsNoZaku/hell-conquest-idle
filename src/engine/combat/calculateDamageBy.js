@@ -9,7 +9,7 @@ export default function calculateDamageBy(attacker) {
                 .pow(attacker.combat.power);
             const resilienceMultiplier = Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
                 .pow(_.get(target, ["combat", "resilience"], 0));
-            const damageModifier = powerMultiplier.minus(resilienceMultiplier).plus(1);
+            const damageModifier = powerMultiplier.times(resilienceMultiplier);
             return {
                 min: attacker.combat.minimumDamage.times(damageModifier).ceil(),
                 med: attacker.combat.medianDamage.times(damageModifier).ceil(),
