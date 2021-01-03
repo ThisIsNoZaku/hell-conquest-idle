@@ -234,7 +234,7 @@ class CombatStats {
 
     get evasion() {
         const attributeBase = this.character().attributes[config.mechanics.combat.evasion.baseAttribute];
-        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].evasion_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].modifiers.evasion_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.evasion_multiplier || 0).minus(1);
@@ -253,7 +253,7 @@ class CombatStats {
 
     get precision() {
         const attributeBase = this.character().attributes[config.mechanics.combat.precision.baseAttribute];
-        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].precison_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].modifiers.precison_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.precision_multiplier || 0).minus(1);
@@ -272,7 +272,7 @@ class CombatStats {
 
     get resilience() { // TODO: Refactor all these into a shared method.
         const attributeBase = this.character().attributes[config.mechanics.combat.resilience.baseAttribute];
-        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].resilience_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].modifiers.resilience_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.resilience_multiplier || 0).minus(1);
@@ -291,7 +291,7 @@ class CombatStats {
 
     get power() {
         const attributeBase = this.character().attributes[config.mechanics.combat.power.baseAttribute];
-        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].power_modifier || 0);
+        const tacticsModifier = Decimal(0).plus(Tactics[this.character().tactics].modifiers.power_modifier || 0);
         const statusesModifier = Object.keys(this.character().statuses).reduce((currentValue, nextStatus) => {
             const statusDefinition = Statuses[nextStatus];
             return currentValue.plus(statusDefinition.effects.power_multiplier || 0).minus(1);
