@@ -37,7 +37,7 @@ export const config = {
         },
         levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal($level.minus(1).toNumber()).pow(2).times(5)",
         powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.sqrt($powerPoints.div(5)).plus(1).floor()",
-        maxLevel: 100,
+        maxLevel: 25,
         combat: {
             randomEncounterChance: "player.powerLevel.div(10).floor().times(10)",
             determineHit: "roll >= target ? 'hit' : 'miss'",
