@@ -6,6 +6,8 @@ import {Character} from "../character";
 import {config} from "../config";
 import * as Package from "../../package.json";
 import {Tactics} from "../data/Tactics";
+import changelog from "../changelog.json";
+import pkg from "../../package.json";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -22,7 +24,17 @@ export function saveGlobalState() {
 }
 
 export function loadGlobalState(state) {
-    const loaded = window.localStorage.getItem(saveKey);
+    let loaded = window.localStorage.getItem(saveKey);
+    if(!loaded) {
+        // try to load previous versions
+        const previousCompatibleVersions = changelog[pkg.version].compatiblePreviousVersions;
+        if(previousCompatibleVersions) {
+            loaded = previousCompatibleVersions.reduce((latestVersion, version) => {
+                const nextKey = require("md5")(`hell-conquest-${version}`);
+                return window.localStorage.getItem(nextKey) || latestVersion;
+            }, null);
+        }
+    }
     return loaded ? JSON.parse(loaded, stateReviver) : {
         debug: {
             creatures: {},
