@@ -33,6 +33,7 @@ export default function ReincarnationSelectionPage(props) {
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
         .minus(Object.values(startingTraits).filter(x => x).length * 4);
+    const nextBonusTraitCost = 2 * (Object.values(startingTraits).filter(x => x).length + 1)
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -115,7 +116,7 @@ export default function ReincarnationSelectionPage(props) {
                                         {Traits[traitId].name} {Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <em>4 pts</em>
+                                        <em style={{visibility: startingTraits[traitId] ? "hidden" : "visible" }}>{nextBonusTraitCost} pts</em>
                                     </Grid>
                                 </Grid>
                             </Tooltip>
