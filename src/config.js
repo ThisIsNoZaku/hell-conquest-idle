@@ -71,7 +71,7 @@ export const config = {
                 baseAttribute: "madness",
                 effectPerPoint: .05
             },
-            baseHitChance: 75,
+            baseHitChance: 90,
             baseDamage: "player.powerLevel.times(10)",
             attributeDamageModifier: .02,
             defaultMinimumDamageMultiplier: .5,
