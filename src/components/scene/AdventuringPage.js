@@ -320,9 +320,16 @@ export default function AdventuringPage(props) {
                                     setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 } else {
                                     pushLogItem({
-                                        message: `The Greater ${enemy.name} caught you!`,
+                                        message: `The ${enemy.name} caught you! (Roll ${roll} vs ${chanceToFlee})`,
                                         uuid: v4()
                                     });
+                                    const enemies = getGlobalState().currentEncounter.enemies;
+                                    const combatResult = resolveCombat(props.rng, {
+                                        parties: [[player], enemies]
+                                    });
+                                    getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
+                                    setEnemy(enemies[0]);
+                                    setNextAction(Actions[changeCurrentAction("fighting")]);
                                     setCurrentAction(Actions[changeCurrentAction("fighting")]);
                                 }
 
