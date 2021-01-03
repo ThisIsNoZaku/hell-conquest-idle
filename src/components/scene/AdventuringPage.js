@@ -188,13 +188,20 @@ export default function AdventuringPage(props) {
                                     })
                                     const encounterRoll = Math.floor(props.rng.double() * 100) + 1;
                                     debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
-                                    if (encounterRoll <= encounterChance) {
+                                    if (encounterChance.gte(encounterRoll)) {
                                         proceedingToEncounter = true;
                                     } else {
-                                        pushLogItem({
-                                            message: "You don't find any trouble while you recover.",
-                                            uuid: v4()
-                                        });
+                                        if(encounterChance.eq(0)) {
+                                            pushLogItem({
+                                                message: "You weak spiritual energy keeps you hidden while you heal.",
+                                                uuid: v4()
+                                            });
+                                        } else {
+                                            pushLogItem({
+                                                message: "You don't find any trouble while you recover.",
+                                                uuid: v4()
+                                            });
+                                        }
                                     }
                                 } else {
                                     proceedingToEncounter = true;
