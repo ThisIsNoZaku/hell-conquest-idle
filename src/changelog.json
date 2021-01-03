@@ -30,5 +30,14 @@
       "Added several additional tooltips.",
       "Traits are now leveled from 1 to 10 instead of 1 to 100, with the level increasing every 10 levels."
     ]
+  },
+  "0.2.1" : {
+    "changes": [
+      "Fixed a typo, from 'You weak spiritual energy[...]' to 'Your weak spiritual energy[...]'",
+      "Changed how attack damage is calculated which was increasing damage based on Power too much",
+      "The enemy is cleared when exploring after combat, instead of when the combat ends.",
+      "Fixed a bug with starting traits not clearing properly when changed."
+    ],
+    "compatiblePreviousVersions": ["0.2.0"]
   }
 }
