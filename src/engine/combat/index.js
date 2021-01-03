@@ -97,7 +97,7 @@ export function resolveCombat(rng, definition) {
                     })
                     .filter(modifier => Decimal(modifier.roundDuration).gt(0));
                 const endOfRoundEffects = [];
-                triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_round_end"}, tick, {
+                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type:"on_round_end"}, tick, {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
@@ -171,17 +171,17 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
         baseDamage: damageToInflict,
         attackMultiplier: actingCharacter.power.times(config.mechanics.combat.power.effectPerPoint),
         defenseDivisor: targetCharacter.resilience.times(config.mechanics.combat.resilience.effectPerPoint),
-        otherEffects: []
+        effects: []
     }
     // Trigger on-hit effects
-    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_hitting"}, tick, {combat: combatResult, attack: attackResult}, rng);
+    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {type:"on_hitting"}, tick, {combat: combatResult, attack: attackResult}, rng);
     const damageMultiplier = attackResult.attackMultiplier.plus(100).div(attackResult.defenseDivisor.plus(100));
     const finalDamage = attackResult.baseDamage.times(damageMultiplier).ceil();
 
     debugMessage(`Damage started off as ${attackResult.baseDamage.toFixed()}, with an attack factor of ${attackResult.attackMultiplier} and a target defense factor of ${attackResult.defenseDivisor}, for a total factor of ${damageMultiplier} and a final damage of ${finalDamage.toFixed()}`);
     targetCharacter.hp = targetCharacter.hp.minus(finalDamage);
     attackResult.finalDamage = finalDamage;
-    debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.otherEffects.map(effect => {
+    debugMessage(`Tick ${tick}: Hit did ${finalDamage.toFixed()}. Additional effects: ${attackResult.effects.map(effect => {
         switch (effect.event) {
             case "apply_effect":
                 return `Applying effect ${effect.effect} with from ${effect.source} to ${effect.target.id}.`
@@ -191,19 +191,19 @@ function resolveHit(tick, combatResult, actingCharacter, targetCharacter, rng) {
 
     }).join(", ")}. Character ${targetCharacter.id} has ${targetCharacter.hp} remaining.`)
     // TODO: Trigger on-damage effects
-    triggerEvent(Object.values(combatResult.combatantCombatStats), {
+    triggerEvent(actingCharacter, targetCharacter, Object.values(combatResult.combatantCombatStats), {
         type:"on_taking_damage",
         attacker: actingCharacter,
         target: targetCharacter
     }, tick, {combat: combatResult, attack: attackResult}, rng);
-    attackResult.otherEffects.forEach(effect => {
+    attackResult.effects.forEach(effect => {
         switch (effect.event) {
             case "damage":
                 combatResult.combatantCombatStats[effect.target].hp = combatResult.combatantCombatStats[effect.target].hp.minus(effect.value);
                 break;
         }
     })
-    combatResult.rounds.push(generateHitCombatResult(tick, actingCharacter.id, targetCharacter.id, finalDamage, attackResult.otherEffects));
+    combatResult.rounds.push(generateHitCombatResult(tick, actingCharacter.id, targetCharacter.id, finalDamage, attackResult.effects));
 }
 
 function resolveMiss(tick, combatResult, actingCharacter, targetCharacter, rng) {
@@ -231,14 +231,17 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                 switch (condition) {
                     case "health_percentage":
                         // Fixme: Implement validation
-                        const target = effect.conditions[condition].target === "attacker" ? sourceCharacter : targetCharacter;
-                        const targetPercent = Decimal(effect.conditions[condition].below);
-                        const targetCurrentHealth = targetCharacter.hp;
-                        const targetMaxHealth = target.maximumHp;
-                        const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
-                        const conditionMet = targetPercent.gte(currentHealthPercent);
-                        debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${conditionMet ? "" : "not"} enough to trigger.`);
-                        return conditionMet;
+                        const targets = selectTargets(sourceCharacter, targetCharacter, Object.values(state.combat.combatantCombatStats), "all_enemies", state);
+                        return targets.reduce((previousValue, combatant) => {
+                            const targetPercent = Decimal(effect.conditions[condition].below);
+                            const targetCurrentHealth = combatant.hp;
+                            const targetMaxHealth = combatant.maximumHp;
+                            const currentHealthPercent = (targetCurrentHealth.mul(100).div(targetMaxHealth));
+                            const thisConditionMet = targetPercent.gte(currentHealthPercent);
+                            debugMessage(`Tick ${tick}: Target health percentage is ${currentHealthPercent}, which is ${thisConditionMet ? "" : "not"} enough to trigger.`);
+                            return previousValue && thisConditionMet;
+                        })
+
                     case "chance":
                         const chanceToTrigger = evaluateExpression(trait[eventType].conditions[condition], {
                             $rank: rank
@@ -284,7 +287,7 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
                                     recordedEffects.push({
                                         event: "damage",
                                         value: damageToInflict,
-                                        target: target
+                                        target: target.id
                                     });
                                 });
                             }
