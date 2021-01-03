@@ -114,9 +114,8 @@ export function resolveCombat(rng, definition) {
                     round: {effects: endOfRoundEffects}
                 }, rng);
                 Object.keys(actingCharacter.statuses).filter(x => Statuses[x].decays).forEach(status => {
-                    if (Decimal(0).lt(actingCharacter.statuses[status] || 0)) {
-                        actingCharacter.statuses[status] = actingCharacter.statuses[status].minus(1);
-                    } else {
+                    actingCharacter.statuses[status] = actingCharacter.statuses[status].minus(1);
+                    if (Decimal(0).lte(actingCharacter.statuses[status] || 0)) {
                         delete actingCharacter.statuses[status]
                         combatResult.rounds.push({
                             uuid: v4(),
