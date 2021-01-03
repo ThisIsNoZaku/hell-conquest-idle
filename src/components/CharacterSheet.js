@@ -10,6 +10,7 @@ import TacticsSection from "./charactersheet/TacticsSection";
 import getHitChanceBy from "../engine/combat/getHitChanceBy";
 import calculateDamageBy from "../engine/combat/calculateDamageBy";
 import * as _ from "lodash";
+import {Help} from "@material-ui/icons";
 
 const styles = {
     tooltip: {
@@ -73,7 +74,7 @@ export default function CharacterSheet(props) {
                 <strong>Combat Statistics</strong>
             </Grid>
             <Grid container>
-                <Tooltip  title={`Your Power increases the damage your attacks deal.`}>
+                <Tooltip title={`Your Power increases the damage your attacks deal.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Power
@@ -83,7 +84,7 @@ export default function CharacterSheet(props) {
                         </Grid>
                     </Grid>
                 </Tooltip>
-                <Tooltip  title={`Your Resilience reduces the damage attacks deal to you.`}>
+                <Tooltip title={`Your Resilience reduces the damage attacks deal to you.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Resilience
@@ -93,7 +94,7 @@ export default function CharacterSheet(props) {
                         </Grid>
                     </Grid>
                 </Tooltip>
-                <Tooltip  title={`Your Evasion reduces the severity of hits you take.`}>
+                <Tooltip title={`Your Evasion reduces the severity of hits you take.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Evasion
@@ -103,7 +104,7 @@ export default function CharacterSheet(props) {
                         </Grid>
                     </Grid>
                 </Tooltip>
-                <Tooltip  title={`Your Precision increases the severity of hits you score.`}>
+                <Tooltip title={`Your Precision increases the severity of hits you score.`}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Precision
@@ -122,6 +123,7 @@ export default function CharacterSheet(props) {
                     <Grid item xs><em>Type</em></Grid>
                     <Grid item xs><em>Chance</em></Grid>
                     <Grid item xs><em>Damage</em></Grid>
+                    <Grid item xs={1}></Grid>
                 </Grid>
                 <Grid item container xs={12}>
                     <Grid item xs>
@@ -133,7 +135,13 @@ export default function CharacterSheet(props) {
                     <Grid item xs>
                         {calculatedDamage.min.toFixed()}
                     </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title="Glancing hits deal 50% less  damage">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
                 </Grid>
+
                 <Grid item container xs={12}>
                     <Grid item xs>
                         Solid Hit
@@ -143,6 +151,11 @@ export default function CharacterSheet(props) {
                     </Grid>
                     <Grid item xs>
                         {calculatedDamage.med.toFixed()}
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title="Solid hits deal normal damage">
+                            <Help/>
+                        </Tooltip>
                     </Grid>
                 </Grid>
                 <Grid item container xs={12}>
@@ -154,6 +167,11 @@ export default function CharacterSheet(props) {
                     </Grid>
                     <Grid item xs>
                         {calculatedDamage.max.toFixed()}
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Tooltip title="Critical hits deal 50% more damage.">
+                            <Help/>
+                        </Tooltip>
                     </Grid>
                 </Grid>
             </Grid>
