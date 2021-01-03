@@ -17,7 +17,7 @@ export const config = {
         lesserLevelScale: 1, // A demon is "lesser" than another when its level is this much lower.
         greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
         chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10)",
-        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : enemy.powerLevel.minus(player.powerLevel).pow(2).times(10)"
+        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(10)"
     },
 
     mechanics: {
