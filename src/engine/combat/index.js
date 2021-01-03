@@ -37,7 +37,7 @@ export function resolveCombat(rng, definition) {
             const actingCharacters = initiatives[initiativeCount];
             actingCharacters.forEach(actingCharacter => {
                 const beginningOfRoundEffects = [];
-                triggerEvent(Object.values(combatResult.combatantCombatStats), {type: "on_round_start"}, tick, {combat: combatResult, round: {effects: beginningOfRoundEffects}}, rng);
+                triggerEvent(actingCharacter, null, Object.values(combatResult.combatantCombatStats), {type: "on_round_start"}, tick, {combat: combatResult, round: {effects: beginningOfRoundEffects}}, rng);
                 beginningOfRoundEffects.forEach(effect => {
                     combatResult.rounds.push(effect);
                 });
