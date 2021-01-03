@@ -27,7 +27,8 @@ export const config = {
         reincarnation: {
             bonusPointsForHighestLevel: 2,
             latentPowerGainOnReincarnate: "player.powerLevel.pow(2)",
-            latentPowerEffectScale: .01
+            latentPowerEffectScale: .01,
+            traitPointCost: "Decimal.max(1, traitsOwned.times(2))"
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
@@ -39,7 +40,7 @@ export const config = {
         maxLevel: 100,
         combat: {
             randomEncounterChance: "player.powerLevel.div(10).floor().times(10)",
-            determineHit: "roll <= config.mechanics.combat.baseHitChance ? 'hit' : 'miss'",
+            determineHit: "roll >= target ? 'hit' : 'miss'",
             precision: { // Determines how precision rolls work
                 baseAttribute: "deceit",
                 effectPerPoint: .1
