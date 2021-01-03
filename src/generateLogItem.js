@@ -46,6 +46,8 @@ export default function generateLogItem(item) {
             break;
         case "add_statuses":
             result.message = `${getCharacter(item.target).name} ${item.target === 0 ? 'gain' : 'gained'} ${Decimal(item.level).toFixed()} levels of ${Statuses[item.status].name}`
+        case "remove-statuses":
+            result.message = `${Statuses[item.status].name} was removed from ${getCharacter(item.target).name}.`
         default:
             debugMessage(`${JSON.stringify(item)}`);
     }

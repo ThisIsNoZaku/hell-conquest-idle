@@ -103,14 +103,19 @@ export function resolveCombat(rng, definition) {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
-                Object.values(combatResult.combatantCombatStats).forEach(combatant => {
-                    Object.keys(combatant.statuses).filter(x => Statuses[x].decays).forEach(status => {
-                        if(Decimal(0).lt(combatant.statuses[status] || 0)) {
-                            combatant.statuses[status] = combatant.statuses[status].minus(1);
-                        } else {
-                            delete combatant.statuses[status]
-                        }
-                    })
+                Object.keys(actingCharacter.statuses).filter(x => Statuses[x].decays).forEach(status => {
+                    if (Decimal(0).lt(actingCharacter.statuses[status] || 0)) {
+                        actingCharacter.statuses[status] = actingCharacter.statuses[status].minus(1);
+                    } else {
+                        delete actingCharacter.statuses[status]
+                        combatResult.rounds.push({
+                            uuid: v4(),
+                            tick,
+                            actor: actingCharacter.id,
+                            result: "status-removed",
+                            status
+                        });
+                    }
                 });
                 endOfRoundEffects.forEach(event => {
                     combatResult.rounds.push(event);
