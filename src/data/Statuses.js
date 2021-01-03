@@ -10,7 +10,7 @@ export const Statuses = {
     },
     terrified: {
         name: "Terrified",
-        icon: "",
+        icon: "icons/icons-130.png",
         effects: {
             skip_turn: true
         },
@@ -18,7 +18,7 @@ export const Statuses = {
     },
     restrained: {
         name: "Restrained",
-        icon: "",
+        icon: "icons/icons-1276.png",
         effects: {
             accuracy_modifier: .9
         },
