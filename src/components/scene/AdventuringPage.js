@@ -134,11 +134,9 @@ export default function AdventuringPage(props) {
                                     targetCharacter.currentHp = Decimal(0);
                                 }
                                 break;
-                            case "apply_effect":
-                                targetCharacter.addModifier({
-                                    effect: effect.effect,
-                                    magnitude: effect.value
-                                });
+                            case "add_statuses":
+                                const characterStatuses = getCharacter(effect.target).statuses;
+                                characterStatuses[effect.status] = effect.level;
                                 break;
                         }
                     });
@@ -147,6 +145,10 @@ export default function AdventuringPage(props) {
                     const characterStatuses = getCharacter(action.target).statuses;
                     characterStatuses[action.status] = action.level;
                     break;
+                case "status-removed": {
+                    const characterStatuses = getCharacter(action.actor).statuses;
+                    delete characterStatuses[action.status];
+                }
                 case "action_skipped":
                     break;
                 default:
