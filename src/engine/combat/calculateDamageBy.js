@@ -5,10 +5,12 @@ import { config } from "../../config";
 export default function calculateDamageBy(attacker) {
     return {
         against: function (target) {
+            const attackerPower = attacker.combat.power;
             const powerMultiplier = Decimal(config.mechanics.combat.power.effectPerPoint).plus(1)
-                .pow(attacker.combat.power);
+                .pow(attackerPower);
+            const defenderResilience = _.get(target, ["combat", "resilience"], 0);
             const resilienceMultiplier = Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
-                .pow(_.get(target, ["combat", "resilience"], 0));
+                .pow(defenderResilience);
             const damageModifier = powerMultiplier.times(resilienceMultiplier);
             return {
                 min: attacker.combat.minimumDamage.times(damageModifier).ceil(),
