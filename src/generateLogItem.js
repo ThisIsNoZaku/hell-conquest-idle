@@ -33,7 +33,7 @@ export default function generateLogItem(item) {
             result.message = "You escaped";
             break;
         case "action_skipped":
-            result.message = `${getCharacter(item.actor).name} lost {item.actor === 0 ? 'your' : 'their'} action.`;
+            result.message = `${getCharacter(item.actor).name} lost ${item.actor === 0 ? 'your' : 'their'} action.`;
             break;
         case "intimidated":
             result.message = `${getCharacter(item.target).name} was Bound to you, granting you {item.value.toFixed()} power while you explore.`
@@ -55,7 +55,7 @@ export default function generateLogItem(item) {
 function describeEffect(target, effect) {
     switch (effect.event) {
         case "damage":
-            return `${getCharacter(effect.target).name} ${target == 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
+            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
         default:
             return Object.keys(effect.effect.effects).map(mod => {
                 switch (mod) {
