@@ -20,5 +20,14 @@
       "Fixed the bonus point calculation and starting traits on the reincarnation page.",
       "Added a new demon: Tormented Dead which inflicts the pain it suffers back on their enemies."
     ]
+  },
+  "0.2.0" : {
+    "changes": [
+      "Reimplemented many traits.",
+      "Added tactics, which allows demons to emphasize certain attributes and customize their fighting style.",
+      "Reduced timer duration for almost all actions",
+      "Combat actions which occur on the same round now print at the same time",
+      "Added several additional tooltips."
+    ]
   }
 }
