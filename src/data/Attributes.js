@@ -19,7 +19,7 @@ export const Attributes = {
     },
     madness: {
         label: "Madness",
-            description: _.template(`Madness is how disconnected from the limits of reality the Demon is. It gives a \${rank * ${ config.mechanics.combat.traitRank.effectPerPoint * 100}}% bonus to the effects of Traits.`),
+            description: _.template(`Madness is how disconnected from the limits of reality the Demon is. It gives a \${rank * ${ config.mechanics.combat.traitRank.effectPerPoint * 100}}% bonus to the effects of Traits and health.`),
             icon: "icons/icons-124.png"
     }
 }
