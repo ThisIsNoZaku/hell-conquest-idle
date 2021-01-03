@@ -32,7 +32,7 @@ export default function ReincarnationSelectionPage(props) {
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
-        .minus(Object.values(startingTraits).filter(x => x).length * 4);
+        .minus(2 * (Object.values(startingTraits).filter(x => x).length));
     const nextBonusTraitCost = 2 * (Object.values(startingTraits).filter(x => x).length + 1)
 
     useEffect(() => {
@@ -96,7 +96,7 @@ export default function ReincarnationSelectionPage(props) {
                     <Grid item xs={12} style={{textAlign: "center", height: "64%"}}>
                         <Button variant="contained"
                                 color={getGlobalState().startingTraits[traitId] ? "secondary" : "default"}
-                                disabled={availableBonusPoints.lt(4) && !startingTraits[traitId]}
+                                disabled={availableBonusPoints.lt(nextBonusTraitCost) && !startingTraits[traitId]}
                                 onClick={() => {
                                     getGlobalState().startingTraits[traitId] = !getGlobalState().startingTraits[traitId];
                                     setStartingTraits({...getGlobalState().startingTraits});
