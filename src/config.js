@@ -3,7 +3,7 @@ console.log(process.env.REACT_APP_DEBUG_MODE, typeof process.env.REACT_APP_DEBUG
 
 export const config = {
     manualSpeedup: {
-        enabled: true,
+        enabled: false,
         multiplier: 2
     },
 
