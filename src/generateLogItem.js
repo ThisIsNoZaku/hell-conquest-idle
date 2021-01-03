@@ -56,23 +56,7 @@ function describeEffect(target, effect) {
     switch (effect.event) {
         case "damage":
             return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'take' : 'takes'} ${effect.value} Damage.`;
-        default:
-            return Object.keys(effect.effect.effects).map(mod => {
-                switch (mod) {
-                    case "speed":
-                        const percentModifier = Decimal(effect.effect.effects.speed.percent); // FIXME: 3 layers, the same name?
-                        if (percentModifier.lt(0)) {
-                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'suffer' : 'suffers'} a ${percentModifier.toFixed()}% penalty to Action Speed.`;
-                        } else {
-                            return `${getCharacter(effect.target).name} ${effect.target == 0 ? 'gain' : 'gains'} a ${percentModifier.toFixed()}% bonus to Action Speed.`;
-                        }
-                }
-            })
-            switch (effect.effect.modifier) {
-                case "speed_modifier":
-
-
-            }
-
+        case "add_statuses":
+            return `${getCharacter(effect.target).name} gained ${Decimal(effect.level).toFixed()} of ${Statuses[effect.status].name}.`;
     }
 }
