@@ -30,6 +30,7 @@ export default class CharacterCombatState {
             max: originalCharacter.combat.maximumDamage
         }
         this.statuses = {...originalCharacter.statuses};
+        this.powerLevel = originalCharacter.powerLevel;
     }
 
     get combat() {

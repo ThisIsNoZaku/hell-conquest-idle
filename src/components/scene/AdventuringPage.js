@@ -137,6 +137,10 @@ export default function AdventuringPage(props) {
                         }
                     });
                     break;
+                case "fatigue-damage":
+                    const targetCharacter = getCharacter(action.actor);
+                    targetCharacter.currentHp = targetCharacter.currentHp.minus(action.value);
+                    break;
                 case "add_statuses":
                     const characterStatuses = getCharacter(action.target).statuses;
                     characterStatuses[action.status] = action.level;
@@ -170,6 +174,13 @@ export default function AdventuringPage(props) {
                         accruedTime.current = 0;
                         switch (getGlobalState().currentAction) {
                             case "exploring":
+                                if(getCharacter(0).powerLevel.gte(config.mechanics.maxLevel)) {
+                                    pushLogItem({
+                                        message: "Congratulations, you've reached the level cap. 👍",
+                                        uuid: v4()
+                                    });
+                                    setPaused(getGlobalState().paused = true);
+                                }
                                 if(getCharacter(0).isAlive) {
                                     setCurrentEncounter(getGlobalState().currentEncounter = null);
                                     setEnemy(null);

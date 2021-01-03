@@ -43,12 +43,16 @@ export default function generateLogItem(item) {
             break;
         case "combat-end":
             result.message = `Battle ended`;
+            delete result.tick;
             break;
         case "add_statuses":
             result.message = `${getCharacter(item.target).name} ${item.target === 0 ? 'gain' : 'gained'} ${Decimal(item.level).toFixed()} ${Decimal(item.level).eq(1) ? 'level' : 'levels'} of ${Statuses[item.status].name}`
             break;
         case "status-removed":
             result.message = `${Statuses[item.status].name} was removed from ${getCharacter(item.actor).name}.`
+            break;
+        case "fatigue-damage":
+            result.message = `Extreme exhaustion deals ${item.value} damage to ${getCharacter(item.actor).name}.`;
             break;
         default:
             debugMessage(`${JSON.stringify(item)}`);

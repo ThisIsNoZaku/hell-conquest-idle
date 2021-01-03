@@ -118,6 +118,16 @@ export function resolveCombat(rng, definition) {
                     combat: combatResult,
                     round: {effects: endOfRoundEffects}
                 }, rng);
+                actingCharacter.fatigue = Decimal(actingCharacter.fatigue || 0).plus(1);
+                if(actingCharacter.powerLevel.div(2).plus(5).lt(actingCharacter.fatigue)) {
+                    const healthToLose = Decimal.max(1, actingCharacter.maximumHp.div(100).ceil());
+                    combatResult.rounds.push({
+                        uuid: v4(),
+                        result: "fatigue-damage",
+                        value: healthToLose,
+                        actor: actingCharacter.id
+                    });
+                }
                 Object.keys(actingCharacter.statuses).filter(x => Statuses[x].decays).forEach(status => {
                     actingCharacter.statuses[status] = actingCharacter.statuses[status].minus(1);
                     if (Decimal(0).lte(actingCharacter.statuses[status] || 0)) {
@@ -133,7 +143,7 @@ export function resolveCombat(rng, definition) {
                 });
                 endOfRoundEffects.forEach(event => {
                     combatResult.rounds.push(event);
-                })
+                });
             });
         });
         const playerPartyDead = definition.parties[0].every(character => combatResult.combatantCombatStats[character.id].hp.lte(0));
