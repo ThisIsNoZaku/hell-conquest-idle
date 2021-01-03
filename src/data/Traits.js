@@ -16,7 +16,7 @@ export const Traits = {
                 add_statuses: {
                     berserk: {
                         target: "attacker",
-                        rank: "rank.div(10).ceil()"
+                        rank: "rank"
                     }
                 }
             }
@@ -60,21 +60,13 @@ export const Traits = {
             }
         }
     },
-    murderousFrenzy: {
-        name: "Murderous Frenzy",
-        icon: "icons/icons-118.png",
-        description: _.template("After hitting with an attack this Demon frenzies, gaining a <span style='color: orangered'>${rank}%</span> bonus to <span style='color: lightgreen'>Attack Speed</span> for 2 rounds."),
-        on_hitting: {
+    sadisticJoy: {
+        name: "Sadistic Joy",
+        icon: "icons/icons-852.png",
+        description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
+        on_kill: {
             effects: {
-                add_modifier: {
-                    speed: {
-                        target: "attacker",
-                        percent: "$rank"
-                    }
-                }
-            },
-            duration: {
-                rounds: 2
+                power_gain_modifier: "rank.times(.25)"
             }
         }
     },

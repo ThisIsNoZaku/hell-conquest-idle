@@ -90,6 +90,17 @@ export const Regions = {
                     }
                 ]
             },
+            condemnedSlasher: {
+                description: "1 Condemned Slasher",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "condemnedSlasher",
+                        count: 1
+                    }
+                ]
+            },
             crushingSnake: {
                 description: "1 Crushing Snake",
                 type: "combat",

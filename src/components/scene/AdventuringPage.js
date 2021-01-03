@@ -20,6 +20,7 @@ import {Regions} from "../../data/Regions";
 import {resolveCombat} from "../../engine/combat";
 import {useHotkeys} from "react-hotkeys-hook";
 import generateLogItem from "../../generateLogItem";
+import {Traits} from "../../data/Traits";
 
 const styles = {
     root: {
@@ -96,12 +97,6 @@ export default function AdventuringPage(props) {
                     return;
                     break;
                 case "kill":
-                    if (getGlobalState().currentEncounter.pendingActions[0].result === "combat-end") {
-                        if (getCharacter(0).isDamaged) {
-                            getGlobalState().nextAction = "healing";
-                            setNextAction(getGlobalState().nextAction);
-                        }
-                    }
                     const enemy = getCharacter(action.target);
                     if (action.actor === 0 && action.target !== 0) {
                         debugMessage("Player killed a non-lesser enemy and gained power.");
@@ -109,7 +104,14 @@ export default function AdventuringPage(props) {
                         const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromOtherDemon, {
                             enemy
                         });
-                        const powerGained = player.gainPower(powerToGain);
+                        let multiplier = Object.keys(player.traits).reduce((multiplier, trait) => {
+                            const traitMultiplier = evaluateExpression(_.get(Traits[trait].on_kill, ["effects", "power_gain_modifier"], 0),
+                                {
+                                    rank: Decimal(player.traits[trait])
+                                });
+                            return multiplier.plus(traitMultiplier);
+                        }, Decimal(1))
+                        const powerGained = player.gainPower(powerToGain.times(multiplier).floor());
                         pushLogItem(generateLogItem({
                             result: "gainedPower",
                             value: powerGained

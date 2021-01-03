@@ -16,8 +16,7 @@ export const Creatures  = {
     },
     condemnedSlasher: {
         name: "Condemned Slasher",
-        traits: ["murderousFrenzy"],
-        enabled: false,
+        traits: ["sadisticJoy"],
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
         description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died.",

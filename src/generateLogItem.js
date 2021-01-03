@@ -45,7 +45,7 @@ export default function generateLogItem(item) {
             result.message = `Battle ended`;
             break;
         case "add_statuses":
-            result.message = `${getCharacter(item.target).name} ${item.target === 0 ? 'gain' : 'gained'} ${item.level.toFixed()} levels of ${Statuses[item.status].name}`
+            result.message = `${getCharacter(item.target).name} ${item.target === 0 ? 'gain' : 'gained'} ${Decimal(item.level).toFixed()} levels of ${Statuses[item.status].name}`
         default:
             debugMessage(`${JSON.stringify(item)}`);
     }
