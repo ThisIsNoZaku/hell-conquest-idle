@@ -352,13 +352,11 @@ function selectTargets(sourceCharacter, targetCharacter, combatants, targetType,
     });
 }
 
-function triggerEvent(combatants, event, tick, state, rng) {
+function triggerEvent(sourceCharacter, targetCharacter, combatants, event, tick, state, rng) {
     debugMessage(`Triggering event ${event.type}`);
-    combatants.forEach(combatant => Object.keys(combatant.traits).forEach(trait => {
-        combatants.filter(other => other !== combatant).forEach(otherCombatant => {
-            applyTrait(combatant, otherCombatant, getTrait(trait), combatant.traits[trait], event, state, tick, rng);
-        });
-    }));
+    Object.keys(sourceCharacter.traits).forEach(trait => {
+        applyTrait(sourceCharacter, targetCharacter, getTrait(trait), sourceCharacter.traits[trait], event, state, tick, rng);
+    });
 }
 
 function determineInitiatives(state) {
