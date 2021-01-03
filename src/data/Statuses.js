@@ -4,8 +4,8 @@ export const Statuses = {
         icon: "./icons/icons-516.png",
         description: "",
         effects: {
-            power_multiplier: 1.2,
-            evasion_multiplier: .9
+            power_modifier: 1.2,
+            evasion_modifier: .9
         }
     },
     terrified: {
