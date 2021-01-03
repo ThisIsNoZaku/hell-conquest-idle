@@ -24,8 +24,11 @@ export function resolveCombat(rng, definition) {
         })
     }));
     debugMessage("Beginning combat")
-    // Trigger start of combat effects.
-    triggerEvent(Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, {combat: combatResult, round: {effects: []}}, rng);
+    Object.values(combatResult.combatantCombatStats).forEach(combatant => {
+        // Trigger start of combat effects.
+        triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {type:"on_combat_start"}, 0, {combat: combatResult, round: {effects: []}}, rng);
+    })
+
 
     let tick = 0;
     while (combatResult.winner === null) {
