@@ -60,7 +60,8 @@ export function resolveCombat(rng, definition) {
                     debugMessage(`Tick ${tick}: Attacking ${target}`);
                     const attackRollResult = makeAttackRoll(actingCharacter, target, combatResult, rng);
                     const attackOutcome = evaluateExpression(config.mechanics.combat.determineHit, {
-                        roll: attackRollResult.total
+                        roll: attackRollResult.total,
+                        target: 100
                     });
                     switch (attackOutcome) {
                         case "hit":
@@ -340,7 +341,8 @@ function applyTrait(sourceCharacter, targetCharacter, trait, rank, event, state,
 
 function makeAttackRoll(actingCharacter, target, combatState, rng) {
     // TODO: Validation
-    const roll = Math.floor((rng.double() * 100));
+    const accuracy = actingCharacter.accuracy;
+    const roll = accuracy.plus(Math.floor((rng.double() * 100)));
     return {
         rawRoll: roll,
         total: roll

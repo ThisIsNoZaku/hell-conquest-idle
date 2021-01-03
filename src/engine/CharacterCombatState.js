@@ -47,6 +47,14 @@ export default class CharacterCombatState {
         return this.hp.gt(0);
     }
 
+    get accuracy() {
+        const baseAccuracy = Decimal(config.mechanics.combat.baseHitChance);
+        const statusesMultiplier = Decimal(1).minus(
+            Decimal(Statuses["restrained"].effects.accuracy_modifier)
+            .times(this.statuses["restrained"] || 0));
+        return baseAccuracy.times(statusesMultiplier);
+    }
+
     get canAct() {
         return Object.keys(this.statuses).reduce((canAct, nextStatus) => {
             return canAct && !Statuses[nextStatus].effects.skip_turn;
