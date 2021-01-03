@@ -213,7 +213,9 @@ export function reincarnateAs(monsterId, newAttributes) {
     globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
 
-    getCharacter(0).traits = Object.keys(globalState.startingTraits).reduce((startingTraits, trait) => {
+    getCharacter(0).traits = Object.keys(globalState.startingTraits)
+        .filter(t => globalState.startingTraits[t])
+        .reduce((startingTraits, trait) => {
         startingTraits[trait] = globalState.unlockedTraits[trait];
         return startingTraits;
     }, {});
