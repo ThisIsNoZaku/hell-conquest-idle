@@ -26,11 +26,15 @@ export function resolveCombat(rng, definition) {
     }));
     debugMessage("Beginning combat")
     Object.values(combatResult.combatantCombatStats).forEach(combatant => {
+        const startOfCombatEffects = [];
         // Trigger start of combat effects.
         triggerEvent(combatant, null, Object.values(combatResult.combatantCombatStats), {type: "on_combat_start"}, 0, {
             combat: combatResult,
-            round: {effects: []}
+            round: {effects: startOfCombatEffects}
         }, rng);
+        startOfCombatEffects.forEach(effect => {
+            combatResult.rounds.push(effect);
+        });
     })
 
 
