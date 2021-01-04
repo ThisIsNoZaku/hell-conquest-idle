@@ -57,6 +57,7 @@ function App() {
                 <Route path="/reincarnating" exact>
                     <ReincarnationSelectionPage reincarnate={(monster, attributes) => {
                         reincarnateAs(monster, attributes);
+                        getGlobalState().automaticReincarnate = false;
                         unpause();
                     }}/>
                 </Route>

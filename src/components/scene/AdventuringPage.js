@@ -122,7 +122,7 @@ export default function AdventuringPage(props) {
                             result: "gainedPower",
                             value: powerGained
                         }));
-                        if(!pregainLevel.eq(player.powerLevel)) {
+                        if (!pregainLevel.eq(player.powerLevel)) {
                             const currentHp = player.currentHp;
                             player.currentHp = player.maximumHp;
                             pushLogItem({
@@ -186,224 +186,230 @@ export default function AdventuringPage(props) {
             if (!lastTime) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
-                if (accruedTime.current >= _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) {
-                    const player = getCharacter(0);
-                    saveGlobalState();
-                    accruedTime.current = 0;
-                    switch (getGlobalState().currentAction) {
-                        case "exploring":
-                            if (getCharacter(0).powerLevel.gte(config.mechanics.maxLevel)) {
-                                pushLogItem({
-                                    message: "Congratulations, you've reached the level cap. 👍",
-                                    uuid: v4()
-                                });
-                                setPaused(getGlobalState().paused = true);
-                            }
-                            if (getCharacter(0).isAlive) {
-                                setCurrentEncounter(getGlobalState().currentEncounter = null);
-                                setEnemy(null);
-                            }
-                            getCharacter(0).clearStatuses();
-                            let proceedingToEncounter = false;
-                            if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
-                                const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {
-                                    player
-                                });
-                                const amountToHeal = encounterChance.lte(0) || getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
-                                    getCharacter(0).maximumHp
-                                ) ? getCharacter(0).maximumHp.minus(getCharacter(0).currentHp) : getCharacter(0).healing;
-                                getCharacter(0).currentHp = getCharacter(0).currentHp.plus(amountToHeal);
-                                pushLogItem({
-                                    message: `You naturally healed ${amountToHeal} health`,
-                                    uuid: v4()
-                                })
-                                const encounterRoll = Math.floor(props.rng.double() * 100) + 1;
-                                debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
-                                if (encounterChance.gte(encounterRoll)) {
+                const player = getCharacter(0);
+                if(getGlobalState().automaticReincarnate && player.powerLevel.gt(getGlobalState().highestLevelEnemyDefeated)) {
+                    setCurrentAction(Actions[changeCurrentAction("reincarnating")]);
+                    pushLogItem({
+                        message: "A game play contrivance forces you to reincarnate",
+                        uuid: v4()
+                    });
+                } else if (accruedTime.current >= _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) {
+                        const player = getCharacter(0);
+                        saveGlobalState();
+                        accruedTime.current = 0;
+                        switch (getGlobalState().currentAction) {
+                            case "exploring":
+                                if (getCharacter(0).powerLevel.gte(config.mechanics.maxLevel)) {
+                                    pushLogItem({
+                                        message: "Congratulations, you've reached the level cap. 👍",
+                                        uuid: v4()
+                                    });
+                                    setPaused(getGlobalState().paused = true);
+                                }
+                                if (getCharacter(0).isAlive) {
+                                    setCurrentEncounter(getGlobalState().currentEncounter = null);
+                                    setEnemy(null);
+                                }
+                                getCharacter(0).clearStatuses();
+                                let proceedingToEncounter = false;
+                                if (getCharacter(0).currentHp.lt(getCharacter(0).maximumHp)) {
+                                    const encounterChance = evaluateExpression(config.mechanics.combat.randomEncounterChance, {
+                                        player
+                                    });
+                                    const amountToHeal = encounterChance.lte(0) || getCharacter(0).currentHp.plus(getCharacter(0).healing).gt(
+                                        getCharacter(0).maximumHp
+                                    ) ? getCharacter(0).maximumHp.minus(getCharacter(0).currentHp) : getCharacter(0).healing;
+                                    getCharacter(0).currentHp = getCharacter(0).currentHp.plus(amountToHeal);
+                                    pushLogItem({
+                                        message: `You naturally healed ${amountToHeal} health`,
+                                        uuid: v4()
+                                    })
+                                    const encounterRoll = Math.floor(props.rng.double() * 100) + 1;
+                                    debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
+                                    if (encounterChance.gte(encounterRoll)) {
+                                        proceedingToEncounter = true;
+                                    } else {
+                                        if (encounterChance.eq(0)) {
+                                            pushLogItem({
+                                                message: "Your weak spiritual energy keeps you hidden while you heal.",
+                                                uuid: v4()
+                                            });
+                                        } else {
+                                            pushLogItem({
+                                                message: "You don't find any trouble while you recover.",
+                                                uuid: v4()
+                                            });
+                                        }
+                                    }
+                                } else {
                                     proceedingToEncounter = true;
-                                } else {
-                                    if (encounterChance.eq(0)) {
-                                        pushLogItem({
-                                            message: "Your weak spiritual energy keeps you hidden while you heal.",
-                                            uuid: v4()
-                                        });
-                                    } else {
-                                        pushLogItem({
-                                            message: "You don't find any trouble while you recover.",
-                                            uuid: v4()
-                                        });
-                                    }
                                 }
-                            } else {
-                                proceedingToEncounter = true;
-                            }
-                            if (proceedingToEncounter) {
-                                getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), props.rng);
-                                setCurrentEncounter(getGlobalState().currentEncounter);
-                                setEnemy(getGlobalState().currentEncounter.enemies[0]);
-                                setCurrentAction(Actions[changeCurrentAction("approaching")]);
-                                getGlobalState().nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
-                                    if (actionSoFar !== "fighting") {
-                                        return actionSoFar;
+                                if (proceedingToEncounter) {
+                                    getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), props.rng);
+                                    setCurrentEncounter(getGlobalState().currentEncounter);
+                                    setEnemy(getGlobalState().currentEncounter.enemies[0]);
+                                    setCurrentAction(Actions[changeCurrentAction("approaching")]);
+                                    getGlobalState().nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
+                                        if (actionSoFar !== "fighting") {
+                                            return actionSoFar;
+                                        }
+
+                                        if (player.otherDemonIsLesserDemon(nextEnemy)) {
+                                            return "intimidating";
+                                        } else if (player.otherDemonIsGreaterDemon(nextEnemy)) {
+                                            return "fleeing";
+                                        } else {
+                                            return "fighting";
+                                        }
+                                    }, "fighting");
+                                    setNextAction(getGlobalState().nextAction);
+                                    if (getGlobalState().passivePowerIncome.gt(0)) {
+                                        const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
+                                        pushLogItem({
+                                            message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
+                                            uuid: v4()
+                                        });
+                                        getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                     }
 
-                                    if (player.otherDemonIsLesserDemon(nextEnemy)) {
-                                        return "intimidating";
-                                    } else if (player.otherDemonIsGreaterDemon(nextEnemy)) {
-                                        return "fleeing";
+                                    const enemies = getGlobalState().currentEncounter.enemies;
+                                    if (player.otherDemonIsGreaterDemon(enemies[0])) {
+                                        pushLogItem({
+                                            message: `<strong>💀Approaching Greater ${enemies[0].name}.💀</strong>`,
+                                            uuid: v4()
+                                        });
+                                    } else if (player.otherDemonIsLesserDemon(enemies[0])) {
+                                        pushLogItem({
+                                            message: `<strong>Approaching Lesser ${enemies[0].name}.</strong>`,
+                                            uuid: v4()
+                                        });
                                     } else {
-                                        return "fighting";
+                                        pushLogItem({
+                                            message: `<strong>Approaching ${enemies[0].name}.</strong>`,
+                                            uuid: v4()
+                                        });
                                     }
-                                }, "fighting");
-                                setNextAction(getGlobalState().nextAction);
-                                if (getGlobalState().passivePowerIncome.gt(0)) {
-                                    const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
+                                    saveGlobalState();
+                                }
+                                break;
+                            case "approaching": {
+                                // Since we're starting a new combat, remove any old, dead characters
+                                switch (getGlobalState().nextAction) {
+                                    case "fighting":
+                                        const enemies = getGlobalState().currentEncounter.enemies;
+                                        const combatResult = resolveCombat(props.rng, {
+                                            parties: [[player], enemies]
+                                        });
+                                        getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
+                                        setEnemy(enemies[0]);
+                                        break;
+                                }
+                                setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
+                                setNextAction();
+                                const deadCharacters = Object.keys(getGlobalState().characters)
+                                    .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
+                                deadCharacters.forEach(id => {
+                                    delete getGlobalState().characters[id]
+                                });
+                                break;
+                            }
+                            case "intimidating": {
+                                const enemy = getGlobalState().currentEncounter.enemies[0];
+                                const chanceToIntimidate = evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+                                    enemy,
+                                    player: getCharacter(0)
+                                });
+                                const roll = Math.floor(props.rng.double() * 100) + 1;
+                                if (chanceToIntimidate.gte(roll)) {
+                                    const periodicPowerIncreases = evaluateExpression(config.mechanics.xp.gainedFromLesserDemon, {
+                                        enemy
+                                    });
+                                    pushLogItem(generateLogItem({
+                                        result: "intimidated",
+                                        target: enemy.id,
+                                        value: periodicPowerIncreases
+                                    }));
+                                    getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
+                                } else {
+                                    pushLogItem(generateLogItem({
+                                        message: `${getCharacter(enemy.id).name} escaped! (You rolled ${roll} vs ${chanceToIntimidate} chance to Bind).`
+                                    }));
+                                    setCurrentEncounter(getGlobalState().currentEncounter = null);
+                                }
+                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                break;
+                            }
+                            case "fleeing":
+                                const enemy = getGlobalState().currentEncounter.enemies[0];
+                                const chanceToFlee = evaluateExpression(config.encounters.chanceToEscapeGreater, {
+                                    enemy,
+                                    player: getCharacter(0)
+                                });
+                                const roll = Math.floor(props.rng.double() * 100) + 1;
+                                if (chanceToFlee.gte(roll)) {
                                     pushLogItem({
-                                        message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
+                                        result: "escaped",
                                         uuid: v4()
                                     });
+                                    const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromGreaterDemon, {
+                                        $enemy: enemy
+                                    });
+                                    const powerGained = player.gainPower(powerToGain);
                                     getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
-                                }
-
-                                const enemies = getGlobalState().currentEncounter.enemies;
-                                if (player.otherDemonIsGreaterDemon(enemies[0])) {
-                                    pushLogItem({
-                                        message: `<strong>💀Approaching Greater ${enemies[0].name}.💀</strong>`,
-                                        uuid: v4()
-                                    });
-                                } else if (player.otherDemonIsLesserDemon(enemies[0])) {
-                                    pushLogItem({
-                                        message: `<strong>Approaching Lesser ${enemies[0].name}.</strong>`,
-                                        uuid: v4()
-                                    });
+                                    pushLogItem(generateLogItem({
+                                        result: "gainedPower",
+                                        value: powerGained,
+                                    }));
+                                    getGlobalState().currentEncounter = null;
+                                    setCurrentEncounter(null);
+                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 } else {
                                     pushLogItem({
-                                        message: `<strong>Approaching ${enemies[0].name}.</strong>`,
+                                        message: `The ${enemy.name} caught you! (Roll ${roll} vs ${chanceToFlee})`,
                                         uuid: v4()
                                     });
-                                }
-                                saveGlobalState();
-                            }
-                            break;
-                        case "approaching": {
-                            // Since we're starting a new combat, remove any old, dead characters
-                            switch (getGlobalState().nextAction) {
-                                case "fighting":
                                     const enemies = getGlobalState().currentEncounter.enemies;
                                     const combatResult = resolveCombat(props.rng, {
                                         parties: [[player], enemies]
                                     });
                                     getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
                                     setEnemy(enemies[0]);
-                                    break;
-                            }
-                            setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
-                            setNextAction();
-                            const deadCharacters = Object.keys(getGlobalState().characters)
-                                .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
-                            deadCharacters.forEach(id => {
-                                delete getGlobalState().characters[id]
-                            });
-                            break;
-                        }
-                        case "intimidating": {
-                            const enemy = getGlobalState().currentEncounter.enemies[0];
-                            const chanceToIntimidate = evaluateExpression(config.encounters.chanceToIntimidateLesser, {
-                                enemy,
-                                player: getCharacter(0)
-                            });
-                            const roll = Math.floor(props.rng.double() * 100) + 1;
-                            if (chanceToIntimidate.gte(roll)) {
-                                const periodicPowerIncreases = evaluateExpression(config.mechanics.xp.gainedFromLesserDemon, {
-                                    enemy
-                                });
-                                pushLogItem(generateLogItem({
-                                    result: "intimidated",
-                                    target: enemy.id,
-                                    value: periodicPowerIncreases
-                                }));
-                                getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
-                            } else {
-                                pushLogItem(generateLogItem({
-                                    message: `${getCharacter(enemy.id).name} escaped! (You rolled ${roll} vs ${chanceToIntimidate} chance to Bind).`
-                                }));
-                                setCurrentEncounter(getGlobalState().currentEncounter = null);
-                            }
-                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            break;
-                        }
-                        case "fleeing":
-                            const enemy = getGlobalState().currentEncounter.enemies[0];
-                            const chanceToFlee = evaluateExpression(config.encounters.chanceToEscapeGreater, {
-                                enemy,
-                                player: getCharacter(0)
-                            });
-                            const roll = Math.floor(props.rng.double() * 100) + 1;
-                            if (chanceToFlee.gte(roll)) {
-                                pushLogItem({
-                                    result: "escaped",
-                                    uuid: v4()
-                                });
-                                const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromGreaterDemon, {
-                                    $enemy: enemy
-                                });
-                                const powerGained = player.gainPower(powerToGain);
-                                getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
-                                pushLogItem(generateLogItem({
-                                    result: "gainedPower",
-                                    value: powerGained,
-                                }));
-                                getGlobalState().currentEncounter = null;
-                                setCurrentEncounter(null);
-                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            } else {
-                                pushLogItem({
-                                    message: `The ${enemy.name} caught you! (Roll ${roll} vs ${chanceToFlee})`,
-                                    uuid: v4()
-                                });
-                                const enemies = getGlobalState().currentEncounter.enemies;
-                                const combatResult = resolveCombat(props.rng, {
-                                    parties: [[player], enemies]
-                                });
-                                getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
-                                setEnemy(enemies[0]);
-                                setNextAction(Actions[changeCurrentAction("fighting")]);
-                                setCurrentAction(Actions[changeCurrentAction("fighting")]);
-                            }
+                                    setNextAction(Actions[changeCurrentAction("fighting")]);
+                                    setCurrentAction(Actions[changeCurrentAction("fighting")]);
+                                }
 
-                            break;
-                        case "fighting" : {
-                            if (getGlobalState().currentEncounter.pendingActions.length) {
-                                const nextAction = getGlobalState().currentEncounter.pendingActions[0];
-                                applyAction(nextAction);
-                                setActionLog([...getGlobalState().actionLog]);
-                            } else {
-                                setCurrentAction(Actions[changeCurrentAction("fleeing")]);
+                                break;
+                            case "fighting" : {
+                                if (getGlobalState().currentEncounter.pendingActions.length) {
+                                    const nextAction = getGlobalState().currentEncounter.pendingActions[0];
+                                    applyAction(nextAction);
+                                    setActionLog([...getGlobalState().actionLog]);
+                                } else {
+                                    setCurrentAction(Actions[changeCurrentAction("fleeing")]);
+                                }
+                                break;
                             }
-                            break;
-                        }
-                        case "looting":
-                            const lootRoll = Math.floor(props.rng.double() * 666);
-                            if (lootRoll <= getGlobalState().currentEncounter.encounterLevel) {
+                            case "looting":
+                                const lootRoll = Math.floor(props.rng.double() * 666);
+                                if (lootRoll <= getGlobalState().currentEncounter.encounterLevel) {
 
-                            }
-                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            break;
-                        case "reincarnating":
-                            reincarnateAs(getCharacter(0).appearance, getCharacter(0).attributes);
-                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                            break;
-                        default:
-                            if (config.debug) {
-                                throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
-                            } else {
-                                setCurrentEncounter();
+                                }
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                                setActionLog([]);
-                            }
+                                break;
+                            case "reincarnating":
+                                reincarnateAs(getCharacter(0).appearance, getCharacter(0).attributes);
+                                setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                break;
+                            default:
+                                if (config.debug) {
+                                    throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
+                                } else {
+                                    setCurrentEncounter();
+                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                    setActionLog([]);
+                                }
+                        }
                     }
-                }
-
                 setDisplayedTime(accruedTime.current);
                 const passedTime = timestamp - lastTime;
                 const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);

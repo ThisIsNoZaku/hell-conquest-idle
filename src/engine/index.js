@@ -237,11 +237,11 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     globalState.currentEncounter = null;
-    globalState.currentAction = "exploring";
     getCharacter(0).currentHp = getCharacter(0).maximumHp;
     getGlobalState().actionLog = [];
     getGlobalState().passivePowerIncome = Decimal(0);
     globalState.reincarnationCount++;
+    getGlobalState().currentAction = "exploring";
 
     saveGlobalState();
 }
