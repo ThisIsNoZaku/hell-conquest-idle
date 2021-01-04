@@ -21,7 +21,8 @@ export default function ReincarnationSelectionPage(props) {
     const player = getCharacter(0);
     const [attributes, setAttributes] = useState(Object.keys(player.attributes)
         .reduce((attributes, next) => {
-            attributes[next.substring(1)] = player.attributes[next];
+            const baseAttributeProperty = `base${next.substring(1, 2).toUpperCase()}${next.substring(2)}`;
+            attributes[next.substring(1)] = player.attributes[baseAttributeProperty];
             return attributes;
         }, {}));
     const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
