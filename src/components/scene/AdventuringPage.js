@@ -382,7 +382,7 @@ export default function AdventuringPage(props) {
                             break;
                         case "reincarnating":
                             reincarnateAs(getCharacter(0).appearance, getCharacter(0).attributes);
-                            setCurrentAction("exploring");
+                            setCurrentAction(Actions[changeCurrentAction("exploring")]);
                             break;
                         default:
                             if (config.debug) {
