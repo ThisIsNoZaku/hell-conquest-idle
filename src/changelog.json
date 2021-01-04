@@ -39,5 +39,15 @@
       "Fixed a bug with starting traits not clearing properly when changed."
     ],
     "compatiblePreviousVersions": ["0.2.0"]
+  },
+  "0.3.0" : {
+    "changes": [
+      "Set level cap temporarily to 25.",
+      "Don't show the latent power gain on initial demon selection reincarnation",
+      "Added a fatigue mechanic which causes damage in long combats, for when two high defense opponents encounter each other.",
+      "Enemies gain higher base attributes and lower latent power",
+      "Added an automatic reincarnation mechanic, which will automatically restart"
+    ],
+    "compatiblePreviousVersions": ["0.2.0", "0.2.1"]
   }
 }

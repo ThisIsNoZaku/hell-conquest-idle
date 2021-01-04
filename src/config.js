@@ -26,7 +26,7 @@ export const config = {
         },
         reincarnation: {
             bonusPointsForHighestLevel: 2,
-            latentPowerGainOnReincarnate: "player.powerLevel.pow(2).times(2)",
+            latentPowerGainOnReincarnate: "player.powerLevel.pow(2)",
             latentPowerEffectScale: .01,
             traitPointCost: "Decimal.max(1, traitsOwned.times(2))"
         },
