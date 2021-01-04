@@ -153,7 +153,7 @@ export class Character {
         if (getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
             this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
         }
-        if (this.appearance) {
+        if (this.appearance && this._isPc) {
             Creatures[this.appearance].traits.forEach(trait => {
                 this._traits[trait] = getLevelForPower(this._absorbedPower).div(10).ceil().plus(1);
                 getGlobalState().unlockedTraits[trait] = this._traits[trait];
