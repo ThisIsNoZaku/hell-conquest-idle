@@ -69,6 +69,7 @@ export default function AdventuringPage(props) {
     const [displayedTime, setDisplayedTime] = useState(0);
     const [player, setPlayer] = useState(getCharacter(0));
     const manualSpeedUpActive = useRef(false);
+    const [automaticReincarnate, setAutomaticReincarnate] = useState(getGlobalState().automaticReincarnate);
 
     function togglePause() {
         getGlobalState().paused = !getGlobalState().paused;
@@ -126,11 +127,11 @@ export default function AdventuringPage(props) {
                             const currentHp = player.currentHp;
                             player.currentHp = player.maximumHp;
                             pushLogItem({
-                                message: `The surge of new power heals you ${player.currentHp.minus(currentHp)}.`,
+                                message: `The surge of new power heals you for ${player.currentHp.minus(currentHp)} health.`,
                                 uuid: v4()
                             })
                         }
-                        if (!getGlobalState().automaticReincarnationEnabled) {
+                        if (!getGlobalState().automaticReincarnate) {
                             getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
                         }
                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
@@ -187,10 +188,10 @@ export default function AdventuringPage(props) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
                 const player = getCharacter(0);
-                if(getGlobalState().automaticReincarnate && player.powerLevel.gt(getGlobalState().highestLevelEnemyDefeated)) {
+                if(getGlobalState().automaticReincarnate && player.powerLevel.gte(getGlobalState().highestLevelEnemyDefeated) && Decimal(getGlobalState().highestLevelEnemyDefeated).gt(1) && getGlobalState().currentAction !== "reincarnating" ) {
                     setCurrentAction(Actions[changeCurrentAction("reincarnating")]);
                     pushLogItem({
-                        message: "A game play contrivance forces you to reincarnate",
+                        message: "A game play contrivance forces you to reincarnate. Perform a manual reincarnation to push further.",
                         uuid: v4()
                     });
                 } else if (accruedTime.current >= _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) {
@@ -397,6 +398,7 @@ export default function AdventuringPage(props) {
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 break;
                             case "reincarnating":
+                                setAutomaticReincarnate(getGlobalState().automaticReincarnate = true);
                                 reincarnateAs(getCharacter(0).appearance, getCharacter(0).attributes);
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 break;
@@ -455,8 +457,8 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
         <PlayerStats player={player} enemy={enemy}/>
-        <div style={{display: "flex", flex: "1 0 auto", flexDirection: "column"}}>
-            <TopSection character={player}/>
+        <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", flexDirection: "column"}}>
+            <TopSection character={player} automaticReincarnateEnabled={getGlobalState().automaticReincarnate}/>
             <BottomSection state={getGlobalState()} actionLog={actionLog}
                            player={player}
                            enemy={enemy}
