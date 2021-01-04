@@ -121,7 +121,7 @@ export function generateCreature(id, powerLevel, rng) {
             player: {
                 powerLevel: powerLevel.minus(1)
             }
-        })).times(5),
+        })),
         tactics,
         traits: Creatures[id].traits.reduce((traits, next) => {
             traits[next] = powerLevel.div(10).ceil();
@@ -131,10 +131,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.div(2).floor(),
-            cunning: powerLevel.div(2).floor(),
-            deceit: powerLevel.div(2).floor(),
-            madness: powerLevel.div(2).floor(),
+            brutality: powerLevel.minus(1).floor(),
+            cunning: powerLevel.minus(1).floor(),
+            deceit: powerLevel.minus(1).floor(),
+            madness: powerLevel.minus(1).floor(),
         },
         combat: {
             fatigue: 0,
