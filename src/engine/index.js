@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import {assertCreatureExists, Creatures} from "../data/creatures";
 import {debugMessage} from "../debugging";
-import { Decimal } from "decimal.js";
+import {Decimal} from "decimal.js";
 import {Character} from "../character";
 import {config} from "../config";
 import * as Package from "../../package.json";
@@ -49,20 +49,21 @@ export function loadGlobalState() {
         nextAction: null,
         id: 0,
         highestLevelReached: Decimal(1),
+        highestLevelEnemyDefeated: 0,
         startingTraits: {},
         currentEncounter: null,
         manualSpeedMultiplier: config.manualSpeedup.enabled ? config.manualSpeedup.multiplier : 1,
         currentRegion: "forest",
         actionLog: [],
         exploration: {
-            explorationTime: 5 * 1000,
+            explorationTime: 2.5 * 1000,
             approachTime: 5 * 1000,
             combatTime: 5 * 1000,
             lootingTime: 5 * 1000,
             recoveryTime: 2 * 1000,
             fleeingTime: 5 * 1000,
-            intimidateTime: 5 * 1000,
-            reincarnationTime: 1
+            intimidateTime: 2.5 * 1000,
+            reincarnationTime: 30 * 1000
         },
         characters: {
             0: new Character({
@@ -160,7 +161,7 @@ function assertCharacterExists(id) {
 }
 
 export function evaluateExpression(expression, context) {
-    if(expression === null || expression === undefined) {
+    if (expression === null || expression === undefined) {
         return expression;
     }
     if (!expressionCache[expression]) {
@@ -195,7 +196,7 @@ export function reincarnateAs(monsterId, newAttributes) {
         });
     }
 
-    if(Decimal(globalState.highestLevelReached).lt(player.powerLevel)) {
+    if (Decimal(globalState.highestLevelReached).lt(player.powerLevel)) {
         globalState.highestLevelReached = player.powerLevel;
     }
 
@@ -212,7 +213,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     Object.keys(player.attributes).forEach(attribute => {
         player.attributes[attribute] = Decimal(newAttributes[attribute.substring(1)]);
     })
-    if(globalState.reincarnationCount !== 0) {
+    if (globalState.reincarnationCount !== 0) {
         // Add your level to your starting energy.
         const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player
@@ -228,16 +229,17 @@ export function reincarnateAs(monsterId, newAttributes) {
     getCharacter(0).traits = Object.keys(globalState.startingTraits)
         .filter(t => globalState.startingTraits[t])
         .reduce((startingTraits, trait) => {
-        startingTraits[trait] = globalState.unlockedTraits[trait];
-        return startingTraits;
-    }, {});
+            startingTraits[trait] = globalState.unlockedTraits[trait];
+            return startingTraits;
+        }, {});
     Creatures[monsterId].traits.forEach(trait => {
         getCharacter(0).traits[trait] = 1;
     })
 
     globalState.currentEncounter = null;
-    globalState.currentAction = "reincarnating";
+    globalState.currentAction = "exploring";
     getCharacter(0).currentHp = getCharacter(0).maximumHp;
+    getGlobalState().actionLog = [];
     getGlobalState().passivePowerIncome = Decimal(0);
     globalState.reincarnationCount++;
 
