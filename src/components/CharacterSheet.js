@@ -21,17 +21,30 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
-    const hitChances = getHitChanceBy(props.character).against(props.enemy)
-    const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy),
-        [
-            props.character,
-            props.enemy
-        ]);
-    const combinedHitWeights = Object.values(hitChances).reduce((total, next) => total.plus(next));
+    const hitChances = useMemo(() => getHitChanceBy(props.character).against(props.enemy), [
+        props.character,
+        props.enemy
+    ]);
+    const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy), [
+        props.character,
+        props.enemy
+    ]);
+    const combinedHitWeights = useMemo(() => Object.values(hitChances).reduce((total, next) => total.plus(next)), [
+        hitChances,
+        calculatedDamage
+    ]);
     const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
     const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
-
+    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).times(100)), [
+        props.character.latentPower
+    ]);
+    const powerTooltip = useMemo(() => `Your Power increases the damage your attacks deal by ${Decimal(config.mechanics.combat.power.effectPerPoint).times(props.character.combat.power).times(100).toFixed()}%.`, [
+        props.character.combat.power
+    ]);
+    const resilienceTooltip = useMemo(() => `Your Resilience reduces the damage your attacks deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.character.combat.resilience).times(100).toFixed()}%.`, [
+        props.character.combat.resilience
+    ]);
 
     return <Grid container>
         <Grid item xs={12}>
@@ -48,7 +61,7 @@ export default function CharacterSheet(props) {
                 Latent Power Bonus
             </Grid>
             <Grid item xs>
-                {props.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).times(100).toFixed()}%
+                {latentPowerModifier.toFixed()}%
             </Grid>
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
@@ -71,7 +84,7 @@ export default function CharacterSheet(props) {
                 <strong>Combat Statistics</strong>
             </Grid>
             <Grid container>
-                <Tooltip title={`Your Power increases the damage your attacks deal by ${Decimal(config.mechanics.combat.power.effectPerPoint).times(props.character.combat.power).times(100).toFixed()}%.`}>
+                <Tooltip title={powerTooltip}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Power
@@ -81,7 +94,7 @@ export default function CharacterSheet(props) {
                         </Grid>
                     </Grid>
                 </Tooltip>
-                <Tooltip title={`Your Resilience reduces the damage your attacks deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.character.combat.resilience).times(100).toFixed()}%.`}>
+                <Tooltip title={resilienceTooltip}>
                     <Grid item container>
                         <Grid item xs style={{textAlign: "center"}}>
                             Resilience
