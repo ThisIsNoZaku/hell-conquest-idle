@@ -1,8 +1,10 @@
 import Paper from "@material-ui/core/Paper";
 import React, {useMemo} from "react";
 import Button from "@material-ui/core/Button";
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import {getCharacter, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "../engine";
+import Alert from '@material-ui/lab/Alert';
+import Grid from "@material-ui/core/Grid";
 
 const styles = {
     root: {
@@ -22,8 +24,18 @@ export default function TopSection(props) {
         getCharacter(0).isAlive
     ])
     return <div style={styles.root}>
-        <Button onClick={() => history.push("/reincarnating")} style={styles.buttons} variant="contained" color="secondary" disabled={!reincarnateEnabled}>
-            Reincarnate
-        </Button>
+        <Grid container direction="column">
+            <Grid item xs>
+                {reincarnateEnabled &&
+                <Button onClick={() => history.push("/reincarnating")} style={styles.buttons} variant="contained"
+                        color="secondary" disabled={!reincarnateEnabled}>
+                    Reincarnate
+                </Button>}
+            </Grid>
+            <Grid item xs>
+                {props.automaticReincarnateEnabled &&
+                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Highest level enemy {getGlobalState().highestLevelEnemyDefeated})</Paper>}
+            </Grid>
+        </Grid>
     </div>
 }
