@@ -115,12 +115,21 @@ export default function AdventuringPage(props) {
                                     rank: Decimal(player.traits[trait])
                                 });
                             return multiplier.plus(traitMultiplier);
-                        }, Decimal(1))
+                        }, Decimal(1));
+                        const pregainLevel = player.powerLevel;
                         const powerGained = player.gainPower(powerToGain.times(multiplier).floor());
                         pushLogItem(generateLogItem({
                             result: "gainedPower",
                             value: powerGained
                         }));
+                        if(!pregainLevel.eq(player.powerLevel)) {
+                            const currentHp = player.currentHp;
+                            player.currentHp = player.maximumHp;
+                            pushLogItem({
+                                message: `The surge of new power heals you ${player.currentHp.minus(currentHp)}.`,
+                                uuid: v4()
+                            })
+                        }
                         if (!getGlobalState().automaticReincarnationEnabled) {
                             getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
                         }
