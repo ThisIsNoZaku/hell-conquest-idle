@@ -5,6 +5,7 @@ import {useHistory} from "react-router-dom";
 import {getCharacter, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "../engine";
 import Alert from '@material-ui/lab/Alert';
 import Grid from "@material-ui/core/Grid";
+import {Decimal} from "decimal.js";
 
 const styles = {
     root: {
@@ -34,7 +35,7 @@ export default function TopSection(props) {
             </Grid>
             <Grid item xs>
                 {props.automaticReincarnateEnabled &&
-                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Highest level enemy {getGlobalState().highestLevelEnemyDefeated})</Paper>}
+                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Strongest enemy defeated: Level {Decimal(getGlobalState().highestLevelEnemyDefeated).toFixed()})</Paper>}
             </Grid>
         </Grid>
     </div>
