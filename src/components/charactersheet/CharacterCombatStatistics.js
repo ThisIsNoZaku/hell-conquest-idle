@@ -29,7 +29,7 @@ export default function CharacterCombatStatistics(props) {
                         Power
                     </Grid>
                     <Grid item xs>
-                        {props.characterPower.toFixed()}
+                        {props.characterPower}
                     </Grid>
                 </Grid>
             </Tooltip>
@@ -39,7 +39,7 @@ export default function CharacterCombatStatistics(props) {
                         Resilience
                     </Grid>
                     <Grid item xs>
-                        {props.characterResilience.toFixed()}
+                        {props.characterResilience}
                     </Grid>
                 </Grid>
             </Tooltip>
@@ -49,7 +49,7 @@ export default function CharacterCombatStatistics(props) {
                         Evasion
                     </Grid>
                     <Grid item xs>
-                        {props.characterEvasion.toFixed()}
+                        {props.characterEvasion}
                     </Grid>
                 </Grid>
             </Tooltip>
@@ -59,7 +59,7 @@ export default function CharacterCombatStatistics(props) {
                         Precision
                     </Grid>
                     <Grid item xs>
-                        {props.characterPrecision.toFixed()}
+                        {props.characterPrecision}
                     </Grid>
                 </Grid>
             </Tooltip>

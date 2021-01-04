@@ -72,7 +72,13 @@ export default function CharacterSheet(props) {
             </Grid>
             <CharacterAttributes character={props.character}/>
         </Grid>
-        <CharacterCombatStatistics hitChances={hitChances} calculatedDamage={calculatedDamage} characterPower={props.character.combat.power} characterResilience={props.character.combat.resilience} characterEvasion={props.character.combat.evasion} characterPrecision={props.character.combat.precision} />
+        <CharacterCombatStatistics
+            hitChances={hitChances}
+            calculatedDamage={calculatedDamage}
+            characterPower={props.character.combat.power.toFixed()}
+            characterResilience={props.character.combat.resilience.toFixed()}
+            characterEvasion={props.character.combat.evasion.toFixed()}
+            characterPrecision={props.character.combat.precision.toFixed()} />
         <Grid container>
             <Grid item xs={12}>
                 <strong>Traits</strong>
