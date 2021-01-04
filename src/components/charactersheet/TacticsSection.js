@@ -8,11 +8,11 @@ export default function TacticsSection(props) {
     return <Grid container>
         <Grid item xs={12}>
             <Tooltip title="Your approach to combat">
-                <span>Utilizing {Tactics[props.character.tactics].title} Tactics</span>
+                <span>Utilizing {Tactics[props.characterTactics].title} Tactics</span>
             </Tooltip>
         </Grid>
         <Grid container direction="row">
-            <TacticsDescription tactic={props.character.tactics}/>
+            <TacticsDescription tactic={props.characterTactics}/>
         </Grid>
 
     </Grid>
