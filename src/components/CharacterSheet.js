@@ -12,6 +12,7 @@ import calculateDamageBy from "../engine/combat/calculateDamageBy";
 import * as _ from "lodash";
 import {Help} from "@material-ui/icons";
 import {Decimal} from "decimal.js";
+import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
 
 const styles = {
     tooltip: {
@@ -21,6 +22,14 @@ const styles = {
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
+
+    const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
+    const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
+    const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
+    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).times(100)), [
+        props.character.latentPower
+    ]);
+
     const hitChances = useMemo(() => getHitChanceBy(props.character).against(props.enemy), [
         props.character,
         props.enemy
@@ -28,22 +37,6 @@ export default function CharacterSheet(props) {
     const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy), [
         props.character,
         props.enemy
-    ]);
-    const combinedHitWeights = useMemo(() => Object.values(hitChances).reduce((total, next) => total.plus(next)), [
-        hitChances,
-        calculatedDamage
-    ]);
-    const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
-    const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
-    const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
-    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).times(100)), [
-        props.character.latentPower
-    ]);
-    const powerTooltip = useMemo(() => `Your Power increases the damage your attacks deal by ${Decimal(config.mechanics.combat.power.effectPerPoint).times(props.character.combat.power).times(100).toFixed()}%.`, [
-        props.character.combat.power
-    ]);
-    const resilienceTooltip = useMemo(() => `Your Resilience reduces the damage your attacks deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.character.combat.resilience).times(100).toFixed()}%.`, [
-        props.character.combat.resilience
     ]);
 
     return <Grid container>
@@ -79,113 +72,7 @@ export default function CharacterSheet(props) {
             </Grid>
             <CharacterAttributes character={props.character}/>
         </Grid>
-        <Grid container>
-            <Grid item xs={12}>
-                <strong>Combat Statistics</strong>
-            </Grid>
-            <Grid container>
-                <Tooltip title={powerTooltip}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
-                            Power
-                        </Grid>
-                        <Grid item xs>
-                            {props.character.combat.power.toFixed()}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={resilienceTooltip}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
-                            Resilience
-                        </Grid>
-                        <Grid item xs>
-                            {props.character.combat.resilience.toFixed()}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={`Your Evasion reduces the severity of hits you take.`}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
-                            Evasion
-                        </Grid>
-                        <Grid item xs>
-                            {props.character.combat.evasion.toFixed()}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={`Your Precision increases the severity of hits you score.`}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
-                            Precision
-                        </Grid>
-                        <Grid item xs>
-                            {props.character.combat.precision.toFixed()}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-            </Grid>
-            <Grid container>
-                <Grid item xs={12}>
-                    <strong>Hit Chances</strong>
-                </Grid>
-                <Grid item container xs={12}>
-                    <Grid item xs><em>Type</em></Grid>
-                    <Grid item xs><em>Chance</em></Grid>
-                    <Grid item xs><em>Damage</em></Grid>
-                    <Grid item xs={1}></Grid>
-                </Grid>
-                <Grid item container xs={12}>
-                    <Grid item xs>
-                        Glancing Hit
-                    </Grid>
-                    <Grid item xs>
-                        {hitChances.min.div(combinedHitWeights).times(100).toFixed(2)}%
-                    </Grid>
-                    <Grid item xs>
-                        {calculatedDamage.min.toFixed()}
-                    </Grid>
-                    <Grid item xs={1}>
-                        <Tooltip title="Glancing hits deal 50% less  damage">
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-
-                <Grid item container xs={12}>
-                    <Grid item xs>
-                        Solid Hit
-                    </Grid>
-                    <Grid item xs>
-                        {hitChances.med.div(combinedHitWeights).times(100).toFixed(2)}%
-                    </Grid>
-                    <Grid item xs>
-                        {calculatedDamage.med.toFixed()}
-                    </Grid>
-                    <Grid item xs={1}>
-                        <Tooltip title="Solid hits deal normal damage">
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-                <Grid item container xs={12}>
-                    <Grid item xs>
-                        Critical Hit
-                    </Grid>
-                    <Grid item xs>
-                        {hitChances.max.div(combinedHitWeights).times(100).toFixed(2)}%
-                    </Grid>
-                    <Grid item xs>
-                        {calculatedDamage.max.toFixed()}
-                    </Grid>
-                    <Grid item xs={1}>
-                        <Tooltip title="Critical hits deal 50% more damage.">
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+        <CharacterCombatStatistics hitChances={hitChances} calculatedDamage={calculatedDamage} characterPower={props.character.combat.power} characterResilience={props.character.combat.resilience} characterEvasion={props.character.combat.evasion} characterPrecision={props.character.combat.precision} />
         <Grid container>
             <Grid item xs={12}>
                 <strong>Traits</strong>
@@ -202,7 +89,7 @@ export default function CharacterSheet(props) {
                 }
             </Grid>
         </Grid>}
-        <TacticsSection character={props.character}/>
+        <TacticsSection characterTactics={props.character.tactics}/>
     </Grid>
 
 }
