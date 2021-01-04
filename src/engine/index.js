@@ -25,10 +25,10 @@ export function saveGlobalState() {
 
 export function loadGlobalState() {
     let loaded = window.localStorage.getItem(saveKey);
-    if(!loaded) {
+    if (!loaded) {
         // try to load previous versions
         const previousCompatibleVersions = changelog[pkg.version].compatiblePreviousVersions;
-        if(previousCompatibleVersions) {
+        if (previousCompatibleVersions) {
             loaded = previousCompatibleVersions.reduce((latestVersion, version) => {
                 const nextKey = require("md5")(`hell-conquest-${version}`);
                 return window.localStorage.getItem(nextKey) || latestVersion;
