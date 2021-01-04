@@ -188,7 +188,7 @@ export default function AdventuringPage(props) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
                 const player = getCharacter(0);
-                if(getGlobalState().automaticReincarnate && player.powerLevel.gte(getGlobalState().highestLevelEnemyDefeated) && Decimal(getGlobalState().highestLevelEnemyDefeated).gt(1) && getGlobalState().currentAction !== "reincarnating" ) {
+                if(getGlobalState().automaticReincarnate && player.powerLevel.gt(getGlobalState().highestLevelEnemyDefeated) && Decimal(getGlobalState().highestLevelEnemyDefeated).gt(1) && getGlobalState().currentAction !== "reincarnating" ) {
                     setCurrentAction(Actions[changeCurrentAction("reincarnating")]);
                     pushLogItem({
                         message: "A game play contrivance forces you to reincarnate. Perform a manual reincarnation to push further.",
