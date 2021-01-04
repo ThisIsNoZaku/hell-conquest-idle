@@ -132,10 +132,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.minus(1).floor(),
-            cunning: powerLevel.minus(1).floor(),
-            deceit: powerLevel.minus(1).floor(),
-            madness: powerLevel.minus(1).floor(),
+            brutality: powerLevel.minus(1).pow(1.5).floor(),
+            cunning: powerLevel.minus(1).pow(1.5).floor(),
+            deceit: powerLevel.minus(1).pow(1.5).floor(),
+            madness: powerLevel.minus(1).pow(1.5).floor(),
         },
         combat: {
             fatigue: 0,
@@ -262,6 +262,7 @@ function stateReviver(key, value) {
                 return new Character(value[character]);
             });
         case "paused":
+        case "automaticReincarnate":
             return false;
         case "passivePowerIncome":
             return Decimal(value);
