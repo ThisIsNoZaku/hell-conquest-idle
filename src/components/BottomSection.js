@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import {config} from "../config";
 import {Decimal} from "decimal.js";
 import CharacterCombatSummary from "./CharacterCombatSummary";
+import ActionLog from "./ActionLog";
 
 const styles = {
     root: {
@@ -87,23 +88,8 @@ export default function BottomSection(props) {
             <progress style={styles.actionProgress} value={props.actionTime}
                       max={_.get(props.state, props.currentAction.duration)}/>
         </Paper>
-        <Paper style={styles.history}>
-            {
-                props.actionLog.map(item => printActionItem(item))
-            }
-        </Paper>
+        <ActionLog actionLog={props.actionLog}/>
     </div>
-}
-
-function printActionItem(item) {
-    return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-        <Grid item xs={11}>
-                <span dangerouslySetInnerHTML={{
-                    __html: item.message
-                }}></span>
-        </Grid>
-        {item.tick && <Grid item={1}>{item.tick}: </Grid>}
-    </Grid>
 }
 
 function actionButton(action, text, description, props) {
