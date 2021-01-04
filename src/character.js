@@ -85,6 +85,7 @@ export class Character {
         return this.powerLevel
             .times(attributeMultiplier.plus(1))
             .mul(config.mechanics.combat.hp.pointsPerLevel)
+            .plus(this._isPc ? config.mechanics.combat.hp.pcBonus : 0)
             .floor();
     }
 

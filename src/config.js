@@ -65,7 +65,7 @@ export const config = {
                 evasionPenaltyPerPoint: 2
             },
             hp: {
-                base: 25,
+                pcBonus: 10,
                 pointsPerLevel: 25,
                 healingPerLevel: 5,
                 baseAttribute: "madness",
