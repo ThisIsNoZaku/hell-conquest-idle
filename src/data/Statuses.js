@@ -4,8 +4,8 @@ export const Statuses = {
         icon: "./icons/icons-516.png",
         description: "",
         effects: {
-            power_modifier: 1.2,
-            evasion_modifier: .9
+            power_modifier: .2,
+            evasion_modifier: -.1
         }
     },
     terrified: {
@@ -20,7 +20,7 @@ export const Statuses = {
         name: "Restrained",
         icon: "icons/icons-1276.png",
         effects: {
-            accuracy_modifier: .9
+            accuracy_modifier: -.1
         },
         decays: true
     }
