@@ -294,24 +294,48 @@ export default function AdventuringPage(props) {
                                 }
                                 break;
                             case "approaching": {
-                                // Since we're starting a new combat, remove any old, dead characters
-                                switch (getGlobalState().nextAction) {
-                                    case "fighting":
-                                        const enemies = getGlobalState().currentEncounter.enemies;
-                                        const combatResult = resolveCombat(props.rng, {
-                                            parties: [[player], enemies]
-                                        });
-                                        getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
-                                        setEnemy(enemies[0]);
-                                        break;
-                                }
-                                setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
-                                setNextAction();
-                                const deadCharacters = Object.keys(getGlobalState().characters)
-                                    .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
-                                deadCharacters.forEach(id => {
-                                    delete getGlobalState().characters[id]
+                                const enemy = getGlobalState().currentEncounter.enemies[0];
+                                const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
+                                    highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
                                 });
+                                if(getGlobalState().nextAction === "fighting" && Decimal(enemy.powerLevel).lte(instantDeathLevel)) {
+                                    pushLogItem({
+                                        message: `The raw force of your killer instinct is enough to instantly vaporise ${enemy.name} on the spot!`,
+                                        uuid: v4()
+                                    });
+                                    let powerGainMultiplier = Object.keys(player.traits).reduce((multiplier, trait) => {
+                                        const traitMultiplier = evaluateExpression(_.get(Traits[trait].on_kill, ["effects", "power_gain_modifier"], 0),
+                                            {
+                                                rank: Decimal(player.traits[trait])
+                                            });
+                                        return multiplier.plus(traitMultiplier);
+                                    }, Decimal(1));
+                                    const gainedPower = getCharacter(0).gainPower(enemy.powerLevel.times(powerGainMultiplier));
+                                    pushLogItem({
+                                        message: `You absorbed ${gainedPower} power`,
+                                        uuid: v4()
+                                    });
+                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                } else {
+                                    // Since we're starting a new combat, remove any old, dead characters
+                                    switch (getGlobalState().nextAction) {
+                                        case "fighting":
+                                            const enemies = getGlobalState().currentEncounter.enemies;
+                                            const combatResult = resolveCombat(props.rng, {
+                                                parties: [[player], enemies]
+                                            });
+                                            getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
+                                            setEnemy(enemies[0]);
+                                            break;
+                                    }
+                                    setCurrentAction(Actions[changeCurrentAction(getGlobalState().nextAction)]);
+                                    setNextAction();
+                                    const deadCharacters = Object.keys(getGlobalState().characters)
+                                        .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
+                                    deadCharacters.forEach(id => {
+                                        delete getGlobalState().characters[id]
+                                    });
+                                }
                                 break;
                             }
                             case "intimidating": {
