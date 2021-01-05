@@ -314,28 +314,6 @@ export default function AdventuringPage(props) {
                                 break;
                             case "approaching": {
                                 const enemy = getGlobalState().currentEncounter.enemies[0];
-                                const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
-                                    highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
-                                });
-                                if(getGlobalState().nextAction === "fighting" && Decimal(enemy.powerLevel).lte(instantDeathLevel)) {
-                                    pushLogItem({
-                                        message: `The raw force of your killer instinct is enough to instantly vaporise ${enemy.name} on the spot!`,
-                                        uuid: v4()
-                                    });
-                                    let powerGainMultiplier = Object.keys(player.traits).reduce((multiplier, trait) => {
-                                        const traitMultiplier = evaluateExpression(_.get(Traits[trait].on_kill, ["effects", "power_gain_modifier"], 0),
-                                            {
-                                                rank: Decimal(player.traits[trait])
-                                            });
-                                        return multiplier.plus(traitMultiplier);
-                                    }, Decimal(1));
-                                    const gainedPower = getCharacter(0).gainPower(enemy.powerLevel.times(powerGainMultiplier));
-                                    pushLogItem({
-                                        message: `You absorbed ${gainedPower} power`,
-                                        uuid: v4()
-                                    });
-                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
-                                } else {
                                     // Since we're starting a new combat, remove any old, dead characters
                                     switch (getGlobalState().nextAction) {
                                         case "fighting":
@@ -354,15 +332,24 @@ export default function AdventuringPage(props) {
                                     deadCharacters.forEach(id => {
                                         delete getGlobalState().characters[id]
                                     });
-                                }
                                 break;
                             }
                             case "intimidating": {
                                 const enemy = getGlobalState().currentEncounter.enemies[0];
-                                const chanceToIntimidate = evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+                                const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
+                                    highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
+                                });
+                                if(enemy.powerLevel.lte(instantDeathLevel)) {
+                                    pushLogItem({
+                                        message: `Your force of will seizes control of ${enemy.name}'s mind!`,
+                                        uuid: v4()
+                                    })
+                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                }
+                                const chanceToIntimidate = Decimal(enemy.powerLevel.lte(instantDeathLevel) ? 999 : evaluateExpression(config.encounters.chanceToIntimidateLesser, {
                                     enemy,
                                     player: getCharacter(0)
-                                });
+                                }));
                                 const roll = Math.floor(props.rng.double() * 100) + 1;
                                 if (chanceToIntimidate.gte(roll)) {
                                     const periodicPowerIncreases = evaluateExpression(config.mechanics.xp.gainedFromLesserDemon, {
@@ -424,12 +411,29 @@ export default function AdventuringPage(props) {
 
                                 break;
                             case "fighting" : {
-                                if (getGlobalState().currentEncounter.pendingActions.length) {
-                                    const nextAction = getGlobalState().currentEncounter.pendingActions[0];
-                                    applyAction(nextAction);
-                                    setActionLog([...getGlobalState().actionLog]);
+                                const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
+                                    highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
+                                });
+                                const enemy = getGlobalState().currentEncounter.enemies[0];
+                                if(enemy.powerLevel.lte(instantDeathLevel)) {
+                                    pushLogItem({
+                                        message: `The raw power of your killer instinct destroys ${enemy.name}!`,
+                                        uuid: v4()
+                                    });
+                                    applyAction({
+                                        result: "kill",
+                                        target: enemy.id,
+                                        actor: 0
+                                    });
+                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 } else {
-                                    setCurrentAction(Actions[changeCurrentAction("fleeing")]);
+                                    if (getGlobalState().currentEncounter.pendingActions.length) {
+                                        const nextAction = getGlobalState().currentEncounter.pendingActions[0];
+                                        applyAction(nextAction);
+                                        setActionLog([...getGlobalState().actionLog]);
+                                    } else {
+                                        setCurrentAction(Actions[changeCurrentAction("fleeing")]);
+                                    }
                                 }
                                 break;
                             }
