@@ -12,7 +12,7 @@ export const Tactics = {
         description: "Your tactics emphasize caution and husbanding your strength.",
         modifiers: {
             resilience_modifier: .50,
-            healing_modifier: 1
+            fatigue_multiplier: .75
         }
     },
     deceptive: {
