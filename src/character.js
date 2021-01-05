@@ -155,7 +155,7 @@ export class Character {
         }
         if (this.appearance && this._isPc) {
             Creatures[this.appearance].traits.forEach(trait => {
-                this._traits[trait] = getLevelForPower(this._absorbedPower).div(10).ceil().plus(1);
+                this._traits[trait] = getLevelForPower(this._absorbedPower).plus(1).div(10).ceil();
                 getGlobalState().unlockedTraits[trait] = this._traits[trait];
             });
         }
