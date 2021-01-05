@@ -62,7 +62,7 @@ export default function CharacterSheet(props) {
             <Grid item xs>
                 Latent Power Bonus
             </Grid>
-            {props.character.latentPower.gte(latentPowerCap) &&
+            {props.character.latentPower.gte(latentPowerCap) && props.character.isPc &&
             <Grid item xs style={{color: "red"}}>
                 <Tooltip
                     title="Your latent power has been capped based on the power of the strongest demon you've defeated while not automatically reincarnating.">
@@ -71,7 +71,7 @@ export default function CharacterSheet(props) {
                     </div>
                 </Tooltip>
             </Grid>}
-            {!props.character.latentPower.gte(latentPowerCap) &&
+            {(!props.character.latentPower.gte(latentPowerCap) || !props.character.isPc) &&
             <Grid item xs>
                 {latentPowerModifier.toFixed()}%
             </Grid>}
