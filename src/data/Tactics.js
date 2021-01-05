@@ -20,7 +20,7 @@ export const Tactics = {
         description: "Your tactics emphasize disorientation and trickery.",
         modifiers: {
             evasion_modifier: .5,
-            critical_hit_damage_modifier: .5
+            max_hit_damage_modifier: .3
         }
     }
 }
