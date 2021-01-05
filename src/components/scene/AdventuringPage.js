@@ -147,7 +147,8 @@ export default function AdventuringPage(props) {
                             getGlobalState().rival = {
                                 level: enemy.powerLevel,
                                 type: enemy.appearance,
-                                traits: enemy.traits
+                                traits: enemy.traits,
+                                tactics: enemy.tactics
                             }
                             pushLogItem({
                                 message: "<strong>You have a new rival!</strong>",
