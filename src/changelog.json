@@ -46,7 +46,12 @@
       "Don't show the latent power gain on initial demon selection reincarnation",
       "Added a fatigue mechanic which causes damage in long combats, for when two high defense opponents encounter each other.",
       "Enemies gain higher base attributes and lower latent power",
-      "Added an automatic reincarnation mechanic, which will automatically restart"
+      "Added an automatic reincarnation mechanic, which will automatically restart",
+      "Player receives a small health boost, to give them a small edge against level 1 and 2 enemies.",
+      "When gaining a level from a kill, the player heals to full",
+      "Damage multipliers from power is capped at x100 and from resilience is capped at x0.01",
+      "Increased probabilities of greater and lesser level encounters.",
+      "Latent power is now capped based on the highest level enemy defeated"
     ],
     "compatiblePreviousVersions": ["0.2.0", "0.2.1"]
   }
