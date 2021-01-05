@@ -11,9 +11,9 @@ export const config = {
         maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
     },
     encounters: {
-        lesserEncounterChanceWeight: 10,
-        greaterEncounterChanceWeight: 10,
-        evenEncounterChanceWeight: 80,
+        lesserEncounterChanceWeight: 20,
+        greaterEncounterChanceWeight: 20,
+        evenEncounterChanceWeight: 60,
         lesserLevelScale: 1, // A demon is "lesser" than another when its level is this much lower.
         greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
         chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10)",
