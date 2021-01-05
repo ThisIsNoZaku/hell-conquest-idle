@@ -79,10 +79,10 @@ export function loadGlobalState() {
                 tactics: "defensive",
                 items: [],
                 attributes: {
-                    brutality: Decimal(0),
-                    cunning: Decimal(0),
-                    deceit: Decimal(0),
-                    madness: Decimal(0)
+                    brutality: Decimal(config.mechanics.combat.playerAttributeMinimum),
+                    cunning: Decimal(config.mechanics.combat.playerAttributeMinimum),
+                    deceit: Decimal(config.mechanics.combat.playerAttributeMinimum),
+                    madness: Decimal(config.mechanics.combat.playerAttributeMinimum)
                 },
                 combat: {
                     fatigue: 0,
