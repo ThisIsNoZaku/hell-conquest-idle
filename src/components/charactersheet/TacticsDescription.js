@@ -24,10 +24,10 @@ export default function (props) {
                     +{Tactics[props.tactic].modifiers.resilience_modifier * 100}% to Resilience
                 </li>
             </Tooltip>}
-            {Tactics[props.tactic].modifiers.healing_modifier &&
-            <Tooltip title="Healing increases how quickly you recover from injury.">
+            {Tactics[props.tactic].modifiers.fatigue_multiplier &&
+            <Tooltip title="Fatigue causes damage when combats last too long.">
                 <li style={{color: "green", textAlign: "left"}}>
-                    +{Tactics[props.tactic].modifiers.healing_modifier * 100}% to Healing
+                    -{(1 - Tactics[props.tactic].modifiers.fatigue_multiplier) * 100}% to Fatigue Damage
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.evasion_modifier &&
