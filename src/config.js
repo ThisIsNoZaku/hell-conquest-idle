@@ -15,9 +15,11 @@ export const config = {
         greaterEncounterChanceWeight: 20,
         evenEncounterChanceWeight: 60,
         lesserLevelScale: 1, // A demon is "lesser" than another when its level is this much lower.
+        lesserLevelFloor: 5,
         greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
+        greaterLevelCap: 4,
         chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10)",
-        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(10)"
+        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(20)"
     },
 
     mechanics: {
@@ -29,7 +31,7 @@ export const config = {
             latentPowerGainOnReincarnate: "player.powerLevel.pow(2)",
             latentPowerEffectScale: .01,
             traitPointCost: "Decimal.max(1, traitsOwned.times(2))",
-            latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(1)"
+            latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(10)"
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
