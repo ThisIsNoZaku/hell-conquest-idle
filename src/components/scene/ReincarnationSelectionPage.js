@@ -33,7 +33,9 @@ export default function ReincarnationSelectionPage(props) {
         }));
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints = spendableBonusPoints
-        .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next).minus(config.mechanics.combat.playerAttributeMinimum)))
+        .minus(Object.values(attributes).reduce((sum, next) => {
+            return Decimal(sum).plus(next).minus(config.mechanics.combat.playerAttributeMinimum);
+        }, 0))
         .minus(
             Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
                 return previousValue.plus(evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
