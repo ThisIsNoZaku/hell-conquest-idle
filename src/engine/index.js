@@ -134,11 +134,9 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: Decimal(evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
-            player: {
-                powerLevel: powerLevel.minus(1)
-            }
-        })).times(2),
+        latentPower: Decimal(evaluateExpression(config.encounters.enemyLatentPower,  {
+            encounterLevel: powerLevel
+        })),
         tactics,
         traits: startingTraits,
         absorbedPower: getPowerNeededForLevel(powerLevel),
