@@ -105,7 +105,7 @@ export default function AdventuringPage(props) {
                 case "kill":
                     const enemy = getCharacter(action.target);
                     if (action.actor === 0 && action.target !== 0) {
-                        debugMessage("Player killed a non-lesser enemy and gained power.");
+                        debugMessage("Player killed an enemy and gained power.");
                         const player = getCharacter(0);
                         const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromOtherDemon, {
                             enemy
@@ -135,6 +135,13 @@ export default function AdventuringPage(props) {
                             getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
                         }
                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
+                        if(enemy.isRival) {
+                            getGlobalState().rival = {};
+                            pushLogItem({
+                                message: "You've defeated your rival!",
+                                uuid: v4()
+                            })
+                        }
                     } else if (action.target === 0) {
                         if(Decimal(enemy.powerLevel).gt(getGlobalState().rival.level || 0)) {
                             getGlobalState().rival = {
@@ -142,6 +149,10 @@ export default function AdventuringPage(props) {
                                 type: enemy.appearance,
                                 traits: enemy.traits
                             }
+                            pushLogItem({
+                                message: "<strong>You have a new rival!</strong>",
+                                uuid: v4()
+                            })
                         }
                         getCharacter(0).currentHp = Decimal(0);
                     }
@@ -281,6 +292,7 @@ export default function AdventuringPage(props) {
                                     }
 
                                     const enemies = getGlobalState().currentEncounter.enemies;
+                                    const rival = getGlobalState().rival;
                                     if (player.otherDemonIsGreaterDemon(enemies[0])) {
                                         pushLogItem({
                                             message: `<strong>💀Approaching Greater ${enemies[0].name}.💀</strong>`,
@@ -291,6 +303,11 @@ export default function AdventuringPage(props) {
                                             message: `<strong>Approaching Lesser ${enemies[0].name}.</strong>`,
                                             uuid: v4()
                                         });
+                                    } else if(enemies[0].isRival) {
+                                        pushLogItem({
+                                            message: `Approaching your rival ${enemies[0].name}.`,
+                                            uuid: v4()
+                                        })
                                     } else {
                                         pushLogItem({
                                             message: `<strong>Approaching ${enemies[0].name}.</strong>`,
