@@ -42,6 +42,7 @@ export function loadGlobalState() {
         },
         rival: {},
         reincarnationCount: 0,
+        latentPowerCap: 0,
         passivePowerIncome: Decimal(0),
         unlockedMonsters: {},
         unlockedTraits: {},
@@ -143,10 +144,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.minus(1).pow(1.25).floor(),
-            cunning: powerLevel.minus(1).pow(1.25).floor(),
-            deceit: powerLevel.minus(1).pow(1.25).floor(),
-            madness: powerLevel.minus(1).pow(1.25).floor(),
+            brutality: powerLevel.minus(1),
+            cunning: powerLevel.minus(1),
+            deceit: powerLevel.minus(1),
+            madness: powerLevel.minus(1)
         },
         combat: {
             fatigue: 0,
@@ -225,6 +226,10 @@ export function reincarnateAs(monsterId, newAttributes) {
         player.attributes[attribute] = Decimal(newAttributes[attribute.substring(1)]);
     })
     if (globalState.reincarnationCount !== 0) {
+        // Calculate your new latent power cap
+        globalState.latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
+            highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
+        })
         // Add your level to your starting energy.
         const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player
@@ -305,7 +310,7 @@ export function getManualSpeedMultiplier() {
 }
 
 export function clearGlobalState() {
-    const previousCompatibleVersions = changelog[pkg.version].compatiblePreviousVersions;
+    const previousCompatibleVersions = changelog[pkg.version].compatiblePreviousVersions || [];
     previousCompatibleVersions.forEach(version => window.localStorage.removeItem(require("md5")(`hell-conquest-${version}`)));
     window.localStorage.removeItem(require("md5")(`hell-conquest-${pkg.version}`));
     globalState = loadGlobalState()
