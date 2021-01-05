@@ -42,7 +42,7 @@ class Region {
                 encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
-            case "even": {
+            default: {
                 const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale);
                 const encounterOffset = Math.floor(rng.double() * difference) - difference;
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
