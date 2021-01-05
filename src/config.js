@@ -34,7 +34,7 @@ export const config = {
             latentPowerEffectScale: .01,
             traitPointCost: "Decimal.max(1, traitsOwned.times(2))",
             latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(10)",
-            attributePointCost: "Decimal.max(1, attributesTotal)"
+            attributePointCost: "Decimal.max(1, attributeScore)"
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
