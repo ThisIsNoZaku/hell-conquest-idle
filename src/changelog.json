@@ -51,8 +51,17 @@
       "When gaining a level from a kill, the player heals to full",
       "Damage multipliers from power is capped at x100 and from resilience is capped at x0.01",
       "Increased probabilities of greater and lesser level encounters.",
-      "Latent power is now capped based on the highest level enemy defeated"
-    ],
-    "compatiblePreviousVersions": ["0.2.0", "0.2.1"]
+      "Latent power is now capped based on the highest level enemy defeated",
+      "Base chance to escape/intimidate is now equal to 25% per level different between the player and the other demon.",
+      "The player bonus to chances to intimidate lesser demons is now equal to the player's deceit, minus the other demon's cunning, times 5 (minimum 0); this is in addition to the modifier based on the level difference",
+      "The player bonus to chances to escape from greater demons is now equal to the player's cunning, minus the other demon's deceit, times 5 (minimum 0); this is in addition to the level based modifier.",
+      "When the player encounters a demon that is significantly weaker than the strongest demon the player has defeated, the enemy demon is instantly killed as they are simply willed out of existence.",
+      "When the player is killed by a demon whose level is higher than that of the strongest demon the player has killed, the player will only encounter that demon at that level until the player defeats them, allowing the player to tailor their abilities to defeat that specific enemy.",
+      "Player attributes now default to 1 instead of 0",
+      "The bonus point cost to increase base attributes now goes up at the total points spent on attributes gets higher.",
+      "Critical/Glancing Hits are now +/-20% damage instead of 50%.",
+      "The Terrified status now inflicts Precision and Power penalties instead of stunning, which was much stronger than the other options",
+      "The Shared Pain trait now reflects 20% damage per level instead of 5%."
+    ]
   }
 }
