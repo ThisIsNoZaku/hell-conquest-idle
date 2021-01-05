@@ -35,7 +35,7 @@ class Region {
         switch (encounterType) {
             case "greater": {
                 const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelCap) + config.encounters.greaterLevelScale;
-                encounterLevel = encounterLevel.plus(encounterOffset);
+                encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1) ) : encounterLevel.plus(encounterOffset);
                 break;
             }
             case "lesser": {
@@ -49,10 +49,11 @@ class Region {
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
+        const encounterWithRival = Decimal(getGlobalState().rival.level || 0).eq(encounterLevel);
         if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const encounterDef = Decimal(getGlobalState().rival.level || 0).gte(encounterLevel) ? this.encounters[getGlobalState().rival.type] :chooseRandomEncounter(this);
+        const encounterDef = encounterWithRival ? this.encounters[getGlobalState().rival.type] : chooseRandomEncounter(this);
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
@@ -62,7 +63,7 @@ class Region {
             pendingActions: [],
             enemies: encounterDef.enemies.flatMap(enemyDef => _.range(0, enemyDef.count).map(i => {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
-                generatedCreature.isRival = Decimal(getGlobalState().rival.level || 0).gte(encounterLevel);
+                generatedCreature.isRival = encounterWithRival;
                 if(generatedCreature.isRival) {
                     generatedCreature.traits = getGlobalState().rival.traits;
                     generatedCreature.tactics = getGlobalState().rival.tactics;
