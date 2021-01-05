@@ -80,7 +80,9 @@ export default function BottomSection(props) {
                 <CharacterCombatSummary name={_.get(props.enemy, "name")} currentHp={_.get(props.enemy, "currentHp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
                                         statuses={_.get(props.enemy, "statuses")}
-                                        direction="row-reverse"/>
+                                        direction="row-reverse"
+                                        isRival={_.get(props.enemy, "isRival")}
+                />
             </Grid>
         </Paper>
         <Paper style={styles.action}>
