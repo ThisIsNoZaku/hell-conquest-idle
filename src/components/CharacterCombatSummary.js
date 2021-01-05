@@ -6,7 +6,13 @@ export default function CharacterCombatSummary(props) {
     return <Grid item container xs >
         <Grid item xs={12} container direction={props.direction}>
             <Grid item xs={6}>
-                {props.name}
+                <div style={{
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    {props.isRival && <img src="./icons/icons-793.png"/> }
+                    {props.name}
+                </div>
             </Grid>
             <Grid item xs={6}>
                 <meter style={{width: "80%"}} low={33} high={66} optimum={100} min={0} max={100}
