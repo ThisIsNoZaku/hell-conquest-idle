@@ -14,16 +14,16 @@ class Region {
     startEncounter(player, rng) {
         let encounterType;
         const combinedEncounterChances = config.encounters.lesserEncounterChanceWeight +
-            config.encounters.greaterLevelScale +
+            config.encounters.greaterEncounterChanceWeight +
             config.encounters.evenEncounterChanceWeight;
         const encounterTypeRoll = Math.floor(rng.double() * combinedEncounterChances) + 1;
         const lesserChance = config.encounters.lesserEncounterChanceWeight;
         const evenChance = config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight;
         debugMessage(`Determine encounter. Roll ${encounterTypeRoll} vs lesser (<=${lesserChance}), even (<=${evenChance})`);
-        if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight) {
+        if (encounterTypeRoll <= lesserChance) {
             encounterType = "lesser";
             debugMessage(`Lesser triggered`)
-        } else if (encounterTypeRoll <= config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight) {
+        } else if (encounterTypeRoll <= evenChance) {
             encounterType = "even";
             debugMessage(`Even level encounter triggered`);
         } else {
@@ -33,12 +33,12 @@ class Region {
         let encounterLevel = player.powerLevel;
         switch (encounterType) {
             case "greater": {
-                const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelScale);
+                const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelCap) + config.encounters.greaterLevelScale;
                 encounterLevel = encounterLevel.plus(encounterOffset);
                 break;
             }
             case "lesser": {
-                const encounterOffset = Math.floor(rng.double() * config.encounters.lesserLevelScale);
+                const encounterOffset = Math.floor(rng.double() * config.encounters.lesserLevelFloor) + config.encounters.lesserLevelScale;
                 encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
