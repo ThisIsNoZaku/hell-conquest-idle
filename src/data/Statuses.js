@@ -12,7 +12,8 @@ export const Statuses = {
         name: "Terrified",
         icon: "icons/icons-130.png",
         effects: {
-            skip_turn: true
+            precision_modifier: -.2,
+            power_modifier: -.2
         },
         decays: true
     },
