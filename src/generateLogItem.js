@@ -36,7 +36,7 @@ export default function generateLogItem(item) {
             result.message = `${getCharacter(item.actor).name} lost ${item.actor === 0 ? 'your' : 'their'} action.`;
             break;
         case "intimidated":
-            result.message = `${getCharacter(item.target).name} was Bound to you, granting you {item.value.toFixed()} power while you explore.`
+            result.message = `${getCharacter(item.target).name} was Bound to you, granting you ${item.value.toFixed()} power while you explore.`
             break;
         case "enemy-fled":
             result.message = `${getCharacter(item.target).name} Fled!`;
