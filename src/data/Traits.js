@@ -91,11 +91,11 @@ export const Traits = {
     sharedPain: {
         name: "Shared Pain",
         icon: "icons/icons-146.png",
-        description: _.template("You return the pain of injuries inflicted on you, reflecting <span style='color: orangered'>${rank.times(5).toFixed()}%</span> of the damage back."),
+        description: _.template("You return the pain of injuries inflicted on you, reflecting <span style='color: orangered'>${rank.times(20).toFixed()}%</span> of the damage back."),
         on_taking_damage: {
             effects: {
                 target: "attacker",
-                damage: "$rank.times(5).div(100).times(attackDamage)"
+                damage: "$rank.times(20).div(100).times(attackDamage)"
             }
         }
     },
