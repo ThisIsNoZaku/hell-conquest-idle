@@ -34,7 +34,9 @@ export default function ReincarnationSelectionPage(props) {
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => {
-            return Decimal(sum).plus(next).minus(config.mechanics.combat.playerAttributeMinimum);
+            next = Decimal(next).minus(config.mechanics.combat.playerAttributeMinimum);
+            const totalAttributeCost = Decimal(next).times(Decimal(next).plus(1)).div(2);
+            return Decimal(sum).plus(totalAttributeCost);
         }, 0))
         .minus(
             Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
@@ -46,9 +48,20 @@ export default function ReincarnationSelectionPage(props) {
     const nextBonusTraitCost = evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
     });
-    const nextAttributeCost = evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
-        attributesTotal: Object.values(attributes).reduce((total, next) => total.plus(next).minus(config.mechanics.combat.playerAttributeMinimum), Decimal(0))
-    });
+    const nextAttributeCosts = {
+        brutality: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: attributes.brutality
+        }),
+        cunning:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: attributes.cunning
+        }),
+        deceit:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: attributes.deceit
+        }),
+        madness:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: attributes.madness
+        }),
+    }
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -67,8 +80,8 @@ export default function ReincarnationSelectionPage(props) {
 
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Spend {availableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} on
-                    bonuses </strong> (Reach higher levels to gain more points)
+                <strong>You have {availableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} to spend out of a max of {spendableBonusPoints.toFixed()} from reaching level {Decimal(getGlobalState().highestLevelReached).toFixed()} on
+                    bonuses </strong>
             </Grid>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
@@ -81,7 +94,7 @@ export default function ReincarnationSelectionPage(props) {
                         <div style={{textAlign: "center"}}>
                             <img src={Attributes[attribute].icon}/>
                             <div>
-                                <Button disabled={availableBonusPoints.lte(0)}
+                                <Button disabled={availableBonusPoints.lt(nextAttributeCosts[attribute])}
                                         onClick={() => {
                                             setAttributes({
                                                 ...attributes,
