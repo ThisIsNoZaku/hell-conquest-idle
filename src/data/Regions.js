@@ -19,6 +19,7 @@ class Region {
         const encounterTypeRoll = Math.floor(rng.double() * combinedEncounterChances) + 1;
         const lesserChance = config.encounters.lesserEncounterChanceWeight;
         const evenChance = config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight;
+        let encounterLevel = player.powerLevel;
         debugMessage(`Determine encounter. Roll ${encounterTypeRoll} vs lesser (<=${lesserChance}), even (<=${evenChance})`);
         if (encounterTypeRoll <= lesserChance) {
             encounterType = "lesser";
@@ -30,7 +31,7 @@ class Region {
             encounterType = "greater";
             debugMessage(`Greater encounter triggered`);
         }
-        let encounterLevel = player.powerLevel;
+
         switch (encounterType) {
             case "greater": {
                 const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelCap) + config.encounters.greaterLevelScale;
@@ -51,7 +52,7 @@ class Region {
         if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const encounterDef = chooseRandomEncounter(this);
+        const encounterDef = Decimal(getGlobalState().rival.level || 0).gte(encounterLevel) ? this.encounters[getGlobalState().rival.type] :chooseRandomEncounter(this);
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
@@ -60,7 +61,9 @@ class Region {
             ...encounterDef,
             pendingActions: [],
             enemies: encounterDef.enemies.flatMap(enemyDef => _.range(0, enemyDef.count).map(i => {
-                return generateCreature(enemyDef.name, encounterLevel, rng)
+                const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
+                generatedCreature.isRival = Decimal(getGlobalState().rival.level || 0).gte(encounterLevel);
+                return generatedCreature;
             }))
         };
         return encounter;
