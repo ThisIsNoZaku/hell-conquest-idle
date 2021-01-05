@@ -119,8 +119,9 @@ export function resolveCombat(rng, definition) {
                     round: {effects: endOfRoundEffects}
                 }, rng);
                 actingCharacter.fatigue = Decimal(actingCharacter.fatigue || 0).plus(1);
-                if(actingCharacter.powerLevel.div(2).plus(5).lt(actingCharacter.fatigue)) {
-                    const healthToLose = Decimal.max(1, actingCharacter.maximumHp.div(100).ceil());
+                if(actingCharacter.powerLevel.div(2).plus(3).lt(actingCharacter.fatigue)) {
+                    const healthToLose = actingCharacter.damageFromFatigue.floor();
+                    actingCharacter.hp = Decimal.max(actingCharacter.hp.minus(healthToLose), 0);
                     combatResult.rounds.push({
                         uuid: v4(),
                         result: "fatigue-damage",
