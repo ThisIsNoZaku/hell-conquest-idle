@@ -234,19 +234,15 @@ class CombatStats {
     }
 
     get minimumDamage() {
-        return calculateDamage(config.mechanics.combat.defaultMinimumDamageMultiplier, this.character()).floor();
+        return calculateDamage("min", this.character()).floor();
     }
 
     get medianDamage() {
-        return calculateDamage(config.mechanics.combat.defaultMedianDamageMultiplier, this.character()).floor();
+        return calculateDamage("med", this.character()).floor();
     }
 
     get maximumDamage() {
-        const tacticsMultiplier = Decimal(1).plus(
-            Tactics[this.character().tactics].modifiers.critical_hit_damage_modifier || 0
-        )
-        return calculateDamage(Decimal(config.mechanics.combat.defaultMaximumDamageMultiplier), this.character())
-            .times(tacticsMultiplier).floor();
+        return calculateDamage("max", this.character()).floor();
     }
 
     get evasion() {
@@ -267,12 +263,15 @@ class CombatStats {
 
 }
 
-function calculateDamage(hitTypeDamageMultiplier, character) {
+function calculateDamage(hitType, character) {
     const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
         player: character
     });
+    const hitTypeDamageMultiplier = config.mechanics.combat[`default${hitType.substring(0, 1).toUpperCase()}${hitType.substring(1)}DamageMultiplier`];
+    const tacticsModifier = Tactics[character.tactics].modifiers[`${hitType}_hit_damage_modifier`] || 0;
+    const totalDamageMultiplier = Decimal(hitTypeDamageMultiplier).plus(tacticsModifier);
     return baseDamage
-        .times(hitTypeDamageMultiplier).ceil();
+        .times(totalDamageMultiplier).ceil();
 }
 
 export function calculateCombatStat(character, combatAttribute) {
