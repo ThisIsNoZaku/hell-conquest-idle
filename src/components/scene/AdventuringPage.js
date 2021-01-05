@@ -190,7 +190,7 @@ export default function AdventuringPage(props) {
             }
         }
 
-        function tick(timestamp) {
+        function tick(timestamp) { // FIXME: Optimize, serious performance bottleneck
             if (!lastTime) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
