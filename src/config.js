@@ -18,7 +18,7 @@ export const config = {
         lesserLevelFloor: 5,
         greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
         greaterLevelCap: 4,
-        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10).plus(Decimal(player.attributes.deceit).minus(enemy.attributes.cunning).times(5))",
+        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10).plus(Decimal(player.attributes.deceit).times(5))",
         chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(20).plus(Decimal(player.attributes.cunning).times(5))",
         lesserDemonInstantKillLevel: "Decimal(highestLevelEnemyDefeated).minus(5)"
     },
@@ -32,15 +32,16 @@ export const config = {
             latentPowerGainOnReincarnate: "player.powerLevel.pow(2)",
             latentPowerEffectScale: .01,
             traitPointCost: "Decimal.max(1, traitsOwned.times(2))",
-            latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(10)"
+            latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(10)",
+            attributePointCost: "Decimal.max(1, attributesTotal)"
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
             gainedFromLesserDemon: "enemy.powerLevel",
             gainedFromOtherDemon: "enemy.powerLevel.times(5)"
         },
-        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal($level.minus(1).toNumber()).pow(2).times(5)",
-        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.sqrt($powerPoints.div(5)).plus(1).floor()",
+        levelToPowerEquation: "$level.eq(1) ? Decimal(0) : Decimal($level.minus(1).toNumber()).pow(2).times(10)",
+        powerToLevelEquation: "Decimal(0).eq($powerPoints) ? Decimal(1) : Decimal.sqrt($powerPoints.div(10)).plus(1).floor()",
         maxLevel: 25,
         combat: {
             randomEncounterChance: "player.powerLevel.div(10).floor().times(10)",
@@ -65,6 +66,7 @@ export const config = {
                 baseAttribute: "madness",
                 effectPerPoint: .05
             },
+            playerAttributeMinimum: 1,
             fatigue: {
                 evasionPenaltyPerPoint: 2
             },

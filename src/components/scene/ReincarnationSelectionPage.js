@@ -33,7 +33,7 @@ export default function ReincarnationSelectionPage(props) {
         }));
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const availableBonusPoints = spendableBonusPoints
-        .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next)))
+        .minus(Object.values(attributes).reduce((sum, next) => Decimal(sum).plus(next).minus(config.mechanics.combat.playerAttributeMinimum)))
         .minus(
             Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
                 return previousValue.plus(evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
@@ -43,6 +43,9 @@ export default function ReincarnationSelectionPage(props) {
         );
     const nextBonusTraitCost = evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
+    });
+    const nextAttributeCost = evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+        attributesTotal: Object.values(attributes).reduce((total, next) => total.plus(next).minus(config.mechanics.combat.playerAttributeMinimum), Decimal(0))
     });
 
     useEffect(() => {
@@ -86,7 +89,7 @@ export default function ReincarnationSelectionPage(props) {
                                     <AddIcon/>
                                 </Button>
                                 {Decimal(attributes[attribute]).toFixed()}
-                                <Button disabled={Decimal(attributes[attribute]).lte(0)} onClick={() => {
+                                <Button disabled={Decimal(attributes[attribute]).lte(config.mechanics.combat.playerAttributeMinimum)} onClick={() => {
                                     setAttributes({...attributes, [attribute]: Decimal(attributes[attribute]).minus(1)})
                                 }}>
                                     <RemoveIcon/>
