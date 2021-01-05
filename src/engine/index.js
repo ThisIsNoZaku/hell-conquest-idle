@@ -40,6 +40,7 @@ export function loadGlobalState() {
             creatures: {},
             regions: {}
         },
+        rival: {},
         reincarnationCount: 0,
         passivePowerIncome: Decimal(0),
         unlockedMonsters: {},

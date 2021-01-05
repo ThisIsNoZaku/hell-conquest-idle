@@ -136,6 +136,13 @@ export default function AdventuringPage(props) {
                         }
                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                     } else if (action.target === 0) {
+                        if(Decimal(enemy.powerLevel).gt(getGlobalState().rival.level || 0)) {
+                            getGlobalState().rival = {
+                                level: enemy.powerLevel,
+                                type: enemy.appearance,
+                                traits: enemy.traits
+                            }
+                        }
                         getCharacter(0).currentHp = Decimal(0);
                     }
                     break;
