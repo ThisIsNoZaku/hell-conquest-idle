@@ -137,7 +137,7 @@ export function generateCreature(id, powerLevel, rng) {
             player: {
                 powerLevel: powerLevel.minus(1)
             }
-        })),
+        })).times(2),
         tactics,
         traits: startingTraits,
         absorbedPower: getPowerNeededForLevel(powerLevel),
@@ -231,9 +231,9 @@ export function reincarnateAs(monsterId, newAttributes) {
             player
         });
         globalState.characters[0].latentPower = Decimal.min(
-            evaluateExpression(config.mechanics.reincarnation.latentPowerMax, {
+            evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
                 player,
-                highestLevelEnemyDefeated: globalState.highestLevelEnemyDefeated
+                highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
             }),
             globalState.characters[0].latentPower.plus(latentPowerGain));
     }
