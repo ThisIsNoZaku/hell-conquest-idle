@@ -81,9 +81,9 @@ export const config = {
             baseHitChance: 90,
             baseDamage: "player.powerLevel.times(10)",
             attributeDamageModifier: .02,
-            defaultMinimumDamageMultiplier: .5,
+            defaultMinimumDamageMultiplier: .8,
             defaultMedianDamageMultiplier: 1,
-            defaultMaximumDamageMultiplier: 1.5,
+            defaultMaximumDamageMultiplier: 1.2,
             baseMinimumDamageWeight: 5,
             baseMedianDamageWeight: 90,
             baseMaximumDamageWeight: 5
