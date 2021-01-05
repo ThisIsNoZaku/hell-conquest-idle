@@ -11,7 +11,7 @@ export default function calculateDamageBy(attacker) {
             const powerMultiplier = Decimal(config.mechanics.combat.power.effectPerPoint).plus(1)
                 .pow(attackerPower);
             debugMessage(`Attacker ${attacker.id} has power ${attackerPower} for multiplier ${powerMultiplier}.`);
-            const defenderResilience = _.get(target, ["combat", "resilience"], 0);
+            const defenderResilience = _.get(target, ["combat", "resilience"], attackerPower);
             const resilienceMultiplier = Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
                 .pow(defenderResilience);
             if(target) {
