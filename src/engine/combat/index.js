@@ -120,7 +120,7 @@ export function resolveCombat(rng, definition) {
                 }, rng);
                 actingCharacter.fatigue = Decimal(actingCharacter.fatigue || 0).plus(1);
                 if(actingCharacter.powerLevel.div(2).plus(3).lt(actingCharacter.fatigue)) {
-                    const healthToLose = actingCharacter.damageFromFatigue.floor();
+                    const healthToLose = Decimal.max(actingCharacter.damageFromFatigue.floor(), 1);
                     actingCharacter.hp = Decimal.max(actingCharacter.hp.minus(healthToLose), 0);
                     combatResult.rounds.push({
                         uuid: v4(),
