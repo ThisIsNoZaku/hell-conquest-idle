@@ -47,9 +47,9 @@ export default class CharacterCombatState {
 
     get damageFromFatigue() {
         const maximumHp = this.maximumHp;
-        const tacticsMultiplier = Tactics[this.tactics].modifiers.fatigue_multiplier;
+        const tacticsMultiplier = Tactics[this.tactics].modifiers.fatigue_multiplier || 0;
         const totalMultiplier = Decimal(1).plus(tacticsMultiplier);
-        return maximumHp.times(totalMultiplier);
+        return maximumHp.times(totalMultiplier).div(100).floor();
     }
 
     set speed(newSpeed) {
