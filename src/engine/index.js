@@ -115,6 +115,21 @@ export function generateCreature(id, powerLevel, rng) {
     }
     const tactics = Object.keys(Tactics)[Math.floor(rng.double() * 3)];
     const nextId = nextMonsterId++;
+    // Bonus traits
+    const numberOfBonusTraits = powerLevel.div(20).floor();
+    const startingTraits = Creatures[id].traits.reduce((traits, next) => {
+        traits[next] = powerLevel.div(10).ceil();
+        return traits;
+    }, {});
+    const alreadySelected = [id];
+    for(let i = 0; i < numberOfBonusTraits; i++) {
+        const options = Object.keys(Creatures).filter(x => !alreadySelected.includes(x));
+        const index = rng.double() * options.length;
+        const selectedCreature = Creatures[options[index]];
+        selectedCreature.traits.forEach(trait => {
+            startingTraits[trait] = powerLevel.div(10).minus(1).ceil();
+        })
+    }
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
@@ -124,18 +139,15 @@ export function generateCreature(id, powerLevel, rng) {
             }
         })),
         tactics,
-        traits: Creatures[id].traits.reduce((traits, next) => {
-            traits[next] = powerLevel.div(10).ceil();
-            return traits;
-        }, {}),
+        traits: startingTraits,
         absorbedPower: getPowerNeededForLevel(powerLevel),
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.minus(1).pow(1.5).floor(),
-            cunning: powerLevel.minus(1).pow(1.5).floor(),
-            deceit: powerLevel.minus(1).pow(1.5).floor(),
-            madness: powerLevel.minus(1).pow(1.5).floor(),
+            brutality: powerLevel.minus(1).pow(1.25).floor(),
+            cunning: powerLevel.minus(1).pow(1.25).floor(),
+            deceit: powerLevel.minus(1).pow(1.25).floor(),
+            madness: powerLevel.minus(1).pow(1.25).floor(),
         },
         combat: {
             fatigue: 0,
@@ -218,7 +230,12 @@ export function reincarnateAs(monsterId, newAttributes) {
         const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player
         });
-        globalState.characters[0].latentPower = globalState.characters[0].latentPower.plus(latentPowerGain);
+        globalState.characters[0].latentPower = Decimal.min(
+            evaluateExpression(config.mechanics.reincarnation.latentPowerMax, {
+                player,
+                highestLevelEnemyDefeated: globalState.highestLevelEnemyDefeated
+            }),
+            globalState.characters[0].latentPower.plus(latentPowerGain));
     }
 
 

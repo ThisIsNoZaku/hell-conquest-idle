@@ -28,7 +28,8 @@ export const config = {
             bonusPointsForHighestLevel: 2,
             latentPowerGainOnReincarnate: "player.powerLevel.pow(2)",
             latentPowerEffectScale: .01,
-            traitPointCost: "Decimal.max(1, traitsOwned.times(2))"
+            traitPointCost: "Decimal.max(1, traitsOwned.times(2))",
+            latentPowerCap: "highestLevelEnemyDefeated.pow(2).times(1)"
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel",
