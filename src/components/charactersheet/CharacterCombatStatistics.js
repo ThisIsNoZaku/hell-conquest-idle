@@ -4,8 +4,6 @@ import {Help} from "@material-ui/icons";
 import React, {useMemo} from "react";
 import {Decimal} from "decimal.js";
 import {config} from "../../config";
-import getHitChanceBy from "../../engine/combat/getHitChanceBy";
-import calculateDamageBy from "../../engine/combat/calculateDamageBy";
 
 export default function CharacterCombatStatistics(props) {
     const combinedHitWeights = useMemo(() => Object.values(props.hitChances).reduce((total, next) => total.plus(next)), [
