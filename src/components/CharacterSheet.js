@@ -1,6 +1,12 @@
 import Grid from "@material-ui/core/Grid";
 import React, {useMemo} from "react";
-import {getCharacter, getGlobalState, getPowerNeededForLevel, getSpriteForCreature} from "../engine";
+import {
+    evaluateExpression,
+    getCharacter,
+    getGlobalState,
+    getPowerNeededForLevel,
+    getSpriteForCreature
+} from "../engine";
 import {config} from "../config";
 import PowerLevelDisplay from "./charactersheet/PowerLevelDisplay";
 import CharacterAttributes from "./charactersheet/CharacterAttributes";
@@ -38,6 +44,9 @@ export default function CharacterSheet(props) {
         props.character,
         props.enemy
     ]);
+    const latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
+        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated)
+    });
 
     return <Grid container>
         <Grid item xs={12}>
@@ -53,9 +62,19 @@ export default function CharacterSheet(props) {
             <Grid item xs>
                 Latent Power Bonus
             </Grid>
+            {props.character.latentPower.gte(latentPowerCap) &&
+            <Grid item xs style={{color: "red"}}>
+                <Tooltip
+                    title="Your latent power has been capped based on the power of the strongest demon you've defeated while not automatically reincarnating.">
+                    <div>
+                        {latentPowerModifier.toFixed()}%
+                    </div>
+                </Tooltip>
+            </Grid>}
+            {!props.character.latentPower.gte(latentPowerCap) &&
             <Grid item xs>
                 {latentPowerModifier.toFixed()}%
-            </Grid>
+            </Grid>}
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
             <progress
@@ -78,7 +97,7 @@ export default function CharacterSheet(props) {
             characterPower={props.character.combat.power.toFixed()}
             characterResilience={props.character.combat.resilience.toFixed()}
             characterEvasion={props.character.combat.evasion.toFixed()}
-            characterPrecision={props.character.combat.precision.toFixed()} />
+            characterPrecision={props.character.combat.precision.toFixed()}/>
         <Grid container>
             <Grid item xs={12}>
                 <strong>Traits</strong>
