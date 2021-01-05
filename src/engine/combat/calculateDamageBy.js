@@ -3,17 +3,18 @@ import * as _ from "lodash";
 import { config } from "../../config";
 import {debugMessage} from "../../debugging";
 import {defaultMergeProps} from "react-redux/lib/connect/mergeProps";
+import {DeckOutlined} from "@material-ui/icons";
 
 export default function calculateDamageBy(attacker) {
     return {
         against: function (target, debugOutput) {
             const attackerPower = attacker.combat.power;
-            const powerMultiplier = Decimal(config.mechanics.combat.power.effectPerPoint).plus(1)
-                .pow(attackerPower);
+            const powerMultiplier = Decimal.min(Decimal(config.mechanics.combat.power.effectPerPoint).plus(1)
+                .pow(attackerPower), 100);
             debugMessage(`Attacker ${attacker.id} has power ${attackerPower} for multiplier ${powerMultiplier}.`);
             const defenderResilience = _.get(target, ["combat", "resilience"], attackerPower);
-            const resilienceMultiplier = Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
-                .pow(defenderResilience);
+            const resilienceMultiplier = Decimal.max(Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
+                .pow(defenderResilience), 0.01);
             if(target) {
                 debugMessage(`Defender ${target.id} has resilience ${defenderResilience} for multiplier ${resilienceMultiplier}.`);
             } else {
