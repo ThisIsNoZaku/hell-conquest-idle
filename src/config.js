@@ -18,9 +18,10 @@ export const config = {
         lesserLevelFloor: 5,
         greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
         greaterLevelCap: 4,
-        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10).plus(Decimal(player.attributes.deceit).times(5))",
-        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(20).plus(Decimal(player.attributes.cunning).times(5))",
-        lesserDemonInstantKillLevel: "Decimal(highestLevelEnemyDefeated).minus(5)"
+        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).pow(2).times(10).plus(Decimal.max(Decimal(player.attributes.deceit).minus((enemy && enemy.attributes.cunning) || 0), 0).times(5))",
+        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).pow(2).times(20).plus(Decimal.max(Decimal(player.attributes.cunning).minus((enemy && enemy.attributes.deceit) || 0), 0).times(5))",
+        lesserDemonInstantKillLevel: "Decimal(highestLevelEnemyDefeated).minus(5)",
+        enemyLatentPower: "Decimal.max(0, encounterLevel.minus(2).times(25))"
     },
 
     mechanics: {
