@@ -63,6 +63,10 @@ class Region {
             enemies: encounterDef.enemies.flatMap(enemyDef => _.range(0, enemyDef.count).map(i => {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
                 generatedCreature.isRival = Decimal(getGlobalState().rival.level || 0).gte(encounterLevel);
+                if(generatedCreature.isRival) {
+                    generatedCreature.traits = getGlobalState().rival.traits;
+                    generatedCreature.tactics = getGlobalState().rival.tactics;
+                }
                 return generatedCreature;
             }))
         };
