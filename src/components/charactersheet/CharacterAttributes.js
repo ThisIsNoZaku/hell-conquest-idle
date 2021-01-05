@@ -8,10 +8,10 @@ import {Decimal} from "decimal.js";
 
 export default function CharacterAttributes(props) {
     const currentHp = useMemo(() => props.character.currentHp, [
-        props.character.currentHp
+        props.character.currentHp.toFixed()
     ]);
     const maximumHp = useMemo(() => props.character.maximumHp, [
-        props.character.maximumHp
+        props.character.maximumHp.toFixed()
     ]);
     const characterAttributes = useMemo(() => props.character.attributes, [
         props.character.attributes

@@ -15,7 +15,7 @@ export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power increases the damage your attacks deal by ${Decimal(config.mechanics.combat.power.effectPerPoint).times(props.characterPower).times(100).toFixed()}%.`, [
         props.characterPower
     ]);
-    const resilienceTooltip = useMemo(() => `Your Resilience reduces the damage your attacks deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.characterResilience).times(100).toFixed()}%.`, [
+    const resilienceTooltip = useMemo(() => `Your Resilience reduces the damage attacks against you deal by ${Decimal(config.mechanics.combat.resilience.effectPerPoint).times(props.characterResilience).times(100).toFixed()}%.`, [
         props.characterResilience
     ]);
     return <Grid container>
