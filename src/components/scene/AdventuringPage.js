@@ -353,7 +353,7 @@ export default function AdventuringPage(props) {
                                         uuid: v4()
                                     });
                                     const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromGreaterDemon, {
-                                        $enemy: enemy
+                                        enemy: enemy
                                     });
                                     const powerGained = player.gainPower(powerToGain);
                                     getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
@@ -397,11 +397,18 @@ export default function AdventuringPage(props) {
                                 }
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 break;
-                            case "reincarnating":
+                            case "reincarnating": {
                                 setAutomaticReincarnate(getGlobalState().automaticReincarnate = true);
-                                reincarnateAs(getCharacter(0).appearance, getCharacter(0).attributes);
+                                const player = getCharacter(0);
+                                reincarnateAs(getCharacter(0).appearance, {
+                                    brutality: player.attributes.baseBrutality,
+                                    cunning: player.attributes.baseCunning,
+                                    deceit: player.attributes.baseDeceit,
+                                    madness: player.attributes.baseMadness
+                                });
                                 setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 break;
+                            }
                             default:
                                 if (config.debug) {
                                     throw new Error(`Action ${getGlobalState().currentAction} not supported.`);
