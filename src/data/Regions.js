@@ -24,12 +24,12 @@ class Region {
         if (encounterTypeRoll <= lesserChance) {
             encounterType = "lesser";
             debugMessage(`Lesser triggered`)
-        } else if (encounterTypeRoll <= evenChance) {
-            encounterType = "even";
-            debugMessage(`Even level encounter triggered`);
-        } else {
+        } else if (encounterTypeRoll > evenChance && player.powerLevel.lt(config.encounters.minimumLevelForGreaterEncounters)) {
             encounterType = "greater";
             debugMessage(`Greater encounter triggered`);
+        } else {
+            encounterType = "even";
+            debugMessage(`Even level encounter triggered`);
         }
 
         switch (encounterType) {

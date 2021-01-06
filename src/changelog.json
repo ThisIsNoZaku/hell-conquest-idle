@@ -61,7 +61,8 @@
       "The bonus point cost to increase base attributes now goes up at the total points spent on attributes gets higher.",
       "Critical/Glancing Hits are now +/-20% damage instead of 50%.",
       "The Terrified status now inflicts Precision and Power penalties instead of stunning, which was much stronger than the other options",
-      "The Shared Pain trait now reflects 20% damage per level instead of 5%."
+      "The Shared Pain trait now reflects 20% damage per level instead of 5%.",
+      "The player cannot encounter Greater demons when they're level is below 5."
     ]
   }
 }
