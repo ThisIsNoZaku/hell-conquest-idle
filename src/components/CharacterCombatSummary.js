@@ -1,16 +1,18 @@
 import Grid from "@material-ui/core/Grid";
 import React from "react";
 import {Statuses} from "../data/Statuses";
+import Tooltip from "@material-ui/core/Tooltip";
+import {Decimal} from "decimal.js";
 
 export default function CharacterCombatSummary(props) {
-    return <Grid item container xs >
+    return <Grid item container xs>
         <Grid item xs={12} container direction={props.direction}>
             <Grid item xs={6}>
                 <div style={{
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    {props.isRival && <img src="./icons/icons-793.png"/> }
+                    {props.isRival && <img src="./icons/icons-793.png"/>}
                     {props.name}
                 </div>
             </Grid>
@@ -22,8 +24,22 @@ export default function CharacterCombatSummary(props) {
         </Grid>
         <Grid container item xs={12} style={{height: "40px"}} direction={props.direction}>
             {props.statuses && Object.keys(props.statuses).map(status => {
+                const modifiers = Object.keys(Statuses[status].effects).reduce((combined, next) => {
+                    switch (next) {
+                        case "power_modifier":
+                        case "evasion_modifier":
+                        case "precision_modifier":
+                        case "evasion_modifier":
+                        case "accuracy_modifier":
+                            combined[next] = Decimal.abs(Decimal(1).minus(Decimal(1).plus(Decimal(Statuses[status].effects[next])).pow(props.statuses[status])).times(100));
+                            break;
+                    }
+                    return combined;
+                }, {});
                 return <Grid item xs={1}>
-                    <img src={Statuses[status].icon}/>
+                    <Tooltip title={Statuses[status].description(modifiers)}>
+                        <img src={Statuses[status].icon}/>
+                    </Tooltip>
                 </Grid>
             })}
         </Grid>
