@@ -285,30 +285,6 @@ export default function AdventuringPage(props) {
                                         });
                                         getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                     }
-
-                                    const enemies = getGlobalState().currentEncounter.enemies;
-                                    const rival = getGlobalState().rival;
-                                    if (player.otherDemonIsGreaterDemon(enemies[0])) {
-                                        pushLogItem({
-                                            message: `<strong>💀Approaching Greater ${enemies[0].name}.💀</strong>`,
-                                            uuid: v4()
-                                        });
-                                    } else if (player.otherDemonIsLesserDemon(enemies[0])) {
-                                        pushLogItem({
-                                            message: `<strong>Approaching Lesser ${enemies[0].name}.</strong>`,
-                                            uuid: v4()
-                                        });
-                                    } else if(enemies[0].isRival) {
-                                        pushLogItem({
-                                            message: `Approaching your rival ${enemies[0].name}.`,
-                                            uuid: v4()
-                                        })
-                                    } else {
-                                        pushLogItem({
-                                            message: `<strong>Approaching ${enemies[0].name}.</strong>`,
-                                            uuid: v4()
-                                        });
-                                    }
                                     saveGlobalState();
                                 }
                                 break;
@@ -420,12 +396,28 @@ export default function AdventuringPage(props) {
                                         message: `The raw power of your killer instinct destroys ${enemy.name}!`,
                                         uuid: v4()
                                     });
+                                    getGlobalState().currentEncounter.pendingActions = [
+                                        {
+                                            uuid: v4(),
+                                            result: "kill",
+                                            target: enemy.id,
+                                            actor: 0,
+                                            tick: 0
+                                        },
+                                        {
+                                            uuid: v4(),
+                                            result: "combat-end",
+                                            tick: 0
+                                        }
+                                    ];
                                     applyAction({
+                                        uuid: v4(),
                                         result: "kill",
                                         target: enemy.id,
-                                        actor: 0
+                                        actor: 0,
+                                        tick: 0
                                     });
-                                    setCurrentAction(Actions[changeCurrentAction("exploring")]);
+                                    // setCurrentAction(Actions[changeCurrentAction("exploring")]);
                                 } else {
                                     if (getGlobalState().currentEncounter.pendingActions.length) {
                                         const nextAction = getGlobalState().currentEncounter.pendingActions[0];
