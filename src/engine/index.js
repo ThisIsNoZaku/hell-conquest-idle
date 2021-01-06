@@ -144,10 +144,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.minus(1),
-            cunning: powerLevel.minus(1),
-            deceit: powerLevel.minus(1),
-            madness: powerLevel.minus(1)
+            brutality: powerLevel.minus(1).div(2).floor(),
+            cunning: powerLevel.minus(1).div(2).floor(),
+            deceit: powerLevel.minus(1).div(2).floor(),
+            madness: powerLevel.minus(1).div(2).floor()
         },
         combat: {
             fatigue: 0,
