@@ -19,7 +19,7 @@ export const Statuses = {
     },
     restrained: {
         name: "Restrained",
-        icon: "icons/icons-1276.png",
+        icon: "icons/icons-116.png",
         effects: {
             accuracy_modifier: -.1
         },
