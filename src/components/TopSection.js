@@ -3,7 +3,6 @@ import React, {useMemo} from "react";
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router-dom";
 import {getCharacter, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "../engine";
-import Alert from '@material-ui/lab/Alert';
 import Grid from "@material-ui/core/Grid";
 import {Decimal} from "decimal.js";
 
