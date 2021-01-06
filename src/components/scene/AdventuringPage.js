@@ -84,7 +84,7 @@ export default function AdventuringPage(props) {
         let lastFrame;
 
         function applyAction(action, lastTick) {
-            if (lastTick && action.tick && action.tick !== lastTick) {
+            if (lastTick !== undefined && action.tick && action.tick !== lastTick) {
                 debugMessage(`Not consuming an action for tick ${action.tick} on tick ${lastTick}`);
                 return;
             }
