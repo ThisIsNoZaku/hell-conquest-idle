@@ -206,8 +206,10 @@ export default function AdventuringPage(props) {
             if (!lastTime) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
+                const actionDuration = typeof Actions[getGlobalState().currentAction].duration === "number" ?
+                    Actions[getGlobalState().currentAction].duration : _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration);
                 const player = getCharacter(0);
-                if (accruedTime.current >= _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) {
+                if (accruedTime.current >= actionDuration) {
                         const player = getCharacter(0);
                         saveGlobalState();
                         accruedTime.current = 0;
@@ -461,7 +463,7 @@ export default function AdventuringPage(props) {
                 setDisplayedTime(accruedTime.current);
                 const passedTime = timestamp - lastTime;
                 const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);
-                if (Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration)) === 0) {
+                if (Math.min(accruedTime.current + adjustedTime, actionDuration) === 0) {
                     if (accruedTime.current + adjustedTime === 0) {
                         debugMessage(`Timestamp ${timestamp}, last time ${lastTime}`);
                     } else {
@@ -469,7 +471,7 @@ export default function AdventuringPage(props) {
                     }
 
                 }
-                accruedTime.current = Math.min(accruedTime.current + adjustedTime, _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration));
+                accruedTime.current = Math.min(accruedTime.current + adjustedTime, actionDuration);
             }
             if (lastTime === timestamp) {
                 debugMessage("New and previous timestamp were identical");

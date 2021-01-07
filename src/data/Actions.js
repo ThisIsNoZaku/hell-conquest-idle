@@ -3,12 +3,12 @@ import React from "react";
 export const Actions = {
     exploring: {
         id: "exploring",
-        duration: "exploration.explorationTime",
+        duration: 2000,
         description: "Exploring..."
     },
     approaching: {
         id: "approaching",
-        duration: "exploration.approachTime",
+        duration: 2000,
         description: "Approaching Enemy..."
     },
     dead: {
@@ -23,12 +23,12 @@ export const Actions = {
     },
     fleeing: {
         id: "fleeing",
-        duration: "exploration.fleeingTime",
+        duration: 2000,
         description: "Fleeing in terror!"
     },
     fighting: {
         id: "fighting",
-        duration: "exploration.combatTime",
+        duration: 2000,
         description: "In Combat!",
     },
     reincarnating: {
@@ -43,7 +43,7 @@ export const Actions = {
     },
     intimidating: {
         id:"intimidating",
-        duration: "exploration.intimidateTime",
+        duration: 2000,
         description: "Intimidating..."
     }
 }

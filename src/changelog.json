@@ -64,5 +64,11 @@
       "The Shared Pain trait now reflects 20% damage per level instead of 5%.",
       "The player cannot encounter Greater demons when they're level is below 5."
     ]
+  },
+  "0.3.1" : {
+    "changes": [
+      "The exploration, combat, fleeing and intimidation timers are all now 2 seconds"
+    ],
+    "compatiblePreviousVersions": ["0.3.0"]
   }
 }

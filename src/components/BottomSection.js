@@ -56,6 +56,9 @@ export default function BottomSection(props) {
         player: props.player,
         enemy: props.enemy
     }) : Decimal(100);
+    const maxActionTime = typeof props.currentAction.duration === "number" ?
+        props.currentAction.duration :
+        _.get(props.state, props.currentAction.duration);
     return <div style={styles.root} onMouseEnter={props.startManualSpeedup} onMouseLeave={props.stopManualSpeedup}>
         <Paper style={styles.actions.container}>
             <Button style={styles.actions.buttons} onClick={() => {
@@ -88,7 +91,7 @@ export default function BottomSection(props) {
         <Paper style={styles.action}>
             <strong>{props.currentAction.description}</strong>
             <progress style={styles.actionProgress} value={props.actionTime}
-                      max={_.get(props.state, props.currentAction.duration)}/>
+                      max={maxActionTime}/>
         </Paper>
         <ActionLog actionLog={props.actionLog}/>
     </div>
