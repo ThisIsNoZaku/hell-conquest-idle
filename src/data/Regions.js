@@ -49,7 +49,7 @@ class Region {
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
-        const encounterWithRival = Decimal(getGlobalState().rival.level || 0).lte(encounterLevel);
+        const encounterWithRival = getGlobalState().rival && Decimal(getGlobalState().rival.level || 0).lte(encounterLevel);
         if(encounterWithRival) {
             encounterLevel = Decimal(getGlobalState().rival.level || 0);
         }
