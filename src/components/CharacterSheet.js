@@ -59,18 +59,13 @@ export default function CharacterSheet(props) {
             <Grid item xs>
                 Latent Power Bonus
             </Grid>
-            {props.character.latentPower.gte(getGlobalState().latentPowerCap) && props.character.isPc &&
-            <Grid item xs style={{color: "red"}}>
+            <Grid item xs style={{color: props.character.latentPower.gte(getGlobalState().latentPowerCap) && props.character.isPc ? "red" : "inherit"}}>
                 <Tooltip
-                    title="Your latent power has been capped based on the power of the strongest demon you've defeated. Increase your cap by reincarnating after defeating stronger enemies.">
+                    title="Latent power multiplies power gain and attributes. Latent power is capped based on the strongest enemy defeated.">
                     <div>
                         {latentPowerModifier.toFixed()}%
                     </div>
                 </Tooltip>
-            </Grid>}
-            {(!props.character.latentPower.gte(getGlobalState().latentPowerCap) || !props.character.isPc) &&
-            <Grid item xs>
-                {latentPowerModifier.toFixed()}%
             </Grid>}
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
