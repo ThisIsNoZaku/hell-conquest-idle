@@ -119,8 +119,7 @@ export default function ReincarnationSelectionPage(props) {
             })}
             {Object.keys(getGlobalState().unlockedTraits).length > 0 &&
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon
-                form)
+                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon form. Increase the Tier of your traits by reaching highest levels with the demons that possess them.)
             </Grid>}
             {Object.keys(getGlobalState().unlockedTraits).map(traitId => {
                 return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
