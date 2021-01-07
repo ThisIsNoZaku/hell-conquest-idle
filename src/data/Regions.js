@@ -51,7 +51,7 @@ class Region {
         }
         const encounterWithRival = Decimal(getGlobalState().rival.level || 0).lte(encounterLevel);
         if(encounterWithRival) {
-            encounterLevel = Decimal(getGlobalState().rival.level);
+            encounterLevel = Decimal(getGlobalState().rival.level || 0);
         }
         if (config.debug) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
