@@ -7,14 +7,6 @@ export const Creatures  = {
         texture: "01_warrior.png",
         description: "A ruthless warrior who delighted in slaughtering whoever they encounter on the battlefield.",
     },
-    rapaciousHighwayman: {
-        name: "Rapacious Highwayman",
-        traits: ["cupidity"],
-        enabled: false,
-        appearance: "rapaciousHighwayman",
-        texture: "02_hunter.png",
-        description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants.",
-    },
     condemnedSlasher: {
         name: "Condemned Slasher",
         traits: ["sadisticJoy"],
@@ -31,14 +23,6 @@ export const Creatures  = {
         texture: "06_snake_01.png",
         description: "A monstrous reptile which",
     },
-    skitteringHorror: {
-        name: "Skittering Horror",
-        traits: ["terrifyingSkitter"],
-        enabled: true,
-        appearance: "skitteringHorror",
-        texture: "10_spider.png",
-        description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs."
-    },
     deadlyHornet: {
         name: "Deadly Hornet",
         traits: ["piercingStrike"],
@@ -46,6 +30,30 @@ export const Creatures  = {
         appearance: "deadlyHornet",
         texture: "12_wasp.png",
         description: "An insect whose stinger is able to pierce even metal protection."
+    },
+    rapaciousHighwayman: {
+        name: "Rapacious Highwayman",
+        traits: ["cupidity"],
+        enabled: false,
+        appearance: "rapaciousHighwayman",
+        texture: "02_hunter.png",
+        description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants.",
+    },
+    searingFangViper: {
+        name: "Searing-Fang Viper",
+        traits: ["searingVenom"],
+        enabled: true,
+        appearance: "searingFangViper",
+        texture: "07_snake_02.png",
+        description: "A venomous snake, whose venom inflicts horrific agony to its victims."
+    },
+    skitteringHorror: {
+        name: "Skittering Horror",
+        traits: ["terrifyingSkitter"],
+        enabled: true,
+        appearance: "skitteringHorror",
+        texture: "10_spider.png",
+        description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs."
     },
     tormentedDead: {
         name: "Tormented Dead",
