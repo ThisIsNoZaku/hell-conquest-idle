@@ -83,7 +83,7 @@ export default function CharacterCombatStatistics(props) {
                     {props.calculatedDamage.min.toFixed()}
                 </Grid>
                 <Grid item xs={1}>
-                    <Tooltip title="Glancing hits deal 50% less  damage">
+                    <Tooltip title={`Glancing hits deal ${Decimal(1).minus(config.mechanics.combat.defaultMinDamageMultiplier).times(100)}% less damage`}>
                         <Help/>
                     </Tooltip>
                 </Grid>
@@ -116,7 +116,7 @@ export default function CharacterCombatStatistics(props) {
                     {props.calculatedDamage.max.toFixed()}
                 </Grid>
                 <Grid item xs={1}>
-                    <Tooltip title="Critical hits deal 50% more damage.">
+                    <Tooltip title={`Critical hits deal ${Decimal.abs(Decimal(1).minus(config.mechanics.combat.defaultMaxDamageMultiplier).times(100))}%  more damage.`}>
                         <Help/>
                     </Tooltip>
                 </Grid>
