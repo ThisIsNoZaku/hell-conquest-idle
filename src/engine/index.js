@@ -69,6 +69,7 @@ export function loadGlobalState() {
         },
         characters: {
             0: new Character({
+                highestLevelReached: 0,
                 id: 0,
                 isPc: true,
                 name: "You",

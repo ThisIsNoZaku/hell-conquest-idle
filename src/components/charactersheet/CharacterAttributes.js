@@ -27,6 +27,7 @@ export default function CharacterAttributes(props) {
         </Grid>
         <Grid container direction="row">
             {Object.keys(Attributes).map(attribute => {
+                const baseAttribute = `base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`;
                 return <Grid item xs>
                     <Tooltip title={Attributes[attribute].description({
                         rank: Decimal(characterAttributes[attribute]).toFixed()
@@ -37,7 +38,8 @@ export default function CharacterAttributes(props) {
                                 <span style={{fontSize: "12"}}>{Attributes[attribute].label}</span>
                             </div>
                             <div>
-                                {Decimal(characterAttributes[attribute]).toFixed()}
+                                {Decimal(characterAttributes[baseAttribute]).toFixed()}
+                                {Decimal(characterAttributes[baseAttribute]).lt(characterAttributes[attribute]) && `(${characterAttributes[attribute].toFixed()})`}
                             </div>
                         </div>
                     </Tooltip>

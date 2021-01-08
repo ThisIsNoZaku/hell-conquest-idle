@@ -26,6 +26,7 @@ export class Character {
         this._modifiers = props.modifiers || props._modifiers || [];
         this._tactics = props.tactics || props._tactics || "defensive";
         this._statuses = props.statuses || props._statuses || {};
+        this.highestLevelReached = props.highestLevelReached;
     }
 
     get tactics() {
@@ -202,27 +203,27 @@ export class Attributes {
     }
 
     get brutality() {
-        const latentPowerMultiplier = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .plus(1);
-        return Decimal(this._brutality).times(latentPowerMultiplier).floor();
+        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
+            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
+        return Decimal(this._brutality).plus(latentPowerBonus).toDecimalPlaces(1);
     }
 
     get cunning() {
-        const latentPowerMultiplier = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .plus(1);
-        return Decimal(this._cunning).times(latentPowerMultiplier).floor();
+        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
+            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
+        return Decimal(this._cunning).plus(latentPowerBonus).toDecimalPlaces(1);
     }
 
     get deceit() {
-        const latentPowerMultiplier = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .plus(1);
-        return Decimal(this._deceit).times(latentPowerMultiplier).floor();
+        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
+            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
+        return Decimal(this._deceit).plus(latentPowerBonus).toDecimalPlaces(1);
     }
 
     get madness() {
-        const latentPowerMultiplier = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .plus(1);
-        return Decimal(this._madness).times(latentPowerMultiplier).floor();
+        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
+            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
+        return Decimal(this._madness).plus(latentPowerBonus).toDecimalPlaces(1);
     }
 }
 

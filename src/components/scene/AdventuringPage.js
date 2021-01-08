@@ -134,7 +134,7 @@ export default function AdventuringPage(props) {
                         if (!getGlobalState().automaticReincarnate) {
                             getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
                         }
-                        getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
+                        getCharacter(0).highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                         if(enemy.isRival) {
                             getGlobalState().rival = {};
                             pushLogItem({
@@ -285,13 +285,12 @@ export default function AdventuringPage(props) {
                                             message: `Your Bound lesser demons grant you ${gainedPower.toFixed()} power.`,
                                             uuid: v4()
                                         });
-                                        getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
+                                        getCharacter(0).highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                     }
                                     saveGlobalState();
                                 }
                                 break;
                             case "approaching": {
-                                const enemy = getGlobalState().currentEncounter.enemies[0];
                                     // Since we're starting a new combat, remove any old, dead characters
                                     switch (getGlobalState().nextAction) {
                                         case "fighting":
@@ -364,7 +363,7 @@ export default function AdventuringPage(props) {
                                         enemy: enemy
                                     });
                                     const powerGained = player.gainPower(powerToGain);
-                                    getGlobalState().highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
+                                    getCharacter(0).highestLevelReached = Decimal.max(getGlobalState().highestLevelReached, getCharacter(0).powerLevel);
                                     pushLogItem(generateLogItem({
                                         result: "gainedPower",
                                         value: powerGained,

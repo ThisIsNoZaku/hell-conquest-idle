@@ -33,7 +33,7 @@ export default function ReincarnationSelectionPage(props) {
         }));
     const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
     const latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
-        highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
+        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0)
     });
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => {
@@ -77,7 +77,7 @@ export default function ReincarnationSelectionPage(props) {
         {getGlobalState().reincarnationCount !== 0 && <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with a <strong>{Decimal.min(newLatentPower, latentPowerCap).toFixed()}%</strong> bonus to Attributes and absorbed power due to your Latent Power acquired from previous reincarnations.
+            You will reincarnate with a bonus of  <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.latentPowerEffectScale).toFixed()}</strong> to every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>}
 
