@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {assertCreatureExists, Creatures} from "../data/creatures";
+import {assertCreatureExists, Creatures, titles} from "../data/creatures";
 import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
 import {Character} from "../character";
@@ -145,6 +145,7 @@ export function generateCreature(id, powerLevel, rng) {
             encounterLevel: powerLevel
         })),
         tactics,
+        adjectives: [adjective],
         traits: startingTraits,
         absorbedPower: getPowerNeededForLevel(powerLevel),
         artifacts: [],
