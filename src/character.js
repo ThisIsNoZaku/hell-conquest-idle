@@ -9,7 +9,7 @@ import {Traits} from "./data/Traits";
 
 export class Character {
     constructor(props) {
-
+        this.adjectives = props.adjectives;
         this._isPc = props.isPc || props._isPc;
         this.id = props.id;
         this._name = props.name || props._name;

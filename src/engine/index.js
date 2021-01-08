@@ -133,10 +133,15 @@ export function generateCreature(id, powerLevel, rng) {
             startingTraits[trait] = powerLevel.div(10).minus(1).ceil();
         })
     }
+    // Adjectives
+    const options = Object.keys(titles);
+    const index = Math.floor(options.length * rng.double());
+    const adjective = titles[options[index]];
+    const bonuses = calculateNPCBonuses(Decimal(powerLevel).toNumber() * 2, [adjective]);
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: Decimal(evaluateExpression(config.encounters.enemyLatentPower,  {
+        latentPower: Decimal(evaluateExpression(config.encounters.enemies.latentPower,  {
             encounterLevel: powerLevel
         })),
         tactics,
@@ -145,10 +150,10 @@ export function generateCreature(id, powerLevel, rng) {
         artifacts: [],
         statuses: {},
         attributes: {
-            brutality: powerLevel.div(2).floor(),
-            cunning: powerLevel.div(2).floor(),
-            deceit: powerLevel.div(2).floor(),
-            madness: powerLevel.div(2).floor()
+            brutality: bonuses.attributes.brutality,
+            cunning:bonuses.attributes.cunning,
+            deceit:bonuses.attributes.deceit,
+            madness:bonuses.attributes.madness
         },
         combat: {
             fatigue: 0,
@@ -210,7 +215,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     }
 
     if (Decimal(globalState.highestLevelReached).lt(player.powerLevel)) {
-        globalState.highestLevelReached = player.powerLevel;
+        getCharacter(0).highestLevelReached = player.powerLevel;
     }
 
     if (monsterId === "random") {
@@ -315,4 +320,36 @@ export function clearGlobalState() {
     previousCompatibleVersions.forEach(version => window.localStorage.removeItem(require("md5")(`hell-conquest-${version}`)));
     window.localStorage.removeItem(require("md5")(`hell-conquest-${pkg.version}`));
     globalState = loadGlobalState()
+}
+
+function calculateNPCBonuses(points, adjectives) {
+    const attributeWeights = {
+        brutality: _.sum(adjectives.map(a => a.attributeMultipliers.brutality)),
+        cunning: _.sum(adjectives.map(a => a.attributeMultipliers.cunning)),
+        deceit: _.sum(adjectives.map(a => a.attributeMultipliers.deceit)),
+        madness: _.sum(adjectives.map(a => a.attributeMultipliers.madness))
+    };
+    const highestWeight = Object.keys(attributeWeights).reduce((highestWeight, next) => {
+        return attributeWeights[highestWeight] >= attributeWeights[next] ? highestWeight : next;
+    }, "brutality");
+    const totalWeights = _.sum(Object.values(attributeWeights));
+    const pointToSpend = {
+        brutality: highestWeight === "brutality" ? Math.ceil(attributeWeights.brutality / totalWeights) : Math.floor(attributeWeights.brutality / totalWeights) ,
+        cunning: highestWeight === "cunning" ? Math.ceil(attributeWeights.cunning / totalWeights) : Math.floor(attributeWeights.cunning / totalWeights) ,
+        deceit: highestWeight === "deceit" ? Math.ceil(attributeWeights.deceit / totalWeights) : Math.floor(attributeWeights.deceit / totalWeights) ,
+        madness: highestWeight === "madness" ? Math.ceil(attributeWeights.madness / totalWeights) : Math.floor(attributeWeights.madness / totalWeights)
+    }
+
+    return {
+        attributes: {
+            brutality: Decimal( triangleNumber(pointToSpend.brutality) + 1).floor(),
+            cunning: Decimal( triangleNumber(pointToSpend.cunning) + 1).floor(),
+            deceit: Decimal( triangleNumber(pointToSpend.deceit) + 1).floor(),
+            madness:Decimal( triangleNumber(pointToSpend.madness) + 1).floor(),
+        }
+    }
+}
+
+function triangleNumber(number) {
+    return (number * (number + 1))/2;
 }

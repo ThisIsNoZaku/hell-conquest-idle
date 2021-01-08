@@ -65,6 +65,45 @@ export const Creatures  = {
     }
 }
 
+export const titles = {
+    mad: {
+        name: "Mad",
+        attributeMultipliers: {
+            brutality: 1,
+            cunning: 1,
+            deceit: 1,
+            madness: 2
+        }
+    },
+    savage: {
+        name: "Brutal",
+        attributeMultipliers: {
+            brutality: 2,
+            cunning: 1,
+            deceit: 1,
+            madness: 1
+        }
+    },
+    devious: {
+        name: "Devious",
+        attributeMultipliers: {
+            brutality: 1,
+            cunning: 1,
+            deceit: 2,
+            madness: 1
+        }
+    },
+    underhanded: {
+        name: "Underhanded",
+        attributeMultipliers: {
+            brutality: 1,
+            cunning: 1,
+            deceit: 2,
+            madness: 1
+        }
+    }
+}
+
 export function assertCreatureExists(id) {
     if(!Creatures[id]) {
         throw new Error(`No creature with id ${id} is defined`);

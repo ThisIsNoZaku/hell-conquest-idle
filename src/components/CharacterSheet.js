@@ -49,6 +49,9 @@ export default function CharacterSheet(props) {
         <Grid item xs={12}>
             <img src={spriteSrc} style={{height: "75px"}}/>
         </Grid>
+        {props.character.id !== 0 && <Grid item xs={12}>
+            {props.character.adjectives.map(a => a.name).join(" ")} {props.character.name}
+        </Grid>}
         <Grid item container>
             <Grid item xs>
                 Level
@@ -66,7 +69,7 @@ export default function CharacterSheet(props) {
                         {latentPowerModifier.toFixed()}%
                     </div>
                 </Tooltip>
-            </Grid>}
+            </Grid>
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
             <progress
