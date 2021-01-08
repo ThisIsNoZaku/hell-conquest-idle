@@ -75,7 +75,7 @@ export const config = {
                 10: 5
             },
             resilience: {
-                baseAttribute: "brutality",
+                baseAttribute: "madness",
                 effectPerPoint: .1
             },
             evasion: {
@@ -98,7 +98,7 @@ export const config = {
                 pcBonus: 25,
                 pointsPerLevel: 25,
                 healingPerLevel: 5,
-                baseAttribute: "madness",
+                baseAttribute: "brutality",
                 effectPerPoint: .05
             },
             baseHitChance: 90,
