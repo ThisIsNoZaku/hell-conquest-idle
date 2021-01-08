@@ -1,6 +1,3 @@
-import * as _ from "lodash";
-console.log(process.env.REACT_APP_DEBUG_MODE, typeof process.env.REACT_APP_DEBUG_MODE);
-
 export const config = {
     manualSpeedup: {
         enabled: false,
@@ -21,7 +18,9 @@ export const config = {
         chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).times(25).plus(Decimal.max(Decimal(player.attributes.deceit).minus((enemy && enemy.attributes.cunning)), 0).times(5))",
         chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).times(25).plus(Decimal.max(Decimal(player.attributes.cunning).minus((enemy && enemy.attributes.deceit) || 0), 0).times(5))",
         lesserDemonInstantKillLevel: "Decimal(highestLevelEnemyDefeated).minus(5)",
-        enemyLatentPower: "Decimal.max(0, encounterLevel.minus(2).times(25))",
+        enemies: {
+            latentPower: "Decimal.max(0, encounterLevel.times(10))",
+        },
         minimumLevelForGreaterEncounters: 5
     },
 
@@ -51,6 +50,29 @@ export const config = {
             precision: { // Determines how precision rolls work
                 baseAttribute: "deceit",
                 effectPerPoint: .1
+            },
+            attributeDifferenceMultipliers: {
+                "-10" : 0.001,
+                "-9" : 0.01,
+                "-8" : 0.025,
+                "-7": 0.05,
+                "-6": 0.075,
+                "-5": 0.1,
+                "-4" : .25,
+                "-3" : .5,
+                "-2" : .75,
+                "-1" : .9,
+                0: 1,
+                1: 1.1,
+                2: 1.25,
+                3: 1.5,
+                4: 1.75,
+                5: 2,
+                6: 2.25,
+                7: 2.50,
+                8: 2.75,
+                9: 4,
+                10: 5
             },
             resilience: {
                 baseAttribute: "brutality",

@@ -2,30 +2,29 @@ import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import { config } from "../../config";
 import {debugMessage} from "../../debugging";
-import {defaultMergeProps} from "react-redux/lib/connect/mergeProps";
-import {DeckOutlined} from "@material-ui/icons";
 
 export default function calculateDamageBy(attacker) {
     return {
         against: function (target, debugOutput) {
             const attackerPower = attacker.combat.power;
-            const powerMultiplier = Decimal.min(Decimal(config.mechanics.combat.power.effectPerPoint).plus(1)
-                .pow(attackerPower), 100);
-            debugMessage(`Attacker ${attacker.id} has power ${attackerPower} for multiplier ${powerMultiplier}.`);
+            debugMessage(`Attacker ${attacker.id} has power ${attackerPower}.`);
             const defenderResilience = _.get(target, ["combat", "resilience"], attackerPower);
-            const resilienceMultiplier = Decimal.max(Decimal(1).minus(config.mechanics.combat.power.effectPerPoint)
-                .pow(defenderResilience), 0.01);
+
             if(target) {
-                debugMessage(`Defender ${target.id} has resilience ${defenderResilience} for multiplier ${resilienceMultiplier}.`);
+                debugMessage(`Defender ${target.id} has resilience ${defenderResilience}.`);
             } else {
-                debugMessage(`No target means an effective resilience of ${defenderResilience} and a multiplier of ${resilienceMultiplier}`)
+                debugMessage(`No target means an effective resilience of ${defenderResilience}`)
             }
-            const damageModifier = powerMultiplier.times(resilienceMultiplier);
-            debugMessage(`Final damage multiplier = ${damageModifier}. Min: ${attacker.combat.minimumDamage.times(damageModifier).ceil()} Med: ${attacker.combat.medianDamage.times(damageModifier).ceil()} Max: ${attacker.combat.maximumDamage.times(damageModifier).ceil()}`);
+            Decimal.set({rounding: Decimal.ROUND_DOWN});
+            const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
+            const damageModifier = config.mechanics.combat.attributeDifferenceMultipliers[attributeDifference];
+            debugMessage(`Final damage multiplier = ${damageModifier}. Min: ${Decimal(attacker.combat.minimumDamage).times(damageModifier).ceil()} Med: ${Decimal(attacker.combat.medianDamage).times(damageModifier).ceil()} Max: ${Decimal(attacker.combat.maximumDamage).times(damageModifier).ceil()}`);
             return {
-                min: attacker.combat.minimumDamage.times(damageModifier).ceil(),
-                med: attacker.combat.medianDamage.times(damageModifier).ceil(),
-                max: attacker.combat.maximumDamage.times(damageModifier).ceil()
+                base: attacker.combat.medianDamage,
+                multiplier: damageModifier,
+                min: Decimal(attacker.combat.minimumDamage).times(damageModifier).ceil(),
+                med: Decimal(attacker.combat.medianDamage).times(damageModifier).ceil(),
+                max: Decimal(attacker.combat.maximumDamage).times(damageModifier).ceil()
             }
         }
     }
