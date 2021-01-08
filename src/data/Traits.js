@@ -1,7 +1,9 @@
 import * as _ from "lodash";
+import { validatedTrait } from "./schemas/traits";
+
 // FIXME: Implement validation
 export const Traits = {
-    bloodrage: {
+    bloodrage: validatedTrait({
         name: "Blood Rage",
         icon: "icons/icons-139.png",
         description: _.template("This demon's unquenchable thirst for blood causes it to gain ${rank} stacks of Berserk when an enemy has 50% or less health."),
@@ -15,14 +17,14 @@ export const Traits = {
             effects: {
                 add_statuses: {
                     berserk: {
-                        target: "attacker",
+                        target: "acting_character",
                         rank: "rank"
                     }
                 }
             }
         }
-    },
-    cupidity: {
+    }),
+    cupidity: validatedTrait({
         name: "Cupidity",
         icon: "icons/icons-2503.png",
         description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to seize the intimidated demon's Artifacts as though it were killed."),
@@ -31,41 +33,36 @@ export const Traits = {
                 chance: "$rank"
             },
             effects: {
-                steal_item_chance: {
-                    target: "enemies"
+                steal_item: {
+                    target: "all_enemies"
                 }
             }
         }
-    },
-    exhaustingTouch: {
+    }),
+    exhaustingTouch: validatedTrait({
         name: "Strangulation",
         icon: "icons/icons-115.png",
         description: _.template("The demon's touch saps the strength from the victims limbs, reducing both Damage and Defense by <span>${rank.times(5)}%</span> for 1 round.")
-    },
-    inescapableGrasp: {
+    }),
+    inescapableGrasp: validatedTrait({
         name: "Inescapable Grasp",
         icon: "icons/icons-2221.png",
         description: _.template("You bind your victims when you strike, causing ${rank} levels of Restrained when you hit with an attack."),
-        on_hitting: {
+        on_critical_hit: {
             conditions: {
-                critical_hit: {
-                    chance: 100
-                }
+                chance: 100
             },
             effects: {
                 add_statuses: {
                     restrained: {
-                        target: "attacked",
+                        target: "target_character",
                         rank: "rank"
                     }
                 }
-            },
-            duration: {
-                rounds: 2
             }
         }
-    },
-    sadisticJoy: {
+    }),
+    sadisticJoy: validatedTrait({
         name: "Sadistic Joy",
         icon: "icons/icons-852.png",
         description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
@@ -74,8 +71,8 @@ export const Traits = {
                 power_gain_modifier: "rank.times(.25)"
             }
         }
-    },
-    piercingStrike: {
+    }),
+    piercingStrike: validatedTrait({
         name: "Piercing Strike",
         icon: "icons/icons-113.png",
         description: _.template("Your fierce attacks can punch right through even armor. Your <span style='color: lightgreen'>Precision</span> is increased by <span style='color: orangered'>${rank.times(25)}%</span>"),
@@ -87,19 +84,33 @@ export const Traits = {
                 }
             }
         }
-    },
-    sharedPain: {
+    }),
+    searingVenom: validatedTrait({
+        name: "Searing Venom",
+        icon: "icons/icons-4.png",
+        description: _.template("Your agonizing venom causes such intense pain that the victim suffers an extra ${rank.times(10)}% damage from attacks."),
+        continuous: {
+            effects: {
+                add_statuses: {
+
+                }
+            }
+        }
+    }),
+    sharedPain: validatedTrait({
         name: "Shared Pain",
         icon: "icons/icons-146.png",
         description: _.template("You return the pain of injuries inflicted on you, reflecting <span style='color: orangered'>${rank.times(20).toFixed()}%</span> of the damage back."),
         on_taking_damage: {
             effects: {
-                target: "attacker",
-                damage: "$rank.times(20).div(100).times(attackDamage)"
+                damage: {
+                    target: "acting_character",
+                    value: "rank.times(20).div(100).times(attackDamage)"
+                }
             }
         }
-    },
-    terrifyingSkitter: {
+    }),
+    terrifyingSkitter: validatedTrait({
         name: "Terrifying Skitter",
         icon: "icons/icons-2260.png",
         description: _.template("The sickening sound of your feet on the ground unnerves even other demons, making the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${rank.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them."),
@@ -108,15 +119,12 @@ export const Traits = {
                 add_statuses: {
                     terrified: {
                         target: "all_enemies",
-                        rank: "rank"
+                        rank: "rank.times(2)"
                     }
                 }
-            },
-            duration: {
-                rounds: "$rank.div(10).round(0, 0).plus(1)"
             }
-        }
-    },
+        },
+    })
 }
 
 export function getTrait(traitId) {
