@@ -8,7 +8,7 @@ export default function resolveAttack(tick, attacker, target) {
     let hitType = "solid";
     let damageToDeal;
     // Can the attacker upgrade their attack?
-    if (Decimal(attacker.precisionPoints).gt(target.evasionPoints) && Decimal(attacker.precisionPoints).lte(attacker.attackUpgradeCost)) {
+    if (Decimal(attacker.precisionPoints).gt(target.evasionPoints) && Decimal(attacker.precisionPoints).gte(attacker.attackUpgradeCost)) {
         attacker.precisionPoints = Decimal(attacker.precisionPoints).minus(attacker.attackUpgradeCost);
         hitType = upgradeHitType(hitType);
     }

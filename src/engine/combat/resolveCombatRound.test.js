@@ -12,6 +12,7 @@ describe('The combat round resolution', function () {
             isPc: true,
             id: 0,
             hp: 50,
+            tactics: "defensive",
             powerLevel: 1,
             attributes: {
                 baseBrutality: 1,
@@ -32,6 +33,7 @@ describe('The combat round resolution', function () {
             id: 1,
             hp: 25,
             powerLevel: 1,
+            tactics: "defensive",
             attributes: {
                 baseBrutality: 1,
                 baseCunning: 1,
@@ -129,6 +131,68 @@ describe('The combat round resolution', function () {
                     attackUpgradeCost: Decimal(200),
                     precisionPoints: Decimal(0),
                     evasionPoints: Decimal(0),
+                    party: 1,
+                    damage: enemy.damage
+                }
+            },
+            events: [
+                {
+                    event: "hit",
+                    actor: 0,
+                    targets: [1],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 0,
+                            target: 1,
+                            value: Decimal(Math.floor(5 * 1.2)),
+                        }
+                    ],
+                    hitType: "critical"
+                },
+                {
+                    event: "hit",
+                    actor: 1,
+                    targets: [0],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 1,
+                            target: 0,
+                            value: Decimal(5)
+                        }
+                    ],
+                    hitType: "solid"
+                }
+            ],
+            tick: 100
+        })
+    });
+    it("when attacker is using Aggressive tactics, the attack upgrade costs 100 points", function () {
+        player.precisionPoints = Decimal(200);
+        player.tactics = "aggressive";
+        const combatResults = resolveCombatRound(100, {
+            combatants: {
+                0: player,
+                1: enemy
+            }
+        });
+        expect(combatResults).toMatchObject({
+            initiativeOrder: [0, 1],
+            characters: {
+                0: {
+                    id: 0,
+                    isPc: true,
+                    hp: 50,
+                    precisionPoints: Decimal(100),
+                    party: 0,
+                    damage: player.damage
+                },
+                1: {
+                    id: 1,
+                    hp: 25,
                     party: 1,
                     damage: enemy.damage
                 }
