@@ -308,4 +308,150 @@ describe('The combat round resolution', function () {
             tick: 100
         })
     });
+    it("when attacker has enough Precision to upgrade an attack and target has enough Evasion to downgrade attack, the result is a Solid Hit", function () {
+        enemy.evasionPoints = Decimal(200);
+        player.precisionPoints = Decimal(300);
+        const combatResults = resolveCombatRound(100, {
+            combatants: {
+                0: player,
+                1: enemy
+            }
+        });
+        expect(combatResults).toMatchObject({
+            initiativeOrder: [0, 1],
+            characters: {
+                0: {
+                    id: 0,
+                    isPc: true,
+                    hp: 50,
+                    precisionPoints: Decimal(100),
+                    evasionPoints: Decimal(0),
+                    party: 0,
+                    damage: {
+                        min: Decimal(4),
+                        med: Decimal(5),
+                        max: Decimal(6)
+                    }
+                },
+                1: {
+                    id: 1,
+                    hp: 25,
+                    precisionPoints: Decimal(0),
+                    evasionPoints: Decimal(0),
+                    party: 1,
+                    damage: {
+                        min: Decimal(4),
+                        med: Decimal(5),
+                        max: Decimal(6)
+                    }
+                }
+            },
+            events: [
+                {
+                    event: "hit",
+                    actor: 0,
+                    targets: [1],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 0,
+                            target: 1,
+                            value: Decimal(Math.floor(5)),
+                        }
+                    ],
+                    hitType: "solid"
+                },
+                {
+                    event: "hit",
+                    actor: 1,
+                    targets: [0],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 1,
+                            target: 0,
+                            value: Decimal(5)
+                        }
+                    ],
+                    hitType: "solid"
+                }
+            ],
+            tick: 100
+        })
+    });
+    it("when target uses Deceptive tactics, the cost to downgrade an attack is equal to the attacker's cost to upgrade", function () {
+        enemy.evasionPoints = Decimal(100);
+        enemy.tactics = "deceptive";
+        player.precisionPoints = Decimal(200);
+        player.tactics = "aggressive";
+        const combatResults = resolveCombatRound(100, {
+            combatants: {
+                0: player,
+                1: enemy
+            }
+        });
+        expect(combatResults).toMatchObject({
+            initiativeOrder: [0, 1],
+            characters: {
+                0: {
+                    id: 0,
+                    isPc: true,
+                    hp: 50,
+                    precisionPoints: Decimal(100),
+                    party: 0,
+                    damage: {
+                        min: Decimal(4),
+                        med: Decimal(5),
+                        max: Decimal(6)
+                    }
+                },
+                1: {
+                    id: 1,
+                    hp: 25,
+                    evasionPoints: Decimal(0),
+                    party: 1,
+                    damage: {
+                        min: Decimal(4),
+                        med: Decimal(5),
+                        max: Decimal(6)
+                    }
+                }
+            },
+            events: [
+                {
+                    event: "hit",
+                    actor: 0,
+                    targets: [1],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 0,
+                            target: 1,
+                            value: Decimal(Math.floor(5)),
+                        }
+                    ],
+                    hitType: "solid"
+                },
+                {
+                    event: "hit",
+                    actor: 1,
+                    targets: [0],
+                    tick: 100,
+                    effects: [
+                        {
+                            type: "damage",
+                            source: 1,
+                            target: 0,
+                            value: Decimal(5)
+                        }
+                    ],
+                    hitType: "solid"
+                }
+            ],
+            tick: 100
+        })
+    });
 });

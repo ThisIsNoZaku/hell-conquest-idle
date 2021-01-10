@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import {Tactics} from "../../data/Tactics";
 
 export default function resolveAttack(tick, attacker, target) {
     if(typeof tick !== "number") {
@@ -8,12 +9,14 @@ export default function resolveAttack(tick, attacker, target) {
     let hitType = "solid";
     let damageToDeal;
     // Can the attacker upgrade their attack?
-    if (Decimal(attacker.precisionPoints).gt(target.evasionPoints) && Decimal(attacker.precisionPoints).gte(attacker.attackUpgradeCost)) {
+    const attackUpgradeCost = attacker.attackUpgradeCost;
+    if (Decimal(attacker.precisionPoints).gt(target.evasionPoints) && Decimal(attacker.precisionPoints).gte(attackUpgradeCost)) {
         attacker.precisionPoints = Decimal(attacker.precisionPoints).minus(attacker.attackUpgradeCost);
         hitType = upgradeHitType(hitType);
     }
-    if(Decimal(target.evasionPoints).gte(target.incomingAttackDowngradeCost)) {
-        target.evasionPoints = Decimal(target.evasionPoints).minus(target.incomingAttackDowngradeCost);
+    const attackDowngradeCost = Tactics[target.tactics].modifiers.downgradeCostSameAsUpgrade ? attackUpgradeCost : target.incomingAttackDowngradeCost;
+    if(Decimal(target.evasionPoints).gte(attackDowngradeCost)) {
+        target.evasionPoints = Decimal(target.evasionPoints).minus(attackDowngradeCost);
         hitType = downgradeHitType(hitType);
     }
     switch (hitType) {
