@@ -8,29 +8,64 @@ import {Statuses} from "../data/Statuses";
 export default class CharacterCombatState {
     constructor(originalCharacter, party) {
         this.id = originalCharacter.id;
+        this.isPc = originalCharacter.isPc;
+        this.stolenPower = Decimal(originalCharacter.stolenPower || 0);
         // FIXME: Symbols?
         this.attributes = new Attributes({
             brutality: originalCharacter.attributes.baseBrutality,
             deceit: originalCharacter.attributes.baseDeceit,
             cunning: originalCharacter.attributes.baseCunning,
             madness: originalCharacter.attributes.baseMadness
-        }, originalCharacter);
+        }, this);
         this.party = party;
-        this.hp = originalCharacter.currentHp;
-        this._speed = originalCharacter.speed;
+        this.hp = originalCharacter.hp;
+        this._speed = Decimal(originalCharacter.speed || 100);
         this.maximumHp = originalCharacter.maximumHp;
-        this.fatigue = 0;
-        this.lastActed = 0;
         this.modifiers = [];
-        this.tactics = originalCharacter.tactics;
+        this.tactics = originalCharacter.tactics || "defensive";
         this.traits = {...originalCharacter.traits};
         this.damage = {
-            min: originalCharacter.combat.minimumDamage,
-            med: originalCharacter.combat.medianDamage,
-            max: originalCharacter.combat.maximumDamage
+            min: Decimal(originalCharacter.combat.damage.min),
+            med: Decimal(originalCharacter.combat.damage.med),
+            max: Decimal(originalCharacter.combat.damage.max)
         }
         this.statuses = {...originalCharacter.statuses};
         this.powerLevel = originalCharacter.powerLevel;
+
+        this._precisionPoints = Decimal(originalCharacter.precisionPoints || 0);
+        this._evasionPoints = Decimal(originalCharacter.evasionPoints || 0);
+    }
+
+    get attackUpgradeCost() {
+        const baseCost = config.mechanics.combat.attackUpgradeBaseCost;
+        const tacticsMultiplier = Tactics[this.tactics].modifiers.attackUpgradeCostMultiplier || 1;
+        return Decimal(baseCost).times(tacticsMultiplier);
+    }
+
+    get incomingAttackDowngradeCost() {
+        const baseCost = config.mechanics.combat.incomingAttackDowngradeBaseCost;
+        const tacticsMultiplier = Tactics[this.tactics].modifiers.incomingAttackDowngradeCostMultiplier || 1;
+        return Decimal(baseCost).times(tacticsMultiplier);
+    }
+
+    get stolenPowerModifier() {
+        return Decimal.min(1, this.stolenPower.div(this.powerLevel));
+    }
+
+    get precisionPoints(){
+        return Decimal(this._precisionPoints);
+    }
+
+    set precisionPoints(newValue) {
+        this._precisionPoints = newValue;
+    }
+
+    get evasionPoints(){
+        return Decimal(this._evasionPoints);
+    }
+
+    set evasionPoints(newValue) {
+        this._evasionPoints = newValue;
     }
 
     get combat() {
@@ -39,9 +74,7 @@ export default class CharacterCombatState {
             evasion: Decimal(this.evasion),
             power: Decimal(this.power),
             resilience: Decimal(this.resilience),
-            minimumDamage: Decimal(this.damage.min),
-            medianDamage: Decimal(this.damage.med),
-            maximumDamage: Decimal(this.damage.max)
+            damage: this.damage
         }
     }
 
