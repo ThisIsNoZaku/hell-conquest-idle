@@ -5,44 +5,49 @@ import CharacterCombatState from "../CharacterCombatState";
 jest.mock("../index");
 
 describe("attack resolution", function () {
+    let attacker, target;
+    beforeEach(() => {
+        attacker = new CharacterCombatState({
+            id: 0,
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                damage: {
+                    min: Math.floor(5 * .8),
+                    med: 5,
+                    max: Math.floor(5 * 1.2)
+                },
+            },
+            precisionPoints: 0,
+            evasionPoints: 0
+        });
+        target = new CharacterCombatState({
+            id: 1,
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                damage: {
+                    min: Math.floor(5 * .8),
+                    med: 5,
+                    max: Math.floor(5 * 1.2)
+                },
+            },
+            precisionPoints: 0,
+            evasionPoints: 0
+        });
+    })
     it("returns the id of the attacking character", function () {
         const roundContext = {
-            attacker: new CharacterCombatState({
-                id: 0,
-                attributes: {
-                    baseBrutality: 1,
-                    baseCunning: 1,
-                    baseDeceit: 1,
-                    baseMadness: 1
-                },
-                combat: {
-                    damage: {
-                        min: Math.floor(5 * .8),
-                        med: 5,
-                        max: Math.floor(5 * 1.2)
-                    },
-                },
-                precisionPoints: 0,
-                evasionPoints: 0
-            }),
-            target: new CharacterCombatState({
-                id: 1,
-                attributes: {
-                    baseBrutality: 1,
-                    baseCunning: 1,
-                    baseDeceit: 1,
-                    baseMadness: 1
-                },
-                combat: {
-                    damage: {
-                        min: Math.floor(5 * .8),
-                        med: 5,
-                        max: Math.floor(5 * 1.2)
-                    },
-                },
-                precisionPoints: 0,
-                evasionPoints: 0
-            })
+            attacker,
+            target
         }
         const attackResult = resolveAttack(100, roundContext.attacker, roundContext.target);
         expect(attackResult).toMatchObject({
