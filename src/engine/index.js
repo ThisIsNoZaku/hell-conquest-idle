@@ -8,6 +8,9 @@ import * as Package from "../../package.json";
 import {Tactics} from "../data/Tactics";
 import changelog from "../changelog.json";
 import pkg from "../../package.json";
+import { knuthShuffle } from "knuth-shuffle";
+import evaluateExpression from "./general/evaluateExpression";
+import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -36,11 +39,13 @@ export function loadGlobalState() {
         }
     }
     return loaded ? JSON.parse(loaded, stateReviver) : {
+        events: [],
         debug: {
             creatures: {},
             regions: {}
         },
         rival: {},
+        intimidatedDemons: {},
         reincarnationCount: 0,
         latentPowerCap: 0,
         passivePowerIncome: Decimal(0),
@@ -48,9 +53,8 @@ export function loadGlobalState() {
         unlockedTraits: {},
         paused: true,
         currentAction: null,
-        nextAction: null,
+        nextAction: "challenging",
         id: 0,
-        highestLevelReached: Decimal(1),
         highestLevelEnemyDefeated: 0,
         startingTraits: {},
         currentEncounter: null,
@@ -69,7 +73,7 @@ export function loadGlobalState() {
         },
         characters: {
             0: new Character({
-                highestLevelReached: 0,
+                highestLevelReached: Decimal(1),
                 id: 0,
                 isPc: true,
                 name: "You",
@@ -94,7 +98,11 @@ export function loadGlobalState() {
                 }
             })
         },
-        tutorials: {}
+        tutorials: {
+            reincarnation: {
+                enabled: true
+            }
+        }
     }
 }
 
@@ -141,9 +149,8 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: Decimal(evaluateExpression(config.encounters.enemies.latentPower,  {
-            encounterLevel: powerLevel
-        })),
+        latentPower: 0,
+        stolenPower: powerLevel.div(4),
         tactics,
         adjectives: [adjective],
         traits: startingTraits,
@@ -179,30 +186,6 @@ function assertCharacterExists(id) {
     }
 }
 
-export function evaluateExpression(expression, context) {
-    if (expression === null || expression === undefined) {
-        return expression;
-    }
-    if (!expressionCache[expression]) {
-        expressionCache[expression] = new Function("context", `with(context) {return ${expression}}`);
-    }
-    context.Decimal = Decimal;
-    context.config = config;
-    return expressionCache[expression].call(null, context);
-}
-
-export function getPowerNeededForLevel(level) {
-    return evaluateExpression(config.mechanics.levelToPowerEquation, {
-        $level: Decimal(level)
-    });
-}
-
-export function getLevelForPower(powerPoints) {
-    return evaluateExpression(config.mechanics.powerToLevelEquation, {
-        $powerPoints: Decimal(powerPoints)
-    });
-}
-
 export function reincarnateAs(monsterId, newAttributes) {
     const player = getCharacter(0);
     // Improve your starting traits
@@ -215,7 +198,7 @@ export function reincarnateAs(monsterId, newAttributes) {
         });
     }
 
-    if (Decimal(globalState.highestLevelReached).lt(player.powerLevel)) {
+    if (Decimal(getCharacter(0).highestLevelReached).lt(player.powerLevel)) {
         getCharacter(0).highestLevelReached = player.powerLevel;
     }
 
@@ -330,27 +313,41 @@ function calculateNPCBonuses(points, adjectives) {
         deceit: _.sum(adjectives.map(a => a.attributeMultipliers.deceit)),
         madness: _.sum(adjectives.map(a => a.attributeMultipliers.madness))
     };
-    const highestWeight = Object.keys(attributeWeights).reduce((highestWeight, next) => {
-        return attributeWeights[highestWeight] >= attributeWeights[next] ? highestWeight : next;
-    }, "brutality");
-    const totalWeights = _.sum(Object.values(attributeWeights));
-    const pointToSpend = {
-        brutality: highestWeight === "brutality" ? Math.ceil(attributeWeights.brutality / totalWeights) : Math.floor(attributeWeights.brutality / totalWeights) ,
-        cunning: highestWeight === "cunning" ? Math.ceil(attributeWeights.cunning / totalWeights) : Math.floor(attributeWeights.cunning / totalWeights) ,
-        deceit: highestWeight === "deceit" ? Math.ceil(attributeWeights.deceit / totalWeights) : Math.floor(attributeWeights.deceit / totalWeights) ,
-        madness: highestWeight === "madness" ? Math.ceil(attributeWeights.madness / totalWeights) : Math.floor(attributeWeights.madness / totalWeights)
+
+    const pointsAssigned = {
+        brutality: 0,
+        cunning: 0,
+        deceit: 0,
+        madness: 0
+    }
+
+    const attributeOrder = knuthShuffle(Object.keys(attributeWeights));
+
+    while (points > 0) {
+        const highestWeight = attributeOrder.reduce((highestWeight, next) => {
+            const adjustedWeightOfHighest = attributeWeights[highestWeight]/(1 + pointsAssigned[highestWeight]);
+            const adjustedWeightOfNext = attributeWeights[next]/(1 + pointsAssigned[next]);
+            return adjustedWeightOfHighest >= adjustedWeightOfNext ? highestWeight : next;
+        }, "brutality");
+        pointsAssigned[highestWeight]++;
+        points--;
     }
 
     return {
         attributes: {
-            brutality: Decimal( triangleNumber(pointToSpend.brutality) + 1).floor(),
-            cunning: Decimal( triangleNumber(pointToSpend.cunning) + 1).floor(),
-            deceit: Decimal( triangleNumber(pointToSpend.deceit) + 1).floor(),
-            madness:Decimal( triangleNumber(pointToSpend.madness) + 1).floor(),
+            brutality: Decimal( inverseTriangleNumber(pointsAssigned.brutality) + 1).floor(),
+            cunning: Decimal( inverseTriangleNumber(pointsAssigned.cunning)  + 1).floor(),
+            deceit: Decimal( inverseTriangleNumber(pointsAssigned.deceit)  + 1).floor(),
+            madness:Decimal( inverseTriangleNumber(pointsAssigned.madness)  + 1).floor(),
         }
     }
 }
 
 function triangleNumber(number) {
     return (number * (number + 1))/2;
+}
+
+function inverseTriangleNumber(number) {
+    return Math.floor(Math.sqrt(number * 2));
+
 }

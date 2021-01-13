@@ -67,7 +67,8 @@
   },
   "0.3.1" : {
     "changes": [
-      "The exploration, combat, fleeing and intimidation timers are all now 2 seconds"
+      "The exploration, combat, fleeing and intimidation timers are all now 2 seconds",
+      "Swapped the Resilience bonus of Brutality and the Health bonus of Madness"
     ],
     "compatiblePreviousVersions": ["0.3.0"]
   }

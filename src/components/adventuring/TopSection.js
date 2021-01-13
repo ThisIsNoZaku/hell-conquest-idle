@@ -2,7 +2,7 @@ import Paper from "@material-ui/core/Paper";
 import React, {useMemo} from "react";
 import Button from "@material-ui/core/Button";
 import {useHistory} from "react-router-dom";
-import {getCharacter, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "../engine";
+import {getCharacter, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "../../engine";
 import Grid from "@material-ui/core/Grid";
 import {Decimal} from "decimal.js";
 

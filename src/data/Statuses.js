@@ -28,5 +28,12 @@ export const Statuses = {
             accuracy_modifier: -.1
         },
         decays: true
+    },
+    famished: {
+        name: "Famished",
+        icon: "icons/icons-149.png",
+        effects: {
+            maximum_hp_multiplier: -.01
+        }
     }
 }

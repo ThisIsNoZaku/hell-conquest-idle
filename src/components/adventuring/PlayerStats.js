@@ -3,14 +3,18 @@ import React from "react";
 import CharacterSheet from "./CharacterSheet";
 
 const styles = {
-    root: {
+    alive: {
         width: "25%",
         backgroundColor: "#eeeeee"
+    },
+    dead: {
+        width: "25%",
+        backgroundColor: "#b3827f"
     }
 }
 
 export default function PlayerStats(props) {
-    return <Paper style={styles.root} elevation={2}>
+    return <Paper style={!props.player || props.player.isAlive ? styles.alive : styles.dead}>
         <CharacterSheet character={props.player} enemy={props.enemy}/>
     </Paper>
 }

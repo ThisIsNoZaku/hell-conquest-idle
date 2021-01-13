@@ -3,13 +3,8 @@ import {v4} from "node-uuid";
 import * as _ from "lodash";
 import React, {useEffect, useRef, useState} from "react";
 import 'react-circular-progressbar/dist/styles.css';
-import {Regions} from "./data/Regions";
-import {Actions} from "./data/Actions";
-import {Decimal} from "decimal.js";
 import {
-    evaluateExpression,
-    getCharacter,
-    getGlobalState, getManualSpeedMultiplier,
+    getGlobalState,
     loadGlobalState, reincarnateAs,
     saveGlobalState, unpause
 } from "./engine";
@@ -20,9 +15,8 @@ import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectio
 import AdventuringPage from "./components/scene/AdventuringPage";
 import DebugUi from "./components/DebugUi";
 import {useHotkeys} from "react-hotkeys-hook";
-import {debugMessage} from "./debugging";
 import SplashPage from "./components/scene/SplashPage";
-import {resolveCombat} from "./engine/combat";
+import TutorialsComponent from "./components/TutorialsComponent"
 
 loadGlobalState();
 
@@ -30,6 +24,7 @@ const rng = seedrandom();
 
 function App() {
     const [debugUiEnabled, setDebugUiEnabled] = useState(false);
+    const [activeTutorial, setActiveTutorial] = useState(Object.values(getGlobalState().tutorials).find(t => t.enabled && !t.completed));
 
     useHotkeys("`", () => {
         setDebugUiEnabled(enabled => {
@@ -46,10 +41,7 @@ function App() {
     });
 
     return (
-        <MemoryRouter initialEntries={[
-            getGlobalState().currentAction === "reincarnating" ? "/reincarnating" : (
-                getGlobalState().currentAction === "adventuring" ? "/adventuring" : "/")
-        ]} basename="%PUBLIC_URL%">
+        <MemoryRouter basename="%PUBLIC_URL%">
             <Switch>
                 <Route path="/" exact>
                     <SplashPage/>
@@ -63,11 +55,12 @@ function App() {
                 </Route>
                 <Route path="/adventuring" exact>
                     <AdventuringPage
-                                     rng={rng}
+                        rng={rng}
                     />
                 </Route>
             </Switch>
             {debugUiEnabled && <DebugUi/>}
+            <TutorialsComponent/>
         </MemoryRouter>
     );
 }

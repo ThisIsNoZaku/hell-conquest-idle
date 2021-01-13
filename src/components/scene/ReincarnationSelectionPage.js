@@ -1,10 +1,10 @@
 import Grid from "@material-ui/core/Grid";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Creatures} from "../../data/creatures";
 import Button from "@material-ui/core/Button";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
-import {evaluateExpression, getCharacter, getGlobalState, getLevelForPower, getSpriteForCreature} from "../../engine";
+import {getCharacter, getGlobalState, getSpriteForCreature} from "../../engine";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../data/Traits";
 import * as _ from "lodash";
@@ -13,8 +13,12 @@ import {config} from "../../config";
 import "../../App.css";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../../data/Tactics";
-import { Attributes } from "../../data/Attributes";
-import TacticsDescription from "../charactersheet/TacticsDescription";
+import {Attributes} from "../../data/Attributes";
+import TacticsDescription from "../adventuring/charactersheet/TacticsDescription";
+import evaluateExpression from "../../engine/general/evaluateExpression";
+import {enableTutorial} from "../../engine/tutorials";
+import {Help} from "@material-ui/icons";
+import Paper from "@material-ui/core/Paper";
 
 export default function ReincarnationSelectionPage(props) {
     const history = useHistory();
@@ -31,7 +35,9 @@ export default function ReincarnationSelectionPage(props) {
         evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
             player
         }));
-    const spendableBonusPoints = Decimal(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.bonusPointsForHighestLevel);
+    const spendableBonusPoints = evaluateExpression(config.mechanics.reincarnation.bonusPointsForHighestLevel, {
+        highestLevel: getCharacter(0).highestLevelReached
+    });
     const latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
         highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0)
     });
@@ -53,16 +59,16 @@ export default function ReincarnationSelectionPage(props) {
     });
     const nextAttributeCosts = {
         brutality: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
-            attributeScore: attributes.brutality
+            attributeScore: Decimal(attributes.brutality)
         }),
-        cunning:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
-            attributeScore: attributes.cunning
+        cunning: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: Decimal(attributes.cunning)
         }),
-        deceit:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
-            attributeScore: attributes.deceit
+        deceit: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: Decimal(attributes.deceit)
         }),
-        madness:  evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
-            attributeScore: attributes.madness
+        madness: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+            attributeScore: Decimal(attributes.madness)
         }),
     }
 
@@ -77,14 +83,17 @@ export default function ReincarnationSelectionPage(props) {
         {getGlobalState().reincarnationCount !== 0 && <Grid item xs={12} style={{textAlign: "center"}}>
             Select a soul to reincarnate as.
             <br/>
-            You will reincarnate with a bonus of  <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getGlobalState().highestLevelReached).times(config.mechanics.reincarnation.latentPowerEffectScale).toFixed()}</strong> to every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
+            You will reincarnate with a bonus
+            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getCharacter(0).highestLevelReached).times(config.mechanics.reincarnation.latentPowerEffectScale).toFixed()}</strong> to
+            every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>}
-
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>You have {availableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} to spend out of a max of {spendableBonusPoints.toFixed()} from reaching level {Decimal(getGlobalState().highestLevelReached).toFixed()} on
-                    bonuses </strong>
+                <strong>You have {availableBonusPoints.toFixed()} {player.powerLevel.gt(1) ? "points" : "point"} to
+                    spend out of a max of {spendableBonusPoints.toFixed()} from reaching
+                    level {Decimal(getCharacter(0).highestLevelReached).toFixed()} on
+                    bonuses: </strong>
             </Grid>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
@@ -99,17 +108,25 @@ export default function ReincarnationSelectionPage(props) {
                             <div>
                                 <Button disabled={availableBonusPoints.lt(nextAttributeCosts[attribute])}
                                         onClick={() => {
+                                            player.attributes[`base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`] = Decimal(attributes[attribute]).plus(1);
                                             setAttributes({
                                                 ...attributes,
                                                 [attribute]: Decimal(attributes[attribute]).plus(1)
                                             })
+                                            enableTutorial("tactics");
                                         }}>
                                     <AddIcon/>
                                 </Button>
                                 {Decimal(attributes[attribute]).toFixed()}
-                                <Button disabled={Decimal(attributes[attribute]).lte(config.mechanics.combat.playerAttributeMinimum)} onClick={() => {
-                                    setAttributes({...attributes, [attribute]: Decimal(attributes[attribute]).minus(1)})
-                                }}>
+                                <Button
+                                    disabled={Decimal(attributes[attribute]).lte(config.mechanics.combat.playerAttributeMinimum)}
+                                    onClick={() => {
+                                        player.attributes[`base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`] = Decimal(attributes[attribute]).minus(1);
+                                        setAttributes({
+                                            ...attributes,
+                                            [attribute]: Decimal(attributes[attribute]).minus(1)
+                                        })
+                                    }}>
                                     <RemoveIcon/>
                                 </Button>
                             </div>
@@ -119,7 +136,8 @@ export default function ReincarnationSelectionPage(props) {
             })}
             {Object.keys(getGlobalState().unlockedTraits).length > 0 &&
             <Grid item xs={12} style={{textAlign: "center"}}>
-                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon form. Increase the Tier of your traits by reaching highest levels with the demons that possess them.)
+                <strong>Bonus Starting Traits</strong> (Start with traits in addition to that innate to your new demon
+                form. Increase the Tier of your traits by reaching highest levels with the demons that possess them.)
             </Grid>}
             {Object.keys(getGlobalState().unlockedTraits).map(traitId => {
                 return <Grid item container xs={3} justify="space-around" style={{height: "138px"}}>
@@ -146,7 +164,7 @@ export default function ReincarnationSelectionPage(props) {
                                         {Traits[traitId].name} {Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <em style={{visibility: startingTraits[traitId] ? "hidden" : "visible" }}>{nextBonusTraitCost.toFixed()} pts</em>
+                                        <em style={{visibility: startingTraits[traitId] ? "hidden" : "visible"}}>{nextBonusTraitCost.toFixed()} pts</em>
                                     </Grid>
                                 </Grid>
                             </Tooltip>
@@ -165,7 +183,8 @@ export default function ReincarnationSelectionPage(props) {
                 {Object.keys(Tactics).map(tactic =>
                     <Grid item>
                         <Button variant="contained" onClick={() => {
-                            setPlayerTactics(getCharacter(0).tactics = tactic)
+                            setPlayerTactics(getCharacter(0).tactics = tactic);
+                            enableTutorial("reincarnation-demon-select");
                         }}
                                 color={player.tactics === tactic ? "primary" : "default"}
                         >{Tactics[tactic].title}</Button>
@@ -178,6 +197,97 @@ export default function ReincarnationSelectionPage(props) {
 
             <TacticsDescription tactic={player.tactics}/>
 
+        </Grid>
+        <Grid container>
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <strong>Summary</strong>
+            </Grid>
+            <Grid item xs={12} container direction="row">
+                <Grid item xs container direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Power
+                        <Tooltip title="Power vs the opponent's Resilience determines the damage your attacks do.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>{player.combat.power.toFixed()}</Grid>
+                </Grid>
+                <Grid item xs container direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Resilience
+                        <Tooltip
+                            title="Resilience vs the opponent's Power determines the damage you take from attacks.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>{player.combat.resilience.toFixed()}</Grid>
+                </Grid>
+                <Grid item xs container direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Precision
+                        <Tooltip title="Precision gives you a pool of points used to upgrade your attacks in combat.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>{player.combat.precision.toFixed()}</Grid>
+                </Grid>
+                <Grid item xs container direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Evasion
+                        <Tooltip
+                            title="Precision gives you a pool of points used to downgrade enemy attacks in combat.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>{player.combat.evasion.toFixed()}</Grid>
+                </Grid>
+                <Grid item xs container direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Health
+                        <Tooltip
+                            title="How much damage it takes to kill you.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>{player.maximumHp.toFixed()}</Grid>
+                </Grid>
+                <Grid item container xs direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Endurance
+                        <Tooltip title="How many rounds your can fight before you begin taking fatigue damage.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>
+                        {player.combat.endurance.toFixed()} Rounds
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item xs={12} container direction="row">
+                <Grid item container xs={4} direction="column"></Grid>
+                <Grid item container xs={2} direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Accuracy Points / Combat
+                        <Tooltip title="Your character spends Accuracy points to make your attacks more damaging.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>
+                        {Decimal(player.combat.precision).times(config.mechanics.combat.precision.effectPerPoint).toFixed()}
+                    </Grid>
+                </Grid>
+                <Grid item container xs={2} direction="column">
+                    <Grid item xs style={{textAlign: "center"}}>
+                        Evasion Points / Combat
+                        <Tooltip title="Your character spends Accuracy points to make your attacks more damaging.">
+                            <Help/>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item xs style={{textAlign: "center"}}>
+                        {Decimal(player.combat.evasion).times(config.mechanics.combat.evasion.effectPerPoint).toFixed()}
+                    </Grid>
+                </Grid>
+            </Grid>
         </Grid>
 
         <Grid container item xs={12} alignItems="stretch" justify="flex-start">

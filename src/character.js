@@ -1,32 +1,41 @@
 import {config} from "./config";
-import {evaluateExpression, getGlobalState, getLevelForPower, getPowerNeededForLevel} from "./engine";
+import {getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
 import {Statuses} from "./data/Statuses";
 import * as _ from "lodash";
 import {Traits} from "./data/Traits";
+import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
+import getLevelForPower from "./engine/general/getLevelForPower";
+import evaluateExpression from "./engine/general/evaluateExpression";
+import {HitTypes} from "./data/HitTypes";
 
 export class Character {
     constructor(props) {
+        assertHasProperty("id", props);
+        assertHasProperty("attributes", props);
+        assertHasProperty("traits", props);
+        assertHasProperty("absorbedPower", props);
+        this._tactics = props.tactics || props._tactics || "defensive";
+        this._statuses = props.statuses || props._statuses || {};
         this.adjectives = props.adjectives;
         this._isPc = props.isPc || props._isPc;
         this.id = props.id;
         this._name = props.name || props._name;
-        this._absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
-        this._latentPower = Decimal(props.latentPower || props._latentPower || 0);
-        this._attributes = new Attributes(props.attributes || props._attributes, this);
-        this._currentHp = Decimal(props._currentHp || this.maximumHp);
-        this._combat = new CombatStats(props.combat || props._combat, this);
         this._traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
             transformed[next] = Decimal((props.traits || props._traits)[next]);
             return transformed;
         }, {});
+        this._absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
+        this._latentPower = Decimal(props.latentPower || props._latentPower || 0);
+        this._stolenPower = props.stolenPower || props._stolenPower || 0;
+        this._attributes = new Attributes(props.attributes || props._attributes, this);
+        this.highestLevelReached = props.highestLevelReached;
+        this._currentHp = Decimal(props._currentHp || this.maximumHp);
+        this._combat = new CombatStats(this);
         this._appearance = props.appearance || props._appearance;
         this._modifiers = props.modifiers || props._modifiers || [];
-        this._tactics = props.tactics || props._tactics || "defensive";
-        this._statuses = props.statuses || props._statuses || {};
-        this.highestLevelReached = props.highestLevelReached;
     }
 
     get tactics() {
@@ -54,14 +63,14 @@ export class Character {
     }
 
     get powerLevel() {
-        return getLevelForPower(this._absorbedPower);
+        return Decimal(getLevelForPower(this._absorbedPower));
     }
 
-    get currentHp() {
+    get hp() {
         return Decimal(this._currentHp);
     }
 
-    set currentHp(newHealth) {
+    set hp(newHealth) {
         if (this.maximumHp.lt(newHealth)) {
             this._currentHp = this.maximumHp;
         } else {
@@ -70,11 +79,15 @@ export class Character {
     }
 
     get isAlive() {
-        return Decimal(this.currentHp).gt(0);
+        return Decimal(this.hp).gt(0);
     }
 
     get latentPower() {
         return this._latentPower;
+    }
+
+    get latentPowerModifier() {
+        return this._latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).plus(1);
     }
 
     set latentPower(newLatentPower) {
@@ -82,11 +95,14 @@ export class Character {
     }
 
     get maximumHp() {
-        const attributeMultiplier = this.attributes.madness.times(config.mechanics.combat.hp.effectPerPoint);
-        return this.powerLevel
-            .times(attributeMultiplier.plus(1))
-            .mul(config.mechanics.combat.hp.pointsPerLevel)
+        const base = Decimal(config.mechanics.combat.hp.baseHp);
+        const fromLevel = this.powerLevel.times(config.mechanics.combat.hp.pointsPerLevel);
+        const attributeMultiplier = this.attributes[config.mechanics.combat.hp.baseAttribute]
+            .times(config.mechanics.combat.hp.effectPerPoint).plus(1);
+
+        return base.plus(fromLevel)
             .plus(this._isPc ? config.mechanics.combat.hp.pcBonus : 0)
+            .times(attributeMultiplier)
             .floor();
     }
 
@@ -113,6 +129,7 @@ export class Character {
     reincarnate(newAppearance, newTraits) {
         this._appearance = newAppearance;
         this._traits = newTraits;
+        this._currentHp = this.maximumHp;
     }
 
     otherDemonIsGreaterDemon(other) {
@@ -132,8 +149,7 @@ export class Character {
     }
 
     gainPower(powerGained) {
-        const latentPowerMultiplier = this.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .plus(1);
+        const latentPowerMultiplier = this.latentPowerModifier;
         powerGained = powerGained.times(latentPowerMultiplier).floor();
         this.absorbedPower = this.absorbedPower.plus(powerGained);
         return powerGained;
@@ -166,12 +182,25 @@ export class Character {
         return Decimal(100);
     }
 
-    addModifier(modifier) {
-        this._modifiers.push(modifier);
-    }
-
     get modifiers() {
         return this._modifiers;
+    }
+
+    get stolenPower() {
+        return Decimal(this._stolenPower);
+    }
+
+    set stolenPower(newValue) {
+        this._stolenPower = newValue;
+    }
+
+    get stolenPowerModifier() {
+        return Decimal.min(1, this.stolenPower.div(this.powerLevel));
+    }
+
+    refreshBeforeCombat() {
+        this.combat.evasionPoints = this.combat.maxPrecisionPoints;
+        this.combat.precisionPoints = this.combat.maxPrecisionPoints;
     }
 }
 
@@ -182,97 +211,147 @@ export class Attributes {
         this._deceit = attributes.deceit || attributes._deceit || 0;
         this._madness = attributes.madness || attributes._madness || 0;
         Object.defineProperty(this, "character", {
-            value: () => character
+            value: character
         })
     }
 
     get baseBrutality() {
         return Decimal(this._brutality).floor();
     }
+    
+    set baseBrutality(newValue) {
+        this._brutality = newValue;
+    }
 
     get baseCunning() {
         return Decimal(this._cunning).floor();
+    }
+
+    set baseCunning(newValue) {
+        this._cunning = newValue;
     }
 
     get baseDeceit() {
         return Decimal(this._deceit).floor();
     }
 
+    set baseDeceit(newValue) {
+        this._deceit = newValue;
+    }
+
     get baseMadness() {
         return Decimal(this._madness).floor();
     }
 
+    set baseMadness(newValue) {
+        this._madness = newValue;
+    }
+
     get brutality() {
-        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
-        return Decimal(this._brutality).plus(latentPowerBonus).toDecimalPlaces(1);
+        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+            baseAttribute: this.baseBrutality,
+            stolenPowerModifier: this.character.latentPowerModifier
+        }).floor();
     }
 
     get cunning() {
-        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
-        return Decimal(this._cunning).plus(latentPowerBonus).toDecimalPlaces(1);
+        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
+        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+            baseAttribute: this.baseCunning,
+            stolenPowerModifier: this.character.latentPowerModifier
+        }).floor();
     }
 
     get deceit() {
-        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
-        return Decimal(this._deceit).plus(latentPowerBonus).toDecimalPlaces(1);
+        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
+        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+            baseAttribute: this.baseDeceit,
+            stolenPowerModifier: this.character.latentPowerModifier
+        }).floor();
     }
 
     get madness() {
-        const latentPowerBonus = this.character().latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale)
-            .times(this.character().isPc ? this.character().highestLevelReached : this.character().powerLevel).floor();
-        return Decimal(this._madness).plus(latentPowerBonus).toDecimalPlaces(1);
+        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
+        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+            baseAttribute: this.baseMadness,
+            stolenPowerModifier: this.character.latentPowerModifier
+        }).floor();
     }
 }
 
 class CombatStats {
-    constructor(props, character) {
-        this.character = function () {
-            return character;
-        }
+    constructor(character) {
+        Object.defineProperty(this, "character", {
+            value: character
+        });
+        this._precisionPoints = this.maxPrecisionPoints;
+        this._evasionPoints = this.maxEvasionPoints;
     }
 
-    get minimumDamage() {
-        return calculateDamage("min", this.character()).floor();
-    }
-
-    get medianDamage() {
-        return calculateDamage("med", this.character()).floor();
-    }
-
-    get maximumDamage() {
-        return calculateDamage("max", this.character()).floor();
+    get damage() {
+        return Object.keys(HitTypes).reduce(((previousValue, currentValue) => {
+            const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
+                player: this.character
+            });
+            const hitTypeMultiplier = HitTypes[currentValue].damageMultiplier;
+            previousValue[currentValue] = Decimal(baseDamage)
+                .times(hitTypeMultiplier).ceil();
+            return previousValue;
+        }), {})
     }
 
     get evasion() {
-        return calculateCombatStat(this.character(), "evasion");
+        return calculateCombatStat(this.character, "evasion");
     }
 
     get precision() {
-        return calculateCombatStat(this.character(), "precision");
+        return calculateCombatStat(this.character, "precision");
     }
 
-    get resilience() { // TODO: Refactor all these into a shared method.
-        return calculateCombatStat(this.character(), "resilience");
+    get resilience() {
+        return calculateCombatStat(this.character, "resilience");
+    }
+
+    get endurance() {
+        return this.character.powerLevel.times(2).plus(1);
     }
 
     get power() {
-        return calculateCombatStat(this.character(), "power");
+        return calculateCombatStat(this.character, "power");
     }
 
+    get maxPrecisionPoints() {
+        return Decimal(this.character.attributes[config.mechanics.combat.precision.baseAttribute])
+            .times(config.mechanics.combat.precision.effectPerPoint);
+    }
+
+    get maxEvasionPoints() {
+        return Decimal(this.character.attributes[config.mechanics.combat.evasion.baseAttribute])
+            .times(config.mechanics.combat.evasion.effectPerPoint);
+    }
+
+    get precisionPoints() {
+        return Decimal(this._precisionPoints);
+    }
+
+    get evasionPoints() {
+        return Decimal(this._evasionPoints);
+    }
+
+    set precisionPoints(newValue) {
+        this._precisionPoints = newValue;
+    }
+
+    set evasionPoints(newValue) {
+        this._evasionPoints = newValue;
+    }
 }
 
-function calculateDamage(hitType, character) {
+function calculateDamage(character) {
     const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
         player: character
     });
-    const hitTypeDamageMultiplier = config.mechanics.combat[`default${hitType.substring(0, 1).toUpperCase()}${hitType.substring(1)}DamageMultiplier`];
-    const tacticsModifier = Tactics[character.tactics].modifiers[`${hitType}_hit_damage_modifier`] || 0;
-    const totalDamageMultiplier = Decimal(hitTypeDamageMultiplier).plus(tacticsModifier);
-    return baseDamage
-        .times(totalDamageMultiplier).ceil();
+    return baseDamage.ceil();
 }
 
 export function calculateCombatStat(character, combatAttribute) {
@@ -292,4 +371,11 @@ export function calculateCombatStat(character, combatAttribute) {
         return previousValue;
     }, Decimal(0));
     return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
+}
+
+export function assertHasProperty(propertyName, object) {
+    if(object[propertyName] === undefined &&
+        object[`_${propertyName}`] === undefined){
+        throw new Error(`Missing required property ${propertyName} or _${propertyName}`);
+    };
 }

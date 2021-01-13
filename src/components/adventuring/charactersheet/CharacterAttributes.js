@@ -1,14 +1,14 @@
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Help} from "@material-ui/icons";
-import {config} from "../../config";
+import {config} from "../../../config";
 import React, {useMemo} from "react";
-import { Attributes } from "../../data/Attributes";
+import { Attributes } from "../../../data/Attributes";
 import {Decimal} from "decimal.js";
 
 export default function CharacterAttributes(props) {
-    const currentHp = useMemo(() => props.character.currentHp, [
-        props.character.currentHp.toFixed()
+    const currentHp = useMemo(() => props.character.hp, [
+        props.character.hp.toFixed()
     ]);
     const maximumHp = useMemo(() => props.character.maximumHp, [
         props.character.maximumHp.toFixed()

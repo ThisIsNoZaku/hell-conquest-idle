@@ -1,14 +1,16 @@
 import {config} from "../config";
 import * as _ from "lodash";
-import {Attributes, calculateCombatStat} from "../character";
+import {assertHasProperty, Attributes, calculateCombatStat} from "../character";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../data/Tactics";
 import {Statuses} from "../data/Statuses";
 
 export default class CharacterCombatState {
     constructor(originalCharacter, party) {
+        assertHasProperty("powerLevel", originalCharacter);
         this.id = originalCharacter.id;
         this.isPc = originalCharacter.isPc;
+        this.powerLevel = Decimal(originalCharacter.powerLevel);
         this.stolenPower = Decimal(originalCharacter.stolenPower || 0);
         // FIXME: Symbols?
         this.attributes = new Attributes({
@@ -18,33 +20,33 @@ export default class CharacterCombatState {
             madness: originalCharacter.attributes.baseMadness
         }, this);
         this.party = party;
-        this.hp = originalCharacter.hp;
+        this.hp = Decimal(originalCharacter.hp);
         this._speed = Decimal(originalCharacter.speed || 100);
-        this.maximumHp = originalCharacter.maximumHp;
+        this.maximumHp = Decimal(originalCharacter.maximumHp || this.hp);
         this.modifiers = [];
         this.tactics = originalCharacter.tactics || "defensive";
         this.traits = {...originalCharacter.traits};
-        this.damage = {
-            min: Decimal(originalCharacter.combat.damage.min),
-            med: Decimal(originalCharacter.combat.damage.med),
-            max: Decimal(originalCharacter.combat.damage.max)
-        }
+        this.damage = {...originalCharacter.combat.damage};
         this.statuses = {...originalCharacter.statuses};
-        this.powerLevel = originalCharacter.powerLevel;
 
-        this._precisionPoints = Decimal(originalCharacter.precisionPoints || 0);
-        this._evasionPoints = Decimal(originalCharacter.evasionPoints || 0);
+        this.maxPrecisonPoints = Decimal(originalCharacter.combat.maxPrecisonPoints || 0);
+        this.maxEvasionPoints = Decimal(originalCharacter.combat.maxEvasionPoints || 0);
+
+        this._precisionPoints = Decimal(originalCharacter.combat.precisionPoints || 0);
+        this._evasionPoints = Decimal(originalCharacter.combat.evasionPoints || 0);
+
+        this.fatigue = Decimal(originalCharacter.fatigue || 0);
     }
 
     get attackUpgradeCost() {
         const baseCost = config.mechanics.combat.attackUpgradeBaseCost;
-        const tacticsMultiplier = Tactics[this.tactics].modifiers.attackUpgradeCostMultiplier || 1;
+        const tacticsMultiplier = Tactics[this.tactics].modifiers.attack_upgrade_cost_multiplier || 1;
         return Decimal(baseCost).times(tacticsMultiplier);
     }
 
     get incomingAttackDowngradeCost() {
         const baseCost = config.mechanics.combat.incomingAttackDowngradeBaseCost;
-        const tacticsMultiplier = Tactics[this.tactics].modifiers.incomingAttackDowngradeCostMultiplier || 1;
+        const tacticsMultiplier = Tactics[this.tactics].modifiers.attack_downgrade_cost_multiplier || 1;
         return Decimal(baseCost).times(tacticsMultiplier);
     }
 
@@ -74,7 +76,11 @@ export default class CharacterCombatState {
             evasion: Decimal(this.evasion),
             power: Decimal(this.power),
             resilience: Decimal(this.resilience),
-            damage: this.damage
+            damage: this.damage,
+            maxPrecisionPoints: this.maxPrecisonPoints,
+            maxEvasionPoints: this.maxEvasionPoints,
+            precisionPoints: this._precisionPoints,
+            _evasionPoints: this._evasionPoints
         }
     }
 
@@ -82,7 +88,7 @@ export default class CharacterCombatState {
         const maximumHp = this.maximumHp;
         const tacticsMultiplier = Tactics[this.tactics].modifiers.fatigue_multiplier || 0;
         const totalMultiplier = Decimal(1).plus(tacticsMultiplier);
-        return maximumHp.times(totalMultiplier).div(100).floor();
+        return maximumHp.times(totalMultiplier).times(config.mechanics.combat.fatigueDamageMultiplier).floor();
     }
 
     set speed(newSpeed) {
@@ -103,6 +109,10 @@ export default class CharacterCombatState {
 
     get isAlive(){
         return this.hp.gt(0);
+    }
+
+    get endurance() {
+        return this.powerLevel.times(2).plus(1);
     }
 
     get accuracy() {

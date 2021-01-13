@@ -1,5 +1,5 @@
 import Tooltip from "@material-ui/core/Tooltip";
-import {Traits} from "../../data/Traits";
+import {Traits} from "../../../data/Traits";
 import React from "react";
 import {Decimal} from "decimal.js";
 

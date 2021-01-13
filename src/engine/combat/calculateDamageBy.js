@@ -2,6 +2,7 @@ import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import { config } from "../../config";
 import {debugMessage} from "../../debugging";
+import {HitTypes} from "../../data/HitTypes";
 
 export default function calculateDamageBy(attacker) {
     return {
@@ -18,14 +19,14 @@ export default function calculateDamageBy(attacker) {
             Decimal.set({rounding: Decimal.ROUND_DOWN});
             const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
             const damageModifier = config.mechanics.combat.attributeDifferenceMultipliers[attributeDifference];
-            debugMessage(`Final damage multiplier = ${damageModifier}. Min: ${Decimal(attacker.combat.minimumDamage).times(damageModifier).ceil()} Med: ${Decimal(attacker.combat.medianDamage).times(damageModifier).ceil()} Max: ${Decimal(attacker.combat.maximumDamage).times(damageModifier).ceil()}`);
-            return {
+            debugMessage(`Final damage multiplier = ${damageModifier}.`);
+            return Object.keys(HitTypes).reduce((damage, nextType) => {
+                damage[nextType] = attacker.combat.damage[nextType].times(damageModifier).floor();
+                return damage;
+            }, {
                 base: attacker.combat.medianDamage,
-                multiplier: damageModifier,
-                min: Decimal(attacker.combat.minimumDamage).times(damageModifier).ceil(),
-                med: Decimal(attacker.combat.medianDamage).times(damageModifier).ceil(),
-                max: Decimal(attacker.combat.maximumDamage).times(damageModifier).ceil()
-            }
+                multiplier: damageModifier
+            })
         }
     }
 

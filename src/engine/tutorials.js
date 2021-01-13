@@ -1,0 +1,38 @@
+import {getGlobalState, saveGlobalState} from "./index";
+import * as _ from "lodash";
+import {Tutorials} from "../data/Tutorials";
+
+let listeners = [];
+
+export function enableTutorial(id) {
+    const alreadyEnabled = _.get(getGlobalState(), ["tutorials", id]);
+    _.set(getGlobalState(), ["tutorials", id, "enabled"], true);
+    if(!alreadyEnabled) {
+        listeners.forEach(l => {
+            l("enabled", id, Tutorials[id])
+        });
+        saveGlobalState();
+    }
+}
+
+export function completeTutorial(id) {
+    const enabled = _.get(getGlobalState(), ["tutorials", id]);
+    if(enabled) {
+        _.set(getGlobalState(), ["tutorials", id, "completed"], true);
+        listeners.forEach(l => {
+            l("completed", id, Tutorials[id])
+        });
+        if(Tutorials[id].onCompletion) {
+            Tutorials[id].onCompletion();
+        }
+        saveGlobalState();
+    }
+}
+
+export function subscribeToTutorials(listener) {
+    listeners.push(listener);
+}
+
+export function unsubscribeFromTutorials(listener) {
+    listeners = listeners.filter(l => l !== listener);
+}

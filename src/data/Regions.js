@@ -12,45 +12,26 @@ class Region {
     }
 
     startEncounter(player, rng) {
-        let encounterType;
-        const combinedEncounterChances = config.encounters.lesserEncounterChanceWeight +
-            config.encounters.greaterEncounterChanceWeight +
-            config.encounters.evenEncounterChanceWeight;
-        const encounterTypeRoll = Math.floor(rng.double() * combinedEncounterChances) + 1;
-        const lesserChance = config.encounters.lesserEncounterChanceWeight;
-        const evenChance = config.encounters.lesserEncounterChanceWeight + config.encounters.evenEncounterChanceWeight;
         let encounterLevel = player.powerLevel;
-        debugMessage(`Determine encounter. Roll ${encounterTypeRoll} vs lesser (<=${lesserChance}), even (<=${evenChance})`);
-        if (encounterTypeRoll <= lesserChance) {
-            encounterType = "lesser";
-            debugMessage(`Lesser triggered`)
-        } else if (encounterTypeRoll > evenChance && player.powerLevel.gte(config.encounters.minimumLevelForGreaterEncounters)) {
-            encounterType = "greater";
-            debugMessage(`Greater encounter triggered`);
-        } else {
-            encounterType = "even";
-            debugMessage(`Even level encounter triggered`);
-        }
 
-        switch (encounterType) {
-            case "greater": {
-                const encounterOffset = Math.floor(rng.double() * config.encounters.greaterLevelCap) + config.encounters.greaterLevelScale;
-                encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1) ) : encounterLevel.plus(encounterOffset);
+        switch (getGlobalState().nextAction) {
+            case "usurping": {
+                const encounterOffset = config.encounters.greaterLevelScale;
+                encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1)) : encounterLevel.plus(encounterOffset);
                 break;
             }
-            case "lesser": {
-                const encounterOffset = Math.floor(rng.double() * config.encounters.lesserLevelFloor) + config.encounters.lesserLevelScale;
+            case "hunting": {
+                const encounterOffset = config.encounters.lesserLevelScale;
                 encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
             default: {
-                const difference = Math.max(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale) - Math.min(config.encounters.greaterLevelScale, config.encounters.lesserLevelScale);
-                const encounterOffset = Math.floor(rng.double() * difference) - difference;
+                const encounterOffset = 0
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
         const encounterWithRival = getGlobalState().rival.level && Decimal(getGlobalState().rival.level || 0).lte(encounterLevel);
-        if(encounterWithRival) {
+        if (encounterWithRival) {
             encounterLevel = Decimal(getGlobalState().rival.level || 0);
         }
         if (config.debug) {
@@ -67,7 +48,7 @@ class Region {
             enemies: encounterDef.enemies.flatMap(enemyDef => _.range(0, enemyDef.count).map(i => {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
                 generatedCreature.isRival = encounterWithRival;
-                if(generatedCreature.isRival) {
+                if (generatedCreature.isRival) {
                     generatedCreature.traits = getGlobalState().rival.traits;
                     generatedCreature.tactics = getGlobalState().rival.tactics;
                 }

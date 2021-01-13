@@ -4,7 +4,7 @@ import * as _ from "lodash";
 export const Attributes = {
     brutality: {
         label: "Brutality",
-            description: _.template(`Brutality is how savage and ruthless a Demon is. It adds to Power and Resilience.`),
+            description: _.template(`Brutality is how savage and ruthless a Demon is. It adds to Power and increases Health.`),
             icon: "icons/icons-92.png"
     },
     cunning: {
@@ -19,7 +19,7 @@ export const Attributes = {
     },
     madness: {
         label: "Madness",
-            description: _.template(`Madness is how disconnected from the limits of reality the Demon is. It gives a \${rank * ${ config.mechanics.combat.traitRank.effectPerPoint * 100}}% bonus to the effects of Traits and health.`),
+            description: _.template(`Madness is how disconnected from the limits of reality the Demon is. It gives a \${rank * ${ config.mechanics.combat.traitRank.effectPerPoint * 100}}% bonus to the effects of Traits and increases Resilience.`),
             icon: "icons/icons-124.png"
     }
 }

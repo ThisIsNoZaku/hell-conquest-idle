@@ -1,4 +1,4 @@
-import {Tactics} from "../../data/Tactics";
+import {Tactics} from "../../../data/Tactics";
 import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import React from "react";
@@ -41,6 +41,30 @@ export default function (props) {
                 <li style={{color: "green", textAlign: "left"}}>
                     +{Tactics[props.tactic].modifiers.max_hit_damage_modifier * 100}% to Critical hit
                     damage
+                </li>
+            </Tooltip>}
+            {Tactics[props.tactic].modifiers.health_modifier &&
+            <Tooltip title="The demon is harder to kill">
+                <li style={{color: "green", textAlign: "left"}}>
+                    {Tactics[props.tactic].modifiers.health_modifier * 100}% increased Health
+                </li>
+            </Tooltip>}
+            {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier &&
+            <Tooltip title="The demon's attacks are easier to upgrade in severity">
+                <li style={{color: "green", textAlign: "left"}}>
+                    Multiplies cost to upgrade attacks by {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier * 100}%.
+                </li>
+            </Tooltip>}
+            {Tactics[props.tactic].modifiers.always_downgrade_to_glancing &&
+            <Tooltip title="When the demon downgrades both Critical and Solid hits to reduced to Glancing.">
+                <li style={{color: "green", textAlign: "left"}}>
+                    Downgrades both Critical and Solid hits to Glancing hits.
+                </li>
+            </Tooltip>}
+            {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier &&
+            <Tooltip title="The demon uses a different amount of points to reduce the severity of incoming attacks.">
+                <li style={{color: Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier > 1 ? "red" : "green", textAlign: "left"}}>
+                    Multiplies cost to downgrade incoming attacks by {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier * 100}%.
                 </li>
             </Tooltip>}
         </ul>

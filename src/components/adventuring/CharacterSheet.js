@@ -1,30 +1,20 @@
 import Grid from "@material-ui/core/Grid";
 import React, {useMemo} from "react";
+import * as _ from "lodash";
 import {
-    evaluateExpression,
-    getCharacter,
-    getGlobalState,
-    getPowerNeededForLevel,
     getSpriteForCreature
-} from "../engine";
-import {config} from "../config";
-import PowerLevelDisplay from "./charactersheet/PowerLevelDisplay";
+} from "../../engine";
+import {config} from "../../config";
 import CharacterAttributes from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
 import TacticsSection from "./charactersheet/TacticsSection";
-import getHitChanceBy from "../engine/combat/getHitChanceBy";
-import calculateDamageBy from "../engine/combat/calculateDamageBy";
-import * as _ from "lodash";
-import {Help} from "@material-ui/icons";
+import getHitChanceBy from "../../engine/combat/getHitChanceBy";
+import calculateDamageBy from "../../engine/combat/calculateDamageBy";
 import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
-
-const styles = {
-    tooltip: {
-        fontSize: "12pt"
-    }
-}
+import getPowerNeededForLevel from "../../engine/general/getPowerNeededForLevel";
+import {Help} from "@material-ui/icons";
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
@@ -36,10 +26,6 @@ export default function CharacterSheet(props) {
         props.character.latentPower
     ]);
 
-    const hitChances = useMemo(() => getHitChanceBy(props.character).against(props.enemy), [
-        props.character,
-        props.enemy
-    ]);
     const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy), [
         props.character,
         props.enemy
@@ -60,15 +46,17 @@ export default function CharacterSheet(props) {
                 {props.character.powerLevel.toFixed()}
             </Grid>
             <Grid item xs>
-                Latent Power Bonus
-            </Grid>
-            <Grid item xs style={{color: props.character.latentPower.gte(getGlobalState().latentPowerCap) && props.character.isPc ? "red" : "inherit"}}>
+                Inherited Power Bonus
                 <Tooltip
-                    title="Latent power multiplies power gain and attributes. Latent power is capped based on the strongest enemy defeated.">
+                    title="Inherited power multiplies power gain and attributes. Inherited power increases when you reincarnate and is capped based on the strongest enemy defeated.">
+                    <Help/>
+                </Tooltip>
+            </Grid>
+            <Grid item xs >
+
                     <div>
                         {latentPowerModifier.toFixed()}%
                     </div>
-                </Tooltip>
             </Grid>
         </Grid>
         {props.character.absorbedPower !== undefined && <Grid item xs={12}>
@@ -87,12 +75,16 @@ export default function CharacterSheet(props) {
             <CharacterAttributes character={props.character}/>
         </Grid>
         <CharacterCombatStatistics
-            hitChances={hitChances}
             calculatedDamage={calculatedDamage}
             characterPower={props.character.combat.power.toFixed()}
             characterResilience={props.character.combat.resilience.toFixed()}
             characterEvasion={props.character.combat.evasion.toFixed()}
-            characterPrecision={props.character.combat.precision.toFixed()}/>
+            characterPrecision={props.character.combat.precision.toFixed()}
+            characterAccuracyPoints={props.character.combat.precisionPoints.toFixed()}
+            characterEvasionPoints={props.character.combat.evasionPoints.toFixed()}
+            enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
+            enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}
+        />
         <Grid container>
             <Grid item xs={12}>
                 <strong>Traits</strong>
