@@ -16,7 +16,7 @@ const styles = {
         display: "flex",
         flex: "1 0 auto",
         justifyContent: "flex-end",
-        flexDirection: "column"
+        flexDirection: "column",
     },
     actions: {
         container: {
@@ -55,6 +55,8 @@ export default function BottomSection(props) {
         props.currentAction.duration :
         _.get(props.state, props.currentAction.duration);
     return <div style={styles.root} onMouseEnter={props.startManualSpeedup} onMouseLeave={props.stopManualSpeedup}>
+        {props.currentAction.id === "exploring" && <ExplorationActionsSection {...props} />}
+        {props.currentAction.id === "approaching" && <ApproachingActionsSection {...props} />}
         <Paper style={styles.actions.container}>
             <Button style={styles.actions.buttons} onClick={() => {
                 getGlobalState().paused = !getGlobalState().paused;
@@ -63,8 +65,6 @@ export default function BottomSection(props) {
                 {props.paused ? "Unpause" : "Pause"}
             </Button>
         </Paper>
-        {props.currentAction.id === "exploring" && <ExplorationActionsSection {...props} />}
-        {props.currentAction.id === "approaching" && <ApproachingActionsSection {...props} />}
         <Paper style={styles.combat.details}>
             <Grid container>
                 <CharacterCombatSummary name="Player" currentHp={props.player.hp}
