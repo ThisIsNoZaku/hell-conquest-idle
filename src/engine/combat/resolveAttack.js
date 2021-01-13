@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import {Tactics} from "../../data/Tactics";
 import {generateHitEvents} from "../events/generate";
-import { config } from "../../config";
+import {getConfigurationValue} from "../../config";
 import {HitTypes} from "../../data/HitTypes";
 
 export default function resolveAttack(tick, attacker, target) {
@@ -9,7 +9,7 @@ export default function resolveAttack(tick, attacker, target) {
         throw new Error("Tick not a number");
     }
     // Start at a Solid Hit
-    let hitLevel = config.mechanics.combat.startingHitLevel;
+    let hitLevel = getConfigurationValue("mechanics.combat.startingHitLevel");
     let spentPrecision = 0;
     let spentEvasion = 0;
     // Can the attacker upgrade their attack?

@@ -1,9 +1,6 @@
-export const config = {
-    manualSpeedup: {
-        enabled: false,
-        multiplier: 2
-    },
+import * as _ from "lodash";
 
+const config = {
     actionLog: {
         maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
     },
@@ -120,4 +117,8 @@ export const config = {
         }
     },
     debug: process.env.REACT_APP_DEBUG_MODE === "true"
+}
+
+export function getConfigurationValue(path, defaultValue) {
+    return _.get(config, path, defaultValue);
 }

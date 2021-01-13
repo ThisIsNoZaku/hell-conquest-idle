@@ -4,7 +4,7 @@ import resolveCombatRound from "../combat/resolveCombatRound";
 import * as _ from "lodash";
 import {HitTypes} from "../../data/HitTypes";
 import {Tactics} from "../../data/Tactics";
-import { config } from "../../config";
+import {config, getConfigurationValue} from "../../config";
 
 jest.mock("../index");
 
@@ -189,7 +189,7 @@ describe("traits", function () {
                     uuid: expect.any(String),
                     children: [expect.any(String)],
                     hitType: -1,
-                    evasionUsed: Decimal(Tactics.defensive.modifiers.attack_downgrade_cost_multiplier * config.mechanics.combat.incomingAttackDowngradeBaseCost),
+                    evasionUsed: Decimal(Tactics.defensive.modifiers.attack_downgrade_cost_multiplier * getConfigurationValue("mechanics.combat.incomingAttackDowngradeBaseCost")),
                     precisionUsed: 0,
                     timesUpgraded: 0,
                     timesDowngraded: 1,

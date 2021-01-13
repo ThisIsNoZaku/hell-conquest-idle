@@ -1,5 +1,5 @@
 import React from "react";
-import {config} from "../config";
+import {config, getConfigurationValue} from "../config";
 import {v4} from "node-uuid";
 import {debugMessage} from "../debugging";
 import {Regions} from "./Regions";
@@ -58,7 +58,7 @@ export const Actions = {
         description: "Fleeing in terror!",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             const enemy = getGlobalState().currentEncounter.enemies[0];
-            const chanceToFlee = evaluateExpression(config.encounters.chanceToEscapeGreater, {
+            const chanceToFlee = evaluateExpression(getConfigurationValue("encounters.chanceToEscapeGreater"), {
                 enemy,
                 player: getCharacter(0)
             });
@@ -68,7 +68,7 @@ export const Actions = {
                     result: "escaped",
                     uuid: v4()
                 });
-                const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromGreaterDemon, {
+                const powerToGain = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromGreaterDemon"), {
                     enemy: enemy
                 });
                 const powerGained = player.gainPower(powerToGain);
@@ -94,7 +94,7 @@ export const Actions = {
         duration: 2000,
         description: "In Combat!",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
-            const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
+            const instantDeathLevel = evaluateExpression(getConfigurationValue("encounters.lesserDemonInstantKillLevel"), {
                 highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
             });
             const enemy = getGlobalState().currentEncounter.enemies[0];
@@ -170,20 +170,20 @@ export const Actions = {
         description: "Intimidating...",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             const enemy = getGlobalState().currentEncounter.enemies[0];
-            const instantDeathLevel = evaluateExpression(config.encounters.lesserDemonInstantKillLevel, {
+            const instantDeathLevel = evaluateExpression(getConfigurationValue("encounters.lesserDemonInstantKillLevel"), {
                 highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
             });
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem(`Your force of will seizes control of ${enemy.name}'s mind!`);
                 nextAction = "exploring";
             }
-            const chanceToIntimidate = Decimal(enemy.powerLevel.lte(instantDeathLevel) ? 999 : evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+            const chanceToIntimidate = Decimal(enemy.powerLevel.lte(instantDeathLevel) ? 999 : evaluateExpression(getConfigurationValue("encounters.chanceToIntimidateLesser"), {
                 enemy,
                 player: getCharacter(0)
             }));
             const roll = Math.floor(rng.double() * 100) + 1;
             if (chanceToIntimidate.gte(roll)) {
-                const periodicPowerIncreases = evaluateExpression(config.mechanics.xp.gainedFromLesserDemon, {
+                const periodicPowerIncreases = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromLesserDemon"), {
                     enemy
                 });
                 getCharacter(0).stolenPower = getCharacter(0).stolenPower.plus(periodicPowerIncreases);
@@ -205,7 +205,7 @@ export const Actions = {
 }
 
 function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
-    if (getCharacter(0).powerLevel.gte(config.mechanics.maxLevel)) {
+    if (getCharacter(0).powerLevel.gte(getConfigurationValue("mechanics.maxLevel"))) {
         pushLogItem({
             message: "Congratulations, you've reached the level cap. 👍",
             uuid: v4()

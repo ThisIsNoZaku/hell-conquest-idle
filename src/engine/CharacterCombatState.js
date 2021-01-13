@@ -1,4 +1,4 @@
-import {config} from "../config";
+import {getConfigurationValue} from "../config";
 import * as _ from "lodash";
 import {assertHasProperty, Attributes, calculateCombatStat} from "../character";
 import {Decimal} from "decimal.js";
@@ -39,13 +39,13 @@ export default class CharacterCombatState {
     }
 
     get attackUpgradeCost() {
-        const baseCost = config.mechanics.combat.attackUpgradeBaseCost;
+        const baseCost = getConfigurationValue("mechanics.combat.attackUpgradeBaseCost");
         const tacticsMultiplier = Tactics[this.tactics].modifiers.attack_upgrade_cost_multiplier || 1;
         return Decimal(baseCost).times(tacticsMultiplier);
     }
 
     get incomingAttackDowngradeCost() {
-        const baseCost = config.mechanics.combat.incomingAttackDowngradeBaseCost;
+        const baseCost = getConfigurationValue("mechanics.combat.incomingAttackDowngradeBaseCost");
         const tacticsMultiplier = Tactics[this.tactics].modifiers.attack_downgrade_cost_multiplier || 1;
         return Decimal(baseCost).times(tacticsMultiplier);
     }
@@ -88,7 +88,7 @@ export default class CharacterCombatState {
         const maximumHp = this.maximumHp;
         const tacticsMultiplier = Tactics[this.tactics].modifiers.fatigue_multiplier || 0;
         const totalMultiplier = Decimal(1).plus(tacticsMultiplier);
-        return maximumHp.times(totalMultiplier).times(config.mechanics.combat.fatigueDamageMultiplier).floor();
+        return maximumHp.times(totalMultiplier).times(getConfigurationValue("mechanics.combat.fatigueDamageMultiplier")).floor();
     }
 
     set speed(newSpeed) {
@@ -103,7 +103,7 @@ export default class CharacterCombatState {
                 return currentValue.plus(multiplier);
             }
             return currentValue;
-        }, _.get(config.tactics, this.tactics, 1));
+        }, _.get(getConfigurationValue("tactics"), this.tactics, 1));
         return baseSpeed.times(speedMultiplier);
     }
 
@@ -116,7 +116,7 @@ export default class CharacterCombatState {
     }
 
     get accuracy() {
-        const baseAccuracy = Decimal(config.mechanics.combat.baseHitChance);
+        const baseAccuracy = Decimal(getConfigurationValue("mechanics.combat.baseHitChance"));
         const statusesMultiplier = Decimal(1).minus(
             Decimal(Statuses["restrained"].effects.accuracy_modifier)
             .times(this.statuses["restrained"] || 0));

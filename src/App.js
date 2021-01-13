@@ -9,7 +9,7 @@ import {
     saveGlobalState, unpause
 } from "./engine";
 import * as seedrandom from "seedrandom";
-import {config} from "./config";
+import {config, getConfigurationValue} from "./config";
 import {MemoryRouter, Route, Switch} from "react-router-dom";
 import ReincarnationSelectionPage from "./components/scene/ReincarnationSelectionPage";
 import AdventuringPage from "./components/scene/AdventuringPage";
@@ -28,7 +28,7 @@ function App() {
 
     useHotkeys("`", () => {
         setDebugUiEnabled(enabled => {
-            if (config.debug) {
+            if (getConfigurationValue("debug")) {
                 if (!enabled) {
                     getGlobalState().paused = true;
                 }

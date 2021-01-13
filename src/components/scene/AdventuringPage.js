@@ -10,7 +10,7 @@ import BottomSection from "../adventuring/BottomSection";
 import EnemySidebar from "../adventuring/EnemySidebar";
 import React, {useEffect, useRef, useState} from "react";
 import * as _ from "lodash";
-import {config} from "../../config";
+import {config, getConfigurationValue} from "../../config";
 import {Actions} from "../../data/Actions";
 import {debugMessage} from "../../debugging";
 import {v4} from "node-uuid";
@@ -60,7 +60,7 @@ function pushLogItem(item) {
     if(validationResult.error) {
         throw new Error(`Log item invalid: ${validationResult.error}`);
     }
-    if (getGlobalState().actionLog.length > (config.actionLog.maxSize || 10)) {
+    if (getGlobalState().actionLog.length > (getConfigurationValue("actionLog.maxSize") || 10)) {
         getGlobalState().actionLog.pop();
     }
     getGlobalState().actionLog.unshift(item);
@@ -195,7 +195,7 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
         <PlayerStats player={player} enemy={enemy}/>
-        <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", flexDirection: "column"}}>
+        <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
             <TopSection character={player} automaticReincarnateEnabled={getGlobalState().automaticReincarnate}/>
             <BottomSection state={getGlobalState()} actionLog={actionLog}
                            player={player}

@@ -1,4 +1,4 @@
-import {config} from "../../../config";
+import { getConfigurationValue } from "../../../config";
 import Paper from "@material-ui/core/Paper";
 import React from "react";
 import {actionButton} from "../BottomSection";
@@ -27,11 +27,11 @@ const styles = {
 }
 
 export default function ApproachingActionsSection(props) {
-    const escapeChance = props.enemy ? evaluateExpression(config.encounters.chanceToEscapeGreater, {
+    const escapeChance = props.enemy ? evaluateExpression(getConfigurationValue("encounters.chanceToEscapeGreater"), {
         player: props.player,
         enemy: props.enemy
     }) : Decimal(100);
-    const intimidateChance = props.enemy ? evaluateExpression(config.encounters.chanceToIntimidateLesser, {
+    const intimidateChance = props.enemy ? evaluateExpression(getConfigurationValue("encounters.chanceToIntimidateLesser"), {
         player: props.player,
         enemy: props.enemy
     }) : Decimal(100);
@@ -39,6 +39,6 @@ export default function ApproachingActionsSection(props) {
         {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
         {actionButton("fleeing", "Flee", `Attempt to escape. Your chance is  ${escapeChance}%.`, props)}
         {actionButton("intimidating", "Intimidate", `Try to cow the enemy, compelling them to continuously provide you a portion of their life force. Your chance is ${intimidateChance}%`, props)}
-        {_.get(config, "features.negotiating.enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
+        {getConfigurationValue("features.negotiating.enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
     </Paper>
 }

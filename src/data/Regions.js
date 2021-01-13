@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import {evaluateExpression, generateCreature, getGlobalState} from "../engine";
-import {config} from "../config";
+import {getConfigurationValue} from "../config";
 import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
 
@@ -16,12 +16,12 @@ class Region {
 
         switch (getGlobalState().nextAction) {
             case "usurping": {
-                const encounterOffset = config.encounters.greaterLevelScale;
+                const encounterOffset = getConfigurationValue("encounters.greaterLevelScale");
                 encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1)) : encounterLevel.plus(encounterOffset);
                 break;
             }
             case "hunting": {
-                const encounterOffset = config.encounters.lesserLevelScale;
+                const encounterOffset = getConfigurationValue("encounters.lesserLevelScale");
                 encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
@@ -34,7 +34,7 @@ class Region {
         if (encounterWithRival) {
             encounterLevel = Decimal(getGlobalState().rival.level || 0);
         }
-        if (config.debug) {
+        if (getConfigurationValue("debug")) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
         const encounterDef = encounterWithRival ? this.encounters[getGlobalState().rival.type] : chooseRandomEncounter(this);

@@ -9,7 +9,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../data/Traits";
 import * as _ from "lodash";
 import {useHistory} from "react-router-dom";
-import {config} from "../../config";
+import {getConfigurationValue} from "../../config";
 import "../../App.css";
 import {Decimal} from "decimal.js";
 import {Tactics} from "../../data/Tactics";
@@ -32,42 +32,42 @@ export default function ReincarnationSelectionPage(props) {
     const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
     const newLatentPower = getCharacter(0).latentPower.plus(
-        evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
+        evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerGainOnReincarnate"), {
             player
         }));
-    const spendableBonusPoints = evaluateExpression(config.mechanics.reincarnation.bonusPointsForHighestLevel, {
+    const spendableBonusPoints = evaluateExpression(getConfigurationValue("mechanics.reincarnation.bonusPointsForHighestLevel"), {
         highestLevel: getCharacter(0).highestLevelReached
     });
-    const latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
+    const latentPowerCap = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
         highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0)
     });
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => {
-            next = Decimal(next).minus(config.mechanics.combat.playerAttributeMinimum);
+            next = Decimal(next).minus(getConfigurationValue("mechanics.combat.playerAttributeMinimum"));
             const totalAttributeCost = Decimal(next).times(Decimal(next).plus(1)).div(2);
             return Decimal(sum).plus(totalAttributeCost);
         }, 0))
         .minus(
             Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
-                return previousValue.plus(evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
+                return previousValue.plus(evaluateExpression(getConfigurationValue("mechanics.reincarnation.traitPointCost"), {
                     traitsOwned: Decimal(i)
                 }))
             }, Decimal(0))
         );
-    const nextBonusTraitCost = evaluateExpression(config.mechanics.reincarnation.traitPointCost, {
+    const nextBonusTraitCost = evaluateExpression(getConfigurationValue("mechanics.reincarnation.traitPointCost"), {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
     });
     const nextAttributeCosts = {
-        brutality: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+        brutality: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
             attributeScore: Decimal(attributes.brutality)
         }),
-        cunning: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+        cunning: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
             attributeScore: Decimal(attributes.cunning)
         }),
-        deceit: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+        deceit: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
             attributeScore: Decimal(attributes.deceit)
         }),
-        madness: evaluateExpression(config.mechanics.reincarnation.attributePointCost, {
+        madness: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
             attributeScore: Decimal(attributes.madness)
         }),
     }
@@ -84,7 +84,7 @@ export default function ReincarnationSelectionPage(props) {
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a bonus
-            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getCharacter(0).highestLevelReached).times(config.mechanics.reincarnation.latentPowerEffectScale).toFixed()}</strong> to
+            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getCharacter(0).highestLevelReached).times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).toFixed()}</strong> to
             every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>}
@@ -119,7 +119,7 @@ export default function ReincarnationSelectionPage(props) {
                                 </Button>
                                 {Decimal(attributes[attribute]).toFixed()}
                                 <Button
-                                    disabled={Decimal(attributes[attribute]).lte(config.mechanics.combat.playerAttributeMinimum)}
+                                    disabled={Decimal(attributes[attribute]).lte(getConfigurationValue("mechanics.combat.playerAttributeMinimum"))}
                                     onClick={() => {
                                         player.attributes[`base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`] = Decimal(attributes[attribute]).minus(1);
                                         setAttributes({
@@ -273,7 +273,7 @@ export default function ReincarnationSelectionPage(props) {
                         </Tooltip>
                     </Grid>
                     <Grid item xs style={{textAlign: "center"}}>
-                        {Decimal(player.combat.precision).times(config.mechanics.combat.precision.effectPerPoint).toFixed()}
+                        {Decimal(player.combat.precision).times(getConfigurationValue("mechanics.combat.precision.effectPerPoint")).toFixed()}
                     </Grid>
                 </Grid>
                 <Grid item container xs={2} direction="column">
@@ -284,7 +284,7 @@ export default function ReincarnationSelectionPage(props) {
                         </Tooltip>
                     </Grid>
                     <Grid item xs style={{textAlign: "center"}}>
-                        {Decimal(player.combat.evasion).times(config.mechanics.combat.evasion.effectPerPoint).toFixed()}
+                        {Decimal(player.combat.evasion).times(getConfigurationValue("mechanics.combat.evasion.effectPerPoint")).toFixed()}
                     </Grid>
                 </Grid>
             </Grid>

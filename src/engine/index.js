@@ -3,7 +3,7 @@ import {assertCreatureExists, Creatures, titles} from "../data/creatures";
 import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
 import {Character} from "../character";
-import {config} from "../config";
+import {getConfigurationValue} from "../config";
 import * as Package from "../../package.json";
 import {Tactics} from "../data/Tactics";
 import changelog from "../changelog.json";
@@ -58,7 +58,7 @@ export function loadGlobalState() {
         highestLevelEnemyDefeated: 0,
         startingTraits: {},
         currentEncounter: null,
-        manualSpeedMultiplier: config.manualSpeedup.enabled ? config.manualSpeedup.multiplier : 1,
+        manualSpeedMultiplier: getConfigurationValue("manualSpeedup.enabled") ? getConfigurationValue("manualSpeedup.multiplier") : 1,
         currentRegion: "forest",
         actionLog: [],
         exploration: {
@@ -85,10 +85,10 @@ export function loadGlobalState() {
                 tactics: "defensive",
                 items: [],
                 attributes: {
-                    brutality: Decimal(config.mechanics.combat.playerAttributeMinimum),
-                    cunning: Decimal(config.mechanics.combat.playerAttributeMinimum),
-                    deceit: Decimal(config.mechanics.combat.playerAttributeMinimum),
-                    madness: Decimal(config.mechanics.combat.playerAttributeMinimum)
+                    brutality: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
+                    cunning: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
+                    deceit: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
+                    madness: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum"))
                 },
                 combat: {
                     fatigue: 0,
@@ -115,7 +115,7 @@ let nextMonsterId = 1;
 
 export function generateCreature(id, powerLevel, rng) {
     assertCreatureExists(id);
-    if (config.debug) {
+    if (getConfigurationValue("debug")) {
         debugMessage(`Generating creature with id ${id} and level ${powerLevel}`);
     }
     if (powerLevel === undefined) {
@@ -217,15 +217,15 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
     if (globalState.reincarnationCount !== 0) {
         // Calculate your new latent power cap
-        globalState.latentPowerCap = evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
+        globalState.latentPowerCap = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
             highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
         })
         // Add your level to your starting energy.
-        const latentPowerGain = evaluateExpression(config.mechanics.reincarnation.latentPowerGainOnReincarnate, {
+        const latentPowerGain = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerGainOnReincarnate"), {
             player
         });
         globalState.characters[0].latentPower = Decimal.min(
-            evaluateExpression(config.mechanics.reincarnation.latentPowerCap, {
+            evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
                 player,
                 highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
             }),

@@ -2,7 +2,7 @@ import Paper from "@material-ui/core/Paper";
 import React from "react";
 import {actionButton} from "../BottomSection";
 import evaluateExpression from "../../../engine/general/evaluateExpression";
-import { config } from "../../../config";
+import { getConfigurationValue } from "../../../config";
 import {Decimal} from "decimal.js";
 
 const styles = {
@@ -25,7 +25,7 @@ const styles = {
     }
 }
 export default function ExplorationActionsSection(props) {
-    const canHunt = evaluateExpression(config.encounters.huntableLevel, {
+    const canHunt = evaluateExpression(getConfigurationValue("encounters.huntableLevel", 0), {
         playerLevel: Decimal(props.player.powerLevel),
     }).gt(0);
     return <Paper style={styles.actions.container}>

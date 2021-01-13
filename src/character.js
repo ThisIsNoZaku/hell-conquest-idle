@@ -1,4 +1,4 @@
-import {config} from "./config";
+import {getConfigurationValue} from "./config";
 import {getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
@@ -87,7 +87,7 @@ export class Character {
     }
 
     get latentPowerModifier() {
-        return this._latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).plus(1);
+        return this._latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).plus(1);
     }
 
     set latentPower(newLatentPower) {
@@ -95,13 +95,13 @@ export class Character {
     }
 
     get maximumHp() {
-        const base = Decimal(config.mechanics.combat.hp.baseHp);
-        const fromLevel = this.powerLevel.times(config.mechanics.combat.hp.pointsPerLevel);
-        const attributeMultiplier = this.attributes[config.mechanics.combat.hp.baseAttribute]
-            .times(config.mechanics.combat.hp.effectPerPoint).plus(1);
+        const base = Decimal(getConfigurationValue("mechanics.combat.hp.baseHp"));
+        const fromLevel = this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.pointsPerLevel"));
+        const attributeMultiplier = this.attributes[getConfigurationValue("mechanics.combat.hp.baseAttribute")]
+            .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
 
         return base.plus(fromLevel)
-            .plus(this._isPc ? config.mechanics.combat.hp.pcBonus : 0)
+            .plus(this._isPc ? getConfigurationValue("mechanics.combat.hp.pcBonus") : 0)
             .times(attributeMultiplier)
             .floor();
     }
@@ -133,7 +133,7 @@ export class Character {
     }
 
     otherDemonIsGreaterDemon(other) {
-        const greaterDemonScale = evaluateExpression(config.encounters.greaterLevelScale, {
+        const greaterDemonScale = evaluateExpression(getConfigurationValue("encounters.greaterLevelScale"), {
             player: this,
             enemy: other
         });
@@ -141,7 +141,7 @@ export class Character {
     }
 
     otherDemonIsLesserDemon(other) {
-        const lesserDemonScale = evaluateExpression(config.encounters.lesserLevelScale, {
+        const lesserDemonScale = evaluateExpression(getConfigurationValue("encounters.lesserLevelScale"), {
             player: this,
             enemy: other
         });
@@ -156,7 +156,7 @@ export class Character {
     }
 
     get healing() {
-        const baseHealing = Decimal(this.powerLevel.times(config.mechanics.combat.hp.healingPerLevel));
+        const baseHealing = Decimal(this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.healingPerLevel")));
         const tacticsMultiplier = Decimal(1).plus(Tactics[this.tactics].modifiers.healing_modifier || 0);
         return baseHealing.times(tacticsMultiplier);
     }
@@ -167,8 +167,8 @@ export class Character {
 
     set absorbedPower(value) {
         this._absorbedPower = value;
-        if (getLevelForPower(this._absorbedPower).gt(config.mechanics.maxLevel)) {
-            this._absorbedPower = getPowerNeededForLevel(config.mechanics.maxLevel);
+        if (getLevelForPower(this._absorbedPower).gt(getConfigurationValue("mechanics.maxLevel"))) {
+            this._absorbedPower = getPowerNeededForLevel(getConfigurationValue("mechanics.maxLevel"));
         }
         if (this.appearance && this._isPc) {
             Creatures[this.appearance].traits.forEach(trait => {
@@ -248,31 +248,31 @@ export class Attributes {
     }
 
     get brutality() {
-        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseBrutality,
             stolenPowerModifier: this.character.latentPowerModifier
         }).floor();
     }
 
     get cunning() {
-        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
-        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
+        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseCunning,
             stolenPowerModifier: this.character.latentPowerModifier
         }).floor();
     }
 
     get deceit() {
-        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
-        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
+        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseDeceit,
             stolenPowerModifier: this.character.latentPowerModifier
         }).floor();
     }
 
     get madness() {
-        const stolenPowerModifier = this.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale);
-        return evaluateExpression(config.mechanics.combat.effectiveAttributeCalculation, {
+        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
+        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseMadness,
             stolenPowerModifier: this.character.latentPowerModifier
         }).floor();
@@ -290,7 +290,7 @@ class CombatStats {
 
     get damage() {
         return Object.keys(HitTypes).reduce(((previousValue, currentValue) => {
-            const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
+            const baseDamage = evaluateExpression(getConfigurationValue("mechanics.combat.baseDamage"), {
                 player: this.character
             });
             const hitTypeMultiplier = HitTypes[currentValue].damageMultiplier;
@@ -321,13 +321,13 @@ class CombatStats {
     }
 
     get maxPrecisionPoints() {
-        return Decimal(this.character.attributes[config.mechanics.combat.precision.baseAttribute])
-            .times(config.mechanics.combat.precision.effectPerPoint);
+        return Decimal(this.character.attributes[getConfigurationValue("mechanics.combat.precision.baseAttribute")])
+            .times(getConfigurationValue("mechanics.combat.precision.effectPerPoint"));
     }
 
     get maxEvasionPoints() {
-        return Decimal(this.character.attributes[config.mechanics.combat.evasion.baseAttribute])
-            .times(config.mechanics.combat.evasion.effectPerPoint);
+        return Decimal(this.character.attributes[getConfigurationValue("mechanics.combat.evasion.baseAttribute")])
+            .times(getConfigurationValue("mechanics.combat.evasion.effectPerPoint"));
     }
 
     get precisionPoints() {
@@ -348,14 +348,14 @@ class CombatStats {
 }
 
 function calculateDamage(character) {
-    const baseDamage = evaluateExpression(config.mechanics.combat.baseDamage, {
+    const baseDamage = evaluateExpression(getConfigurationValue("mechanics.combat.baseDamage"), {
         player: character
     });
     return baseDamage.ceil();
 }
 
 export function calculateCombatStat(character, combatAttribute) {
-    const attributeBase = character.attributes[config.mechanics.combat[combatAttribute].baseAttribute];
+    const attributeBase = character.attributes[getConfigurationValue("mechanics.combat")[combatAttribute].baseAttribute];
     const tacticsModifier = Decimal(0).plus(Tactics[character.tactics].modifiers[`${combatAttribute}_modifier`] || 0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];

@@ -1,7 +1,7 @@
-import {config} from "./config";
+import {getConfigurationValue} from "./config";
 
 export function debugMessage() {
-    if(config.debug) {
+    if(getConfigurationValue("debug")) {
         console.debug.apply(null, arguments);
     }
 }

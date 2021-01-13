@@ -1,5 +1,5 @@
 import {getCharacter, getGlobalState} from "./index";
-import {config} from "../config";
+import {config, getConfigurationValue} from "../config";
 import {debugMessage} from "../debugging";
 import evaluateExpression from "./general/evaluateExpression";
 import {Traits} from "../data/Traits";
@@ -20,7 +20,7 @@ export const EventHandlers = {
         if (!getCharacter(0).isAlive) {
             getGlobalState().nextAction = "reincarnating";
         } else {
-            if (config.mechanics.artifacts.enabled) {
+            if (getConfigurationValue("mechanics.artifacts.enabled")) {
                 getGlobalState().nextAction = "looting";
             } else {
                 getGlobalState().nextAction = "exploring";
@@ -33,7 +33,7 @@ export const EventHandlers = {
         if (actingCharacter.id === 0 && actingCharacter.id !== deadCharacter.id) {
             debugMessage("Player killed an deadCharacter and gained power.");
             const player = getCharacter(0);
-            const powerToGain = evaluateExpression(config.mechanics.xp.gainedFromOtherDemon, {
+            const powerToGain = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromOtherDemon"), {
                 enemy: deadCharacter
             });
             let multiplier = Object.keys(player.traits).reduce((multiplier, trait) => {

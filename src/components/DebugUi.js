@@ -25,10 +25,10 @@ const styles = {
 export default function DebugUi(props) {
     const [creatures, setCreatures] = useState(_.get(getGlobalState(), ["debug", "creatures"]));
     const [regions, setRegions] = useState(_.get(getGlobalState(), ["debug", "regions"]));
-    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Decimal(1)) ?
-        Decimal(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale)));
-    const [maxLevel, setMaxLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "maxLevel"], getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale).gt(100) ?
-        Decimal(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2)));
+    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")).lt(Decimal(1)) ?
+        Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale"))));
+    const [maxLevel, setMaxLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "maxLevel"], getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
+        Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2)));
     const [manualSpeedMultiplier, setManualSpeedMultiplier] = useState(_.get(getGlobalState(), ["debug", "manualSpeedMultiplier"],
         getGlobalState().manualSpeedMultiplier));
     const [playerAbsorbedPower, setPlayerAbsorbedPower] = useState(getCharacter(0).absorbedPower);
@@ -37,10 +37,10 @@ export default function DebugUi(props) {
         resetDebug();
         setCreatures(_.get(getGlobalState(), ["debug", "creatures"]));
         setRegions(_.get(getGlobalState(), ["debug", "regions"]));
-        setMinLevel(getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale).lt(Decimal(1)) ?
-            Decimal(1) : getCharacter(0).powerLevel.minus(config.encounters.lesserLevelScale));
-        setMaxLevel(getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale).gt(100) ?
-            Decimal(100) : getCharacter(0).powerLevel.plus(config.encounters.greaterLevelScale * 2));
+        setMinLevel(getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")).lt(Decimal(1)) ?
+            Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")));
+        setMaxLevel(getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
+            Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2));
     }
 
     function clearSave() {

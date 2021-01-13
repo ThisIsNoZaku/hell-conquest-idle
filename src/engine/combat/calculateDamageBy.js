@@ -1,6 +1,6 @@
 import {Decimal} from "decimal.js";
 import * as _ from "lodash";
-import { config } from "../../config";
+import {getConfigurationValue} from "../../config";
 import {debugMessage} from "../../debugging";
 import {HitTypes} from "../../data/HitTypes";
 
@@ -18,7 +18,7 @@ export default function calculateDamageBy(attacker) {
             }
             Decimal.set({rounding: Decimal.ROUND_DOWN});
             const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
-            const damageModifier = config.mechanics.combat.attributeDifferenceMultipliers[attributeDifference];
+            const damageModifier = getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference];
             debugMessage(`Final damage multiplier = ${damageModifier}.`);
             return Object.keys(HitTypes).reduce((damage, nextType) => {
                 damage[nextType] = attacker.combat.damage[nextType].times(damageModifier).floor();

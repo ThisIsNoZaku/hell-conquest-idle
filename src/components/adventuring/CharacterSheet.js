@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import {
     getSpriteForCreature
 } from "../../engine";
-import {config} from "../../config";
+import {getConfigurationValue} from "../../config";
 import CharacterAttributes from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -22,7 +22,7 @@ export default function CharacterSheet(props) {
     const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
     const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
-    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(config.mechanics.reincarnation.latentPowerEffectScale).times(100)), [
+    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).times(100)), [
         props.character.latentPower
     ]);
 
@@ -91,7 +91,7 @@ export default function CharacterSheet(props) {
             </Grid>
             <CharacterTraits character={props.character}/>
         </Grid>
-        {config.mechanics.artifacts.enabled && <Grid container>
+        {getConfigurationValue("mechanics.artifacts.enabled") && <Grid container>
             <Grid item xs={12}>
                 <strong>Artifacts</strong>
             </Grid>
