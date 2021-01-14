@@ -98,7 +98,7 @@ export default function CharacterCombatStatistics(props) {
                 <Grid item xs><em>Damage</em></Grid>
                 <Grid item xs={1}></Grid>
             </Grid>
-            {Object.keys(HitTypes).map(type => {
+            {[-2, -1, -0, 1, 2].map(type => {
                 return <Grid item container xs={12}>
                     <Grid item xs><em>{HitTypes[type].type}</em></Grid>
                     <Grid item xs><em>{props.calculatedDamage[type].toFixed()}</em></Grid>
