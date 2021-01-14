@@ -4,10 +4,10 @@ export const Statuses = {
     berserk: {
         name: "Berserk",
         icon: "./icons/icons-516.png",
-        description: _.template("Your rage grants you a ${power_modifier}% bonus to Power but a ${evasion_modifier}% penalty to Evasion."),
+        description: _.template("Your rage grants you a ${power_modifier}% bonus to Power but multiplies the cost to downgrade incoming attacks by ${attack_downgrade_cost_multiplier}%."),
         effects: {
-            power_modifier: .2,
-            evasion_modifier: -.1
+            power_modifier: .25,
+            attack_downgrade_cost_multiplier: 1.25
         }
     },
     terrified: {
@@ -28,6 +28,14 @@ export const Statuses = {
             accuracy_modifier: -.1
         },
         decays: true
+    },
+    agonizingPoison: {
+        name: "Agonizing Poison",
+        description: _.template("Take ${received_damage_modifier.toFixed()}% damage from attacks."),
+        icon: "icons/icons-129.png",
+        effects: {
+            received_damage_modifier: 1.1
+        }
     },
     famished: {
         name: "Famished",
