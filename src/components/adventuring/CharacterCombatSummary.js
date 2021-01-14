@@ -43,15 +43,7 @@ export default function CharacterCombatSummary(props) {
         <Grid container item xs={12} style={{height: "40px"}} direction={props.direction}>
             {props.statuses && Object.keys(props.statuses).map(status => {
                 const modifiers = Object.keys(Statuses[status].effects).reduce((combined, next) => {
-                    switch (next) {
-                        case "power_modifier":
-                        case "evasion_modifier":
-                        case "precision_modifier":
-                        case "evasion_modifier":
-                        case "accuracy_modifier":
-                            combined[next] = Decimal.abs(Decimal(1).minus(Decimal(1).plus(Decimal(Statuses[status].effects[next])).pow(props.statuses[status])).times(100));
-                            break;
-                    }
+                    combined[next] = Decimal.abs(Decimal(1).minus(Decimal(1).plus(Decimal(Statuses[status].effects[next])).pow(props.statuses[status])).times(100));
                     return combined;
                 }, {});
                 return <Grid item xs={1}>
