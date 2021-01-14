@@ -18,7 +18,9 @@ export default function calculateDamageBy(attacker) {
             }
             Decimal.set({rounding: Decimal.ROUND_DOWN});
             const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
-            const damageModifier = getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference];
+            const enemyReceivedDamageMultiplier = _.get(target, "combat.receivedDamageMultiplier", Decimal(1)).minus(1);
+            const damageModifier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
+                .plus(enemyReceivedDamageMultiplier);
             debugMessage(`Final damage multiplier = ${damageModifier}.`);
             return Object.keys(HitTypes).reduce((damage, nextType) => {
                 damage[nextType] = attacker.combat.damage[nextType].times(damageModifier).floor();
