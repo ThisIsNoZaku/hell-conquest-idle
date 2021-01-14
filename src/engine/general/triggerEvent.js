@@ -26,6 +26,7 @@ export default function triggerEvent(event) {
                 const eventDefinition = trait[event.type];
                 if (eventDefinition) {
                     const traitTriggered = doesTraitTrigger(eventDefinition, event);
+                    debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not' } trigger.`);
                     const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
                     if (effectsToApply) {
                         applyTraitEffects(effectsToApply, event, traitId);
@@ -60,6 +61,7 @@ function selectConditionTargets(targetType, sourceCharacter, targetCharacter, co
 
 function applyTraitEffects(effectsToApply, event, traitId) {
     for (const effect of Object.keys(effectsToApply)) {
+        debugMessage(`Applying trait effect ${effect}`);
         const effectDefinition = effectsToApply[effect];
         switch (effect) {
             case "add_statuses":
