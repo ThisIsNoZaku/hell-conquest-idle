@@ -10,16 +10,23 @@ import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
 import getLevelForPower from "./engine/general/getLevelForPower";
 import evaluateExpression from "./engine/general/evaluateExpression";
 import {HitTypes} from "./data/HitTypes";
+import * as JOI from "joi";
 
 export class Character {
     constructor(props) {
+        const validation = characterPropsSchema.validate(props);
+        if(validation.error) {
+            throw new Error(`Character failed validation: ${validation.error}`);
+        }
         assertHasProperty("id", props);
         assertHasProperty("attributes", props);
         assertHasProperty("traits", props);
-        assertHasProperty("absorbedPower", props);
-        this._tactics = props.tactics || props._tactics || "defensive";
+        assertHasProperty("tactics", props);
+        assertHasProperty("powerLevel", props);
+        this._tactics = props.tactics || props._tactics;
         this._statuses = props.statuses || props._statuses || {};
         this.adjectives = props.adjectives;
+        this.powerLevel = Decimal(props.powerLevel);
         this._isPc = props.isPc || props._isPc;
         this.id = props.id;
         this._name = props.name || props._name;
@@ -36,6 +43,11 @@ export class Character {
         this._combat = new CombatStats(this);
         this._appearance = props.appearance || props._appearance;
         this._modifiers = props.modifiers || props._modifiers || [];
+    }
+
+    levelUp(){
+        this.powerLevel = this.powerLevel.plus(1);
+        this._absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
     }
 
     get tactics() {
@@ -62,10 +74,6 @@ export class Character {
         return this._name;
     }
 
-    get powerLevel() {
-        return Decimal(getLevelForPower(this._absorbedPower));
-    }
-
     get hp() {
         return Decimal(this._currentHp);
     }
@@ -87,7 +95,7 @@ export class Character {
     }
 
     get latentPowerModifier() {
-        return this._latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).plus(1);
+        return this._latentPower.times(getConfigurationValue("latent_power_effect_scale")).plus(1);
     }
 
     set latentPower(newLatentPower) {
@@ -133,7 +141,7 @@ export class Character {
     }
 
     otherDemonIsGreaterDemon(other) {
-        const greaterDemonScale = evaluateExpression(getConfigurationValue("encounters.greaterLevelScale"), {
+        const greaterDemonScale = evaluateExpression(getConfigurationValue("greater_level_scale"), {
             player: this,
             enemy: other
         });
@@ -141,7 +149,7 @@ export class Character {
     }
 
     otherDemonIsLesserDemon(other) {
-        const lesserDemonScale = evaluateExpression(getConfigurationValue("encounters.lesserLevelScale"), {
+        const lesserDemonScale = evaluateExpression(getConfigurationValue("lesser_level_scale"), {
             player: this,
             enemy: other
         });
@@ -151,7 +159,7 @@ export class Character {
     gainPower(powerGained) {
         const latentPowerMultiplier = this.latentPowerModifier;
         powerGained = powerGained.times(latentPowerMultiplier).floor();
-        this.absorbedPower = this.absorbedPower.plus(powerGained);
+        this.absorbedPower = Decimal.min(getPowerNeededForLevel(this.powerLevel.plus(1)), this.absorbedPower.plus(powerGained));
         return powerGained;
     }
 
@@ -255,7 +263,6 @@ export class Attributes {
     }
 
     get cunning() {
-        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseCunning,
             stolenPowerModifier: this.character.latentPowerModifier
@@ -263,7 +270,6 @@ export class Attributes {
     }
 
     get deceit() {
-        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseDeceit,
             stolenPowerModifier: this.character.latentPowerModifier
@@ -271,7 +277,6 @@ export class Attributes {
     }
 
     get madness() {
-        const stolenPowerModifier = this.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale"));
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseMadness,
             stolenPowerModifier: this.character.latentPowerModifier
@@ -286,6 +291,7 @@ class CombatStats {
         });
         this._precisionPoints = this.maxPrecisionPoints;
         this._evasionPoints = this.maxEvasionPoints;
+        this.stamina = this.maximumStamina;
     }
 
     get damage() {
@@ -300,6 +306,13 @@ class CombatStats {
         }), {})
     }
 
+    get receivedDamageMultiplier() {
+        return Object.keys(this.character.statuses).reduce((previousValue, currentValue) => {
+            const modifier = Decimal(Statuses[currentValue].effects.received_damage_modifier).pow(this.character.statuses[currentValue]).minus(1);
+            return previousValue.plus(modifier || 0);
+        }, Decimal(1));
+    }
+
     get evasion() {
         return calculateCombatStat(this.character, "evasion");
     }
@@ -312,7 +325,7 @@ class CombatStats {
         return calculateCombatStat(this.character, "resilience");
     }
 
-    get endurance() {
+    get maximumStamina() {
         return this.character.powerLevel.times(2).plus(1);
     }
 
@@ -363,8 +376,8 @@ export function calculateCombatStat(character, combatAttribute) {
     }, Decimal(0));
     const traitModifier = Object.keys(character.traits).reduce((previousValue, trait) => {
         const traitDefinition = Traits[trait];
-        if(_.get(traitDefinition, ["continuous", "effects", `${combatAttribute}_modifier`, "target"]) === "self") {
-            return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "effects", `${combatAttribute}_modifier`, "modifier"]), {
+        if(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "target"]) === "self") {
+            return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "modifier"]), {
                 rank: Decimal(character.traits[trait])
             }));
         }
@@ -379,3 +392,21 @@ export function assertHasProperty(propertyName, object) {
         throw new Error(`Missing required property ${propertyName} or _${propertyName}`);
     };
 }
+
+const characterPropsSchema = JOI.object({
+    id: JOI.number(),
+    attributes: JOI.alternatives().try(
+        JOI.object({
+            baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+        }),
+        JOI.object({
+            _baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            _baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            _baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            _baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+        })
+    )
+}).unknown(true);
