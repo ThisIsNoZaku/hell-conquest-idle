@@ -80,7 +80,7 @@ function applyTraitEffects(effectsToApply, event, traitId) {
                         } else {
                             target.statuses[status] = (target.statuses[status] || []);
                             target.statuses[status].push({
-                                source: event.source,
+                                source: event.source.id,
                                 duration,
                                 stacks
                             });
