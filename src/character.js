@@ -13,76 +13,55 @@ import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
 
 export class Character {
-    constructor(props) {
+    constructor(props, party) {
         const validation = characterPropsSchema.validate(props);
         if(validation.error) {
             throw new Error(`Character failed validation: ${validation.error}`);
         }
-        assertHasProperty("id", props);
-        assertHasProperty("attributes", props);
-        assertHasProperty("traits", props);
-        assertHasProperty("tactics", props);
-        assertHasProperty("powerLevel", props);
-        this._tactics = props.tactics || props._tactics;
-        this._statuses = props.statuses || props._statuses || {};
+        props = validation.value;
+        this.party = party;
+        this.tactics = props.tactics || props._tactics;
+        this.statuses = props.statuses || {};
         this.adjectives = props.adjectives;
         this.powerLevel = Decimal(props.powerLevel);
-        this._isPc = props.isPc || props._isPc;
+        this.isPc = props.isPc;
         this.id = props.id;
-        this._name = props.name || props._name;
-        this._traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
+        this.name = props.name || props._name;
+        this.traits = Object.keys(props.traits || props._traits).reduce((transformed, next) => {
             transformed[next] = Decimal((props.traits || props._traits)[next]);
             return transformed;
         }, {});
-        this._absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
-        this._latentPower = Decimal(props.latentPower || props._latentPower || 0);
-        this._stolenPower = props.stolenPower || props._stolenPower || 0;
-        this._attributes = new Attributes(props.attributes || props._attributes, this);
+        this.absorbedPower = Decimal(props.absorbedPower || props._absorbedPower || 0);
+        this.latentPower = Decimal(props.latentPower || props._latentPower || 0);
+        this.attributes = new Attributes({...props.attributes}, this);
         this.highestLevelReached = props.highestLevelReached;
-        this._currentHp = Decimal(props._currentHp || this.maximumHp);
-        this._combat = new CombatStats(this);
-        this._appearance = props.appearance || props._appearance;
-        this._modifiers = props.modifiers || props._modifiers || [];
+        this.combat = new CombatStats(this, props.combat);
+        this.appearance = props.appearance || props._appearance;
+
+        this.hp = Decimal(props.hp || this.maximumHp);
     }
 
     levelUp(){
         this.powerLevel = this.powerLevel.plus(1);
-        this._absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
-    }
-
-    get tactics() {
-        return this._tactics;
-    }
-
-    get statuses() {
-        return this._statuses;
+        this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
     }
 
     clearStatuses() {
-        Object.keys(this._statuses).forEach(status => delete this._statuses[status]);
+        Object.keys(this.statuses).forEach(status => delete this.statuses[status]);
     }
 
-    set tactics(newTactics) {
-        this._tactics = newTactics;
+    getStatusRank(status) {
+        const statusInstances = this.statuses[status];
+        return statusInstances.reduce((highestRank, nextInstance) => {
+            return Decimal.max(highestRank, nextInstance.rank);
+        }, 0)
     }
 
-    get isPc() {
-        return this._isPc;
-    }
-
-    get name() {
-        return this._name;
-    }
-
-    get hp() {
-        return Decimal(this._currentHp);
-    }
-
-    set hp(newHealth) {
+    setHp(newHealth) {
         if (this.maximumHp.lt(newHealth)) {
-            this._currentHp = this.maximumHp;
+            this.hp = this.maximumHp;
         } else {
-            this._currentHp = newHealth;
+            this.hp = newHealth;
         }
     }
 
@@ -90,16 +69,8 @@ export class Character {
         return Decimal(this.hp).gt(0);
     }
 
-    get latentPower() {
-        return this._latentPower;
-    }
-
     get latentPowerModifier() {
-        return this._latentPower.times(getConfigurationValue("latent_power_effect_scale")).plus(1);
-    }
-
-    set latentPower(newLatentPower) {
-        this._latentPower = newLatentPower;
+        return this.latentPower.times(getConfigurationValue("latent_power_effect_scale")).plus(1);
     }
 
     get maximumHp() {
@@ -109,35 +80,15 @@ export class Character {
             .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
 
         return base.plus(fromLevel)
-            .plus(this._isPc ? getConfigurationValue("mechanics.combat.hp.pcBonus") : 0)
+            .plus(this.isPc ? getConfigurationValue("mechanics.combat.hp.pcBonus") : 0)
             .times(attributeMultiplier)
             .floor();
     }
 
-    get attributes() {
-        return this._attributes;
-    }
-
-    get combat() {
-        return this._combat;
-    }
-
-    get traits() {
-        return this._traits;
-    }
-
-    set traits(newTraits) {
-        this._traits = newTraits;
-    }
-
-    get appearance() {
-        return this._appearance;
-    }
-
     reincarnate(newAppearance, newTraits) {
-        this._appearance = newAppearance;
-        this._traits = newTraits;
-        this._currentHp = this.maximumHp;
+        this.appearance = newAppearance;
+        this.traits = newTraits;
+        this.hp = this.maximumHp;
     }
 
     otherDemonIsGreaterDemon(other) {
@@ -169,43 +120,6 @@ export class Character {
         return baseHealing.times(tacticsMultiplier);
     }
 
-    get absorbedPower() {
-        return this._absorbedPower;
-    }
-
-    set absorbedPower(value) {
-        this._absorbedPower = value;
-        if (getLevelForPower(this._absorbedPower).gt(getConfigurationValue("mechanics.maxLevel"))) {
-            this._absorbedPower = getPowerNeededForLevel(getConfigurationValue("mechanics.maxLevel"));
-        }
-        if (this.appearance && this._isPc) {
-            Creatures[this.appearance].traits.forEach(trait => {
-                this._traits[trait] = getLevelForPower(this._absorbedPower).plus(1).div(10).ceil();
-                getGlobalState().unlockedTraits[trait] = this._traits[trait];
-            });
-        }
-    }
-
-    get speed() {
-        return Decimal(100);
-    }
-
-    get modifiers() {
-        return this._modifiers;
-    }
-
-    get stolenPower() {
-        return Decimal(this._stolenPower);
-    }
-
-    set stolenPower(newValue) {
-        this._stolenPower = newValue;
-    }
-
-    get stolenPowerModifier() {
-        return Decimal.min(1, this.stolenPower.div(this.powerLevel));
-    }
-
     refreshBeforeCombat() {
         this.combat.evasionPoints = this.combat.maxPrecisionPoints;
         this.combat.precisionPoints = this.combat.maxPrecisionPoints;
@@ -214,45 +128,13 @@ export class Character {
 
 export class Attributes {
     constructor(attributes, character) {
-        this._brutality = attributes.brutality || attributes._brutality || 0;
-        this._cunning = attributes.cunning || attributes._cunning || 0;
-        this._deceit = attributes.deceit || attributes._deceit || 0;
-        this._madness = attributes.madness || attributes._madness || 0;
         Object.defineProperty(this, "character", {
             value: character
-        })
-    }
-
-    get baseBrutality() {
-        return Decimal(this._brutality).floor();
-    }
-    
-    set baseBrutality(newValue) {
-        this._brutality = newValue;
-    }
-
-    get baseCunning() {
-        return Decimal(this._cunning).floor();
-    }
-
-    set baseCunning(newValue) {
-        this._cunning = newValue;
-    }
-
-    get baseDeceit() {
-        return Decimal(this._deceit).floor();
-    }
-
-    set baseDeceit(newValue) {
-        this._deceit = newValue;
-    }
-
-    get baseMadness() {
-        return Decimal(this._madness).floor();
-    }
-
-    set baseMadness(newValue) {
-        this._madness = newValue;
+        });
+        this.baseBrutality = Decimal(attributes.brutality || getConfigurationValue("minimum_attribute_score"));
+        this.baseCunning = Decimal(attributes.cunning  || getConfigurationValue("minimum_attribute_score"));
+        this.baseDeceit = Decimal(attributes.deceit  || getConfigurationValue("minimum_attribute_score"));
+        this.baseMadness = Decimal(attributes.madness  || getConfigurationValue("minimum_attribute_score"));
     }
 
     get brutality() {
@@ -285,13 +167,13 @@ export class Attributes {
 }
 
 class CombatStats {
-    constructor(character) {
+    constructor(character, overrides) {
         Object.defineProperty(this, "character", {
             value: character
         });
-        this._precisionPoints = this.maxPrecisionPoints;
-        this._evasionPoints = this.maxEvasionPoints;
-        this.stamina = this.maximumStamina;
+        this.precisionPoints = Decimal(overrides.precisionPoints || this.maxPrecisionPoints);
+        this.evasionPoints = Decimal(overrides.evasionPoints || this.maxEvasionPoints);
+        this.stamina = Decimal(overrides.stamina || this.maximumStamina);
     }
 
     get damage() {
@@ -308,7 +190,9 @@ class CombatStats {
 
     get receivedDamageMultiplier() {
         return Object.keys(this.character.statuses).reduce((previousValue, currentValue) => {
-            const modifier = Decimal(Statuses[currentValue].effects.received_damage_modifier).pow(this.character.statuses[currentValue]).minus(1);
+            const statusModifier = Statuses[currentValue].effects.received_damage_modifier || 0;
+            const statusRank = this.character.getStatusRank(currentValue);
+            const modifier = Decimal(statusModifier).pow(this.character.statuses[currentValue]).minus(1);
             return previousValue.plus(modifier || 0);
         }, Decimal(1));
     }
@@ -343,20 +227,16 @@ class CombatStats {
             .times(getConfigurationValue("mechanics.combat.evasion.effectPerPoint"));
     }
 
-    get precisionPoints() {
-        return Decimal(this._precisionPoints);
+    get attackUpgradeCost() {
+        const base = Decimal(getConfigurationValue("base_attack_upgrade_cost"));
+        const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_upgrade_cost_multiplier || 1;
+        return base.times(tacticsCostMultiplier);
     }
 
-    get evasionPoints() {
-        return Decimal(this._evasionPoints);
-    }
-
-    set precisionPoints(newValue) {
-        this._precisionPoints = newValue;
-    }
-
-    set evasionPoints(newValue) {
-        this._evasionPoints = newValue;
+    get incomingAttackDowngradeCost() {
+        const base = Decimal(getConfigurationValue("base_attack_downgrade_cost"));
+        const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_downgrade_cost_multiplier || 1;
+        return base.times(tacticsCostMultiplier);
     }
 }
 
@@ -394,19 +274,43 @@ export function assertHasProperty(propertyName, object) {
 }
 
 const characterPropsSchema = JOI.object({
-    id: JOI.number(),
+    id: JOI.number().required(),
     attributes: JOI.alternatives().try(
         JOI.object({
-            baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
         }),
         JOI.object({
-            _baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            _baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            _baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
-            _baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object()),
+            _baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            _baseCunning: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            _baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
+            _baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
         })
-    )
-}).unknown(true);
+    ).required(),
+    powerLevel: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number()).required(),
+    statuses: JOI.object().default({}),
+    highestLevelReached: JOI.alternatives().try(JOI.number(), JOI.object().instance(Decimal), JOI.string())
+        .default(Decimal(1)),
+    isPc: JOI.boolean().default(false),
+    name: JOI.string(),
+    appearance: JOI.string().empty(''),
+    traits: JOI.object().default({}),
+    tactics: JOI.string().valid(...Object.keys(Tactics)),
+    combat: JOI.object({
+        stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
+        precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        evasionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+    }).default({}),
+    adjectives: JOI.array().items(JOI.object()),
+    absorbedPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number())
+        .default(Decimal(1)),
+    hp: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+    party: JOI.number(),
+    latentPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
+    enabled: JOI.boolean(),
+    texture: JOI.string(),
+    description: JOI.string(),
+    isRival: JOI.boolean()
+});

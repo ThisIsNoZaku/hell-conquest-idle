@@ -58,7 +58,7 @@ export function loadGlobalState() {
         highestLevelEnemyDefeated: 0,
         startingTraits: {},
         currentEncounter: null,
-        manualSpeedMultiplier: getConfigurationValue("manualSpeedup.enabled") ? getConfigurationValue("manualSpeedup.multiplier") : 1,
+        manualSpeedMultiplier: getConfigurationValue("manualSpeedup.enabled", false) ? getConfigurationValue("manualSpeedup.multiplier", 1) : 1,
         currentRegion: "forest",
         actionLog: [],
         exploration: {
@@ -78,24 +78,17 @@ export function loadGlobalState() {
                 isPc: true,
                 name: "You",
                 powerLevel: Decimal(1),
-                absorbedPower: Decimal(0),
                 appearance: "",
                 statuses: {},
                 traits: {},
                 tactics: "defensive",
-                items: [],
                 attributes: {
-                    brutality: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
-                    cunning: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
-                    deceit: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum")),
-                    madness: Decimal(getConfigurationValue("mechanics.combat.playerAttributeMinimum"))
+                    baseBrutality: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                    baseCunning: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                    baseDeceit: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                    baseMadness: getConfigurationValue("mechanics.combat.playerAttributeMinimum")
                 },
-                combat: {
-                    fatigue: 0,
-                    minimumDamageMultiplier: .5,
-                    medianDamageMultiplier: 1,
-                    maximumDamageMultiplier: 1.5
-                }
+                combat: {}
             })
         },
         tutorials: {
@@ -149,25 +142,16 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: 0,
-        stolenPower: powerLevel.div(4),
+        latentPower: Decimal(0),
         tactics,
         adjectives: [adjective],
         traits: startingTraits,
-        absorbedPower: getPowerNeededForLevel(powerLevel),
-        artifacts: [],
-        statuses: {},
+        powerLevel: powerLevel,
         attributes: {
-            brutality: bonuses.attributes.brutality,
-            cunning:bonuses.attributes.cunning,
-            deceit:bonuses.attributes.deceit,
-            madness:bonuses.attributes.madness
-        },
-        combat: {
-            fatigue: 0,
-            minimumDamageMultiplier: .5,
-            medianDamageMultiplier: 1,
-            maximumDamageMultiplier: 1.5
+            baseBrutality: bonuses.attributes.brutality,
+            baseCunning:bonuses.attributes.cunning,
+            baseDeceit:bonuses.attributes.deceit,
+            baseMadness:bonuses.attributes.madness
         }
     });
     saveGlobalState();
@@ -213,15 +197,15 @@ export function reincarnateAs(monsterId, newAttributes) {
 
     // Update player attributes
     Object.keys(player.attributes).forEach(attribute => {
-        player.attributes[attribute] = Decimal(newAttributes[attribute.substring(1)]);
+        player.attributes[attribute] = Decimal(newAttributes[attribute]);
     })
     if (globalState.reincarnationCount !== 0) {
         // Calculate your new latent power cap
         globalState.latentPowerCap = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
             highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
         })
-        // Add your level to your starting energy.
-        const latentPowerGain = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerGainOnReincarnate"), {
+
+        const latentPowerGain = evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
             player
         });
         globalState.characters[0].latentPower = Decimal.min(
@@ -248,7 +232,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
 
     globalState.currentEncounter = null;
-    getCharacter(0).currentHp = getCharacter(0).maximumHp;
+    getCharacter(0).hp = getCharacter(0).maximumHp;
     getGlobalState().actionLog = [];
     getGlobalState().passivePowerIncome = Decimal(0);
     globalState.reincarnationCount++;
