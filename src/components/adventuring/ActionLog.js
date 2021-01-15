@@ -7,6 +7,10 @@ const styles = {
         height: "15%",
         flexDirection: "column",
         overflowY: "scroll"
+    },
+    item: {
+        width: "100%",
+        textAlign: "center"
     }
 }
 export default function (props) {
@@ -19,12 +23,13 @@ export default function (props) {
 
 
 function printActionItem(item) {
-    return <Grid container direction="row-reverse" key={item.uuid} style={{textAlign: "center"}}>
-        <Grid item xs={11}>
+    return <Grid container direction="row-reverse" key={item.uuid} style={styles.item} >
+        <Grid item xs={12}>
+            <Paper elevation={3}>
                 <span dangerouslySetInnerHTML={{
                     __html: item.message
                 }}></span>
+            </Paper>
         </Grid>
-        {item.tick && <Grid item={1}>{item.tick}: </Grid>}
     </Grid>
 }
