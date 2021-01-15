@@ -1,42 +1,30 @@
 import * as _ from "lodash";
 
 const config = {
-    actionLog: {
-        maxSize:  process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20,
-    },
-    encounters: {
-        huntableLevel: "playerLevel.minus(config.encounters.lesserLevelScale)",
-        lesserEncounterChanceWeight: 20,
-        greaterEncounterChanceWeight: 20,
-        evenEncounterChanceWeight: 60,
-        lesserLevelScale: 20, // A demon is "lesser" than another when its level is this much lower.
-        lesserLevelFloor: 5,
-        greaterLevelScale: 1, // A demon is "greater" than another when its level is this much higher.
-        greaterLevelCap: 1,
-        chanceToIntimidateLesser: "player.powerLevel.minus(enemy.powerLevel).times(25).plus(Decimal.max(Decimal(player.attributes.deceit).minus((enemy && enemy.attributes.cunning)), 0).times(5))",
-        chanceToEscapeGreater: "player.powerLevel.gt(enemy.powerLevel) ? 100 : Decimal.max(enemy.powerLevel.minus(player.powerLevel), 1).times(25).plus(Decimal.max(Decimal(player.attributes.cunning).minus((enemy && enemy.attributes.deceit) || 0), 0).times(5))",
-        lesserDemonInstantKillLevel: "Decimal(highestLevelEnemyDefeated).minus(5)",
-        enemies: {
-            latentPower: "Decimal.max(0, encounterLevel.minus(1).times(25))",
-        },
-        minimumLevelForGreaterEncounters: 5
-    },
-
+    action_log_max_size: process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20, // The maximum number of items in the history log.
+    huntable_level: "playerLevel.minus(1)",
+    lesser_level_scale: 1, // A demon is "lesser" than another when its level is this much lower.
+    greater_level_scale: 1, // A demon is "greater" than another when its level is this much higher.
+    intimidateable_demon_level: 10, // A demon can be intimidated when its level is this much lower than the player
+    enemy_latent_power: "Decimal.max(0, encounterLevel.minus(1).times(25))", // The amount of latent power enemy demons start with
+    bonus_points_for_highest_level : "highestLevelReached.plus(highestLevelReached.div(10).floor())", // How many bonus points the player gets, based on their highest level reached.
+    latent_power_cap: "highestLevelReached.times(25)", // The maximum the player's latent power cap can be.
+    lesser_demon_instant_kill_level: "highestLevelReached.minus(10)",
+    latent_power_gain_on_reincarnate:  "player.powerLevel.times(5)",
+    latent_power_effect_scale: .01,
+    trait_point_cost: "Decimal.max(1, traitsOwned.times(2))",
+    base_attack_upgrade_cost: 100,
+    base_attack_downgrade_cost: 100,
+    minimum_attribute_score: 1,
     mechanics: {
-        artifacts: {
-            enabled: process.env.REACT_APP_FEATURE_ARTIFACTS_ENABLED || false
-        },
         reincarnation: {
-            bonusPointsForHighestLevel: "Decimal.sqrt(highestLevel).times(2).ceil()",
-            latentPowerGainOnReincarnate: "player.powerLevel.times(5)",
-            latentPowerEffectScale: .01,
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
             traitPointCost: "Decimal.max(1, traitsOwned.times(2))",
             attributePointCost: "Decimal.max(1, attributeScore)"
         },
         xp: {
-            gainedFromGreaterDemon: "enemy.powerLevel",
-            gainedFromLesserDemon: "enemy.powerLevel",
+            gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(5)",
+            gainedFromLesserDemon: "Decimal.sqre(enemy.powerLevel).ceil()",
             gainedFromOtherDemon: "enemy.powerLevel.times(5)"
         },
         levelToPowerEquation: "level.eq(1) ? 0 : Decimal.floor(Decimal(5).pow(level.minus(1)))",
@@ -116,9 +104,19 @@ const config = {
             baseMaximumDamageWeight: 5
         }
     },
+    // Artifacts
+    artifacts_enabled: false,
+
+    // Negotiation
+    negotiation_enabled: false,
+
     debug: process.env.REACT_APP_DEBUG_MODE === "true"
 }
 
 export function getConfigurationValue(path, defaultValue) {
-    return _.get(config, path, defaultValue);
+    const configValue = _.get(config, path);
+    if(configValue === undefined && defaultValue === undefined) {
+        throw new Error(`No configuration value for ${path} found and no default found`);
+    }
+    return configValue;
 }
