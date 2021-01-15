@@ -67,7 +67,7 @@ export default function BottomSection(props) {
         </Paper>
         <Paper style={styles.combat.details}>
             <Grid container>
-                <CharacterCombatSummary name="Player" currentHp={props.player.hp}
+                <CharacterCombatSummary name="Player" hp={props.player.hp}
                                         maximumHp={props.player.maximumHp}
                                         statuses={_.get(props.player, "statuses")}
                                         direction="row"
@@ -75,7 +75,7 @@ export default function BottomSection(props) {
                                         maxEvasionPoints={props.player.combat.maxEvasionPoints.toNumber()}
                                         precisionPoints={props.player.combat.precisionPoints.toNumber()}
                                         maxPrecisionPoints={props.player.combat.maxPrecisionPoints.toNumber()}/>
-                <CharacterCombatSummary name={_.get(props.enemy, "name")} currentHp={_.get(props.enemy, "hp", Decimal(0))}
+                <CharacterCombatSummary name={_.get(props.enemy, "name")} hp={_.get(props.enemy, "hp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
                                         statuses={_.get(props.enemy, "statuses")}
                                         direction="row-reverse"
@@ -83,13 +83,14 @@ export default function BottomSection(props) {
                                         evasionPoints={_.get(props.enemy, ["combat", "evasionPoints"], Decimal(0)).toNumber()}
                                         maxEvasionPoints={_.get(props.enemy, ["combat", "maxEvasionPoints"], Decimal(0)).toNumber()}
                                         precisionPoints={_.get(props.enemy, ["combat", "precisionPoints"], Decimal(0)).toNumber()}
-                                        maxPrecisionPoints={_.get(props.enemy, ["combat", "maxEvasionPoints"], Decimal(0)).toNumber()}/>
+                                        maxPrecisionPoints={_.get(props.enemy, ["combat", "maxPrecisionPoints"], Decimal(0)).toNumber()}/>
             </Grid>
         </Paper>
         <Paper style={styles.action}>
             <strong>{props.currentAction.description}</strong>
             <progress style={styles.actionProgress} value={props.actionTime}
                       max={maxActionTime}/>
+            {Math.floor(props.actionTime)} / {maxActionTime}
         </Paper>
         <ActionLog actionLog={props.actionLog}/>
     </div>
