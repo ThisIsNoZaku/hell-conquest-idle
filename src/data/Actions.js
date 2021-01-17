@@ -207,10 +207,7 @@ export const Actions = {
                     pushLogItem(message);
                 }
             }
-            if (player.hp.lt(player.maximumHp) || player.combat.stamina.lt(player.combat.maximumStamina)) {
-                return "recovering";
-            }
-            return "exploring";
+            return ["exploring", "challenging"];
         }
     },
     usurp: {
