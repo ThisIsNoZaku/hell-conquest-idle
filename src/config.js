@@ -97,7 +97,7 @@ const config = {
                 pcBonus: 25,
                 baseHp: 10,
                 pointsPerLevel: 15,
-                healingPerLevel: 5,
+                healingPercentage: .5,
                 baseAttribute: "brutality",
                 effectPerPoint: .1
             },
