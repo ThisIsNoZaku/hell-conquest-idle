@@ -226,7 +226,7 @@ describe("reincarnating action", function () {
                 baseDeceit: Decimal(1),
                 baseMadness: Decimal(1),
             }
-        })).toEqual("exploring");
+        })).toEqual(["exploring", "challenging"]);
     });
     it("enables automatic reincarnation", function () {
         const globalState = getGlobalState();
