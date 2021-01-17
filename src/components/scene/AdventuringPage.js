@@ -102,11 +102,6 @@ export default function AdventuringPage(props) {
                         break;
                 }
             });
-            if(round.tick !== 0) {
-                round.initiativeOrder.forEach(characterId => {
-                    getCharacter(characterId).combat.stamina = Decimal.max(0, getCharacter(characterId).combat.stamina.minus(1));
-                });
-            }
             saveGlobalState();
         }
 
