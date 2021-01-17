@@ -14,7 +14,7 @@ class Region {
     startEncounter(player, rng) {
         let encounterLevel = player.powerLevel;
 
-        switch (getGlobalState().nextAction) {
+        switch (getGlobalState().currentAction) {
             case "usurp": {
                 const encounterOffset = getConfigurationValue("greater_level_scale");
                 encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1)) : encounterLevel.plus(encounterOffset);
