@@ -88,7 +88,7 @@ export default function ReincarnationSelectionPage(props) {
             <br/>
             You will reincarnate with a bonus
             of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).toFixed()}</strong> to
-            every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
+            every Attribute and an extra <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>}
         <Grid container>
