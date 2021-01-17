@@ -7,7 +7,6 @@ import {Decimal} from "decimal.js";
 import {v4} from "node-uuid";
 import * as _ from "lodash";
 import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
-import {act} from "@testing-library/react";
 import {enableTutorial} from "./tutorials";
 
 export const EventHandlers = {
@@ -62,7 +61,7 @@ export const EventHandlers = {
             if (!getGlobalState().automaticReincarnate) {
                 getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, deadCharacter.powerLevel);
             }
-            getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel);
+            getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel); // FIXME: Move into character levelup method.
             if (deadCharacter.isRival) {
                 getGlobalState().rival = {};
                 pushLogItem({
