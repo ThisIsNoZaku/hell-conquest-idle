@@ -144,7 +144,7 @@ export const Actions = {
                 baseDeceit: player.attributes.baseDeceit,
                 baseMadness: player.attributes.baseMadness
             });
-            return "exploring";
+            return ["exploring", "challenging"];
         }
 
     },
