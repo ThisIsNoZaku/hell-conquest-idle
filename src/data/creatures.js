@@ -70,6 +70,13 @@ export const Creatures  = {
         appearance: "wheezingApparition",
         texture: "128_sorrowsworn.png",
         description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate."
+    },
+    bloodyBat: {
+        name: "Bloody Bat",
+        traits: ["swiftEvasion"],
+        enabled: true,
+        appearance: "bloodyBat",
+        texture: "13_bat.png"
     }
 }
 

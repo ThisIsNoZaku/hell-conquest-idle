@@ -137,6 +137,17 @@ export const Regions = {
                         count: 1
                     }
                 ]
+            },
+            bloodyBat: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "bloodyBat",
+                        count: 1,
+                    }
+                ]
             }
         },
         {

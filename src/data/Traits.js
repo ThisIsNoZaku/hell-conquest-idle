@@ -80,16 +80,6 @@ export const Traits = {
             }
         }
     }),
-    sadisticJoy: validatedTrait({
-        name: "Sadistic Joy",
-        icon: "icons/icons-852.png",
-        description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
-        on_kill: {
-            trigger_effects: {
-                power_gain_modifier: "rank.times(.25)"
-            }
-        }
-    }),
     piercingStrike: validatedTrait({
         name: "Piercing Strike",
         icon: "icons/icons-113.png",
@@ -98,8 +88,18 @@ export const Traits = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    modifier: "rank.times(.25)"
+                    modifier: "rank.times(.10)"
                 }
+            }
+        }
+    }),
+    sadisticJoy: validatedTrait({
+        name: "Sadistic Joy",
+        icon: "icons/icons-852.png",
+        description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
+        on_kill: {
+            trigger_effects: {
+                power_gain_modifier: "rank.times(.25)"
             }
         }
     }),
@@ -147,6 +147,19 @@ export const Traits = {
                 damage: {
                     target: "source_character",
                     value: "rank.times(20).div(100).times(attackDamage)"
+                }
+            }
+        }
+    }),
+    swiftEvasion: validatedTrait({
+        name: "Swift Evasion",
+        icon: "icons/icons-595.png",
+        description: _.template("Your agility increases your Evasion by ${rank.times(25)}%."),
+        continuous: {
+            trigger_effects: {
+                evasion_modifier: {
+                    target: "self",
+                    modifier: "rank.times(.10)"
                 }
             }
         }
