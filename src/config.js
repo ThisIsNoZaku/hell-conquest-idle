@@ -72,7 +72,7 @@ const config = {
                 9: 4,
                 10: 5
             },
-            effectiveAttributeCalculation: "Decimal.floor(baseAttribute.times(stolenPowerModifier))",
+            effectiveAttributeCalculation: "Decimal.floor(baseAttribute.plus(stolenPowerModifier.div(100).floor()))",
             resilience: {
                 baseAttribute: "madness",
                 effectPerPoint: .05
