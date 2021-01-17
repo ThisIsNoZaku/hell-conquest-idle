@@ -43,7 +43,9 @@ export class Character {
 
     levelUp(){
         this.powerLevel = this.powerLevel.plus(1);
-        this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
+        while(this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel))) {
+            this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
+        }
         Creatures[this.appearance].traits.forEach(trait =>{
             getGlobalState().unlockedTraits[trait] = this.powerLevel.div(10).ceil();
         });
