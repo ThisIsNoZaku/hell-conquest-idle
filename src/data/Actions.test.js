@@ -19,8 +19,8 @@ describe("Exploring action", function () {
         Actions["exploring"].complete();
         expect(getGlobalState().currentEncounter).toBeNull();
     });
-    it("set 'challenging' to next action", function () {
-        const nextAction = Actions["exploring"].complete();
+    it("set next action to given value", function () {
+        const nextAction = Actions["exploring"].complete(null, null, null, null, null, null, null, "challenging");
         expect(nextAction).toEqual("challenging");
     });
 });
@@ -206,7 +206,7 @@ describe("fighting action", function () {
             hitType: 0
         });
         const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
-        expect(nextAction).toEqual(["exploring", "challenging"]);
+        expect(nextAction).toEqual("recovering");
         expect(pushLogItem).toHaveBeenCalled();
         expect(applyAction).toHaveBeenCalled();
     });
