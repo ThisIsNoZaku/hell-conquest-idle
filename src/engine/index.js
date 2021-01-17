@@ -216,6 +216,7 @@ export function reincarnateAs(monsterId, newAttributes) {
     getGlobalState().passivePowerIncome = Decimal(0);
     globalState.reincarnationCount++;
     getGlobalState().currentAction = "exploring";
+    getGlobalState().nextAction = "challenging";
 
     saveGlobalState();
 }
