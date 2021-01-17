@@ -268,13 +268,19 @@ class CombatStats {
     get attackUpgradeCost() {
         const base = Decimal(getConfigurationValue("base_attack_upgrade_cost"));
         const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_upgrade_cost_multiplier || 1;
-        return base.times(tacticsCostMultiplier);
+        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next)=>{
+            return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
+        }, Decimal(1));
+        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
     }
 
     get incomingAttackDowngradeCost() {
         const base = Decimal(getConfigurationValue("base_attack_downgrade_cost"));
         const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_downgrade_cost_multiplier || 1;
-        return base.times(tacticsCostMultiplier);
+        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next)=>{
+            return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
+        }, Decimal(1));
+        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
     }
 }
 
