@@ -145,6 +145,7 @@ export class Character {
         if(this.combat.maxPrecisionPoints.lt(this.combat.precisionPoints)) {
             throw new Error("Max precision points < precision points");
         }
+        this.statuses = {};
     }
 }
 
