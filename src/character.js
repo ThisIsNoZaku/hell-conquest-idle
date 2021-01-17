@@ -127,7 +127,7 @@ export class Character {
     gainPower(powerGained) {
         const latentPowerMultiplier = this.latentPowerModifier;
         powerGained = powerGained.times(latentPowerMultiplier).floor();
-        this.absorbedPower = Decimal.min(getPowerNeededForLevel(this.powerLevel.plus(1)), this.absorbedPower.plus(powerGained));
+        this.absorbedPower = this.absorbedPower.plus(powerGained);
         return powerGained;
     }
 
