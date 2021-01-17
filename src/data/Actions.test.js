@@ -42,15 +42,6 @@ describe("Approaching action", function () {
             powerLevel: 1
         });
     })
-    it("if next action is 'fighting', resolves combat", function () {
-        const setEnemyMock = jest.fn();
-        resolveAttackMock.mockReturnValue({
-            effect: [],
-            hitType: 0
-        });
-        Actions["approaching"].complete(null, player, null, null, setEnemyMock, null, null, "fighting");
-        expect(getGlobalState().currentEncounter.pendingActions).toBeDefined();
-    });
     it("if next action is 'fighting', setEnemy", function () {
         const setEnemyMock = jest.fn();
         resolveAttackMock.mockReturnValue({
