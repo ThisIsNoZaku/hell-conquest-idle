@@ -197,12 +197,6 @@ class CombatStats {
         this.precisionPoints = Decimal(overrides.precisionPoints === undefined ? this.maxPrecisionPoints : overrides.precisionPoints );
         this.evasionPoints = Decimal(overrides.evasionPoints === undefined ? this.maxEvasionPoints : overrides.evasionPoints );
         this.stamina = Decimal(overrides.stamina || this.maximumStamina);
-        if(this.precisionPoints.gt(this.maxPrecisionPoints)) {
-            throw new Error("Precision points > max");
-        }
-        if(this.evasionPoints.gt(this.maxEvasionPoints)) {
-            throw new Error("Evasion points > max");
-        }
     }
 
     refresh() {

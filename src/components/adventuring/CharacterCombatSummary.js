@@ -5,12 +5,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {Decimal} from "decimal.js";
 
 export default function CharacterCombatSummary(props) {
-    if (Decimal(props.precisionPoints).gt(props.maxPrecisionPoints)) {
-        throw new Error("Precision points > max!")
-    }
-    if (Decimal(props.evasionPoints).gt(props.maxEvasionPoints)) {
-        throw new Error("Evasion points > max!")
-    }
     return <Grid item container xs>
         <Grid item xs={12} container direction={props.direction}>
             <Grid item xs={4}>
