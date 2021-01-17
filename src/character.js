@@ -10,6 +10,7 @@ import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
 import evaluateExpression from "./engine/general/evaluateExpression";
 import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
+import calculateCharacterStamina from "./engine/general/calculateCharacterStamina";
 
 export class Character {
     constructor(props, party) {
@@ -242,7 +243,7 @@ class CombatStats {
     }
 
     get maximumStamina() {
-        return this.character.powerLevel.times(2).plus(1);
+        return calculateCharacterStamina(this.character.powerLevel);
     }
 
     get power() {
