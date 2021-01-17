@@ -21,6 +21,8 @@ const config = {
     flee_stamina_cost_base: 5,
     flee_stamina_minimum_cost: 1,
     instant_death_offset: 5,
+    recovery_action_healing_percentage: .5,
+    recover_action_stamina: 1,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",

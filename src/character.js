@@ -128,9 +128,8 @@ export class Character {
     }
 
     get healing() {
-        const baseHealing = Decimal(this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.healingPerLevel")));
-        const tacticsMultiplier = Decimal(1).plus(Tactics[this.tactics].modifiers.healing_modifier || 0);
-        return baseHealing.times(tacticsMultiplier);
+        const healingPercentage = getConfigurationValue("recovery_action_healing_percentage");
+        return Decimal(healingPercentage).times(this.maximumHp).ceil();
     }
 
     refreshBeforeCombat() {
