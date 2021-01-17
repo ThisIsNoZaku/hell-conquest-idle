@@ -203,7 +203,6 @@ class CombatStats {
     refresh() {
         this.precisionPoints = this.maxPrecisionPoints;
         this.evasionPoints = this.maxEvasionPoints;
-        this.stamina = this.maximumStamina;
     }
 
     get damage() {
