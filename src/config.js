@@ -23,6 +23,7 @@ const config = {
     instant_death_offset: 5,
     recovery_action_healing_percentage: .5,
     recover_action_stamina: 1,
+    minimum_stamina: 3,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -30,16 +31,16 @@ const config = {
             attributePointCost: "Decimal.max(1, attributeScore)"
         },
         xp: {
-            gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(5)",
-            gainedFromLesserDemon: "Decimal.sqrt(enemy.powerLevel).ceil()",
-            gainedFromOtherDemon: "enemy.powerLevel.times(5)"
+            gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(10)",
+            gainedFromLesserDemon: "Decimal.sqrt(enemy.powerLevel).ceil().times(10)",
+            gainedFromOtherDemon: "enemy.powerLevel.times(10)"
         },
-        levelToPowerEquation: "level.eq(1) ? 0 : Decimal.floor(Decimal(5).pow(level.minus(1)))",
-        powerToLevelEquation: "Decimal(powerPoints).eq(0) ? 1 : Decimal.floor(Decimal.log(powerPoints, 5)).plus(1)",
+        levelToPowerEquation: "level.eq(1) ? 0 : Decimal.floor(Decimal(2).pow(level.minus(1))).times(5)",
+        powerToLevelEquation: "Decimal(powerPoints).eq(0) ? 1 : Decimal.floor(Decimal.log(powerPoints.div(5), 2)).plus(1)",
         maxLevel: 25,
         combat: {
             startingHitLevel: 0,
-            fatigueDamageMultiplier: 0.1,
+            fatigueDamageMultiplier: 0.25,
             attackUpgradeBaseCost: 100,
             incomingAttackDowngradeBaseCost: 100,
             stolenPowerScale: 0.25,
@@ -72,7 +73,7 @@ const config = {
                 9: 4,
                 10: 5
             },
-            effectiveAttributeCalculation: "Decimal.floor(baseAttribute.plus(stolenPowerModifier.div(100).floor()))",
+            effectiveAttributeCalculation: "Decimal.floor(baseAttribute.plus(stolenPowerModifier.minus(1).floor()))",
             resilience: {
                 baseAttribute: "madness",
                 effectPerPoint: .05
@@ -95,7 +96,7 @@ const config = {
             },
             hp: {
                 pcBonus: 25,
-                baseHp: 10,
+                baseHp: 15,
                 pointsPerLevel: 15,
                 healingPercentage: .5,
                 baseAttribute: "brutality",
