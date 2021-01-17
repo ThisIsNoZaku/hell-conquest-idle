@@ -119,7 +119,7 @@ export const Actions = {
 
                     if (nextRound.end) {
                         if (player.isAlive) {
-                            return ["exploring", "challenging"];
+                            return "recovering";
                         } else {
                             return "reincarnating";
                         }
