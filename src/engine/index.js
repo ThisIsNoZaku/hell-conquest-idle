@@ -174,15 +174,6 @@ function assertCharacterExists(id) {
 
 export function reincarnateAs(monsterId, newAttributes) {
     const player = getCharacter(0);
-    // Improve your starting traits
-    const currentDemon = Creatures[player.appearance];
-    if (currentDemon) {
-        currentDemon.traits.forEach(trait => {
-            if (!globalState.unlockedTraits[trait] || player.powerLevel.gt(globalState.unlockedTraits[trait])) {
-                globalState.unlockedTraits[trait] = player.powerLevel;
-            }
-        });
-    }
 
     if (Decimal(getCharacter(0).highestLevelReached).lt(player.powerLevel)) {
         getCharacter(0).highestLevelReached = player.powerLevel;
