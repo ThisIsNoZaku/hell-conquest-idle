@@ -73,25 +73,14 @@ export const Actions = {
                     message: `The raw power of your killer instinct destroys ${enemy.name}!`,
                     uuid: v4()
                 });
-                getGlobalState().currentEncounter.pendingActions = {
-                    events: [
-                        {
-                            uuid: v4(),
-                            event: "kill",
-                            target: enemy.id,
-                            source: 0,
-                            tick: 0
-                        }
-                    ],
-                    tick: 0,
-                    end: true
-                };
                 applyAction({
-                    uuid: v4(),
-                    event: "kill",
-                    target: enemy.id,
-                    source: 0,
-                    tick: 0
+                    events: [{
+                        uuid: v4(),
+                        event: "kill",
+                        target: enemy.id,
+                        source: 0,
+                        tick: 0
+                    }]
                 });
                 return ["exploring", "challenging"];
             } else {
