@@ -15,9 +15,9 @@ export const Actions = {
         id: "exploring",
         duration: 5000,
         description: "Exploring...",
-        complete: function () {
+        complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             getGlobalState().currentEncounter = null;
-            return "challenging";
+            return nextAction;
         }
     },
     approaching: {
