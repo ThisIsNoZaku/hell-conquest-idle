@@ -89,7 +89,10 @@ export class Character {
 
     reincarnate(newAppearance, newTraits) {
         this.appearance = newAppearance;
-        this.traits = newTraits;
+        this.traits = Object.keys(newTraits).reduce((previousValue, currentValue) => {
+            previousValue[currentValue] = getGlobalState().unlockedTraits[currentValue];
+            return previousValue;
+        }, {});
         Creatures[newAppearance].traits.forEach(trait => {
             this.traits[trait] = Math.max(1, this.traits[trait] || 0);
         });
@@ -158,28 +161,28 @@ export class Attributes {
     get brutality() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseBrutality,
-            stolenPowerModifier: this.character.latentPowerModifier
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
         }).floor();
     }
 
     get cunning() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseCunning,
-            stolenPowerModifier: this.character.latentPowerModifier
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
         }).floor();
     }
 
     get deceit() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseDeceit,
-            stolenPowerModifier: this.character.latentPowerModifier
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
         }).floor();
     }
 
     get madness() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseMadness,
-            stolenPowerModifier: this.character.latentPowerModifier
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
         }).floor();
     }
 }
