@@ -20,7 +20,7 @@ export default function CharacterCombatSummary(props) {
                 </div>
             </Grid>
             <Grid item xs={4}>
-                <Tooltip title="Health">
+                <Tooltip title={`Health ${props.hp}/${props.maximumHp}`}>
                     <div style={{display: "flex", flexDirection: props.direction, alignItems: "center"}}>
                         <img src="./icons/icons-464.png"/>
                         <meter style={{width: "100%"}} low={33} high={66} optimum={100} min={0} max={100}
@@ -30,7 +30,7 @@ export default function CharacterCombatSummary(props) {
                 </Tooltip>
             </Grid>
             <Grid item xs={4}>
-                <Tooltip title="Stamina">
+                <Tooltip title={`Stamina ${props.stamina}/${props.maxStamina}`}>
                     <div style={{display: "flex", flexDirection: props.direction, alignItems: "center"}}>
                         <img src="./icons/icons-64.png"/>
                         <meter style={{width: "100%"}} min={0} max={props.maxStamina}

@@ -76,7 +76,7 @@ export default function BottomSection(props) {
                                         precisionPoints={props.player.combat.precisionPoints.toNumber()}
                                         maxPrecisionPoints={props.player.combat.maxPrecisionPoints.toNumber()}
                                         stamina={props.player.combat.stamina}
-                                        maxStamina={props.player.maximumStamina}
+                                        maxStamina={props.player.combat.maximumStamina}
                 />
                 <CharacterCombatSummary name={_.get(props.enemy, "name")} hp={_.get(props.enemy, "hp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
