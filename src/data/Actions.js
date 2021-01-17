@@ -192,7 +192,7 @@ export const Actions = {
             const playerHealing = player.healing;
 
             const amountToHeal = Decimal.min(playerHealing, player.maximumHp.minus(player.hp));
-            player.hp = Decimal.min(amountToHeal);
+            player.hp = player.hp.plus(amountToHeal);
 
             const staminaToRecover = Decimal.min(player.combat.maximumStamina.minus(player.combat.stamina),
                 1);
