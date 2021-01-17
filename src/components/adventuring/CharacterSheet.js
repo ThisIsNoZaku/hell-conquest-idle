@@ -2,6 +2,7 @@ import Grid from "@material-ui/core/Grid";
 import React, {useMemo} from "react";
 import * as _ from "lodash";
 import {
+    getGlobalState,
     getSpriteForCreature
 } from "../../engine";
 import {getConfigurationValue} from "../../config";
@@ -51,8 +52,7 @@ export default function CharacterSheet(props) {
                 </Tooltip>
             </Grid>
             <Grid item xs >
-
-                    <div>
+                    <div style={{color: latentPowerModifier.eq(getGlobalState().latentPowerCap) ? "red" : "inherit"}}>
                         {latentPowerModifier.toFixed()}%
                     </div>
             </Grid>
