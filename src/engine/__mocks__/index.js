@@ -1,5 +1,6 @@
 const globalState = {
-    characters: {}
+    characters: {},
+    unlockedTraits: {}
 };
 export const getGlobalState = jest.fn().mockReturnValue(globalState);
 
