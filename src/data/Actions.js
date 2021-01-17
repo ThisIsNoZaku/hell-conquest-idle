@@ -98,10 +98,6 @@ export const Actions = {
                 return ["exploring", "challenging"];
             } else {
                 const currentEncounter = getGlobalState().currentEncounter;
-                const nextRound = resolveCombatRound(currentEncounter.currentTick, {
-                    0: player,
-                    [currentEncounter.enemies[0].id]: currentEncounter.enemies[0]
-                });
                 // Start of combat
                 if (currentEncounter.currentTick === 0) {
                     pushLogItem("Combat Begins!");
@@ -109,9 +105,12 @@ export const Actions = {
                     currentEncounter.currentTick += 100;
                     return "fighting";
                 } else {
-
+                    const nextRound = resolveCombatRound(currentEncounter.currentTick, {
+                        0: player,
+                        [currentEncounter.enemies[0].id]: currentEncounter.enemies[0]
+                    });
                     if (nextRound.tick !== 0) {
-                        pushLogItem(`<strong>Actions on ${nextRound.tick}</strong>`)
+                        pushLogItem(`<strong>Actions on ${nextRound.tick}</strong>`);
                     }
                     applyAction(nextRound);
 
