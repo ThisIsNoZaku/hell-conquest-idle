@@ -5,6 +5,7 @@ import triggerEvent from "../general/triggerEvent";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
 import {Character} from "../../character";
+import {v4} from "node-uuid";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -64,6 +65,7 @@ export default function resolveCombatRound(tick, combatants) {
             const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
             roundEvents.push({
+                uuid: v4(),
                 event: "fatigue-damage",
                 source: actingCharacter.id,
                 target: actingCharacter.id,
