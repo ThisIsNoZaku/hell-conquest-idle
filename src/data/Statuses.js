@@ -22,10 +22,11 @@ export const Statuses = {
     },
     restrained: {
         name: "Restrained",
-        description: _.template("Your limbs are bound, causing a ${accuracy_modifier}% miss chance."),
+        description: _.template("Your limbs are bound, multiplying attack upgrade cost by ${attack_upgrade_cost_multiplier}% and attack downgrade cost by ${attack_downgrade_cost_multiplier}."),
         icon: "icons/icons-116.png",
         effects: {
-            accuracy_modifier: -.1
+            attack_downgrade_cost_multiplier: 1.10,
+            attack_upgrade_cost_multiplier: 1.10
         },
         decays: true
     },
