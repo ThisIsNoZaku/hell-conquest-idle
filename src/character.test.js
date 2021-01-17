@@ -1,5 +1,6 @@
 import {Character} from "./character";
 import Decimal from "decimal.js";
+import {getGlobalState} from "./engine";
 
 jest.mock("./engine");
 
@@ -49,8 +50,11 @@ describe("reincarnate", function () {
         expect(character.absorbedPower).toEqual(Decimal(0));
     });
     it("reincarnate combines innate and bonus traits", function () {
-        character.reincarnate("bloodthirstyKnight", {
+        getGlobalState().unlockedTraits = {
             foo: 1
+        };
+        character.reincarnate("bloodthirstyKnight", {
+            foo: true
         })
         expect(character.traits).toEqual({
             foo: 1,
@@ -58,8 +62,9 @@ describe("reincarnate", function () {
         });
     });
     it("reincarnate uses the highest of new traits and demon trait", function () {
+        getGlobalState().unlockedTraits.bloodrage = 2;
         character.reincarnate("bloodthirstyKnight", {
-            bloodrage: 2
+            bloodrage: true
         });
         expect(character.traits).toEqual({
             bloodrage: 2,

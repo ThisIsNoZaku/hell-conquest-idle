@@ -15,7 +15,7 @@ import calculateCharacterStamina from "./engine/general/calculateCharacterStamin
 export class Character {
     constructor(props, party) {
         const validation = characterPropsSchema.validate(props);
-        if(validation.error) {
+        if (validation.error) {
             throw new Error(`Character failed validation: ${validation.error}`);
         }
         props = validation.value;
@@ -41,12 +41,12 @@ export class Character {
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
 
-    levelUp(){
+    levelUp() {
         this.powerLevel = this.powerLevel.plus(1);
-        while(this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel))) {
+        while (this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel))) {
             this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
         }
-        Creatures[this.appearance].traits.forEach(trait =>{
+        Creatures[this.appearance].traits.forEach(trait => {
             getGlobalState().unlockedTraits[trait] = this.powerLevel.div(10).ceil();
         });
     }
@@ -91,6 +91,10 @@ export class Character {
     }
 
     reincarnate(newAppearance, newTraits) {
+        const newTraitsValidation = newTraitsSchema.validate(newTraits);
+        if(newTraitsValidation.error) {
+            throw new Error(`Failed validation: ${newTraitsValidation}`);
+        }
         this.appearance = newAppearance;
         this.traits = Object.keys(newTraits).reduce((previousValue, currentValue) => {
             previousValue[currentValue] = getGlobalState().unlockedTraits[currentValue];
@@ -141,10 +145,10 @@ export class Character {
     refreshBeforeCombat() {
         this.combat.evasionPoints = this.combat.maxEvasionPoints;
         this.combat.precisionPoints = this.combat.maxPrecisionPoints;
-        if(this.combat.maxEvasionPoints.lt(this.combat.evasionPoints)) {
+        if (this.combat.maxEvasionPoints.lt(this.combat.evasionPoints)) {
             throw new Error("Max evasion points < evasion points");
         }
-        if(this.combat.maxPrecisionPoints.lt(this.combat.precisionPoints)) {
+        if (this.combat.maxPrecisionPoints.lt(this.combat.precisionPoints)) {
             throw new Error("Max precision points < precision points");
         }
         this.statuses = {};
@@ -157,9 +161,9 @@ export class Attributes {
             value: character
         });
         this.baseBrutality = Decimal(attributes.baseBrutality || getConfigurationValue("minimum_attribute_score"));
-        this.baseCunning = Decimal(attributes.baseCunning  || getConfigurationValue("minimum_attribute_score"));
-        this.baseDeceit = Decimal(attributes.baseDeceit  || getConfigurationValue("minimum_attribute_score"));
-        this.baseMadness = Decimal(attributes.baseMadness  || getConfigurationValue("minimum_attribute_score"));
+        this.baseCunning = Decimal(attributes.baseCunning || getConfigurationValue("minimum_attribute_score"));
+        this.baseDeceit = Decimal(attributes.baseDeceit || getConfigurationValue("minimum_attribute_score"));
+        this.baseMadness = Decimal(attributes.baseMadness || getConfigurationValue("minimum_attribute_score"));
     }
 
     get brutality() {
@@ -196,8 +200,8 @@ class CombatStats {
         Object.defineProperty(this, "character", {
             value: character
         });
-        this.precisionPoints = Decimal(overrides.precisionPoints === undefined ? this.maxPrecisionPoints : overrides.precisionPoints );
-        this.evasionPoints = Decimal(overrides.evasionPoints === undefined ? this.maxEvasionPoints : overrides.evasionPoints );
+        this.precisionPoints = Decimal(overrides.precisionPoints === undefined ? this.maxPrecisionPoints : overrides.precisionPoints);
+        this.evasionPoints = Decimal(overrides.evasionPoints === undefined ? this.maxEvasionPoints : overrides.evasionPoints);
         this.stamina = Decimal(overrides.stamina || this.maximumStamina);
     }
 
@@ -264,7 +268,7 @@ class CombatStats {
     get attackUpgradeCost() {
         const base = Decimal(getConfigurationValue("base_attack_upgrade_cost"));
         const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_upgrade_cost_multiplier || 1;
-        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next)=>{
+        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
         }, Decimal(1));
         return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
@@ -273,7 +277,7 @@ class CombatStats {
     get incomingAttackDowngradeCost() {
         const base = Decimal(getConfigurationValue("base_attack_downgrade_cost"));
         const tacticsCostMultiplier = Tactics[this.character.tactics].modifiers.attack_downgrade_cost_multiplier || 1;
-        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next)=>{
+        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
         }, Decimal(1));
         return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
@@ -289,7 +293,7 @@ export function calculateCombatStat(character, combatAttribute) {
     }, Decimal(0));
     const traitModifier = Object.keys(character.traits).reduce((previousValue, trait) => {
         const traitDefinition = Traits[trait];
-        if(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "target"]) === "self") {
+        if (_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "target"]) === "self") {
             return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "modifier"]), {
                 rank: Decimal(character.traits[trait])
             }));
@@ -300,10 +304,11 @@ export function calculateCombatStat(character, combatAttribute) {
 }
 
 export function assertHasProperty(propertyName, object) {
-    if(object[propertyName] === undefined &&
-        object[`_${propertyName}`] === undefined){
+    if (object[propertyName] === undefined &&
+        object[`_${propertyName}`] === undefined) {
         throw new Error(`Missing required property ${propertyName} or _${propertyName}`);
-    };
+    }
+    ;
 }
 
 const characterPropsSchema = JOI.object({
@@ -347,3 +352,5 @@ const characterPropsSchema = JOI.object({
     description: JOI.string(),
     isRival: JOI.boolean()
 });
+
+const newTraitsSchema = JOI.object().pattern(JOI.string(), JOI.boolean());
