@@ -30,14 +30,14 @@ class Region {
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
-        const encounterWithRival = getGlobalState().rival.level && Decimal(getGlobalState().rival.level || 0).lte(encounterLevel);
+        const encounterWithRival = getGlobalState().rival.powerLevel && Decimal(getGlobalState().rival.powerLevel || 0).lte(encounterLevel);
         if (encounterWithRival) {
-            encounterLevel = Decimal(getGlobalState().rival.level || 0);
+            encounterLevel = Decimal(getGlobalState().rival.powerLevel);
         }
         if (getConfigurationValue("debug")) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const encounterDef = encounterWithRival ? this.encounters[getGlobalState().rival.type] : chooseRandomEncounter(this);
+        const encounterDef = encounterWithRival ? this.encounters[getGlobalState().rival.appearance] : chooseRandomEncounter(this);
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
