@@ -27,9 +27,7 @@ export const Actions = {
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             // Since we're starting a new combat, remove any old, dead characters
             const enemies = getGlobalState().currentEncounter.enemies;
-            const combatResult = resolveCombat([[player], enemies]);
-            getGlobalState().currentEncounter.pendingActions = Object.values(combatResult)
-                .sort((a, b) => a.tick - b.tick);
+
             setEnemy(enemies[0]);
             const deadCharacters = Object.keys(getGlobalState().characters)
                 .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
@@ -237,11 +235,6 @@ function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, s
         )
         const enemyDescription = enemy.adjectives.map(adj => adj.name).join(" ");
         pushLogItem(`<strong>Encountered ${enemyDescription} ${enemyType === 'greater' ? 'Greater ' : ''}${enemyType === 'lesser' ? 'Lesser ' : ''}${enemy.name}</strong>`);
-        const enemies = getGlobalState().currentEncounter.enemies;
-        const combatResult = resolveCombat([[player], enemies]);
-        getGlobalState().currentEncounter.pendingActions = Object.keys(combatResult)
-            .map(tick => combatResult[tick]);
-        setEnemy(enemies[0]);
         nextAction = ["approaching", "fighting"];
 
         if (getGlobalState().passivePowerIncome.gt(0)) {
