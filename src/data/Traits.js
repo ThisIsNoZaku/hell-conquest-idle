@@ -56,7 +56,7 @@ export const Traits = {
     inescapableGrasp: validatedTrait({
         name: "Inescapable Grasp",
         icon: "icons/icons-2221.png",
-        description: _.template("On a critical hit you wrap around your enemy, inflicting ${rank} stacks of <em>Restrained</em> for 5 rounds."),
+        description: _.template("On a critical hit you wrap around your enemy, inflicting ${rank} stack${rank.eq(1) ? '': 's'} of <em>Restrained</em> for 5 rounds."),
         on_serious_hit: {
             trigger_effects: {
                 add_statuses: {
