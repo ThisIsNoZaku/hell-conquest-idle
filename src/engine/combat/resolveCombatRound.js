@@ -3,6 +3,8 @@ import Decimal from "decimal.js";
 import * as JOI from "joi";
 import triggerEvent from "../general/triggerEvent";
 import {HitTypes} from "../../data/HitTypes";
+import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
+import {Character} from "../../character";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -49,7 +51,7 @@ export default function resolveCombatRound(tick, combatants) {
         });
 
         Object.values(combatants).forEach(combatant => {
-            if (combatant.hp.lte(0)) {
+            if (Decimal(combatant.hp).lte(0)) {
                 roundEvents.push({
                     event: "kill",
                     source: actingCharacter.id,
@@ -57,9 +59,9 @@ export default function resolveCombatRound(tick, combatants) {
                 });
             }
         });
-        actingCharacter.fatigue = actingCharacter.fatigue.plus(1);
-        if (actingCharacter.fatigue.gt(actingCharacter.endurance) && actingCharacter.isAlive) {
-            const damageToInflictDueToFatigue = actingCharacter.damageFromFatigue;
+        actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(1);
+        if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive) {
+            const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
             roundEvents.push({
                 event: "fatigue-damage",
@@ -70,7 +72,7 @@ export default function resolveCombatRound(tick, combatants) {
             if (actingCharacter.hp.lte(0)) {
                 roundEvents.push({
                     event: "kill",
-                    source: null,
+                    source: actingCharacter.id,
                     target: actingCharacter.id
                 });
             }
@@ -91,8 +93,9 @@ export default function resolveCombatRound(tick, combatants) {
     return {
         initiativeOrder: initiativeOrder.map(c => c.id),
         events: roundEvents,
-        tick
+        tick,
+        end: Object.values(combatants).some(c =>!c.isAlive)
     }
 }
 
-const combatantsSchema = JOI.object();
+const combatantsSchema = JOI.object().pattern(JOI.number(), JOI.object().instance(Character));

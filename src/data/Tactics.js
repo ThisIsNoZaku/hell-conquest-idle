@@ -23,8 +23,7 @@ export const Tactics = {
         modifiers: {
             evasion_modifier: .25,
             max_hit_damage_modifier: .3,
-            always_downgrade_to_glancing: true,
-            attack_downgrade_cost_multiplier: 1.5
+            always_downgrade_to_glancing: true
         }
     }
 }

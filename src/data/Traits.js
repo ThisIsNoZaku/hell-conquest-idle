@@ -18,7 +18,8 @@ export const Traits = {
                 add_statuses: {
                     berserk: {
                         target: "source_character",
-                        rank: "rank"
+                        rank: "rank",
+                        duration: 999
                     }
                 }
             },
@@ -97,7 +98,7 @@ export const Traits = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    modifier: "rank.times(.1)"
+                    modifier: "rank.times(.25)"
                 }
             }
         }
@@ -106,10 +107,33 @@ export const Traits = {
         name: "Searing Venom",
         icon: "icons/icons-4.png",
         description: _.template("Your agonizing venom causes such intense pain that the victim suffers an extra ${rank.times(10)}% damage from attacks."),
-        continuous: {
+        on_solid_hit: {
             trigger_effects: {
                 add_statuses: {
-
+                    agonizingPoison: {
+                        target: "target_character",
+                        rank: "rank"
+                    }
+                }
+            }
+        },
+        on_devastating_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    agonizingPoison: {
+                        target: "target_character",
+                        rank: "rank"
+                    }
+                }
+            }
+        },
+        on_serious_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    agonizingPoison: {
+                        target: "target_character",
+                        rank: "rank"
+                    }
                 }
             }
         }

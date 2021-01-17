@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import {completeTutorial, enableTutorial, subscribeToTutorials, unsubscribeFromTutorials} from "../engine/tutorials";
 import { useLocation } from "react-router-dom";
 import {Tutorials} from "../data/Tutorials";
+import {getGlobalState} from "../engine";
 
 export default function TutorialsComponent(props) {
     const [activeTutorial, setActiveTutorial] = useState();
@@ -10,9 +11,9 @@ export default function TutorialsComponent(props) {
     useEffect(() => {
         const listener = (status, id, tutorial) => {
             if(status === "completed") {
-                setActiveTutorial();
+                setActiveTutorial(getGlobalState().activeTutorial = undefined);
             } else {
-                setActiveTutorial(id);
+                setActiveTutorial(getGlobalState().activeTutorial = id);
             }
         };
         subscribeToTutorials(listener);

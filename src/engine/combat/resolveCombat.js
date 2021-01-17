@@ -1,10 +1,10 @@
 import * as _ from "lodash";
-import CharacterCombatState from "../CharacterCombatState";
 import resolveCombatRound from "./resolveCombatRound";
-import Decimal from "decimal.js";
+import {Character} from "../../character";
+
 export default function resolveCombat(parties) {
     let combatants = _.flatMap(parties)
-        .map(c => new CharacterCombatState(c, c.id === 0 ? 0 : 1))
+        .map(c => new Character(c, c.id === 0 ? 0 : 1))
         .reduce((previousValue, currentValue) =>{
             previousValue[currentValue.id] = currentValue;
             return previousValue;
@@ -16,7 +16,8 @@ export default function resolveCombat(parties) {
     const roundResults = {
         0: {
             tick: 0,
-            events: []
+            events: [],
+            initiativeOrder: []
         }
     };
     while(!firstPartyDead && !secondPartyDead) {

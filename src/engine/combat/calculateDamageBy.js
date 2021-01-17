@@ -7,9 +7,9 @@ import {HitTypes} from "../../data/HitTypes";
 export default function calculateDamageBy(attacker) {
     return {
         against: function (target, debugOutput) {
-            const attackerPower = attacker.combat.power;
+            const attackerPower = Decimal(attacker.combat.power);
             debugMessage(`Attacker ${attacker.id} has power ${attackerPower}.`);
-            const defenderResilience = _.get(target, ["combat", "resilience"], attackerPower);
+            const defenderResilience = Decimal(_.get(target, ["combat", "resilience"], attackerPower));
 
             if(target) {
                 debugMessage(`Defender ${target.id} has resilience ${defenderResilience}.`);
@@ -23,7 +23,10 @@ export default function calculateDamageBy(attacker) {
                 .plus(enemyReceivedDamageMultiplier);
             debugMessage(`Final damage multiplier = ${damageModifier}.`);
             return Object.keys(HitTypes).reduce((damage, nextType) => {
-                damage[nextType] = attacker.combat.damage[nextType].times(damageModifier).floor();
+                const powerLevel = Decimal(attacker.powerLevel);
+                const perLevelDamage = getConfigurationValue("damage_per_level");
+                const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
+                damage[nextType] = powerLevel.times(perLevelDamage).times(damageModifier).times(hitTypeDamageMultiplier).floor();
                 return damage;
             }, {
                 base: attacker.combat.medianDamage,

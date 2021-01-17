@@ -1,7 +1,7 @@
 import resolveCombatRound from "./resolveCombatRound";
 import Decimal from "decimal.js";
-import CharacterCombatState from "../CharacterCombatState";
 import {HitTypes} from "../../data/HitTypes";
+import {Character} from "../../character";
 
 jest.mock("../index");
 
@@ -9,7 +9,7 @@ describe('The combat round resolution', function () {
     let player;
     let enemy;
     beforeEach(() => {
-        player = new CharacterCombatState({
+        player = new Character({
             isPc: true,
             id: 0,
             hp: Decimal(50),
@@ -20,16 +20,9 @@ describe('The combat round resolution', function () {
                 baseCunning: 1,
                 baseDeceit: 1,
                 baseMadness: 1
-            },
-            combat: {
-                damage: Object.keys(HitTypes).reduce((previousValue, currentValue) => {
-                    previousValue[currentValue] = Decimal(10).times(HitTypes[currentValue].damageMultiplier);
-                    return previousValue;
-                }, {}),
-            },
-            evasionPoints: 0
+            }
         }, 0);
-        enemy = new CharacterCombatState({
+        enemy = new Character({
             id: 1,
             hp: Decimal(50),
             powerLevel: 1,
@@ -39,21 +32,20 @@ describe('The combat round resolution', function () {
                 baseCunning: 1,
                 baseDeceit: 1,
                 baseMadness: 1
-            },
-            combat: {
-                damage: Object.keys(HitTypes).reduce((previousValue, currentValue) => {
-                    previousValue[currentValue] = Decimal(10).times(HitTypes[currentValue].damageMultiplier);
-                    return previousValue;
-                }, {}),
-            },
-            evasionPoints: 0
+            }
         }, 1);
     })
     it("when characters have no evasion or precision points, the characters land solid hits.", function () {
+        enemy.combat.evasionPoints = Decimal(0);
+        enemy.combat.precisionPoints = Decimal(0);
+
+        player.combat.precisionPoints = Decimal(0);
+        player.combat.evasionPoints = Decimal(0);
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
             tick: 100,
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -61,8 +53,8 @@ describe('The combat round resolution', function () {
                     children: [expect.any(String)],
                     source: 0,
                     target: 1,
-                    evasionUsed: 0,
-                    precisionUsed: 0,
+                    evasionUsed: Decimal(0),
+                    precisionUsed: Decimal(0),
                     timesUpgraded: 0,
                     timesDowngraded: 0,
                     hitType: 0
@@ -81,8 +73,8 @@ describe('The combat round resolution', function () {
                     children: [expect.any(String)],
                     source: 1,
                     target: 0,
-                    evasionUsed: 0,
-                    precisionUsed: 0,
+                    evasionUsed: Decimal(0),
+                    precisionUsed: Decimal(0),
                     timesUpgraded: 0,
                     timesDowngraded: 0,
                     hitType: 0
@@ -99,10 +91,15 @@ describe('The combat round resolution', function () {
         })
     });
     it("when attacker has more Precision points than the attacker has Evasion and enough precision points to spend, they score a Critical Hit", function () {
-        player.precisionPoints = Decimal(200);
+        enemy.combat.evasionPoints = Decimal(0);
+        enemy.combat.precisionPoints = Decimal(0);
+
+        player.combat.precisionPoints = Decimal(200);
+        player.combat.evasionPoints = Decimal(0);
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -111,7 +108,7 @@ describe('The combat round resolution', function () {
                     uuid: expect.any(String),
                     children: [expect.any(String)],
                     precisionUsed: Decimal(100),
-                    evasionUsed: 0,
+                    evasionUsed: Decimal(0),
                     timesUpgraded: 1,
                     timesDowngraded: 0,
                     hitType: 1
@@ -122,7 +119,7 @@ describe('The combat round resolution', function () {
                     parent: expect.any(String),
                     source: 0,
                     target: 1,
-                    value: Decimal(Math.floor(10 * 1.2))
+                    value: Decimal(Math.floor(HitTypes[1].damageMultiplier * 10))
                 },
                 {
                     event: "hit",
@@ -133,8 +130,8 @@ describe('The combat round resolution', function () {
                     hitType: 0,
                     timesUpgraded: 0,
                     timesDowngraded: 0,
-                    evasionUsed: 0,
-                    precisionUsed: 0
+                    evasionUsed: Decimal(0),
+                    precisionUsed: Decimal(0)
                 },
                 {
                     event: "damage",
@@ -149,11 +146,17 @@ describe('The combat round resolution', function () {
         })
     });
     it("when attacker is using Aggressive tactics, the attack upgrade costs 50 points", function () {
-        player.precisionPoints = Decimal(200);
+        enemy.combat.evasionPoints = Decimal(0);
+        enemy.combat.precisionPoints = Decimal(0);
+
+        player.combat.precisionPoints = Decimal(200);
+        player.combat.evasionPoints = Decimal(0);
         player.tactics = "aggressive";
+
         const combatResults = resolveCombatRound(100, {0: player, 1:enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -162,9 +165,9 @@ describe('The combat round resolution', function () {
                     source: 0,
                     target: 1,
                     precisionUsed: Decimal(50),
-                    evasionUsed: 0,
-                    hitType: 2,
-                    timesUpgraded: 2,
+                    evasionUsed: Decimal(0),
+                    hitType: 1,
+                    timesUpgraded: 1,
                     timesDowngraded: 0,
                 },
                 {
@@ -173,7 +176,7 @@ describe('The combat round resolution', function () {
                     parent: expect.any(String),
                     source: 0,
                     target: 1,
-                    value: Decimal(Math.floor(20)),
+                    value: Decimal(HitTypes[1].damageMultiplier * 10),
                 },
                 {
                     event: "hit",
@@ -181,8 +184,8 @@ describe('The combat round resolution', function () {
                     children: [expect.any(String)],
                     source: 1,
                     target: 0,
-                    precisionUsed: 0,
-                    evasionUsed: 0,
+                    precisionUsed: Decimal(0),
+                    evasionUsed: Decimal(0),
                     hitType: 0,
                     timesUpgraded: 0,
                     timesDowngraded: 0,
@@ -200,10 +203,15 @@ describe('The combat round resolution', function () {
         })
     });
     it("when target has enough Evasion to spend, they downgrade a Solid Hit to a Glancing Hit", function () {
-        enemy.evasionPoints = Decimal(200);
+        enemy.combat.evasionPoints = Decimal(200);
+        enemy.combat.precisionPoints = Decimal(0);
+
+        player.combat.evasionPoints = Decimal(0);
+        player.combat.precisionPoints = Decimal(0);
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -214,7 +222,7 @@ describe('The combat round resolution', function () {
                     source: 0,
                     target: 1,
                     evasionUsed: Decimal(75),
-                    precisionUsed: 0,
+                    precisionUsed: Decimal(0),
                     timesDowngraded: 1,
                     timesUpgraded: 0,
                     hitType: -1
@@ -225,7 +233,7 @@ describe('The combat round resolution', function () {
                     parent: expect.any(String),
                     source: 0,
                     target: 1,
-                    value: Decimal(Math.floor(10 * 0.75)),
+                    value: Decimal(HitTypes[-1].damageMultiplier * 10),
                 },
                 {
                     event: "hit",
@@ -235,8 +243,8 @@ describe('The combat round resolution', function () {
                     ],
                     source: 1,
                     target: 0,
-                    evasionUsed: 0,
-                    precisionUsed: 0,
+                    evasionUsed: Decimal(0),
+                    precisionUsed: Decimal(0),
                     timesDowngraded: 0,
                     timesUpgraded: 0,
                     hitType: 0
@@ -254,11 +262,15 @@ describe('The combat round resolution', function () {
         })
     });
     it("when attacker has enough Precision to upgrade an attack and target has enough Evasion to downgrade attack, the result is a Solid Hit", function () {
-        enemy.evasionPoints = Decimal(200);
-        player.precisionPoints = Decimal(300);
+        enemy.combat.evasionPoints = Decimal(200);
+        enemy.combat.precisionPoints = Decimal(0);
+
+        player.combat.precisionPoints = Decimal(300);
+        player.combat.evasionPoints = Decimal(0);
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -290,8 +302,8 @@ describe('The combat round resolution', function () {
                     ],
                     source: 1,
                     target: 0,
-                    evasionUsed: 0,
-                    precisionUsed: 0,
+                    evasionUsed: Decimal(0),
+                    precisionUsed: Decimal(0),
                     timesDowngraded: 0,
                     timesUpgraded: 0,
                     hitType: 0
@@ -309,13 +321,17 @@ describe('The combat round resolution', function () {
         })
     });
     it("when target uses Deceptive tactics, the cost to downgrade an attack is 50% higher", function () {
-        enemy.evasionPoints = Decimal(300);
+        enemy.combat.precisionPoints = Decimal(0);
+        enemy.combat.evasionPoints = Decimal(300);
         enemy.tactics = "deceptive";
-        player.precisionPoints = Decimal(500);
+
+        player.combat.precisionPoints = Decimal(500);
+        player.combat.evasionPoints = Decimal(0);
         player.tactics = "aggressive";
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
         expect(combatResults).toEqual({
             initiativeOrder: [0, 1],
+            end: false,
             events: [
                 {
                     event: "hit",
@@ -326,7 +342,7 @@ describe('The combat round resolution', function () {
                     source: 0,
                     target: 1,
                     precisionUsed: Decimal(50),
-                    evasionUsed: Decimal(150),
+                    evasionUsed: Decimal(100),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
                     hitType: -1
@@ -337,7 +353,7 @@ describe('The combat round resolution', function () {
                     parent: expect.any(String),
                     source: 0,
                     target: 1,
-                    value: Decimal(Math.floor(7)),
+                    value: Decimal(HitTypes[-1].damageMultiplier * 10),
                 },
                 {
                     event: "hit",
@@ -347,8 +363,8 @@ describe('The combat round resolution', function () {
                     ],
                     source: 1,
                     target: 0,
-                    precisionUsed: 0,
-                    evasionUsed: 0,
+                    precisionUsed: Decimal(0),
+                    evasionUsed: Decimal(0),
                     timesUpgraded: 0,
                     timesDowngraded: 0,
                     hitType: 0

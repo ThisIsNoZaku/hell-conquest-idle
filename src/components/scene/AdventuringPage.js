@@ -3,7 +3,7 @@ import TopSection from "../adventuring/TopSection";
 import {
     getCharacter,
     getGlobalState,
-    getManualSpeedMultiplier, reincarnateAs,
+    getManualSpeedMultiplier,
     saveGlobalState
 } from "../../engine";
 import BottomSection from "../adventuring/BottomSection";
@@ -18,6 +18,8 @@ import {useHotkeys} from "react-hotkeys-hook";
 import generateRoundActionLogItems from "../../engine/general/generateRoundActionLogItems";
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
+import {completeTutorial, enableTutorial} from "../../engine/tutorials";
+import Decimal from "decimal.js";
 
 const styles = {
     root: {
@@ -60,7 +62,7 @@ function pushLogItem(item) {
     if(validationResult.error) {
         throw new Error(`Log item invalid: ${validationResult.error}`);
     }
-    if (getGlobalState().actionLog.length > (getConfigurationValue("actionLog.maxSize") || 10)) {
+    if (getGlobalState().actionLog.length > (getConfigurationValue("action_log_max_size") || 10)) {
         getGlobalState().actionLog.pop();
     }
     getGlobalState().actionLog.unshift(item);
@@ -91,36 +93,20 @@ export default function AdventuringPage(props) {
             const roundMessages = generateRoundActionLogItems(round);
             roundMessages.forEach(message => pushLogItem(message));
             round.events.forEach(event => {
-                const sourceCharacter = event.source !== undefined ? getCharacter(event.source) : undefined;
+                const sourceCharacter = event.source !== null ? getCharacter(event.source) : undefined;
                 const targetCharacter = getCharacter(event.target);
                 const eventHandler = EventHandlers[event.event];
                 switch (event.event) {
-                    case "combat-end":
                     case "kill":
-                    case "damage":
-                    case "fatigue-damage":
-                    case "add-status":
-                    case "remove-status":
                         eventHandler(event, sourceCharacter, targetCharacter, pushLogItem);
                         break;
-                    case "hit":
-                        if(event.precisionUsed) {
-                            const originalPrecisionPoints = sourceCharacter.combat.precisionPoints; 
-                            sourceCharacter.combat.precisionPoints = sourceCharacter.combat.precisionPoints.minus(event.precisionUsed);
-                            debugMessage(`Precision points for ${sourceCharacter.id} changed from ${originalPrecisionPoints.toFixed()} to ${sourceCharacter.combat.precisionPoints.toFixed()}`);
-                        }
-                        if(event.evasionUsed) {
-                            const originalevasionPoints = targetCharacter.combat.evasionPoints;
-                            targetCharacter.combat.evasionPoints = targetCharacter.combat.evasionPoints.minus(event.evasionUsed);
-                            debugMessage(`evasion points for ${targetCharacter.id} changed from ${originalevasionPoints.toFixed()} to ${targetCharacter.combat.evasionPoints.toFixed()}`);
-                        }
-                        break;
-                    case "action_skipped":
-                        break;
-                    default:
-                        throw new Error(`No handling for ${event.event}.`);
                 }
             });
+            if(round.tick !== 0) {
+                round.initiativeOrder.forEach(characterId => {
+                    getCharacter(characterId).combat.stamina = Decimal.max(0, getCharacter(characterId).combat.stamina.minus(1));
+                });
+            }
             saveGlobalState();
         }
 
@@ -134,10 +120,9 @@ export default function AdventuringPage(props) {
                     saveGlobalState();
                     accruedTime.current = 0;
                     const nextAction = getGlobalState().nextAction;
+                    getGlobalState().nextAction = undefined;
 
-                    const currentAction = getGlobalState().currentAction = nextAction;
-                    setCurrentAction(Actions[currentAction]);
-                    const candidateNextAction = Actions[currentAction].complete(
+                    const candidateNextAction = Actions[getGlobalState().currentAction].complete(
                         props.rng,
                         getCharacter(0),
                         pushLogItem,
@@ -147,8 +132,19 @@ export default function AdventuringPage(props) {
                         setActionLog,
                         nextAction
                     );
-                    setNextAction(getGlobalState().nextAction = candidateNextAction !== undefined ? candidateNextAction : getGlobalState().nextAction);
-
+                    debugMessage(`Completed ${getGlobalState().currentAction}`);
+                    if(!candidateNextAction) {
+                        throw new Error(`No next action after completing ${getGlobalState().currentAction}`);
+                    }
+                    if(_.isArray(candidateNextAction)) {
+                        const currentAction = getGlobalState().currentAction = candidateNextAction[0];
+                        setCurrentAction(Actions[currentAction]);
+                        setNextAction(getGlobalState().nextAction = candidateNextAction[1]);
+                    } else {
+                        const currentAction = getGlobalState().currentAction = candidateNextAction;
+                        setCurrentAction(Actions[currentAction]);
+                    }
+                    debugMessage(`Current Action now: ${getGlobalState().currentAction} Next: ${getGlobalState().nextAction}`);
                 }
                 setDisplayedTime(accruedTime.current);
                 const passedTime = timestamp - lastTime;

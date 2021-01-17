@@ -25,13 +25,13 @@ const styles = {
     }
 }
 export default function ExplorationActionsSection(props) {
-    const canHunt = evaluateExpression(getConfigurationValue("encounters.huntableLevel", 0), {
+    const canHunt = evaluateExpression(getConfigurationValue("huntable_level", 0), {
         playerLevel: Decimal(props.player.powerLevel),
     }).gt(0);
     return <Paper style={styles.actions.container}>
-        {actionButton("hunting", "Hunt Lesser Demons", "Hunt lesser demons you can Bind to claim their power, increasing your Tithed Power.",
+        {actionButton("hunting", "Hunt Lesser Demons", "Hunt lesser demons to build up your absorbed power.",
             {...props, disabled: !canHunt})}
         {actionButton("challenging", "Challenge Peer Demons", "Find a demon of equal strength to challenge in battle.", props)}
-        {actionButton("usurp", "Usurp Greater Demon", "Find Challenge a Greater Demon to take.", props)}
+        {actionButton("usurp", "Usurp Greater Demon", "Challenge a Greater Demon to duel!", props)}
     </Paper>
 }

@@ -5,7 +5,7 @@ import {Tutorials} from "../data/Tutorials";
 let listeners = [];
 
 export function enableTutorial(id) {
-    const alreadyEnabled = _.get(getGlobalState(), ["tutorials", id]);
+    const alreadyEnabled = _.get(getGlobalState(), ["tutorials", id, "enabled"]);
     _.set(getGlobalState(), ["tutorials", id, "enabled"], true);
     if(!alreadyEnabled) {
         listeners.forEach(l => {
@@ -16,7 +16,7 @@ export function enableTutorial(id) {
 }
 
 export function completeTutorial(id) {
-    const enabled = _.get(getGlobalState(), ["tutorials", id]);
+    const enabled = _.get(getGlobalState(), ["tutorials", id, "enabled"]);
     if(enabled) {
         _.set(getGlobalState(), ["tutorials", id, "completed"], true);
         listeners.forEach(l => {
@@ -27,6 +27,10 @@ export function completeTutorial(id) {
         }
         saveGlobalState();
     }
+}
+
+export function tutorialIsCompleted(id) {
+    return _.get(getGlobalState(), ["tutorials", id, "completed"], false);
 }
 
 export function subscribeToTutorials(listener) {

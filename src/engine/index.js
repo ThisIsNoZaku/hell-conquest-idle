@@ -10,11 +10,8 @@ import changelog from "../changelog.json";
 import pkg from "../../package.json";
 import { knuthShuffle } from "knuth-shuffle";
 import evaluateExpression from "./general/evaluateExpression";
-import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
-
-const expressionCache = {};
 
 let globalState = loadGlobalState()
 
@@ -75,6 +72,7 @@ export function loadGlobalState() {
             0: new Character({
                 highestLevelReached: Decimal(1),
                 id: 0,
+                party: 0,
                 isPc: true,
                 name: "You",
                 powerLevel: Decimal(1),
@@ -89,7 +87,7 @@ export function loadGlobalState() {
                     baseMadness: getConfigurationValue("mechanics.combat.playerAttributeMinimum")
                 },
                 combat: {}
-            })
+            }, 0)
         },
         tutorials: {
             reincarnation: {
@@ -138,7 +136,10 @@ export function generateCreature(id, powerLevel, rng) {
     const options = Object.keys(titles);
     const index = Math.floor(options.length * rng.double());
     const adjective = titles[options[index]];
-    const bonuses = calculateNPCBonuses(Decimal(powerLevel).toNumber() * 2, [adjective]);
+    const bonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
+        highestLevelReached: Decimal(powerLevel)
+    })
+    const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective]);
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
@@ -147,13 +148,14 @@ export function generateCreature(id, powerLevel, rng) {
         adjectives: [adjective],
         traits: startingTraits,
         powerLevel: powerLevel,
+        party: 1,
         attributes: {
             baseBrutality: bonuses.attributes.brutality,
             baseCunning:bonuses.attributes.cunning,
             baseDeceit:bonuses.attributes.deceit,
             baseMadness:bonuses.attributes.madness
         }
-    });
+    }, 1);
     saveGlobalState();
     return globalState.characters[nextId];
 }
@@ -201,7 +203,8 @@ export function reincarnateAs(monsterId, newAttributes) {
     })
     if (globalState.reincarnationCount !== 0) {
         // Calculate your new latent power cap
-        globalState.latentPowerCap = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
+        globalState.latentPowerCap = evaluateExpression(getConfigurationValue("latent_power_cap"), {
+            highestLevelReached: Decimal(getCharacter(0).highestLevelReached),
             highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
         })
 
@@ -209,30 +212,15 @@ export function reincarnateAs(monsterId, newAttributes) {
             player
         });
         globalState.characters[0].latentPower = Decimal.min(
-            evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
-                player,
-                highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
-            }),
+            globalState.latentPowerCap,
             globalState.characters[0].latentPower.plus(latentPowerGain));
     }
 
+    globalState.characters[0].reincarnate(monsterId, {...globalState.startingTraits});
 
-    globalState.characters[0].absorbedPower = Decimal(0);
-    globalState.characters[0].reincarnate(monsterId, globalState.startingTraits);
     globalState.unlockedMonsters[monsterId] = true;
 
-    getCharacter(0).traits = Object.keys(globalState.startingTraits)
-        .filter(t => globalState.startingTraits[t])
-        .reduce((startingTraits, trait) => {
-            startingTraits[trait] = globalState.unlockedTraits[trait];
-            return startingTraits;
-        }, {});
-    Creatures[monsterId].traits.forEach(trait => {
-        getCharacter(0).traits[trait] = 1;
-    })
-
     globalState.currentEncounter = null;
-    getCharacter(0).hp = getCharacter(0).maximumHp;
     getGlobalState().actionLog = [];
     getGlobalState().passivePowerIncome = Decimal(0);
     globalState.reincarnationCount++;
@@ -249,7 +237,7 @@ function stateReviver(key, value) {
     switch (key) {
         case "characters":
             return Object.keys(value).reduce((characters, id) => {
-                characters[id] = new Character(value[id]);
+                characters[id] = new Character(value[id], id === "0" ? 0 : 1);
                 return characters;
             }, {});
         case "enemies":

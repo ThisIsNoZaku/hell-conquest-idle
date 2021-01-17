@@ -16,61 +16,64 @@ import {Tactics} from "../../data/Tactics";
 import {Attributes} from "../../data/Attributes";
 import TacticsDescription from "../adventuring/charactersheet/TacticsDescription";
 import evaluateExpression from "../../engine/general/evaluateExpression";
-import {enableTutorial} from "../../engine/tutorials";
+import {enableTutorial, tutorialIsCompleted} from "../../engine/tutorials";
 import {Help} from "@material-ui/icons";
-import Paper from "@material-ui/core/Paper";
 
 export default function ReincarnationSelectionPage(props) {
     const history = useHistory();
     const player = getCharacter(0);
     const [attributes, setAttributes] = useState(Object.keys(player.attributes)
         .reduce((attributes, next) => {
-            const baseAttributeProperty = `base${next.substring(1, 2).toUpperCase()}${next.substring(2)}`;
-            attributes[next.substring(1)] = player.attributes[baseAttributeProperty];
+            attributes[next] = player.attributes[next];
             return attributes;
         }, {}));
     const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
     const newLatentPower = getCharacter(0).latentPower.plus(
-        evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerGainOnReincarnate"), {
+        evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
             player
         }));
-    const spendableBonusPoints = evaluateExpression(getConfigurationValue("mechanics.reincarnation.bonusPointsForHighestLevel"), {
-        highestLevel: getCharacter(0).highestLevelReached
+    const spendableBonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
+        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0),
+        highestLevelReached: Decimal(getCharacter(0).highestLevelReached)
     });
-    const latentPowerCap = evaluateExpression(getConfigurationValue("mechanics.reincarnation.latentPowerCap"), {
-        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0)
+    const latentPowerCap = evaluateExpression(getConfigurationValue("latent_power_cap"), {
+        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0),
+        highestLevelReached: Decimal(getCharacter(0).highestLevelReached)
     });
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => {
-            next = Decimal(next).minus(getConfigurationValue("mechanics.combat.playerAttributeMinimum"));
+            next = Decimal(next).minus(getConfigurationValue("minimum_attribute_score"));
             const totalAttributeCost = Decimal(next).times(Decimal(next).plus(1)).div(2);
             return Decimal(sum).plus(totalAttributeCost);
         }, 0))
         .minus(
             Object.values(startingTraits).filter(x => x).reduce((previousValue, x, i) => {
-                return previousValue.plus(evaluateExpression(getConfigurationValue("mechanics.reincarnation.traitPointCost"), {
+                return previousValue.plus(evaluateExpression(getConfigurationValue("trait_point_cost"), {
                     traitsOwned: Decimal(i)
                 }))
             }, Decimal(0))
         );
-    const nextBonusTraitCost = evaluateExpression(getConfigurationValue("mechanics.reincarnation.traitPointCost"), {
+    const nextBonusTraitCost = evaluateExpression(getConfigurationValue("trait_point_cost"), {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
     });
     const nextAttributeCosts = {
-        brutality: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.brutality)
+        baseBrutality: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
+            attributeScore: Decimal(attributes.baseBrutality)
         }),
-        cunning: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.cunning)
+        baseCunning: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
+            attributeScore: Decimal(attributes.baseCunning)
         }),
-        deceit: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.deceit)
+        baseDeceit: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
+            attributeScore: Decimal(attributes.baseDeceit)
         }),
-        madness: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.madness)
+        baseMadness: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
+            attributeScore: Decimal(attributes.baseMadness)
         }),
     }
+
+    const tacticsEnabled = tutorialIsCompleted("reincarnation-attributes");
+    const reincarnationEnabled = tutorialIsCompleted("tactics");
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -84,7 +87,7 @@ export default function ReincarnationSelectionPage(props) {
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a bonus
-            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getCharacter(0).highestLevelReached).times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).toFixed()}</strong> to
+            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).toFixed()}</strong> to
             every Attribute and absorbed power due to your Latent Power acquired from previous reincarnations.
             <br/>
         </Grid>}
@@ -98,21 +101,22 @@ export default function ReincarnationSelectionPage(props) {
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <strong>Attributes</strong>
             </Grid>
-            {Object.keys(Attributes).map(attribute => {
+            {Object.keys(attributes).map(attribute => {
+                const attributeDef = Attributes[attribute.substring(4).toLowerCase()];
                 return <Grid item xs={3}>
-                    <Tooltip title={Attributes[attribute].description({
+                    <Tooltip title={attributeDef.description({
                         rank: Decimal(attributes[attribute]).toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
-                            <img src={Attributes[attribute].icon}/>
+                            <img src={attributeDef.icon}/>
                             <div>
                                 <Button disabled={availableBonusPoints.lt(nextAttributeCosts[attribute])}
                                         onClick={() => {
-                                            player.attributes[`base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`] = Decimal(attributes[attribute]).plus(1);
+                                            player.attributes[attribute] = Decimal(attributes[attribute]).plus(1);
                                             setAttributes({
                                                 ...attributes,
                                                 [attribute]: Decimal(attributes[attribute]).plus(1)
-                                            })
+                                            });
                                             enableTutorial("tactics");
                                         }}>
                                     <AddIcon/>
@@ -121,7 +125,7 @@ export default function ReincarnationSelectionPage(props) {
                                 <Button
                                     disabled={Decimal(attributes[attribute]).lte(getConfigurationValue("mechanics.combat.playerAttributeMinimum"))}
                                     onClick={() => {
-                                        player.attributes[`base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`] = Decimal(attributes[attribute]).minus(1);
+                                        player.attributes[attribute] = Decimal(attributes[attribute]).minus(1);
                                         setAttributes({
                                             ...attributes,
                                             [attribute]: Decimal(attributes[attribute]).minus(1)
@@ -183,9 +187,11 @@ export default function ReincarnationSelectionPage(props) {
                 {Object.keys(Tactics).map(tactic =>
                     <Grid item>
                         <Button variant="contained" onClick={() => {
+                            if(getCharacter(0).tactics !== tactic) {
+                                enableTutorial("reincarnation-demon-select");
+                            }
                             setPlayerTactics(getCharacter(0).tactics = tactic);
-                            enableTutorial("reincarnation-demon-select");
-                        }}
+                        }} disabled={!tacticsEnabled}
                                 color={player.tactics === tactic ? "primary" : "default"}
                         >{Tactics[tactic].title}</Button>
                     </Grid>
@@ -254,12 +260,12 @@ export default function ReincarnationSelectionPage(props) {
                 <Grid item container xs direction="column">
                     <Grid item xs style={{textAlign: "center"}}>
                         Endurance
-                        <Tooltip title="How many rounds your can fight before you begin taking fatigue damage.">
+                        <Tooltip title="How many rounds your can fight before you begin taking fatigue damage. You also lose stamina from intimidating and fleeing other Demons.">
                             <Help/>
                         </Tooltip>
                     </Grid>
                     <Grid item xs style={{textAlign: "center"}}>
-                        {player.combat.endurance.toFixed()} Rounds
+                        {player.combat.stamina.toFixed()} Stamina
                     </Grid>
                 </Grid>
             </Grid>
@@ -314,7 +320,9 @@ export default function ReincarnationSelectionPage(props) {
                                                 onClick={() => {
                                                     props.reincarnate("random", attributes);
                                                     history.push("/adventuring");
-                                                }}>
+                                                }}
+                                                disabled={!reincarnationEnabled}
+                                        >
                                             <Grid container>
                                                 <Grid item xs={12}>
                                                     ???
@@ -332,7 +340,8 @@ export default function ReincarnationSelectionPage(props) {
                                                 onClick={() => {
                                                     props.reincarnate(name, attributes);
                                                     history.push("/adventuring");
-                                                }}>
+                                                }}
+                                        >
                                             <Grid container>
                                                 <Grid item xs={12}>
                                                     <img src={getSpriteForCreature(name)}/>

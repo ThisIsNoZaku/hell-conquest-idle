@@ -1,12 +1,14 @@
 import React from "react";
-import {config, getConfigurationValue} from "../config";
+import {getConfigurationValue} from "../config";
 import {v4} from "node-uuid";
 import {debugMessage} from "../debugging";
 import {Regions} from "./Regions";
 import {Decimal} from "decimal.js";
-import {resolveCombat} from "../engine/combat";
-import evaluateExpression from "../engine/general/evaluateExpression";
+import {resolveCombat, resolveCombatRound} from "../engine/combat";
 import {getCharacter, getGlobalState, reincarnateAs} from "../engine";
+import calculateStaminaCostToFlee from "../engine/general/calculateStaminaCostToFlee";
+import calculateInstantDeathLevel from "../engine/combat/calculateInstantDeathLevel";
+import {onIntimidation} from "../engine/general/onIntimidation";
 
 export const Actions = {
     exploring: {
@@ -15,30 +17,28 @@ export const Actions = {
         description: "Exploring...",
         complete: function () {
             getGlobalState().currentEncounter = null;
-            return getCharacter(0).stolenPowerModifier.eq(1) ? "challenging" : "hunting";
+            return "challenging";
         }
     },
     approaching: {
         id: "approaching",
-        duration: 2500,
+        duration: 5000,
         description: "Approaching Enemy...",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             // Since we're starting a new combat, remove any old, dead characters
-            switch (getGlobalState().nextAction) {
-                case "fighting":
-                    const enemies = getGlobalState().currentEncounter.enemies;
-                    const combatResult = resolveCombat(rng, {
-                        parties: [[player], enemies]
-                    });
-                    getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
-                    setEnemy(enemies[0]);
-                    break;
-            }
+            const enemies = getGlobalState().currentEncounter.enemies;
+            const combatResult = resolveCombat([[player], enemies]);
+            getGlobalState().currentEncounter.pendingActions = Object.values(combatResult)
+                .sort((a, b) => a.tick - b.tick);
+            setEnemy(enemies[0]);
             const deadCharacters = Object.keys(getGlobalState().characters)
                 .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
             deadCharacters.forEach(id => {
                 delete getGlobalState().characters[id]
             });
+            player.combat.refresh();
+            // Default action.
+            return "fighting";
         }
     },
     looting: {
@@ -46,45 +46,19 @@ export const Actions = {
         duration: "exploration.lootingTime",
         description: "Looting the body..."
     },
-    hunting: {
-        id: "hunting",
-        description: "Hunting for prey...",
-        duration: 2000,
-        complete: precombat
-    },
     fleeing: {
         id: "fleeing",
         duration: 2000,
         description: "Fleeing in terror!",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             const enemy = getGlobalState().currentEncounter.enemies[0];
-            const chanceToFlee = evaluateExpression(getConfigurationValue("encounters.chanceToEscapeGreater"), {
-                enemy,
-                player: getCharacter(0)
-            });
-            const roll = Math.floor(rng.double() * 100) + 1;
-            if (chanceToFlee.gte(roll)) {
-                pushLogItem({
-                    result: "escaped",
-                    uuid: v4()
-                });
-                const powerToGain = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromGreaterDemon"), {
-                    enemy: enemy
-                });
-                const powerGained = player.gainPower(powerToGain);
-                getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel);
-                pushLogItem(`You gained ${powerGained.toFixed()} power.`);
-                getGlobalState().currentEncounter = null;
+            const costToFlee = calculateStaminaCostToFlee(player, enemy);
+            if (player.combat.stamina.gte(costToFlee)) {
+                pushLogItem("Escaped!");
+                player.combat.stamina = player.combat.stamina.minus(costToFlee);
                 return "exploring";
             } else {
-                pushLogItem({
-                    message: `The ${enemy.name} caught you! (Roll ${roll} vs ${chanceToFlee})`,
-                    uuid: v4()
-                });
-                const enemies = getGlobalState().currentEncounter.enemies;
-                const combatResult = resolveCombat([[player], enemies]);
-                getGlobalState().currentEncounter.pendingActions = combatResult.rounds;
-                setEnemy(enemies[0]);
+                pushLogItem("You have been caught!");
                 return "fighting";
             }
         }
@@ -94,9 +68,7 @@ export const Actions = {
         duration: 2000,
         description: "In Combat!",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
-            const instantDeathLevel = evaluateExpression(getConfigurationValue("encounters.lesserDemonInstantKillLevel"), {
-                highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
-            });
+            const instantDeathLevel = calculateInstantDeathLevel(player);
             const enemy = getGlobalState().currentEncounter.enemies[0];
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem({
@@ -107,44 +79,56 @@ export const Actions = {
                     events: [
                         {
                             uuid: v4(),
-                            result: "kill",
+                            event: "kill",
                             target: enemy.id,
-                            actor: 0,
-                            tick: 0
-                        },
-                        {
-                            uuid: v4(),
-                            result: "combat-end",
+                            source: 0,
                             tick: 0
                         }
-                    ]
+                    ],
+                    tick: 0,
+                    end: true
                 };
                 applyAction({
                     uuid: v4(),
-                    result: "kill",
+                    event: "kill",
                     target: enemy.id,
-                    actor: 0,
+                    source: 0,
                     tick: 0
                 });
+                return ["exploring", "challenging"];
             } else {
-                if (getGlobalState().currentEncounter.pendingActions.length) {
-                    const nextRound = getGlobalState().currentEncounter.pendingActions[0];
-                    if(nextRound.tick !== 0) {
+                const currentEncounter = getGlobalState().currentEncounter;
+                const nextRound = resolveCombatRound(currentEncounter.currentTick, {
+                    0: player,
+                    [currentEncounter.enemies[0].id]: currentEncounter.enemies[0]
+                });
+                // Start of combat
+                if (currentEncounter.currentTick === 0) {
+                    pushLogItem("Combat Begins!");
+                    player.refreshBeforeCombat();
+                    currentEncounter.currentTick += 100;
+                    return "fighting";
+                } else {
+
+                    if (nextRound.tick !== 0) {
                         pushLogItem(`<strong>Actions on ${nextRound.tick}</strong>`)
                     }
                     applyAction(nextRound);
-                    if(nextRound.tick === 0) {
-                        pushLogItem("Combat Begins!");
-                        player.refreshBeforeCombat();
-                    }
-                    getGlobalState().currentEncounter.pendingActions.shift();
+
                     setActionLog([...getGlobalState().actionLog]);
-                    if(nextRound.end) {
-                        getGlobalState().nextAction = "exploring";
+
+                    if (nextRound.end) {
+                        if (player.isAlive) {
+                            return ["exploring", "challenging"];
+                        } else {
+                            return "reincarnating";
+                        }
+                    } else {
+                        currentEncounter.currentTick += 100;
+                        return "fighting";
                     }
-                } else {
-                    return "fleeing";
                 }
+                return "fleeing";
             }
         }
     },
@@ -154,11 +138,11 @@ export const Actions = {
         description: "Reincarnating...",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             getGlobalState().automaticReincarnate = true;
-            reincarnateAs(getCharacter(0).appearance, {
-                brutality: player.attributes.baseBrutality,
-                cunning: player.attributes.baseCunning,
-                deceit: player.attributes.baseDeceit,
-                madness: player.attributes.baseMadness
+            reincarnateAs(player.appearance, {
+                baseBrutality: player.attributes.baseBrutality,
+                baseCunning: player.attributes.baseCunning,
+                baseDeceit: player.attributes.baseDeceit,
+                baseMadness: player.attributes.baseMadness
             });
             return "exploring";
         }
@@ -170,36 +154,69 @@ export const Actions = {
         description: "Intimidating...",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             const enemy = getGlobalState().currentEncounter.enemies[0];
-            const instantDeathLevel = evaluateExpression(getConfigurationValue("encounters.lesserDemonInstantKillLevel"), {
-                highestLevelEnemyDefeated: getGlobalState().highestLevelEnemyDefeated
-            });
+            const instantDeathLevel = calculateInstantDeathLevel(player);
+            let intimidateSuccess = false;
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem(`Your force of will seizes control of ${enemy.name}'s mind!`);
-                nextAction = "exploring";
+                intimidateSuccess = true;
+            } else if (player.combat.stamina.gte(enemy.combat.stamina)) {
+                player.combat.stamina = player.combat.stamina.minus(enemy.combat.stamina);
+                intimidateSuccess = true;
+            } else {
+                pushLogItem(`Your lack of stamina allows ${enemy.name} to escape!`);
+                getGlobalState().currentEncounter = null;
             }
-            const chanceToIntimidate = Decimal(enemy.powerLevel.lte(instantDeathLevel) ? 999 : evaluateExpression(getConfigurationValue("encounters.chanceToIntimidateLesser"), {
-                enemy,
-                player: getCharacter(0)
-            }));
-            const roll = Math.floor(rng.double() * 100) + 1;
-            if (chanceToIntimidate.gte(roll)) {
-                const periodicPowerIncreases = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromLesserDemon"), {
-                    enemy
-                });
-                getCharacter(0).stolenPower = getCharacter(0).stolenPower.plus(periodicPowerIncreases);
-                getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
-                if (enemy.isRival) {
-                    pushLogItem("<strong>You bend your rival to your will!</strong>");
-                    getGlobalState().rival = {};
-                }
+            if (intimidateSuccess) {
+                onIntimidation(player, enemy, pushLogItem);
             }
             return "exploring";
         }
+    },
+    hunting: {
+        id: "hunting",
+        description: "Hunting for prey...",
+        duration: 2000,
+        complete: precombat
     },
     challenging: {
         id: "challenging",
         duration: 1000,
         description: "Finding challenger...",
+        complete: precombat
+    },
+    recovering: {
+        id: "recovering",
+        duration: 1000,
+        description: "Recovering...",
+        complete: function (rng, player, pushLogItem) {
+            const playerHealing = player.healing;
+
+            const amountToHeal = Decimal.min(playerHealing, player.maximumHp.minus(player.hp));
+            player.hp = Decimal.min(amountToHeal);
+
+            const staminaToRecover = Decimal.min(player.combat.maximumStamina.minus(player.combat.stamina),
+                1);
+            player.combat.stamina = player.combat.stamina.plus(staminaToRecover);
+            if (staminaToRecover.gt(0) || amountToHeal.gt(0)) {
+                const elements = [
+                    amountToHeal.gt(0) ? `You recovered ${amountToHeal.toFixed()} health.` : null,
+                    staminaToRecover.gt(0) ? `You regained ${staminaToRecover.toFixed()} stamina.` : null
+                ];
+                const message = elements.join(" ");
+                if (message) {
+                    pushLogItem(message);
+                }
+            }
+            if (player.hp.lt(player.maximumHp) || player.combat.stamina.lt(player.combat.maximumStamina)) {
+                return "recovering";
+            }
+            return "exploring";
+        }
+    },
+    usurp: {
+        id: "usurp",
+        duration: 1000,
+        description: "Approaching foe...",
         complete: precombat
     }
 }
@@ -214,37 +231,7 @@ function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, s
     }
     getCharacter(0).clearStatuses();
 
-    let proceedingToEncounter = false;
-    if (getCharacter(0).hp.lt(getCharacter(0).maximumHp)) {
-        const encounterChance = Decimal(0);
-        const amountToHeal = encounterChance.lte(0) || getCharacter(0).hp.plus(getCharacter(0).healing).gt(
-            getCharacter(0).maximumHp
-        ) ? getCharacter(0).maximumHp.minus(getCharacter(0).hp) : getCharacter(0).healing;
-        getCharacter(0).hp = getCharacter(0).hp.plus(amountToHeal);
-        pushLogItem({
-            message: `You naturally healed ${amountToHeal} health`,
-            uuid: v4()
-        })
-        const encounterRoll = Math.floor(rng.double() * 100) + 1;
-        debugMessage(`Determining if encounter occurs. Chance ${encounterChance} vs roll ${encounterRoll}.`);
-        if (encounterChance.gte(encounterRoll)) {
-            proceedingToEncounter = true;
-        } else {
-            if (encounterChance.eq(0)) {
-                pushLogItem({
-                    message: "Your weak spiritual energy keeps you hidden while you heal.",
-                    uuid: v4()
-                });
-            } else {
-                pushLogItem({
-                    message: "You don't find any trouble while you recover.",
-                    uuid: v4()
-                });
-            }
-        }
-    } else {
-        proceedingToEncounter = true;
-    }
+    let proceedingToEncounter = true; // FIXME
     if (proceedingToEncounter) {
         getGlobalState().currentEncounter = Regions[getGlobalState().currentRegion].startEncounter(getCharacter(0), rng);
         const enemy = getGlobalState().currentEncounter.enemies[0];
@@ -253,20 +240,13 @@ function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, s
             player.otherDemonIsLesserDemon(enemy) ? "lesser" : "peer"
         )
         const enemyDescription = enemy.adjectives.map(adj => adj.name).join(" ");
-        pushLogItem(`<strong>Encountered ${enemyDescription} ${enemyType === 'greater' ? 'Greater ' : '' }${enemyType === 'lesser'?'Lesser ':''}${enemy.name}</strong>`);
-        nextAction = getGlobalState().currentEncounter.enemies.reduce((actionSoFar, nextEnemy) => {
-            if (actionSoFar !== "fighting") {
-                return actionSoFar;
-            }
-
-            if (player.otherDemonIsLesserDemon(nextEnemy)) {
-                return "intimidating";
-            } else if (player.otherDemonIsGreaterDemon(nextEnemy)) {
-                return "fleeing";
-            } else {
-                return "fighting";
-            }
-        }, "fighting");
+        pushLogItem(`<strong>Encountered ${enemyDescription} ${enemyType === 'greater' ? 'Greater ' : ''}${enemyType === 'lesser' ? 'Lesser ' : ''}${enemy.name}</strong>`);
+        const enemies = getGlobalState().currentEncounter.enemies;
+        const combatResult = resolveCombat([[player], enemies]);
+        getGlobalState().currentEncounter.pendingActions = Object.keys(combatResult)
+            .map(tick => combatResult[tick]);
+        setEnemy(enemies[0]);
+        nextAction = ["approaching", "fighting"];
 
         if (getGlobalState().passivePowerIncome.gt(0)) {
             const gainedPower = getCharacter(0).gainPower(getGlobalState().passivePowerIncome);
@@ -278,16 +258,6 @@ function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, s
         }
 
         // Since we're starting a new combat, remove any old, dead characters
-        switch (nextAction) {
-            case "fighting":
-            case "hunting":
-                const enemies = getGlobalState().currentEncounter.enemies;
-                const combatResult = resolveCombat([[player], enemies]);
-                getGlobalState().currentEncounter.pendingActions = Object.keys(combatResult)
-                    .map(tick => combatResult[tick]);
-                setEnemy(enemies[0]);
-                break;
-        }
         const deadCharacters = Object.keys(getGlobalState().characters)
             .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
         deadCharacters.forEach(id => {

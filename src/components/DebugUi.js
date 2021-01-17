@@ -10,7 +10,7 @@ import RemoveCircleOutlineRoundedIcon from '@material-ui/icons/RemoveCircleOutli
 import {getCharacter, getGlobalState, resetDebug, saveKey} from "../engine";
 import * as _ from "lodash";
 import {Regions} from "../data/Regions";
-import {config} from "../config";
+import {getConfigurationValue} from "../config";
 
 const styles = {
     root: {
@@ -25,8 +25,8 @@ const styles = {
 export default function DebugUi(props) {
     const [creatures, setCreatures] = useState(_.get(getGlobalState(), ["debug", "creatures"]));
     const [regions, setRegions] = useState(_.get(getGlobalState(), ["debug", "regions"]));
-    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")).lt(Decimal(1)) ?
-        Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale"))));
+    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")).lt(Decimal(1)) ?
+        Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale"))));
     const [maxLevel, setMaxLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "maxLevel"], getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
         Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2)));
     const [manualSpeedMultiplier, setManualSpeedMultiplier] = useState(_.get(getGlobalState(), ["debug", "manualSpeedMultiplier"],
@@ -37,8 +37,8 @@ export default function DebugUi(props) {
         resetDebug();
         setCreatures(_.get(getGlobalState(), ["debug", "creatures"]));
         setRegions(_.get(getGlobalState(), ["debug", "regions"]));
-        setMinLevel(getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")).lt(Decimal(1)) ?
-            Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("encounters.lesserLevelScale")));
+        setMinLevel(getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")).lt(Decimal(1)) ?
+            Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")));
         setMaxLevel(getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
             Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2));
     }

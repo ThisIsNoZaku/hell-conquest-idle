@@ -15,13 +15,13 @@ class Region {
         let encounterLevel = player.powerLevel;
 
         switch (getGlobalState().nextAction) {
-            case "usurping": {
-                const encounterOffset = getConfigurationValue("encounters.greaterLevelScale");
+            case "usurp": {
+                const encounterOffset = getConfigurationValue("greater_level_scale");
                 encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1)) : encounterLevel.plus(encounterOffset);
                 break;
             }
             case "hunting": {
-                const encounterOffset = getConfigurationValue("encounters.lesserLevelScale");
+                const encounterOffset = getConfigurationValue("lesser_level_scale");
                 encounterLevel = Decimal.max(1, encounterLevel.minus(encounterOffset));
                 break;
             }
@@ -44,6 +44,7 @@ class Region {
         const encounter = {
             encounterLevel,
             ...encounterDef,
+            currentTick: 0,
             pendingActions: [],
             enemies: encounterDef.enemies.flatMap(enemyDef => _.range(0, enemyDef.count).map(i => {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);

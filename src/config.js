@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 
 const config = {
+    debug_enabled: process.env.REACT_APP_DEBUG_MODE === "true",
     action_log_max_size: process.env.REACT_APP_MAX_ACTIONLOG_SIZE || 20, // The maximum number of items in the history log.
     huntable_level: "playerLevel.minus(1)",
     lesser_level_scale: 1, // A demon is "lesser" than another when its level is this much lower.
@@ -8,7 +9,7 @@ const config = {
     intimidateable_demon_level: 10, // A demon can be intimidated when its level is this much lower than the player
     enemy_latent_power: "Decimal.max(0, encounterLevel.minus(1).times(25))", // The amount of latent power enemy demons start with
     bonus_points_for_highest_level : "highestLevelReached.plus(highestLevelReached.div(10).floor())", // How many bonus points the player gets, based on their highest level reached.
-    latent_power_cap: "highestLevelReached.times(25)", // The maximum the player's latent power cap can be.
+    latent_power_cap: "highestLevelEnemyDefeated.times(25)", // The maximum the player's latent power cap can be.
     lesser_demon_instant_kill_level: "highestLevelReached.minus(10)",
     latent_power_gain_on_reincarnate:  "player.powerLevel.times(5)",
     latent_power_effect_scale: .01,
@@ -16,6 +17,10 @@ const config = {
     base_attack_upgrade_cost: 100,
     base_attack_downgrade_cost: 100,
     minimum_attribute_score: 1,
+    damage_per_level: 10,
+    flee_stamina_cost_base: 5,
+    flee_stamina_minimum_cost: 1,
+    instant_death_offset: 5,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -89,7 +94,7 @@ const config = {
             hp: {
                 pcBonus: 25,
                 baseHp: 10,
-                pointsPerLevel: 5,
+                pointsPerLevel: 15,
                 healingPerLevel: 5,
                 baseAttribute: "brutality",
                 effectPerPoint: .1

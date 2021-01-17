@@ -1,19 +1,14 @@
 export const HitTypes = {
-    "-3": {
+    "-2": {
         type: "Miss",
         summary: "miss",
         damageMultiplier: 0,
         preventHit: true
     },
-    "-2": {
-        type: "Glancing",
-        summary: "glancing",
-        damageMultiplier: 0.25
-    },
     "-1": {
         type: "Minor",
         summary: "minor",
-        damageMultiplier: 0.75
+        damageMultiplier: 0.5
     },
     0: {
         type: "Solid",
@@ -21,14 +16,9 @@ export const HitTypes = {
         damageMultiplier: 1
     },
     1: {
-        type: "Serious",
-        summary: "serious",
-        damageMultiplier: 1.25
-    },
-    2: {
         type: "Devastating",
         summary: "devastating",
-        damageMultiplier: 2
+        damageMultiplier: 1.5
     }
 }
 

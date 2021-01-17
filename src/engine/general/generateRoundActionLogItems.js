@@ -8,7 +8,7 @@ export default function generateRoundActionLogItems(round) {
     const processed = {};
     round.events.forEach(event => {
         let messageElements = [];
-        if(!processed[event.uuid]) {
+        if (!processed[event.uuid]) {
             processed[event.uuid] = true;
             messageElements.push(describeEvent(event));
             (event.children || []).forEach(child => {
@@ -28,15 +28,24 @@ function describeEvent(event) {
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "hit":
-            const base = `${sourceName} scored a ${HitTypes[event.hitType].type} hit! `;
-            const upgrade =  Decimal(event.precisionUsed).gt(0) ? `${event.precisionUsed} points were spent to upgrade the attack ${event.timesUpgraded} steps. ` : "";
-            const downgrade = Decimal(event.evasionUsed).gt(0) ? `${event.evasionUsed} points were spent to downgrade the attack ${event.timesDowngraded} steps. ` : "";
-            return base + upgrade + downgrade;
+            const base = `${sourceName} scored a ${HitTypes[event.hitType].type} hit!`;
+            const upgrade = Decimal(event.precisionUsed).gt(0) ? `${event.precisionUsed} Precision was used to upgrade the attack ${event.timesUpgraded} step${event.timesUpgraded !== 1 ? 's' : ''}. ` : null;
+            const downgrade = Decimal(event.evasionUsed).gt(0) ? `${event.evasionUsed} Evasion was used to downgrade the attack ${event.timesDowngraded} step${event.timesDowngraded !== 1 ? 's' : ''}. ` : null;
+            return [base, upgrade, downgrade].filter(e => e !== null).join(" ");
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
         case "fatigue-damage":
-            return `${targetName} loses ${event.value.toFixed()} health from exhaustion.`;
+            const damage = Decimal(event.value);
+            return `${targetName} lose${targetName === "You" ? "" : "s"} ${damage.toFixed()} health from exhaustion.`;
         case "add-status":
-            return `${targetName} gained ${Decimal(event.stacks).toFixed()} stacks of ${Statuses[event.status].name} for ${event.duration} actions.`;
+            const numStacks = Decimal(event.stacks);
+            const duration = Decimal(event.duration);
+            return `${targetName} gained ${numStacks.toFixed()} stack${numStacks.eq(1) ? "" : "s"} of ${Statuses[event.status].name} for ${event.duration} action${duration.eq(1) ? "" : "s"}.`;
+        case "remove-status": {
+            const statusToRemove = getCharacter(event.target).statuses[event.status]
+                .find(s => s.uuid === event.toRemove);
+            const stacks = Decimal(statusToRemove.stacks);
+            return `${targetName} removed ${stacks.toFixed()} stack${stacks.eq(0)?"":"s"} of ${Statuses[event.status].name}.`;
+        }
     }
 }

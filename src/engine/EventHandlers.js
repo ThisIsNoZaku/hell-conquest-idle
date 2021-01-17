@@ -6,32 +6,33 @@ import {Traits} from "../data/Traits";
 import {Decimal} from "decimal.js";
 import {v4} from "node-uuid";
 import * as _ from "lodash";
+import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
+import {act} from "@testing-library/react";
+import {enableTutorial} from "./tutorials";
 
 export const EventHandlers = {
-    "add-status" : function(event, sourceCharacter, targetCharacter) {
-        targetCharacter.statuses[event.status] = Decimal(event.stacks);
+    "add-status": function (event, sourceCharacter, targetCharacter) {
+        targetCharacter.statuses[event.status].push({
+            source: event.source,
+            stacks: event.stacks,
+            duration: event.duration
+        });
     },
-    "remove-status" : function (event, sourceCharacter, targetCharacter) {
-        targetCharacter.statuses[event.status] = Decimal.max(0,
-            Decimal(targetCharacter.statuses[event.status]).minus(event.stacks)
-            );
-    },
-    "combat-end": function(event, sourceCharacter, targetCharacter) {
-        if (!getCharacter(0).isAlive) {
-            getGlobalState().nextAction = "reincarnating";
+    "remove-status": function (event, sourceCharacter, targetCharacter) {
+        const statusToRemove = targetCharacter.statuses[event.status].find(s => s.uuid === event.toRemove);
+        if(Decimal(statusToRemove.stacks).lte(event.stacks)) {
+            targetCharacter.statuses[event.status] = targetCharacter.statuses[event.status]
+                .filter(s => s.uuid !== event.toRemove);
         } else {
-            if (getConfigurationValue("mechanics.artifacts.enabled")) {
-                getGlobalState().nextAction = "looting";
-            } else {
-                getGlobalState().nextAction = "exploring";
-            }
+            statusToRemove.stacks = Decimal(statusToRemove.stacks).minus(event.stacks);
         }
     },
-    "kill" : function(event, sourceCharacter, targetCharacter, pushLogItem) {
+    "kill": function (event, sourceCharacter, targetCharacter, pushLogItem) {
         const deadCharacter = getCharacter(event.target);
         const actingCharacter = getCharacter(event.source);
         if (actingCharacter.id === 0 && actingCharacter.id !== deadCharacter.id) {
-            debugMessage("Player killed an deadCharacter and gained power.");
+            enableTutorial("leveling-up");
+            debugMessage("Player killed an enemy and gained power.");
             const player = getCharacter(0);
             const powerToGain = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromOtherDemon"), {
                 enemy: deadCharacter
@@ -46,13 +47,17 @@ export const EventHandlers = {
             const pregainLevel = player.powerLevel;
             const powerGained = player.gainPower(powerToGain.times(multiplier).floor());
             pushLogItem(`You gained ${powerGained.toFixed()} power.`);
+            if (player.absorbedPower.gte(getPowerNeededForLevel(player.powerLevel.plus(1)))) {
+                player.levelUp();
+            }
             if (!pregainLevel.eq(player.powerLevel)) {
                 const hp = player.hp;
                 player.hp = player.maximumHp;
+                player.combat.stamina = player.combat.maximumStamina;
                 pushLogItem({
                     message: `The surge of new power heals you for ${player.hp.minus(hp)} health.`,
                     uuid: v4()
-                })
+                });
             }
             if (!getGlobalState().automaticReincarnate) {
                 getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, deadCharacter.powerLevel);
@@ -67,12 +72,7 @@ export const EventHandlers = {
             }
         } else if (deadCharacter.id === 0) {
             if (Decimal(deadCharacter.powerLevel).gt(getGlobalState().rival.level || 0)) {
-                getGlobalState().rival = {
-                    level: actingCharacter.powerLevel,
-                    type: actingCharacter.appearance,
-                    traits: actingCharacter.traits,
-                    tactics: actingCharacter.tactics
-                }
+                getGlobalState().rival = {...actingCharacter};
                 pushLogItem({
                     message: "<strong>You have a new rival!</strong>",
                     uuid: v4()

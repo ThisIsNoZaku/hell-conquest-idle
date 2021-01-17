@@ -74,7 +74,10 @@ export default function BottomSection(props) {
                                         evasionPoints={props.player.combat.evasionPoints.toNumber()}
                                         maxEvasionPoints={props.player.combat.maxEvasionPoints.toNumber()}
                                         precisionPoints={props.player.combat.precisionPoints.toNumber()}
-                                        maxPrecisionPoints={props.player.combat.maxPrecisionPoints.toNumber()}/>
+                                        maxPrecisionPoints={props.player.combat.maxPrecisionPoints.toNumber()}
+                                        stamina={props.player.combat.stamina}
+                                        maxStamina={props.player.maximumStamina}
+                />
                 <CharacterCombatSummary name={_.get(props.enemy, "name")} hp={_.get(props.enemy, "hp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
                                         statuses={_.get(props.enemy, "statuses")}
@@ -83,7 +86,10 @@ export default function BottomSection(props) {
                                         evasionPoints={_.get(props.enemy, ["combat", "evasionPoints"], Decimal(0)).toNumber()}
                                         maxEvasionPoints={_.get(props.enemy, ["combat", "maxEvasionPoints"], Decimal(0)).toNumber()}
                                         precisionPoints={_.get(props.enemy, ["combat", "precisionPoints"], Decimal(0)).toNumber()}
-                                        maxPrecisionPoints={_.get(props.enemy, ["combat", "maxPrecisionPoints"], Decimal(0)).toNumber()}/>
+                                        maxPrecisionPoints={_.get(props.enemy, ["combat", "maxPrecisionPoints"], Decimal(0)).toNumber()}
+                                        stamina={_.get(props.enemy, ["combat","stamina"], Decimal(0)).toNumber()}
+                                        maxStamina={_.get(props.enemy, ["combat","maximumStamina"], Decimal(0)).toNumber()}
+                />
             </Grid>
         </Paper>
         <Paper style={styles.action}>

@@ -9,7 +9,6 @@ import CharacterAttributes from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
 import TacticsSection from "./charactersheet/TacticsSection";
-import getHitChanceBy from "../../engine/combat/getHitChanceBy";
 import calculateDamageBy from "../../engine/combat/calculateDamageBy";
 import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
@@ -19,10 +18,9 @@ import {Help} from "@material-ui/icons";
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
 
-    const powerRequiredForCurrentLevel = getPowerNeededForLevel(props.character.powerLevel);
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
-    const progressToNextLevel = props.character.absorbedPower.minus(powerRequiredForCurrentLevel);
-    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(getConfigurationValue("mechanics.reincarnation.latentPowerEffectScale")).times(100)), [
+    const progressToNextLevel = Decimal(props.character.absorbedPower);
+    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(getConfigurationValue("latent_power_effect_scale")).times(100)), [
         props.character.latentPower
     ]);
 
@@ -75,6 +73,7 @@ export default function CharacterSheet(props) {
             <CharacterAttributes character={props.character}/>
         </Grid>
         <CharacterCombatStatistics
+            characterStamina={props.character.stamina}
             calculatedDamage={calculatedDamage}
             characterPower={props.character.combat.power.toFixed()}
             characterResilience={props.character.combat.resilience.toFixed()}
@@ -91,7 +90,7 @@ export default function CharacterSheet(props) {
             </Grid>
             <CharacterTraits character={props.character}/>
         </Grid>
-        {getConfigurationValue("mechanics.artifacts.enabled") && <Grid container>
+        {getConfigurationValue("artifacts_enabled") && <Grid container>
             <Grid item xs={12}>
                 <strong>Artifacts</strong>
             </Grid>

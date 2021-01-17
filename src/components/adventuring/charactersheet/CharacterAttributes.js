@@ -7,7 +7,7 @@ import { Attributes } from "../../../data/Attributes";
 import {Decimal} from "decimal.js";
 
 export default function CharacterAttributes(props) {
-    const currentHp = useMemo(() => props.character.hp, [
+    const hp = useMemo(() => props.character.hp, [
         props.character.hp.toFixed()
     ]);
     const maximumHp = useMemo(() => props.character.maximumHp, [
@@ -22,7 +22,7 @@ export default function CharacterAttributes(props) {
                 Health
             </Grid>
             <Grid item xs={5}>
-                {currentHp.toFixed()} / {maximumHp.toFixed()}
+                {hp.toFixed()} / {maximumHp.toFixed()}
             </Grid>
         </Grid>
         <Grid container direction="row">

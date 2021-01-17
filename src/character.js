@@ -1,5 +1,5 @@
 import {getConfigurationValue} from "./config";
-import {getGlobalState} from "./engine";
+import {getCharacter, getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
@@ -7,7 +7,6 @@ import {Statuses} from "./data/Statuses";
 import * as _ from "lodash";
 import {Traits} from "./data/Traits";
 import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
-import getLevelForPower from "./engine/general/getLevelForPower";
 import evaluateExpression from "./engine/general/evaluateExpression";
 import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
@@ -38,22 +37,25 @@ export class Character {
         this.combat = new CombatStats(this, props.combat);
         this.appearance = props.appearance || props._appearance;
 
-        this.hp = Decimal(props.hp || this.maximumHp);
+        this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
 
     levelUp(){
         this.powerLevel = this.powerLevel.plus(1);
         this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
+        Creatures[this.appearance].traits.forEach(trait =>{
+            getGlobalState().unlockedTraits[trait] = this.powerLevel.div(10).ceil();
+        });
     }
 
     clearStatuses() {
         Object.keys(this.statuses).forEach(status => delete this.statuses[status]);
     }
 
-    getStatusRank(status) {
+    getStatusStacks(status) {
         const statusInstances = this.statuses[status];
         return statusInstances.reduce((highestRank, nextInstance) => {
-            return Decimal.max(highestRank, nextInstance.rank);
+            return Decimal.max(highestRank, nextInstance.stacks);
         }, 0)
     }
 
@@ -88,7 +90,18 @@ export class Character {
     reincarnate(newAppearance, newTraits) {
         this.appearance = newAppearance;
         this.traits = newTraits;
+        Creatures[newAppearance].traits.forEach(trait => {
+            this.traits[trait] = Math.max(1, this.traits[trait] || 0);
+        });
+        this.absorbedPower = Decimal(0);
+        this.powerLevel = Decimal(1);
+        this.reset();
+    }
+
+    reset() {
         this.hp = this.maximumHp;
+        this.statuses = {};
+        this.combat.refresh();
     }
 
     otherDemonIsGreaterDemon(other) {
@@ -121,8 +134,14 @@ export class Character {
     }
 
     refreshBeforeCombat() {
-        this.combat.evasionPoints = this.combat.maxPrecisionPoints;
+        this.combat.evasionPoints = this.combat.maxEvasionPoints;
         this.combat.precisionPoints = this.combat.maxPrecisionPoints;
+        if(this.combat.maxEvasionPoints.lt(this.combat.evasionPoints)) {
+            throw new Error("Max evasion points < evasion points");
+        }
+        if(this.combat.maxPrecisionPoints.lt(this.combat.precisionPoints)) {
+            throw new Error("Max precision points < precision points");
+        }
     }
 }
 
@@ -131,10 +150,10 @@ export class Attributes {
         Object.defineProperty(this, "character", {
             value: character
         });
-        this.baseBrutality = Decimal(attributes.brutality || getConfigurationValue("minimum_attribute_score"));
-        this.baseCunning = Decimal(attributes.cunning  || getConfigurationValue("minimum_attribute_score"));
-        this.baseDeceit = Decimal(attributes.deceit  || getConfigurationValue("minimum_attribute_score"));
-        this.baseMadness = Decimal(attributes.madness  || getConfigurationValue("minimum_attribute_score"));
+        this.baseBrutality = Decimal(attributes.baseBrutality || getConfigurationValue("minimum_attribute_score"));
+        this.baseCunning = Decimal(attributes.baseCunning  || getConfigurationValue("minimum_attribute_score"));
+        this.baseDeceit = Decimal(attributes.baseDeceit  || getConfigurationValue("minimum_attribute_score"));
+        this.baseMadness = Decimal(attributes.baseMadness  || getConfigurationValue("minimum_attribute_score"));
     }
 
     get brutality() {
@@ -171,9 +190,21 @@ class CombatStats {
         Object.defineProperty(this, "character", {
             value: character
         });
-        this.precisionPoints = Decimal(overrides.precisionPoints || this.maxPrecisionPoints);
-        this.evasionPoints = Decimal(overrides.evasionPoints || this.maxEvasionPoints);
+        this.precisionPoints = Decimal(overrides.precisionPoints === undefined ? this.maxPrecisionPoints : overrides.precisionPoints );
+        this.evasionPoints = Decimal(overrides.evasionPoints === undefined ? this.maxEvasionPoints : overrides.evasionPoints );
         this.stamina = Decimal(overrides.stamina || this.maximumStamina);
+        if(this.precisionPoints.gt(this.maxPrecisionPoints)) {
+            throw new Error("Precision points > max");
+        }
+        if(this.evasionPoints.gt(this.maxEvasionPoints)) {
+            throw new Error("Evasion points > max");
+        }
+    }
+
+    refresh() {
+        this.precisionPoints = this.maxPrecisionPoints;
+        this.evasionPoints = this.maxEvasionPoints;
+        this.stamina = this.maximumStamina;
     }
 
     get damage() {
@@ -191,8 +222,8 @@ class CombatStats {
     get receivedDamageMultiplier() {
         return Object.keys(this.character.statuses).reduce((previousValue, currentValue) => {
             const statusModifier = Statuses[currentValue].effects.received_damage_modifier || 0;
-            const statusRank = this.character.getStatusRank(currentValue);
-            const modifier = Decimal(statusModifier).pow(this.character.statuses[currentValue]).minus(1);
+            const statusRank = this.character.getStatusStacks(currentValue);
+            const modifier = Decimal.max(0, Decimal(statusModifier).pow(statusRank).minus(1));
             return previousValue.plus(modifier || 0);
         }, Decimal(1));
     }
@@ -218,13 +249,17 @@ class CombatStats {
     }
 
     get maxPrecisionPoints() {
-        return Decimal(this.character.attributes[getConfigurationValue("mechanics.combat.precision.baseAttribute")])
-            .times(getConfigurationValue("mechanics.combat.precision.effectPerPoint"));
+        const attributeToUse = this.precision;
+        const scale = getConfigurationValue("mechanics.combat.precision.effectPerPoint");
+        return attributeToUse
+            .times(scale);
     }
 
     get maxEvasionPoints() {
-        return Decimal(this.character.attributes[getConfigurationValue("mechanics.combat.evasion.baseAttribute")])
-            .times(getConfigurationValue("mechanics.combat.evasion.effectPerPoint"));
+        const attributeToUse = this.evasion;
+        const scale = getConfigurationValue("mechanics.combat.evasion.effectPerPoint");
+        return attributeToUse
+            .times(scale);
     }
 
     get attackUpgradeCost() {
@@ -240,15 +275,8 @@ class CombatStats {
     }
 }
 
-function calculateDamage(character) {
-    const baseDamage = evaluateExpression(getConfigurationValue("mechanics.combat.baseDamage"), {
-        player: character
-    });
-    return baseDamage.ceil();
-}
-
 export function calculateCombatStat(character, combatAttribute) {
-    const attributeBase = character.attributes[getConfigurationValue("mechanics.combat")[combatAttribute].baseAttribute];
+    const attributeBase = character.attributes[getConfigurationValue(["mechanics", "combat", combatAttribute, "baseAttribute"])];
     const tacticsModifier = Decimal(0).plus(Tactics[character.tactics].modifiers[`${combatAttribute}_modifier`] || 0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];
@@ -288,8 +316,8 @@ const characterPropsSchema = JOI.object({
             _baseDeceit: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
             _baseMadness: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
         })
-    ).required(),
-    powerLevel: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number()).required(),
+    ).default({baseBrutality: Decimal(1), baseCunning: Decimal(1), baseDeceit: Decimal(1), baseMadness: Decimal(1)}),
+    powerLevel: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number()).default(Decimal(1)),
     statuses: JOI.object().default({}),
     highestLevelReached: JOI.alternatives().try(JOI.number(), JOI.object().instance(Decimal), JOI.string())
         .default(Decimal(1)),
@@ -297,7 +325,7 @@ const characterPropsSchema = JOI.object({
     name: JOI.string(),
     appearance: JOI.string().empty(''),
     traits: JOI.object().default({}),
-    tactics: JOI.string().valid(...Object.keys(Tactics)),
+    tactics: JOI.string().valid(...Object.keys(Tactics)).required(),
     combat: JOI.object({
         stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
@@ -305,7 +333,7 @@ const characterPropsSchema = JOI.object({
     }).default({}),
     adjectives: JOI.array().items(JOI.object()),
     absorbedPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number())
-        .default(Decimal(1)),
+        .default(Decimal(0)),
     hp: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     party: JOI.number(),
     latentPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),

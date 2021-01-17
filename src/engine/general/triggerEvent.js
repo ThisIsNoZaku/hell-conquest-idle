@@ -3,6 +3,7 @@ import {Traits} from "../../data/Traits";
 import * as JOI from "joi";
 import evaluateExpression from "./evaluateExpression";
 import Decimal from "decimal.js";
+import { v4 } from "node-uuid";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
@@ -72,27 +73,32 @@ function applyTraitEffects(effectsToApply, event, traitId) {
                     });
                     const duration = evaluateExpression(effectDefinition[status].duration, {});
                     targets.forEach(target => {
+                        const statusUuid = v4();
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => s.source === event.source.id);
                         if(existingStatus) {
                             existingStatus.duration = duration;
-                            existingStatus.stacks = status;
+                            existingStatus.stacks = stacks;
                         } else {
                             target.statuses[status] = (target.statuses[status] || []);
                             target.statuses[status].push({
+                                uuid: statusUuid,
                                 source: event.source.id,
                                 duration,
                                 stacks
                             });
                         }
-                        event.roundEvents.push({
-                            event: "add-status",
-                            source: event.source.id,
-                            target: target.id,
-                            duration,
-                            status,
-                            stacks
-                        });
+                        if(duration < 999) {
+                            event.roundEvents.push({
+                                uuid: statusUuid,
+                                event: "add-status",
+                                source: event.source.id,
+                                target: target.id,
+                                duration,
+                                status,
+                                stacks
+                            });
+                        }
                     })
 
                 });
@@ -111,6 +117,7 @@ function applyTraitEffects(effectsToApply, event, traitId) {
                                 event: "remove-status",
                                 source: event.source.id,
                                 target: target.id,
+                                toRemove: existingStatus.uuid,
                                 status,
                                 stacks
                             });
