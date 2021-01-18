@@ -77,6 +77,13 @@ export const Creatures  = {
         enabled: true,
         appearance: "bloodyBat",
         texture: "13_bat.png"
+    },
+    myrmidonWarrior: {
+        name: "Myrmidon",
+        traits: ["relentless"],
+        enabled: true,
+        appearance: "myrmidonWarrior",
+        texture: "14_ant.png"
     }
 }
 

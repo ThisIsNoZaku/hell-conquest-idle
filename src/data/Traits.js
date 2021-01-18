@@ -93,6 +93,19 @@ export const Traits = {
             }
         }
     }),
+    relentless: validatedTrait({
+        name: "Relentless",
+        description: _.template("Your indomitably increases your Stamina and stamina regeneration by ${rank.times(10)}%."),
+        icon: "icons/icons-110.png",
+        continuous: {
+            trigger_effects: {
+                stamina_modifier: {
+                    target: "self",
+                    modifier: "rank.times(.1)"
+                }
+            }
+        }
+    }),
     sadisticJoy: validatedTrait({
         name: "Sadistic Joy",
         icon: "icons/icons-852.png",

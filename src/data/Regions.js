@@ -148,6 +148,17 @@ export const Regions = {
                         count: 1,
                     }
                 ]
+            },
+            myrmidonWarrior: {
+                description: "1 Myrmidon Warrior",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "myrmidonWarrior",
+                        count: 1
+                    }
+                ]
             }
         },
         {
