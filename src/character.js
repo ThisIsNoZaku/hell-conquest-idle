@@ -244,7 +244,7 @@ class CombatStats {
     }
 
     get maximumStamina() {
-        return calculateCharacterStamina(this.character.powerLevel);
+        return calculateCharacterStamina(this.character.powerLevel, this.character.traits);
     }
 
     get power() {

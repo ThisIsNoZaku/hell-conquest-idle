@@ -42,6 +42,10 @@ const eventEffects = JOI.object({
         target: effectTarget,
         modifier: [JOI.number(), JOI.string()]
     }),
+    stamina_modifier: JOI.object({
+        target: effectTarget,
+        modifier: [JOI.number(), JOI.string()]
+    }),
     damage: JOI.object({
         target: effectTarget,
         value: [JOI.number(), JOI.string()]
