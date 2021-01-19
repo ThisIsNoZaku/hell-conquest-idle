@@ -84,6 +84,27 @@ export const Creatures  = {
         enabled: true,
         appearance: "myrmidonWarrior",
         texture: "14_ant.png"
+    },
+    scorpion: {
+        name: "Scorpion",
+        traits: ["killingBlow"],
+        enabled: true,
+        appearance: "scorpion",
+        texture: "16_scorpion.png"
+    },
+    carrionBeetle: {
+        name: "Corpse Beetle",
+        traits: ["cannibalism"],
+        enabled: true,
+        appearance: "carrionBeetle",
+        texture: "17_scarab.png"
+    },
+    fleshlessSoldier: {
+        name: "Fleshless Soldier",
+        traits: ["mindlessAssault"],
+        enabled: true,
+        appearance: "fleshlessSoldier",
+        texture: "18_skeleton.png"
     }
 }
 
