@@ -90,29 +90,27 @@ export const Actions = {
                     pushLogItem("Combat Begins!");
                     player.refreshBeforeCombat();
                     currentEncounter.currentTick += 100;
-                    return "fighting";
-                } else {
-                    const nextRound = resolveCombatRound(currentEncounter.currentTick, {
-                        0: player,
-                        [currentEncounter.enemies[0].id]: currentEncounter.enemies[0]
-                    });
-                    if (nextRound.tick !== 0) {
-                        pushLogItem(`<strong>Actions on ${nextRound.tick}</strong>`);
-                    }
-                    applyAction(nextRound);
+                }
+                const nextRound = resolveCombatRound(currentEncounter.currentTick, {
+                    0: player,
+                    [currentEncounter.enemies[0].id]: currentEncounter.enemies[0]
+                });
+                if (nextRound.tick !== 0) {
+                    pushLogItem(`<strong>Actions on ${nextRound.tick}</strong>`);
+                }
+                applyAction(nextRound);
 
-                    setActionLog([...getGlobalState().actionLog]);
+                setActionLog([...getGlobalState().actionLog]);
 
-                    if (nextRound.end) {
-                        if (player.isAlive) {
-                            return "recovering";
-                        } else {
-                            return "reincarnating";
-                        }
+                if (nextRound.end) {
+                    if (player.isAlive) {
+                        return "recovering";
                     } else {
-                        currentEncounter.currentTick += 100;
-                        return "fighting";
+                        return "reincarnating";
                     }
+                } else {
+                    currentEncounter.currentTick += 100;
+                    return "fighting";
                 }
                 return "fleeing";
             }
