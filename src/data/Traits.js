@@ -18,7 +18,7 @@ export const Traits = {
                 add_statuses: {
                     berserk: {
                         target: "source_character",
-                        rank: "rank",
+                        stacks: "rank",
                         duration: 999
                     }
                 }
@@ -27,7 +27,23 @@ export const Traits = {
                 remove_statuses: {
                     berserk: {
                         target: "source_character",
-                        rank: 999
+                        stacks: 999
+                    }
+                }
+            }
+        }
+    }),
+    cannibalism: validatedTrait({
+        name: "Cannibalism",
+        icon: "icons/icons-1.png",
+        description: _.template("When this demon kills another, it gains ${rank} stacks of of Engorged, to a maximum of ${rank.times(10)}"),
+        on_kill: {
+            trigger_effects: {
+                add_statuses: {
+                    engorged: {
+                        target: "self",
+                        stacks: "rank",
+                        max: "rank.times(10)"
                     }
                 }
             }
@@ -62,7 +78,7 @@ export const Traits = {
                 add_statuses: {
                     restrained: {
                         target: "target_character",
-                        rank: "rank",
+                        stacks: "rank",
                         duration: 5
                     }
                 }
@@ -73,9 +89,35 @@ export const Traits = {
                 add_statuses: {
                     restrained: {
                         target: "target_character",
-                        rank: "rank",
+                        stacks: "rank",
                         duration: 5
                     }
+                }
+            }
+        }
+    }),
+    killingBlow: validatedTrait({
+        name: "Killing Blow",
+        description: _.template("You seek to end fights with a single strike, dealing ${rank.times(10).plus(100).toFixed()}% damage on a Devastating hit."),
+        icon: "icons/icons-1.png",
+        on_devastating_hit: {
+            trigger_effects: {
+                damage_modifier: {
+                    target: "dealt",
+                    modifier: "rank.times(1.1)"
+                }
+            }
+        }
+    }),
+    mindlessBlows: validatedTrait({
+        name: "Mindless Blows",
+        icon: "./icons/icon-1.png",
+        description: _.template("Your relentless attacks make your attacks hard to deflect, increasing the cost to downgrade your attacks by ${rank.times(10)}%."),
+        continuous: {
+            trigger_effects: {
+                attack_downgrade_cost_multiplier: {
+                    target: "source_character",
+                    modifier: "rank.times(.1)"
                 }
             }
         }
@@ -125,7 +167,7 @@ export const Traits = {
                 add_statuses: {
                     agonizingPoison: {
                         target: "target_character",
-                        rank: "rank"
+                        stacks: "rank"
                     }
                 }
             }
@@ -135,7 +177,7 @@ export const Traits = {
                 add_statuses: {
                     agonizingPoison: {
                         target: "target_character",
-                        rank: "rank"
+                        stacks: "rank"
                     }
                 }
             }
@@ -145,7 +187,7 @@ export const Traits = {
                 add_statuses: {
                     agonizingPoison: {
                         target: "target_character",
-                        rank: "rank"
+                        stacks: "rank"
                     }
                 }
             }
@@ -157,8 +199,8 @@ export const Traits = {
         description: _.template("You return the pain of injuries inflicted on you, reflecting <span style='color: orangered'>${rank.times(20).toFixed()}%</span> of the damage back."),
         on_taking_damage: {
             trigger_effects: {
-                damage: {
-                    target: "source_character",
+                inflict_damage: {
+                    target: "target_character",
                     value: "rank.times(20).div(100).times(attackDamage)"
                 }
             }
@@ -167,7 +209,7 @@ export const Traits = {
     swiftEvasion: validatedTrait({
         name: "Swift Evasion",
         icon: "icons/icons-595.png",
-        description: _.template("Your agility increases your Evasion by ${rank.times(25)}%."),
+        description: _.template("Your agility increases your Evasion by ${rank.times(10)}%."),
         continuous: {
             trigger_effects: {
                 evasion_modifier: {
@@ -186,7 +228,7 @@ export const Traits = {
                 add_statuses: {
                     terrified: {
                         target: "all_enemies",
-                        rank: "rank.times(2)"
+                        stacks: "rank.times(2)"
                     }
                 }
             }

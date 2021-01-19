@@ -1,8 +1,8 @@
 import * as JOI from "joi";
-import { Statuses } from "../Statuses";
+import {Statuses} from "../Statuses";
+import {effectTarget, modifierEffects} from "./effects";
 
 const conditionTriggerTarget = JOI.valid("any_enemy");
-const effectTarget = JOI.valid("self", "source_character", "target_character", "all_enemies");
 
 const statusNames = Object.keys(Statuses);
 // Conditions
@@ -15,42 +15,23 @@ const eventConditions = JOI.object({
 });
 
 // Effects
-const eventEffects = JOI.object({
+const eventEffects = modifierEffects.keys({
     add_statuses: JOI.object().keys(statusNames.reduce((schemas, nextStatus) => {
         schemas[nextStatus] = JOI.object({
             target: effectTarget,
-            rank: [JOI.string(), JOI.number().min(0)],
-            duration: JOI.number().min(1).default(1)
+            stacks: [JOI.string(), JOI.number().min(0)],
+            duration: JOI.number().min(1).default(1),
+            max: [JOI.number().min(1), JOI.string()]
         });
         return schemas;
     }, {})),
     remove_statuses: JOI.object().keys(statusNames.reduce((schemas, nextStatus) => {
         schemas[nextStatus] = JOI.object({
             target: effectTarget,
-            rank: [JOI.string(), JOI.number().min(0)]
+            stacks: [JOI.string(), JOI.number().min(0)]
         });
         return schemas;
-    }, {})),
-    steal_item: JOI.object({
-        target: effectTarget
-    }),
-    precision_modifier: JOI.object({
-        target: effectTarget,
-        modifier: [JOI.number(), JOI.string()]
-    }),
-    evasion_modifier: JOI.object({
-        target: effectTarget,
-        modifier: [JOI.number(), JOI.string()]
-    }),
-    stamina_modifier: JOI.object({
-        target: effectTarget,
-        modifier: [JOI.number(), JOI.string()]
-    }),
-    damage: JOI.object({
-        target: effectTarget,
-        value: [JOI.number(), JOI.string()]
-    }),
-    power_gain_modifier: [JOI.string(), JOI.number()]
+    }, {}))
 });
 
 // Validators
@@ -92,7 +73,7 @@ const traitValidator = JOI.object({
 
 export function validatedTrait(object) {
     const validationResult = traitValidator.validate(object);
-    if(validationResult.error) {
+    if (validationResult.error) {
         throw new Error(validationResult.error.details.map(d => d.message).join(", "));
     }
     return validationResult.value;
