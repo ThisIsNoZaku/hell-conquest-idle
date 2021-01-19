@@ -4,14 +4,20 @@ import * as _ from "lodash";
 import {Character} from "../character";
 import {Decimal} from "decimal.js";
 import {onIntimidation} from "../engine/general/onIntimidation";
+import resolveCombatRound from "../engine/combat/resolveCombatRound";
 
 jest.mock("../engine");
 jest.mock("../engine/general/onIntimidation");
 jest.mock("../engine/combat/resolveAttack");
+jest.mock("../engine/combat/resolveCombatRound");
+
 const resolveAttackMock = jest.requireMock("../engine/combat/resolveAttack").default;
 
 describe("Exploring action", function () {
+    let globalState;
     beforeEach(() => {
+        globalState = {};
+        getGlobalState.mockReturnValue(globalState);
     });
     it("completion clears the current encounter", function () {
         getGlobalState().currentEncounter = {};
@@ -27,14 +33,26 @@ describe("Exploring action", function () {
 
 describe("Approaching action", function () {
     let player;
+    let globalState;
+    let enemy;
     beforeEach(() => {
-        _.set(getGlobalState(), ["currentEncounter", "enemies"], [
-            new Character({
-                id: 1,
-                attributes: {},
-                tactics: "defensive",
-                powerLevel: 1
-            })]);
+        getGlobalState.mockClear();
+        enemy = new Character({
+            id: 1,
+            attributes: {},
+            tactics: "defensive",
+            powerLevel: 1
+        });
+        globalState = {
+            characters: {
+                0: player,
+                1: enemy
+            },
+            currentEncounter: {
+                enemies: [enemy]
+            }
+        };
+        getGlobalState.mockReturnValue(globalState);
         player = new Character({
             id: 0,
             attributes: {},
@@ -85,7 +103,11 @@ describe("fighting action", function () {
     let pushLogItem;
     let applyAction;
     let setActionLog;
+    let globalState;
+    let enemy;
     beforeEach(() => {
+        getGlobalState.mockClear();
+        resolveCombatRound.mockClear();
         player = new Character({
             id: 0,
             attributes: {
@@ -107,11 +129,33 @@ describe("fighting action", function () {
         pushLogItem = jest.fn();
         applyAction = jest.fn();
         setActionLog = jest.fn();
-        getGlobalState().actionLog = [];
+        enemy = new Character({
+            id: 1,
+            powerLevel: Decimal(1),
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            tactics: "defensive",
+        });
+        globalState = {
+            characters: {
+                0: player,
+                1: enemy
+            },
+            currentEncounter: {
+                currentTick: 0,
+                enemies: [enemy]
+            },
+            actionLog : []
+        };
+        getGlobalState.mockReturnValue(globalState);
     })
     it("if enemy level <= instantKill enemy is killed automatically", function () {
-        getGlobalState().highestLevelEnemyDefeated = Decimal(6);
-        getGlobalState().currentEncounter = {
+        globalState.highestLevelEnemyDefeated = Decimal(6);
+        globalState.currentEncounter = {
             pendingActions: [],
             enemies: [new Character({
                 id: 1,
@@ -122,39 +166,15 @@ describe("fighting action", function () {
         const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction);
         expect(nextAction).toEqual(["exploring", "challenging"]);
     });
-    it("if has pending actions, resolves it", function () {
-        player.highestLevelReached = 1;
-        getGlobalState().currentEncounter = {
-            pendingActions: [
-                {
-                    end: false,
-                    event: [],
-                    tick: 100
-                }
-            ],
-            enemies: [new Character({
-                id: 1,
-                tactics: "defensive",
-                powerLevel: Decimal(1)
-            })]
-        };
-        resolveAttackMock.mockReturnValue({
-            effects: [],
-            hitType: 0
-        });
-        const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
-        expect(nextAction).toEqual("fighting");
-        expect(pushLogItem).toHaveBeenCalled();
-        expect(applyAction).toHaveBeenCalled();
-    });
     it("End of combat when player is dead", function () {
         player.highestLevelReached = 1;
         player.hp = 0;
-        resolveAttackMock.mockReturnValue({
-            effects: [],
-            hitType: 0
-        })
-        getGlobalState().currentEncounter = {
+        resolveCombatRound.mockReturnValue({
+            events: [],
+            end: true,
+            tick: 100
+        });
+        globalState.currentEncounter = {
             pendingActions: [
                 {
                     end: true,
@@ -177,7 +197,7 @@ describe("fighting action", function () {
     it("End of combat when player is alive", function () {
         player.highestLevelReached = 1;
         player.hp = 1;
-        getGlobalState().currentEncounter = {
+        globalState.currentEncounter = {
             currentTick: 100,
             enemies: [new Character({
                 id: 1,
@@ -192,14 +212,33 @@ describe("fighting action", function () {
                 }
             })]
         };
-        resolveAttackMock.mockReturnValue({
-            effects: [],
-            hitType: 0
+        resolveCombatRound.mockReturnValue({
+            events: [],
+            tick: 100,
+            end: true
         });
         const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
         expect(nextAction).toEqual("recovering");
         expect(pushLogItem).toHaveBeenCalled();
         expect(applyAction).toHaveBeenCalled();
+    });
+    it("prints a message when combat begins", function () {
+        resolveCombatRound.mockReturnValue({
+            events: [],
+            tick: 100
+        });
+        player.highestLevelReached = Decimal(2);
+        Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
+        expect(pushLogItem).toHaveBeenCalledWith("Combat Begins!");
+    });
+    it("resolves a combat round", function () {
+        resolveCombatRound.mockReturnValue({
+            events: [],
+            tick: 100
+        });
+        player.highestLevelReached = Decimal(2);
+        Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
+        expect(resolveCombatRound).toHaveBeenCalled();
     });
 });
 
