@@ -32,7 +32,7 @@ const config = {
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(10)",
-            gainedFromLesserDemon: "Decimal.sqrt(enemy.powerLevel).ceil().times(10)",
+            gainedFromLesserDemon: "Decimal.sqrt(enemy.powerLevel).times(10).ceil()",
             gainedFromOtherDemon: "enemy.powerLevel.times(10)"
         },
         levelToPowerEquation: "level.eq(1) ? 0 : Decimal.floor(Decimal(2).pow(level.minus(1))).times(5)",
