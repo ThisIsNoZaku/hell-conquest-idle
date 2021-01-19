@@ -33,13 +33,19 @@ describe("character", function () {
 
 describe("reincarnate", function () {
     let character;
+    let globalState
     beforeEach(() => {
+        globalState = {
+            unlockedTraits: {}
+        }
+        getGlobalState.mockClear();
         character = new Character({
             id: 0,
             powerLevel: 1,
             attributes: {},
             tactics: "deceptive"
         });
+        getGlobalState.mockReturnValue(globalState);
     });
     it("changes appearance", function () {
         character.reincarnate("bloodthirstyKnight", {})
@@ -50,7 +56,7 @@ describe("reincarnate", function () {
         expect(character.absorbedPower).toEqual(Decimal(0));
     });
     it("reincarnate combines innate and bonus traits", function () {
-        getGlobalState().unlockedTraits = {
+        globalState.unlockedTraits = {
             foo: 1
         };
         character.reincarnate("bloodthirstyKnight", {
@@ -62,7 +68,7 @@ describe("reincarnate", function () {
         });
     });
     it("reincarnate uses the highest of new traits and demon trait", function () {
-        getGlobalState().unlockedTraits.bloodrage = 2;
+        globalState.unlockedTraits.bloodrage = 2;
         character.reincarnate("bloodthirstyKnight", {
             bloodrage: true
         });
