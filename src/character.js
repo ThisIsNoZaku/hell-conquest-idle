@@ -143,14 +143,6 @@ export class Character {
     }
 
     refreshBeforeCombat() {
-        this.combat.evasionPoints = this.combat.maxEvasionPoints;
-        this.combat.precisionPoints = this.combat.maxPrecisionPoints;
-        if (this.combat.maxEvasionPoints.lt(this.combat.evasionPoints)) {
-            throw new Error("Max evasion points < evasion points");
-        }
-        if (this.combat.maxPrecisionPoints.lt(this.combat.precisionPoints)) {
-            throw new Error("Max precision points < precision points");
-        }
         this.statuses = {};
     }
 }
@@ -200,14 +192,11 @@ class CombatStats {
         Object.defineProperty(this, "character", {
             value: character
         });
-        this.precisionPoints = Decimal(overrides.precisionPoints === undefined ? this.maxPrecisionPoints : overrides.precisionPoints);
-        this.evasionPoints = Decimal(overrides.evasionPoints === undefined ? this.maxEvasionPoints : overrides.evasionPoints);
         this.stamina = Decimal(overrides.stamina || this.maximumStamina);
     }
 
     refresh() {
-        this.precisionPoints = this.maxPrecisionPoints;
-        this.evasionPoints = this.maxEvasionPoints;
+
     }
 
     get damage() {
@@ -249,20 +238,6 @@ class CombatStats {
 
     get power() {
         return calculateCombatStat(this.character, "power");
-    }
-
-    get maxPrecisionPoints() {
-        const attributeToUse = this.precision;
-        const scale = getConfigurationValue("mechanics.combat.precision.effectPerPoint");
-        return attributeToUse
-            .times(scale);
-    }
-
-    get maxEvasionPoints() {
-        const attributeToUse = this.evasion;
-        const scale = getConfigurationValue("mechanics.combat.evasion.effectPerPoint");
-        return attributeToUse
-            .times(scale);
     }
 
     get attackUpgradeCost() {
