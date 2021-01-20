@@ -7,6 +7,12 @@ import {config} from "../../../config";
 import {HitTypes} from "../../../data/HitTypes";
 import calculateDamageBy from "../../../engine/combat/calculateDamageBy";
 import calculateAttributeDifferentMultiplier from "../../../engine/combat/calculateAttributeDifferentMultiplier";
+import Table from "@material-ui/core/Table";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import TableBody from "@material-ui/core/TableBody";
+import TableContainer from "@material-ui/core/TableContainer";
+import Paper from "@material-ui/core/Paper";
 
 export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
@@ -21,79 +27,106 @@ export default function CharacterCombatStatistics(props) {
         <Grid item xs={12}>
             <strong>Combat Statistics</strong>
         </Grid>
-        <Grid container item xs direction="column">
-            <Grid container>
-                <Tooltip title={powerTooltip}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
+        <TableContainer component={Paper}>
+            <Table>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>
                             Power
-                        </Grid>
-                        <Grid item xs>
+                        </TableCell>
+                        <TableCell>
                             {props.characterPower}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={resilienceTooltip}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={powerTooltip}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                            Energy
+                        </TableCell>
+                        <TableCell>
+                            {props.characterStamina.toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
                             Resilience
-                        </Grid>
-                        <Grid item xs>
+                        </TableCell>
+                        <TableCell>
                             {props.characterResilience}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={`Your Evasion reduces the severity of hits you take.`}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={resilienceTooltip}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                        <TableCell>
+
+                        </TableCell>
+                        <TableCell>
+
+                        </TableCell>
+                        <TableCell>
+
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
                             Evasion
-                        </Grid>
-                        <Grid item xs>
+                        </TableCell>
+                        <TableCell>
                             {props.characterEvasion}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-                <Tooltip title={`Your Precision increases the severity of hits you score.`}>
-                    <Grid item container>
-                        <Grid item xs style={{textAlign: "center"}}>
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={`This character's evasion reduces the energy cost to downgrade attacks.`}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                            Downgrade Cost
+                        </TableCell>
+                        <TableCell>
+                            {props.evasionMultiplier.toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
                             Precision
-                        </Grid>
-                        <Grid item xs>
+                        </TableCell>
+                        <TableCell>
                             {props.characterPrecision}
-                        </Grid>
-                    </Grid>
-                </Tooltip>
-            </Grid>
-        </Grid>
-        <Grid container item xs direction="column">
-            <Grid container style={{visibility: "hidden"}}>
-                a
-            </Grid>
-            <Grid container >
-                <Grid item xs>
-                    Stamina
-                </Grid>
-                <Grid item xs>
-                    {props.characterStamina}
-                </Grid>
-            </Grid>
-            <Grid container direction="row">
-                <Grid item xs>
-                    Ev. Pool
-                </Grid>
-                <Grid item xs>
-                    {props.characterEvasionPoints}
-                </Grid>
-            </Grid>
-            <Grid container direction="row">
-                <Grid item xs>
-                    Acc. Pool
-                </Grid>
-                <Grid item xs>
-                    {props.characterAccuracyPoints}
-                </Grid>
-            </Grid>
-        </Grid>
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Precision reduces the energy cost to upgrade attacks.">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                        <TableCell>
+                            Upgrade Cost
+                        </TableCell>
+                        <TableCell>
+                            {props.precisionMultiplier.toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="How much energy is consumed to downgrade incoming attacks">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
         <Grid container>
             <Grid item xs={12}>
                 <strong>Hit Types</strong>
@@ -103,12 +136,13 @@ export default function CharacterCombatStatistics(props) {
                 <Grid item xs><em>Damage</em></Grid>
                 <Grid item xs={1}></Grid>
             </Grid>
-            {[-2, -1, -0, 1].map(type => {
+            {[-1, -0, 1].map(type => {
                 return <Grid item container xs={12}>
                     <Grid item xs><em>{HitTypes[type].type}</em></Grid>
                     <Grid item xs><em>{props.calculatedDamage[type].toFixed()}</em></Grid>
                     <Grid item xs={1}>
-                        <Tooltip title={`${HitTypes[type].type} deals ${HitTypes[type].damageMultiplier * 100}% of base damage.`}>
+                        <Tooltip
+                            title={`${HitTypes[type].type} deals ${HitTypes[type].damageMultiplier * 100}% of base damage.`}>
                             <Help/>
                         </Tooltip>
                     </Grid>
