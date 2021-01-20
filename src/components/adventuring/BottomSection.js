@@ -71,10 +71,6 @@ export default function BottomSection(props) {
                                         maximumHp={props.player.maximumHp}
                                         statuses={_.get(props.player, "statuses")}
                                         direction="row"
-                                        evasionPoints={props.player.combat.evasionPoints.toNumber()}
-                                        maxEvasionPoints={props.player.combat.maxEvasionPoints.toNumber()}
-                                        precisionPoints={props.player.combat.precisionPoints.toNumber()}
-                                        maxPrecisionPoints={props.player.combat.maxPrecisionPoints.toNumber()}
                                         stamina={props.player.combat.stamina}
                                         maxStamina={props.player.combat.maximumStamina}
                 />
@@ -83,10 +79,6 @@ export default function BottomSection(props) {
                                         statuses={_.get(props.enemy, "statuses")}
                                         direction="row-reverse"
                                         isRival={_.get(props.enemy, "isRival")}
-                                        evasionPoints={_.get(props.enemy, ["combat", "evasionPoints"], Decimal(0)).toNumber()}
-                                        maxEvasionPoints={_.get(props.enemy, ["combat", "maxEvasionPoints"], Decimal(0)).toNumber()}
-                                        precisionPoints={_.get(props.enemy, ["combat", "precisionPoints"], Decimal(0)).toNumber()}
-                                        maxPrecisionPoints={_.get(props.enemy, ["combat", "maxPrecisionPoints"], Decimal(0)).toNumber()}
                                         stamina={_.get(props.enemy, ["combat","stamina"], Decimal(0)).toNumber()}
                                         maxStamina={_.get(props.enemy, ["combat","maximumStamina"], Decimal(0)).toNumber()}
                 />

@@ -73,14 +73,14 @@ export default function CharacterSheet(props) {
             <CharacterAttributes character={props.character}/>
         </Grid>
         <CharacterCombatStatistics
-            characterStamina={props.character.stamina}
+            characterStamina={props.character.combat.stamina}
             calculatedDamage={calculatedDamage}
             characterPower={props.character.combat.power.toFixed()}
             characterResilience={props.character.combat.resilience.toFixed()}
             characterEvasion={props.character.combat.evasion.toFixed()}
             characterPrecision={props.character.combat.precision.toFixed()}
-            characterAccuracyPoints={props.character.combat.precisionPoints.toFixed()}
-            characterEvasionPoints={props.character.combat.evasionPoints.toFixed()}
+            evasionMultiplier={props.character.combat.incomingAttackDowngradeCost}
+            precisionMultiplier={props.character.combat.attackUpgradeCost}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}
         />
