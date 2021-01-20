@@ -1,6 +1,7 @@
 import * as JOI from "joi";
 import {Statuses} from "../Statuses";
 import {effectTarget, modifierEffects} from "./effects";
+import {Traits} from "../Traits";
 
 const conditionTriggerTarget = JOI.valid("any_enemy");
 
@@ -28,6 +29,7 @@ const eventEffects = modifierEffects.keys({
     remove_statuses: JOI.object().keys(statusNames.reduce((schemas, nextStatus) => {
         schemas[nextStatus] = JOI.object({
             target: effectTarget,
+            sourceTrait: JOI.string(),
             stacks: [JOI.string(), JOI.number().min(0)]
         });
         return schemas;

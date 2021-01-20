@@ -59,11 +59,14 @@ describe("traits", function () {
         _.set(player, ["traits", "bloodrage"], 1);
         enemy.hp = Decimal(1);
         enemy.combat.precisonPoints = Decimal(200);
-        const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
+        resolveCombatRound(100, {0: player, 1: enemy});
         expect(player.statuses).toEqual({
             berserk: [{
                 stacks: Decimal(1),
-                source: 0,
+                source: {
+                    character: 0,
+                    trait: "bloodrage"
+                },
                 duration: 999,
                 uuid: expect.any(String)
             }]
@@ -73,10 +76,22 @@ describe("traits", function () {
         _.set(player, ["traits", "bloodrage"], 1);
         player.statuses["berserk"] = [
             {
-                source: 0,
+                source: {
+                    character: 0,
+                    trait: "bloodrage"
+                },
                 stacks: 1,
-                duration: 1,
+                duration: 999,
                 uuid: "1234567890"
+            },
+            {
+                source: {
+                    character: 0,
+                    trait: "other"
+                },
+                stacks: 1,
+                duration: 999,
+                uuid: "2345678901"
             }
         ];
         enemy.combat.evasionPoints = Decimal(0);
@@ -102,7 +117,64 @@ describe("traits", function () {
                 }
             ]
         });
+        expect(player.statuses["berserk"]).toEqual([
+            {
+                source: {
+                    character: 0,
+                    trait: "other"
+                },
+                stacks: 1,
+                duration: 999,
+                uuid: "2345678901"
+            }
+        ])
     });
+})
+describe("inescapeable grasp trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockReturnValue({
+            effects: [],
+            hitType: 0
+        });
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 1);
+    })
+    afterEach(() => {
+        resolveAttackMock.mockClear();
+    })
     it("inescapable grasp adds no stacks of restrained on glancing hit", function () {
         _.set(player, ["traits", "inescapableGrasp"], 1);
         enemy.combat.evasionPoints = Decimal(200);

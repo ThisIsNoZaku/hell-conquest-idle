@@ -27,6 +27,7 @@ export const Traits = {
                 remove_statuses: {
                     berserk: {
                         target: "source_character",
+                        sourceTrait: "bloodrage",
                         stacks: 999
                     }
                 }
@@ -137,7 +138,7 @@ export const Traits = {
     }),
     relentless: validatedTrait({
         name: "Relentless",
-        description: _.template("Your indomitably increases your Stamina and stamina regeneration by ${rank.times(10)}%."),
+        description: _.template("Your indomitability increases your Stamina and stamina regeneration by ${rank.times(10)}%."),
         icon: "icons/icons-110.png",
         continuous: {
             trigger_effects: {
