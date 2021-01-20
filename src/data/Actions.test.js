@@ -1,15 +1,18 @@
-import {getGlobalState, reincarnateAs} from "../engine";
+import {getGlobalState, getCharacter, generateCreature} from "../engine";
 import {Actions} from "./Actions";
-import * as _ from "lodash";
 import {Character} from "../character";
 import {Decimal} from "decimal.js";
 import {onIntimidation} from "../engine/general/onIntimidation";
 import resolveCombatRound from "../engine/combat/resolveCombatRound";
+import reincarnateAs from "../engine/general/reincarnateAs";
+import cleanupDeadCharacters from "../engine/general/cleanupDeadCharacters";
 
 jest.mock("../engine");
 jest.mock("../engine/general/onIntimidation");
 jest.mock("../engine/combat/resolveAttack");
 jest.mock("../engine/combat/resolveCombatRound");
+jest.mock("../engine/general/reincarnateAs");
+jest.mock("../engine/general/cleanupDeadCharacters");
 
 const resolveAttackMock = jest.requireMock("../engine/combat/resolveAttack").default;
 
@@ -244,8 +247,17 @@ describe("fighting action", function () {
 
 describe("reincarnating action", function () {
     const action = Actions["reincarnating"];
+    let globalState;
+    let player;
     beforeEach(() => {
-        getGlobalState().automaticReincarnate = false;
+        getGlobalState.mockClear();
+        player = {
+
+        };
+        globalState = {
+            automaticReincarnate: false
+        };
+        getGlobalState.mockReturnValue(globalState);
         reincarnateAs.mockClear();
     });
     it("return exploring", function () {
@@ -259,10 +271,8 @@ describe("reincarnating action", function () {
         })).toEqual(["exploring", "challenging"]);
     });
     it("enables automatic reincarnation", function () {
-        const globalState = getGlobalState();
         expect(globalState.automaticReincarnate).toBeFalsy();
-        expect(reincarnateAs).not.toHaveBeenCalled();
-        action.complete(null, {
+        action.complete(player, {
             attributes: {
                 baseBrutality: Decimal(1),
                 baseCunning: Decimal(1),
@@ -346,3 +356,96 @@ describe("intimidating action", function () {
         expect(pushLogItem).toHaveBeenCalledWith("Your lack of stamina allows Enemy to escape!");
     });
 });
+
+describe("recovering action", function () {
+    let player;
+    let pushLogItem;
+    beforeEach(() => {
+        player = {
+            hp: Decimal(10),
+            maximumHp: Decimal(10),
+            healing: Decimal(1),
+            combat: {
+                stamina: Decimal(2),
+                maximumStamina: Decimal(2)
+            }
+        };
+        pushLogItem = jest.fn();
+    });
+    it("if player is missing health, they heal some", function () {
+        player.hp = player.maximumHp.minus(1);
+        Actions["recovering"].complete(null, player, pushLogItem);
+
+        expect(player.hp).toEqual(player.maximumHp);
+        expect(pushLogItem).toHaveBeenCalledWith("You recovered 1 health.");
+    });
+    it("if player is missing stamina, they recover some", function () {
+        player.combat.stamina = Decimal(1);
+        Actions["recovering"].complete(null, player, pushLogItem);
+
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina);
+        expect(pushLogItem).toHaveBeenCalledWith("You recovered 1 stamina.");
+    });
+    it("returns exploring and challenging as next actions", function () {
+        const nextActions = Actions["recovering"].complete(null, player, pushLogItem);;
+        expect(nextActions).toEqual(["exploring", "challenging"]);
+    })
+});
+
+describe("A precombat action (challenging, hunting, usurp)", function () {
+    let player;
+    let globalState;
+    let enemy;
+    let setEnemy;
+    let pushLogItem;
+    beforeEach(() => {
+        getCharacter.mockClear();
+        getGlobalState.mockClear();
+        generateCreature.mockClear();
+        cleanupDeadCharacters.mockClear();
+        player = {
+            powerLevel: Decimal(1),
+            clearStatuses: jest.fn(),
+            otherDemonIsGreaterDemon: function (other) {
+                this.powerLevel.lt(other.powerLevel);
+            },
+            otherDemonIsLesserDemon: function (other) {
+                this.powerLevel.gt(other.powerLevel);
+            }
+        };
+        globalState = {
+            characters: {
+                0: player,
+                1: enemy
+            },
+            rival: {},
+            currentRegion: "forest",
+            passivePowerIncome: Decimal(0)
+        };
+        enemy = {
+            adjectives: [],
+            powerLevel: Decimal(1)
+        };
+        getCharacter.mockReturnValue(player);
+        getGlobalState.mockReturnValue(globalState);
+        generateCreature.mockReturnValue(enemy);
+        setEnemy = jest.fn();
+        pushLogItem = jest.fn();
+    });
+    it("clears the players statuses", function () {
+        Actions["challenging"].complete(null, player, pushLogItem, null, setEnemy);
+        expect(player.clearStatuses).toHaveBeenCalled();
+    });
+    it("generates a new encounter and sets enemy", function () {
+        expect(globalState.currentEncounter).toBeUndefined();
+        Actions["challenging"].complete(null, player, pushLogItem, null, setEnemy);
+        expect(globalState.currentEncounter).toBeDefined();
+        expect(setEnemy).toHaveBeenCalled();
+        expect(pushLogItem).toHaveBeenCalled();
+    });
+    it("cleans up dead characters", function () {
+        expect(cleanupDeadCharacters).not.toHaveBeenCalled();
+        Actions["challenging"].complete(null, player, pushLogItem, null, setEnemy);
+        expect(cleanupDeadCharacters).toHaveBeenCalled();
+    });
+})
