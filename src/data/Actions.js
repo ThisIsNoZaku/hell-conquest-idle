@@ -1,14 +1,15 @@
 import React from "react";
 import {getConfigurationValue} from "../config";
 import {v4} from "node-uuid";
-import {debugMessage} from "../debugging";
 import {Regions} from "./Regions";
 import {Decimal} from "decimal.js";
-import {resolveCombat, resolveCombatRound} from "../engine/combat";
-import {getCharacter, getGlobalState, reincarnateAs} from "../engine";
+import {resolveCombatRound} from "../engine/combat";
+import {getCharacter, getGlobalState} from "../engine";
 import calculateStaminaCostToFlee from "../engine/general/calculateStaminaCostToFlee";
 import calculateInstantDeathLevel from "../engine/combat/calculateInstantDeathLevel";
 import {onIntimidation} from "../engine/general/onIntimidation";
+import reincarnateAs from "../engine/general/reincarnateAs";
+import cleanupDeadCharacters from "../engine/general/cleanupDeadCharacters";
 
 export const Actions = {
     exploring: {
@@ -112,7 +113,6 @@ export const Actions = {
                     currentEncounter.currentTick += 100;
                     return "fighting";
                 }
-                return "fleeing";
             }
         }
     },
@@ -184,9 +184,9 @@ export const Actions = {
             if (staminaToRecover.gt(0) || amountToHeal.gt(0)) {
                 const elements = [
                     amountToHeal.gt(0) ? `You recovered ${amountToHeal.toFixed()} health.` : null,
-                    staminaToRecover.gt(0) ? `You regained ${staminaToRecover.toFixed()} stamina.` : null
+                    staminaToRecover.gt(0) ? `You recovered ${staminaToRecover.toFixed()} stamina.` : null
                 ];
-                const message = elements.join(" ");
+                const message = elements.filter(m => m != null).join(" ");
                 if (message) {
                     pushLogItem(message);
                 }
@@ -234,11 +234,7 @@ function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, s
         }
 
         // Since we're starting a new combat, remove any old, dead characters
-        const deadCharacters = Object.keys(getGlobalState().characters)
-            .filter(id => id !== '0' && !getGlobalState().currentEncounter.enemies.find(c => c.id == id));
-        deadCharacters.forEach(id => {
-            delete getGlobalState().characters[id]
-        });
+        cleanupDeadCharacters();
     }
     return nextAction;
 }
