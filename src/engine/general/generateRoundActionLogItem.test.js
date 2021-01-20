@@ -12,7 +12,8 @@ describe("generate round action log", function () {
     it("combines hit and damage events together", function () {
         const messages = generateRoundActionLogItems({
             events: [{
-                event: "hit",
+                event: "attack",
+                hit: true,
                 hitType: 0,
                 source: 0,
                 children: ["1"],
