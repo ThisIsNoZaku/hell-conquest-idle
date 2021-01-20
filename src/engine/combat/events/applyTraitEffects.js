@@ -39,7 +39,10 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                             event.roundEvents.push({
                                 uuid: statusUuid,
                                 event: "add-status",
-                                source: event.source.id,
+                                source: {
+                                    character: event.source.id,
+                                    trait: traitId
+                                },
                                 target: target.id,
                                 duration,
                                 status,
