@@ -58,7 +58,7 @@ export default function (props) {
             {Tactics[props.tactic].modifiers.always_downgrade_to_glancing &&
             <Tooltip title="When the demon downgrades both Critical and Solid hits to reduced to Glancing.">
                 <li style={{color: "green", textAlign: "left"}}>
-                    Downgrades both Critical and Solid hits to Glancing hits.
+                    Downgrades both Devastating and Solid hits to Misses.
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier &&

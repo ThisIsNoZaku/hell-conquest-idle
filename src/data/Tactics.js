@@ -5,7 +5,7 @@ export const Tactics = {
         modifiers: {
             power_modifier: .25,
             health_modifier: .25,
-            attack_upgrade_cost_multiplier: .5
+            attack_upgrade_cost_multiplier: .75
         }
     },
     defensive: {

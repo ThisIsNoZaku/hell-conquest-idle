@@ -86,3 +86,40 @@ describe("reincarnate", function () {
         expect(character.statuses).toEqual({});
     });
 })
+
+describe("character combat stats", function () {
+    it("incoming attack downgrade cost is reduced by evasion", function () {
+        let i = 1;
+        for(i; i <= 20; i++) {
+            const calculatedCost = new Character({
+                id: 0,
+                powerLevel: 1,
+                attributes: {
+                    baseCunning: Decimal(i)
+                },
+                tactics: "aggressive",
+                combat: {
+
+                }
+            }, 0).combat.incomingAttackDowngradeCost;
+            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.05)).times(100));
+        }
+    });
+    it("attack upgrade cost is reduced by precision", function () {
+        let i = 1;
+        for(i; i <= 20; i++) {
+            const calculatedCost = new Character({
+                id: 0,
+                powerLevel: 1,
+                attributes: {
+                    baseDeceit: Decimal(i)
+                },
+                tactics: "deceptive",
+                combat: {
+
+                }
+            }, 0).combat.attackUpgradeCost;
+            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.05)).times(100));
+        }
+    });
+})

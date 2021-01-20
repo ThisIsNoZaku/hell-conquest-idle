@@ -20,9 +20,7 @@ export default function resolveAttack(tick, attacker, target) {
     let timesUpgraded = 0;
     const attackUpgradeCost = attacker.combat.attackUpgradeCost;
     const maxHitLevel = HitTypes.max;
-    debugMessage(`Attacker precision ${Decimal(attacker.combat.precisionPoints).toFixed()} > target evasion ${Decimal(target.combat.evasionPoints).times(1 + timesUpgraded).toFixed()}`);
-    while (Decimal(attacker.combat.precisionPoints).gt(Decimal(target.combat.evasionPoints).times(1 + timesUpgraded).plus(spentPrecision))
-        && Decimal(attacker.combat.precisionPoints).gte(Decimal(attackUpgradeCost).times(1 + timesUpgraded))
+    while (Decimal(attacker.combat.stamina).gte(Decimal(attackUpgradeCost).times(1 + timesUpgraded))
         && hitLevel != maxHitLevel
         && timesUpgraded === 0
         ) {
@@ -31,14 +29,13 @@ export default function resolveAttack(tick, attacker, target) {
         hitLevel++;
         timesUpgraded++;
     }
-    attacker.combat.precisionPoints = Decimal(attacker.combat.precisionPoints).minus(spentPrecision);
-    debugMessage(`Precision points for ${attacker.id} now ${Decimal(attacker.combat.precisionPoints).toFixed()}`);
+    attacker.combat.stamina = Decimal(attacker.combat.stamina).minus(spentPrecision);
 
     let timesDowngraded = 0;
     const minHitLevel = HitTypes.min;
     const attackDowngradeCost = Tactics[target.tactics].modifiers.downgradeCostSameAsUpgrade ? attackUpgradeCost : target.combat.incomingAttackDowngradeCost;
-    debugMessage(`Attacker precision ${Decimal(attacker.combat.precisionPoints).toFixed()} > target evasion ${Decimal(target.combat.evasionPoints).times(1 + timesUpgraded).toFixed()}`);
-    while (Decimal(target.combat.evasionPoints).gte(attackDowngradeCost.times(1 + timesDowngraded).plus(spentEvasion)) &&
+
+    while (Decimal(target.combat.stamina).gte(attackDowngradeCost.times(1 + timesDowngraded).plus(spentEvasion)) &&
     hitLevel != minHitLevel && timesDowngraded === 0) {
         spentEvasion = spentEvasion.plus(attackDowngradeCost.times(1 + timesDowngraded));
         if (Tactics[target.tactics].modifiers.always_downgrade_to_glancing) {
@@ -49,11 +46,8 @@ export default function resolveAttack(tick, attacker, target) {
             timesDowngraded++;
         }
     }
-    target.combat.evasionPoints = Decimal(target.combat.evasionPoints).minus(spentEvasion);
-    debugMessage(`Evasion points for ${target.id} now ${target.combat.evasionPoints.toFixed()}`);
-    if(target.combat.evasionPoints.lt(0) || attacker.combat.precisionPoints.lt(0)) {
-        debugger;
-    }
+    target.combat.stamina = Decimal(target.combat.stamina).minus(spentEvasion);
+
     const damageToDeal = calculatedDamage[hitLevel].floor();
 
     target.setHp(Decimal.max(Decimal(target.hp).minus(damageToDeal), 0));

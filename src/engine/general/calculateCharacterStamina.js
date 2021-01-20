@@ -18,5 +18,6 @@ export default _.memoize(function (powerLevel, traits) {
     }, Decimal(1));
     return minimumStamina.plus(Decimal(powerLevel).div(10))
         .times(traitMultiplier)
+        .times(100)
         .floor();
 });

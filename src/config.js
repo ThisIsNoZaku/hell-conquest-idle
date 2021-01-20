@@ -23,6 +23,7 @@ const config = {
     instant_death_offset: 5,
     recovery_action_healing_percentage: .5,
     recover_action_stamina: 1,
+    stamina_consumed_per_round: 25,
     minimum_stamina: 3,
     mechanics: {
         reincarnation: {

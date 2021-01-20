@@ -6,6 +6,7 @@ import {HitTypes} from "../../data/HitTypes";
 import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
 import {Character} from "../../character";
 import {v4} from "node-uuid";
+import {getConfigurationValue} from "../../config";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -60,7 +61,7 @@ export default function resolveCombatRound(tick, combatants) {
                 });
             }
         });
-        actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(1);
+
         if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive) {
             const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
@@ -78,6 +79,9 @@ export default function resolveCombatRound(tick, combatants) {
                     target: actingCharacter.id
                 });
             }
+        } else {
+            const perRoundStamina = getConfigurationValue("stamina_consumed_per_round");
+            actingCharacter.combat.stamina = Decimal.max(actingCharacter.combat.stamina.minus(perRoundStamina), 0);
         }
     });
 

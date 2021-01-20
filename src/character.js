@@ -246,7 +246,10 @@ class CombatStats {
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
         }, Decimal(1));
-        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
+        const precisionEffectScale = getConfigurationValue("mechanics.combat.precision.effectPerPoint");
+        const attributeMultiplier = Decimal(1).minus(this.precision.times(precisionEffectScale));
+        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier)
+            .times(attributeMultiplier).ceil();
     }
 
     get incomingAttackDowngradeCost() {
@@ -255,7 +258,10 @@ class CombatStats {
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
         }, Decimal(1));
-        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier);
+        const evasionEffectScale = getConfigurationValue("mechanics.combat.evasion.effectPerPoint");
+        const attributeMultiplier = Decimal(1).minus(this.evasion.times(evasionEffectScale));
+        return base.times(tacticsCostMultiplier).times(statusesCostMultiplier)
+            .times(attributeMultiplier).ceil();
     }
 }
 
