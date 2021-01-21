@@ -6,6 +6,7 @@ import triggerEvent from "./triggerEvent";
 import calculateDamageBy from "../combat/calculateDamageBy";
 import calculateAttackDowngradeCost from "../combat/calculateAttackDowngradeCost";
 import calculateAttackUpgradeCost from "../combat/calculateAttackUpgradeCost";
+import resolveAttack from "../combat/resolveAttack";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -517,3 +518,62 @@ describe("relentless trait", function () {
         expect(player.combat.maximumStamina).toEqual(Decimal(325 * 1.25).floor());
     })
 });
+describe("searing venom trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            traits: {
+                searingVenom: 1
+            },
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                stamina: Decimal(0),
+            },
+        }, 1);
+    });
+    it("adds stacks on critical hit", function () {
+        const result = resolveCombatRound(100, {0: player, 1: enemy});
+        expect(enemy.statuses["agonizingPoison"]).toBeDefined();
+        expect(result.events).toContainEqual({
+            event: "add-status",
+            duration: 1,
+            source: {
+                character: 0,
+                trait: "searingVenom"
+            },
+            status: "agonizingPoison",
+            target: 1,
+            stacks: Decimal(2),
+            uuid: expect.any(String)
+        });
+    });
+})

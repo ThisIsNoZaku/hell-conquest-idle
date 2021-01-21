@@ -164,33 +164,13 @@ export const Traits = {
     searingVenom: validatedTrait({
         name: "Searing Venom",
         icon: "icons/icons-4.png",
-        description: _.template("Your agonizing venom causes such intense pain that the victim suffers an extra ${rank.times(10)}% damage from attacks."),
-        on_solid_hit: {
-            trigger_effects: {
-                add_statuses: {
-                    agonizingPoison: {
-                        target: "target_character",
-                        stacks: "rank"
-                    }
-                }
-            }
-        },
+        description: _.template("Your agonizing venom causes such intense pain that the victim suffers an extra ${rank.times(5)}% damage from attacks."),
         on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
                     agonizingPoison: {
                         target: "target_character",
-                        stacks: "rank"
-                    }
-                }
-            }
-        },
-        on_serious_hit: {
-            trigger_effects: {
-                add_statuses: {
-                    agonizingPoison: {
-                        target: "target_character",
-                        stacks: "rank"
+                        stacks: "rank.times(2)"
                     }
                 }
             }
