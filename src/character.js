@@ -105,6 +105,7 @@ export class Character {
         });
         this.absorbedPower = Decimal(0);
         this.powerLevel = Decimal(1);
+        this.combat.stamina = this.combat.maximumStamina;
         this.reset();
     }
 
