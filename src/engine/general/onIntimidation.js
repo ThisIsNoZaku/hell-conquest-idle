@@ -13,6 +13,6 @@ export function onIntimidation(player, enemy, pushLogItem) {
     const periodicPowerIncreases = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromLesserDemon"), {
         enemy
     });
-    getGlobalState().passivePowerIncome = getGlobalState().passivePowerIncome.plus(periodicPowerIncreases);
+    player.latentPower = player.stolenPower.plus(periodicPowerIncreases);
     getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
 }
