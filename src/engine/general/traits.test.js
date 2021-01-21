@@ -470,3 +470,50 @@ describe("piercing strike trait", function () {
         expect(cost).toEqual(Decimal(100).times(1 - (1.1 * .05)).ceil());
     });
 });
+describe("relentless trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            traits: {
+                relentless: 1
+            },
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 1);
+    });
+    it("increases your maximum stamina", function () {
+        expect(player.combat.maximumStamina).toEqual(Decimal(325 * 1.25).floor());
+    })
+});
