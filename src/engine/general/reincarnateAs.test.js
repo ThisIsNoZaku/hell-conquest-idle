@@ -69,7 +69,5 @@ describe("reincarnateAt", function () {
             baseDeceit: 1
         });
         expect(getGlobalState().latentPowerCap).toEqual(Decimal(25));
-        const playerLatentPower = getCharacter(0).latentPower;
-        expect(playerLatentPower).toEqual(Decimal(5));
     });
 })

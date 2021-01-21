@@ -15,7 +15,9 @@ describe("generate round action log", function () {
                 event: "attack",
                 hit: true,
                 hitType: 0,
-                source: 0,
+                source: {
+                    character: 0
+                },
                 children: ["1"],
                 precisionUsed: 0,
                 evasionUsed: 0,
@@ -28,7 +30,9 @@ describe("generate round action log", function () {
                     event: "damage",
                     parent: "0",
                     value: Decimal(10),
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                 }]
         })
@@ -38,7 +42,7 @@ describe("generate round action log", function () {
         const messages = generateRoundActionLogItems({
             events: [{
                 event: "kill",
-                source: 0,
+                source: {character:0},
                 target: 1,
                 uuid: "0"
             },]
@@ -51,7 +55,9 @@ describe("generate round action log", function () {
                 event: "add-status",
                 status: "berserk",
                 target: 1,
-                source: 0,
+                source: {
+                    character: 0
+                },
                 stacks: 1,
                 duration: 1,
                 uuid: "0"
@@ -65,7 +71,9 @@ describe("generate round action log", function () {
                 event: "fatigue-damage",
                 status: "berserk",
                 target: 0,
-                source: 0,
+                source: {
+                    character: 0
+                },
                 value: 1,
                 uuid: "0"
             }]
@@ -78,7 +86,9 @@ describe("generate round action log", function () {
                 event: "fatigue-damage",
                 status: "berserk",
                 target: 1,
-                source: 1,
+                source: {
+                    character: 1
+                },
                 value: 1,
                 uuid: "0"
             }]

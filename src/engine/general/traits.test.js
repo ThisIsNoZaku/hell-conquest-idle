@@ -8,6 +8,7 @@ import calculateAttackDowngradeCost from "../combat/calculateAttackDowngradeCost
 import calculateAttackUpgradeCost from "../combat/calculateAttackUpgradeCost";
 import resolveAttack from "../combat/resolveAttack";
 import {generateHitEvents} from "../events/generate";
+import {getCharacter} from "../index";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -621,6 +622,8 @@ describe("shared pain trait", function () {
         }, 1);
     });
     it("causes retaliation damage to attackers", function () {
+        getCharacter.mockReturnValueOnce(player)
+            .mockReturnValueOnce(enemy);
         resolveAttack.mockReturnValueOnce(generateHitEvents(0, player, enemy, 10, 0, 0, 0, 0)
         ).mockReturnValueOnce(generateHitEvents(0, enemy, player, 10, 0, 0, 0, 0));
         const result = resolveCombatRound(100, {0: player, 1: enemy});
@@ -629,7 +632,7 @@ describe("shared pain trait", function () {
             parent: expect.any(String),
             uuid: expect.any(String),
             target: 1,
-            source: 0,
+            source: {character:0},
             value: Decimal(2)
         })
     });

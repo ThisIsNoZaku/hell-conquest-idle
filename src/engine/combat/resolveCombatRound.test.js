@@ -49,7 +49,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [expect.any(String)],
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     evasionUsed: Decimal(0),
                     precisionUsed: Decimal(0),
@@ -62,7 +64,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     value: Decimal(10),
                 },
@@ -70,7 +74,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [expect.any(String)],
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     evasionUsed: Decimal(0),
                     precisionUsed: Decimal(0),
@@ -83,7 +89,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     value: Decimal(10),
                 }
@@ -100,7 +108,9 @@ describe('The combat round resolution', function () {
             events: [
                 {
                     event: "attack",
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     uuid: expect.any(String),
                     children: [expect.any(String)],
@@ -115,7 +125,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     value: Decimal(Math.floor(HitTypes[1].damageMultiplier * 10))
                 },
@@ -123,7 +135,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [],
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     hitType: -1,
                     timesUpgraded: 0,
@@ -134,10 +148,12 @@ describe('The combat round resolution', function () {
                 },
                 {
                     event: "fatigue-damage",
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 1,
                     uuid: expect.any(String),
-                    value: Decimal(1)
+                    value: Decimal(7)
                 }
             ],
             tick: 100
@@ -157,7 +173,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [expect.any(String)],
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     hit: true,
                     precisionUsed: Decimal(72),
@@ -170,7 +188,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     value: Decimal(HitTypes[1].damageMultiplier * 10),
                 },
@@ -178,7 +198,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [],
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     hit: false,
                     precisionUsed: Decimal(0),
@@ -190,9 +212,11 @@ describe('The combat round resolution', function () {
                 {
                     event: "fatigue-damage",
                     uuid: expect.any(String),
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 1,
-                    value: Decimal(1)
+                    value: Decimal(7)
                 }
             ],
             tick: 100
@@ -211,7 +235,9 @@ describe('The combat round resolution', function () {
                     event: "attack",
                     uuid: expect.any(String),
                     children: [],
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     evasionUsed: Decimal(72),
                     precisionUsed: Decimal(0),
@@ -226,7 +252,9 @@ describe('The combat round resolution', function () {
                     children: [
                         expect.any(String)
                     ],
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     evasionUsed: Decimal(0),
                     precisionUsed: Decimal(0),
@@ -239,7 +267,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     value: Decimal(10)
                 }
@@ -259,7 +289,9 @@ describe('The combat round resolution', function () {
                     children: [
                         expect.any(String)
                     ],
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     evasionUsed: Decimal(72),
                     precisionUsed: Decimal(95),
@@ -272,7 +304,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     value: Decimal(Math.floor(10)),
                 },
@@ -282,7 +316,9 @@ describe('The combat round resolution', function () {
                     children: [
                         expect.any(String)
                     ],
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     evasionUsed: Decimal(72),
                     precisionUsed: Decimal(95),
@@ -295,7 +331,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     value: Decimal(10)
                 }
@@ -317,10 +355,12 @@ describe('The combat round resolution', function () {
                     uuid: expect.any(String),
                     hit: false,
                     children: [],
-                    source: 0,
+                    source: {
+                        character: 0
+                    },
                     target: 1,
                     precisionUsed: Decimal(72),
-                    evasionUsed: Decimal(94),
+                    evasionUsed: Decimal(118),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
                     hitType: -1
@@ -332,7 +372,9 @@ describe('The combat round resolution', function () {
                         expect.any(String)
                     ],
                     hit: true,
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     precisionUsed: Decimal(94),
                     evasionUsed: Decimal(95),
@@ -344,7 +386,9 @@ describe('The combat round resolution', function () {
                     event: "damage",
                     uuid: expect.any(String),
                     parent: expect.any(String),
-                    source: 1,
+                    source: {
+                        character: 1
+                    },
                     target: 0,
                     value: Decimal(10)
                 }
@@ -355,10 +399,10 @@ describe('The combat round resolution', function () {
     it("consumes stamina each round", function () {
         const staminaConsumedPerRound = getConfigurationValue("stamina_consumed_per_round");
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
-        const playerAttackStaminaUsed = combatResults.events.find(e => e.source === 0 && e.event === "attack").precisionUsed;
+        const playerAttackStaminaUsed = combatResults.events.find(e => e.source.character === 0 && e.event === "attack").precisionUsed;
         const playerDefenseStaminaUsed = combatResults.events.find(e => e.target === 0 && e.event === "attack").evasionUsed;
 
-        const enemyAttackStaminaUsed = combatResults.events.find(e => e.source === 1 && e.event === "attack").precisionUsed;
+        const enemyAttackStaminaUsed = combatResults.events.find(e => e.source.character === 1 && e.event === "attack").precisionUsed;
         const enemyDefenseStaminaUsed = combatResults.events.find(e => e.target === 1 && e.event === "attack").evasionUsed
 
         expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(staminaConsumedPerRound).minus(playerAttackStaminaUsed).minus(playerDefenseStaminaUsed));

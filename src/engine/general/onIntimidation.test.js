@@ -26,8 +26,7 @@ describe("onIntimidation", function () {
     });
     it("updates stolen power", function () {
         onIntimidation(player, {powerLevel: Decimal(1)}, pushLogItem);
-        expect(globalState.passivePowerIncome)
-            .toEqual(Decimal(10));
+        expect(player.latentPower).toEqual(Decimal(10));
     });
     it("prints a message and clears the player rival if the enemy is a rival", function () {
         globalState.rival = {
