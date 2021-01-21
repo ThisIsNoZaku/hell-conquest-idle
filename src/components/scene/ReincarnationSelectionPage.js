@@ -231,7 +231,7 @@ export default function ReincarnationSelectionPage(props) {
                 <Grid item xs container direction="column">
                     <Grid item xs style={{textAlign: "center"}}>
                         Precision
-                        <Tooltip title="Precision gives you a pool of points used to upgrade your attacks in combat.">
+                        <Tooltip title="Precision reduces the energy cost to upgrade your attacks.">
                             <Help/>
                         </Tooltip>
                     </Grid>
@@ -241,7 +241,7 @@ export default function ReincarnationSelectionPage(props) {
                     <Grid item xs style={{textAlign: "center"}}>
                         Evasion
                         <Tooltip
-                            title="Precision gives you a pool of points used to downgrade enemy attacks in combat.">
+                            title="Evasion reduces the energy cost to downgrade incoming attacks.">
                             <Help/>
                         </Tooltip>
                     </Grid>
@@ -259,13 +259,13 @@ export default function ReincarnationSelectionPage(props) {
                 </Grid>
                 <Grid item container xs direction="column">
                     <Grid item xs style={{textAlign: "center"}}>
-                        Endurance
-                        <Tooltip title="How many rounds your can fight before you begin taking fatigue damage. You also lose stamina from intimidating and fleeing other Demons.">
+                        Energy
+                        <Tooltip title="Used to enhance your attacks and defend yourself, as well as used up during battle.">
                             <Help/>
                         </Tooltip>
                     </Grid>
                     <Grid item xs style={{textAlign: "center"}}>
-                        {player.combat.stamina.toFixed()} Stamina
+                        {player.combat.stamina.toFixed()}
                     </Grid>
                 </Grid>
             </Grid>
