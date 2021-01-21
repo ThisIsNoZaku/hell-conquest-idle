@@ -20,16 +20,17 @@ export default function resolveAttack(tick, attacker, target) {
     let spentEvasion = Decimal(0);
     // Can the attacker upgrade their attack?
     let timesUpgraded = 0;
+    let attackerStaminaPercentage = attacker.combat.stamina.div(attacker.combat.maximumStamina);
     const attackUpgradeCost = calculateAttackUpgradeCost(attacker, target);
     const maxHitLevel = HitTypes.max;
     while (Decimal(attacker.combat.stamina).gte(Decimal(attackUpgradeCost).times(1 + timesUpgraded))
         && hitLevel != maxHitLevel
-        && timesUpgraded === 0
+        && timesUpgraded === 0 &&
+        attackerStaminaPercentage.gt(Tactics[attacker.tactics].strategy.attack_floor)
         ) {
         spentPrecision = spentPrecision.plus(attackUpgradeCost.times(1 + timesUpgraded));
 
-        hitLevel++;
-        timesUpgraded++;
+        hitLevel++;timesUpgraded++;
     }
     attacker.combat.stamina = Decimal(attacker.combat.stamina).minus(spentPrecision);
 
