@@ -8,11 +8,11 @@ export function onIntimidation(player, enemy, pushLogItem) {
         pushLogItem("<strong>You bind your rival to your will!</strong>");
         getGlobalState().rival = {};
     } else {
-        pushLogItem(`You bind ${enemy.name}!`);
+        pushLogItem(`You spend ${enemy.powerLevel.times(50).toFixed()} energy to bind ${enemy.name}!`);
     }
     const periodicPowerIncreases = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromLesserDemon"), {
         enemy
     });
-    player.latentPower = player.stolenPower.plus(periodicPowerIncreases);
+    player.latentPower = player.latentPower.plus(periodicPowerIncreases);
     getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
 }
