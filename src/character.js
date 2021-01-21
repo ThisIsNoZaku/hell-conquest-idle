@@ -270,7 +270,7 @@ export function calculateCombatStat(character, combatAttribute) {
     const tacticsModifier = Decimal(0).plus(Tactics[character.tactics].modifiers[`${combatAttribute}_modifier`] || 0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];
-        return currentValue.plus(statusDefinition.effects[`${combatAttribute}_modifier`] || 0);
+        return currentValue.plus(_.get(statusDefinition, ["effects", `${combatAttribute}_modifier`, "modifier"], 0));
     }, Decimal(0));
     const traitModifier = Object.keys(character.traits).reduce((previousValue, trait) => {
         const traitDefinition = Traits[trait];
