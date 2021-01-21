@@ -24,7 +24,7 @@ const config = {
     recovery_action_healing_percentage: .5,
     recover_action_stamina: 1,
     stamina_consumed_per_round: 25,
-    minimum_stamina: 3,
+    minimum_stamina: 300,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -49,7 +49,7 @@ const config = {
             determineHit: "roll >= target ? 'hit' : 'miss'",
             precision: { // Determines how precision rolls work
                 baseAttribute: "deceit",
-                effectPerPoint: 200
+                effectPerPoint: .05
             },
             attributeDifferenceMultipliers: {
                 "-10" : 0.001,
@@ -81,7 +81,7 @@ const config = {
             },
             evasion: {
                 baseAttribute: "cunning",
-                effectPerPoint: 200
+                effectPerPoint: .05
             },
             power: {
                 baseAttribute: "brutality",
