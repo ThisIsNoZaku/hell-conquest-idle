@@ -106,6 +106,16 @@ export const Actions = {
                         target: enemy,
                         roundEvents: events
                     });
+                    triggerEvent({
+                        type: "on_combat_start",
+                        combatants: {
+                            0: player,
+                            [enemy.id]: enemy
+                        },
+                        source: enemy,
+                        target: player,
+                        roundEvents: events
+                    });
                     generateRoundActionLogItems({
                         events
                     }).forEach(event => {
