@@ -65,7 +65,7 @@ export const Statuses = {
         icon: "icons/icons-129.png",
         effects: {
             damage_modifier: {
-                target: "received",
+                target: "self",
                 modifier: 1.1
             }
         }

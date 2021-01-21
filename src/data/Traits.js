@@ -17,7 +17,7 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     berserk: {
-                        target: "source_character",
+                        target: "self",
                         stacks: "rank",
                         duration: 999
                     }
@@ -26,7 +26,7 @@ export const Traits = {
             not_trigger_effects: {
                 remove_statuses: {
                     berserk: {
-                        target: "source_character",
+                        target: "self",
                         sourceTrait: "bloodrage",
                         stacks: 999
                     }
@@ -43,7 +43,7 @@ export const Traits = {
                 add_statuses: {
                     engorged: {
                         cumulative: true,
-                        target: "source_character",
+                        target: "self",
                         stacks: "rank",
                         duration: 999,
                         max: "rank.times(10)"
@@ -57,12 +57,9 @@ export const Traits = {
         icon: "icons/icons-2503.png",
         description: _.template("When this demon successfully Intimidates another demon, it gains a <span style='color: red'>${rank}%</span> chance to seize the intimidated demon's Artifacts as though it were killed."),
         on_intimidate: {
-            conditions: {
-                chance: "$rank"
-            },
             trigger_effects: {
                 steal_item: {
-                    target: "all_enemies"
+                    target: "enemy"
                 }
             }
         }
@@ -80,7 +77,7 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     restrained: {
-                        target: "target_character",
+                        target: "enemy",
                         stacks: "rank",
                         duration: 5
                     }
@@ -91,7 +88,7 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     restrained: {
-                        target: "target_character",
+                        target: "enemy",
                         stacks: "rank",
                         duration: 5
                     }
@@ -106,7 +103,7 @@ export const Traits = {
         continuous: {
             trigger_effects: {
                 devastating_hit_damage_multiplier: {
-                    target: "dealt",
+                    target: "self",
                     modifier: "rank.times(0.1)"
                 }
             }
@@ -119,7 +116,7 @@ export const Traits = {
         continuous: {
             trigger_effects: {
                 attack_downgrade_cost_multiplier: {
-                    target: "source_character",
+                    target: "enemy",
                     modifier: "rank.times(.1)"
                 }
             }
@@ -157,7 +154,10 @@ export const Traits = {
         description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
         on_kill: {
             trigger_effects: {
-                power_gain_modifier: "rank.times(.25)"
+                power_gain_modifier: {
+                    target: "self",
+                    modifier: "rank.times(.25)"
+                }
             }
         }
     }),
@@ -169,7 +169,7 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     agonizingPoison: {
-                        target: "target_character",
+                        target: "enemy",
                         stacks: "rank.times(2)"
                     }
                 }
@@ -183,7 +183,7 @@ export const Traits = {
         on_taking_damage: {
             trigger_effects: {
                 reflect_damage: {
-                    target: "target_character",
+                    target: "enemy",
                     value: "rank.times(20).div(100).times(attackDamage)"
                 }
             }
@@ -210,7 +210,7 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     terrified: {
-                        target: "all_enemies",
+                        target: "enemy",
                         stacks: "rank.times(2)"
                     }
                 }
