@@ -5,6 +5,7 @@ import {Character} from "../../character";
 import triggerEvent from "./triggerEvent";
 import calculateDamageBy from "../combat/calculateDamageBy";
 import calculateAttackDowngradeCost from "../combat/calculateAttackDowngradeCost";
+import calculateAttackUpgradeCost from "../combat/calculateAttackUpgradeCost";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -419,5 +420,53 @@ describe("mindless blow trait", function () {
     it("increases the cost to downgrade your attacks", function () {
         const cost = calculateAttackDowngradeCost(enemy, player);
         expect(cost).toEqual(Decimal(72 * 1.1).floor());
+    });
+});
+describe("piercing strike trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            traits: {
+                piercingStrike: 1
+            },
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 1);
+    });
+    it("decreases the cost to upgrade your attacks", function () {
+        const cost = calculateAttackUpgradeCost(player, enemy);
+        expect(cost).toEqual(Decimal(100).times(1 - (1.1 * .05)).ceil());
     });
 });
