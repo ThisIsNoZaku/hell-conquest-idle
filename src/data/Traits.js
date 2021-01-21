@@ -140,13 +140,13 @@ export const Traits = {
     }),
     relentless: validatedTrait({
         name: "Relentless",
-        description: _.template("Your indomitability increases your Stamina and stamina regeneration by ${rank.times(10)}%."),
+        description: _.template("Your indomitability increases your Stamina by ${rank.times(25)}%."),
         icon: "icons/icons-110.png",
         continuous: {
             trigger_effects: {
                 stamina_modifier: {
                     target: "self",
-                    modifier: "rank.times(.1)"
+                    modifier: "rank.times(.25)"
                 }
             }
         }
