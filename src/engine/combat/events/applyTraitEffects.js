@@ -15,14 +15,22 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     const stacks = evaluateExpression(effectDefinition[status].stacks, {
                         rank: Decimal(event.source.traits[traitId])
                     });
+                    const max = evaluateExpression(effectDefinition[status].max, {
+                        rank: Decimal(event.source.traits[traitId])
+                    });
                     const duration = evaluateExpression(effectDefinition[status].duration, {});
                     targets.forEach(target => {
                         const statusUuid = v4();
                         const existingStatus = (target.statuses[status] || [])
-                            .find(s => s.source === event.source.id);
+                            .find(s => {
+                                return s.source.character === event.source.id &&
+                                    s.source.trait === traitId;
+                            });
                         if(existingStatus) {
                             existingStatus.duration = duration;
-                            existingStatus.stacks = stacks;
+                            existingStatus.stacks = effectDefinition[status].cumulative ?
+                                Decimal.min(existingStatus.stacks.plus(stacks), max) :
+                                stacks;
                         } else {
                             target.statuses[status] = (target.statuses[status] || []);
                             target.statuses[status].push({
