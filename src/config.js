@@ -89,7 +89,7 @@ const config = {
             },
             traitRank: {
                 baseAttribute: "madness",
-                effectPerPoint: .01
+                effectPerPoint: .05
             },
             playerAttributeMinimum: 1,
             fatigue: {
