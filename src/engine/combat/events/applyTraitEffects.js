@@ -4,6 +4,8 @@ import Decimal from "decimal.js";
 import {v4} from "node-uuid";
 import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
+import {generateDamageEvent} from "../../events/generate";
+import {getCharacter} from "../../index";
 
 export default function applyTraitEffects(effectsToApply, event, traitId) {
     for (const effect of Object.keys(effectsToApply)) {
@@ -107,14 +109,13 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     damageEffect.children = [
                         newDamageEffectUuid
                     ];
-                    event.roundEvents.push({
-                        event: "damage",
-                        uuid: newDamageEffectUuid,
-                        target: event.target.id,
-                        source: event.source.id,
-                        value: damageToDeal,
-                        parent: damageEffect.uuid
-                    });
+                    event.roundEvents.push(generateDamageEvent(
+                        getCharacter(damageEffect.source.character),
+                        getCharacter(damageEffect.target),
+                        damageToDeal,
+                        damageEffect.uuid,
+                        newDamageEffectUuid
+                        ));
                 });
         }
     }
