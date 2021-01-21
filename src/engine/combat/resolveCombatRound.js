@@ -7,6 +7,7 @@ import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
 import {Character} from "../../character";
 import {v4} from "node-uuid";
 import {getConfigurationValue} from "../../config";
+import {generateFatigueDamageEvent, generateKillEvent} from "../events/generate";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -51,40 +52,30 @@ export default function resolveCombatRound(tick, combatants) {
             target: actionTarget,
             combatants,
         });
-        triggerEvent({
-            type: `on_taking_damage`,
-            roundEvents,
-            source: actionTarget,
-            target: actingCharacter,
-            combatants
-        });
+        if(!HitTypes[attackResult.hitType].preventHit) {
+            triggerEvent({
+                type: `on_taking_damage`,
+                roundEvents,
+                source: actionTarget,
+                target: actingCharacter,
+                combatants
+            });
+        }
 
         Object.values(combatants).forEach(combatant => {
-            if (Decimal(combatant.hp).lte(0)) {
-                roundEvents.push({
-                    event: "kill",
-                    source: actingCharacter.id,
-                    target: actionTarget.id
-                });
+            if (!combatant.isAlive && !roundEvents.find(re => re.type === "kill" && re.target !== combatant.id)) {
+                roundEvents.push(generateKillEvent(combatant, actingCharacter));
             }
         });
 
         if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive) {
             const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
-            roundEvents.push({
-                uuid: v4(),
-                event: "fatigue-damage",
-                source: actingCharacter.id,
-                target: actingCharacter.id,
-                value: damageToInflictDueToFatigue
-            });
+            roundEvents.push(generateFatigueDamageEvent(actingCharacter, actingCharacter, damageToInflictDueToFatigue));
             if (actingCharacter.hp.lte(0)) {
-                roundEvents.push({
-                    event: "kill",
-                    source: actingCharacter.id,
-                    target: actingCharacter.id
-                });
+                if(!roundEvents.find(re => re.type === "kill" && re.target !== actingCharacter.id)) {
+                    roundEvents.push(generateKillEvent(actingCharacter, actingCharacter));
+                }
             }
         } else {
             const perRoundStamina = getConfigurationValue("stamina_consumed_per_round");

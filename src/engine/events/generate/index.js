@@ -1,17 +1,17 @@
 import Decimal from "decimal.js";
-import { v4 } from "node-uuid";
+import {v4} from "node-uuid";
 import {HitTypes} from "../../../data/HitTypes";
 
 export function generateHitEvents(hitType, attacker, target, damageToDeal, spentPrecision, spentEvasion, timesUpgraded, timesDowngraded) {
     const hitEventUuid = v4();
-    if(HitTypes[hitType].preventHit) {
+    if (HitTypes[hitType].preventHit) {
         return {
             hitType,
             effects: [
                 {
                     event: "attack",
                     uuid: hitEventUuid,
-                    source: attacker.id,
+                    source: {character: attacker.id},
                     target: target.id,
                     children: [],
                     hitType,
@@ -32,7 +32,7 @@ export function generateHitEvents(hitType, attacker, target, damageToDeal, spent
                     event: "attack",
                     hit: true,
                     uuid: hitEventUuid,
-                    source: attacker.id,
+                    source: {character: attacker.id},
                     target: target.id,
                     children: [damageEventUuid],
                     hitType,
@@ -41,15 +41,37 @@ export function generateHitEvents(hitType, attacker, target, damageToDeal, spent
                     timesUpgraded,
                     timesDowngraded
                 },
-                {
-                    event: "damage",
-                    uuid: damageEventUuid,
-                    parent: hitEventUuid,
-                    source: attacker.id,
-                    target: target.id,
-                    value: Decimal(damageToDeal)
-                }
+                generateDamageEvent(attacker, target, damageToDeal, hitEventUuid, damageEventUuid)
             ]
         }
+    }
+}
+
+export function generateKillEvent(source, target) {
+    return {
+        event: "kill",
+        source: {character: source.id},
+        target: target.id
+    }
+}
+
+export function generateFatigueDamageEvent(source, target, damage) {
+    return {
+        uuid: v4(),
+        event: "fatigue-damage",
+        source: {character: source.id},
+        target: target.id,
+        value: damage
+    }
+}
+
+export function generateDamageEvent(source, target, damageDone, parentUuid, effectUuid) {
+    return {
+        event: "damage",
+        uuid: effectUuid,
+        target: target.id,
+        source: {character: source.id},
+        value: Decimal(damageDone),
+        parent: parentUuid
     }
 }
