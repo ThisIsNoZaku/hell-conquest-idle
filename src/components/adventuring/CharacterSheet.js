@@ -15,6 +15,8 @@ import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
 import getPowerNeededForLevel from "../../engine/general/getPowerNeededForLevel";
 import {Help} from "@material-ui/icons";
+import calculateAttackDowngradeCost from "../../engine/combat/calculateAttackDowngradeCost";
+import calculateAttackUpgradeCost from "../../engine/combat/calculateAttackUpgradeCost";
 
 export default function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
@@ -79,8 +81,8 @@ export default function CharacterSheet(props) {
             characterResilience={props.character.combat.resilience.toFixed()}
             characterEvasion={props.character.combat.evasion.toFixed()}
             characterPrecision={props.character.combat.precision.toFixed()}
-            evasionMultiplier={props.character.combat.incomingAttackDowngradeCost}
-            precisionMultiplier={props.character.combat.attackUpgradeCost}
+            evasionMultiplier={calculateAttackDowngradeCost(props.enemy, props.character)}
+            precisionMultiplier={calculateAttackUpgradeCost(props.character, props.enemy)}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}
         />
