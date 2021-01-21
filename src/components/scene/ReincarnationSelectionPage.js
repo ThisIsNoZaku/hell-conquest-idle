@@ -272,26 +272,10 @@ export default function ReincarnationSelectionPage(props) {
             <Grid item xs={12} container direction="row">
                 <Grid item container xs={4} direction="column"></Grid>
                 <Grid item container xs={2} direction="column">
-                    <Grid item xs style={{textAlign: "center"}}>
-                        Accuracy Points / Combat
-                        <Tooltip title="Your character spends Accuracy points to make your attacks more damaging.">
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs style={{textAlign: "center"}}>
-                        {Decimal(player.combat.precision).times(getConfigurationValue("mechanics.combat.precision.effectPerPoint")).toFixed()}
-                    </Grid>
+
                 </Grid>
                 <Grid item container xs={2} direction="column">
-                    <Grid item xs style={{textAlign: "center"}}>
-                        Evasion Points / Combat
-                        <Tooltip title="Your character spends Accuracy points to make your attacks more damaging.">
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs style={{textAlign: "center"}}>
-                        {Decimal(player.combat.evasion).times(getConfigurationValue("mechanics.combat.evasion.effectPerPoint")).toFixed()}
-                    </Grid>
+
                 </Grid>
             </Grid>
         </Grid>
