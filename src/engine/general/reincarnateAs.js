@@ -39,9 +39,9 @@ export default function reincarnateAs(monsterId, newAttributes) {
         const latentPowerGain = evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
             player
         });
-        globalState.characters[0].latentPower = Decimal.min(
-            globalState.latentPowerCap,
-            globalState.characters[0].latentPower.plus(latentPowerGain));
+        // globalState.characters[0].latentPower = Decimal.min(
+        //     globalState.latentPowerCap,
+        //     globalState.characters[0].latentPower.plus(latentPowerGain));
     }
 
     globalState.characters[0].reincarnate(monsterId, {...globalState.startingTraits});
