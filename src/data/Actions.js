@@ -11,10 +11,9 @@ import {onIntimidation} from "../engine/general/onIntimidation";
 import reincarnateAs from "../engine/general/reincarnateAs";
 import cleanupDeadCharacters from "../engine/general/cleanupDeadCharacters";
 import triggerEvent from "../engine/general/triggerEvent";
-import {generateHitEvents} from "../engine/events/generate";
 import generateRoundActionLogItems from "../engine/general/generateRoundActionLogItems";
 
-const defaultActions = ["exploring", "fighting"];
+const defaultActions = ["exploring", "challenging"];
 
 export const Actions = {
     exploring: {
