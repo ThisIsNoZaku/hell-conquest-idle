@@ -9,7 +9,7 @@ export default function CharacterCombatSummary(props) {
         <Grid item xs={12} container direction={props.direction}>
             <Grid item xs={4}>
                 <div>
-                    {props.isRival && <img src="./icons/icons-793.png"/>}
+                    {props.isRival && <Tooltip title="Your Rival!"><img src="./icons/icons-793.png"/></Tooltip>}
                     {props.name}
                 </div>
             </Grid>
