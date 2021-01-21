@@ -21,8 +21,8 @@ export const Tactics = {
         title: "Deceptive",
         description: "Your tactics emphasize disorientation and trickery.",
         modifiers: {
+            precision_modifier: .25,
             evasion_modifier: .25,
-            max_hit_damage_modifier: .3,
             always_downgrade_to_glancing: true
         }
     }
