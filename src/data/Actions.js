@@ -14,6 +14,8 @@ import triggerEvent from "../engine/general/triggerEvent";
 import {generateHitEvents} from "../engine/events/generate";
 import generateRoundActionLogItems from "../engine/general/generateRoundActionLogItems";
 
+const defaultActions = ["exploring", "fighting"];
+
 export const Actions = {
     exploring: {
         id: "exploring",
@@ -40,7 +42,7 @@ export const Actions = {
             });
             player.combat.refresh();
             // Default action.
-            return "fighting";
+            return nextAction;
         }
     },
     looting: {
@@ -86,7 +88,7 @@ export const Actions = {
                         tick: 0
                     }]
                 });
-                return ["exploring", "challenging"];
+                return defaultActions;
             } else {
                 const currentEncounter = getGlobalState().currentEncounter;
                 // Start of combat
@@ -148,7 +150,7 @@ export const Actions = {
                 baseDeceit: player.attributes.baseDeceit,
                 baseMadness: player.attributes.baseMadness
             });
-            return ["exploring", "challenging"];
+            return defaultActions;
         }
 
     },
@@ -173,7 +175,7 @@ export const Actions = {
             if (intimidateSuccess) {
                 onIntimidation(player, enemy, pushLogItem);
             }
-            return "exploring";
+            return defaultActions;
         }
     },
     hunting: {
@@ -211,7 +213,7 @@ export const Actions = {
                     pushLogItem(message);
                 }
             }
-            return ["exploring", "challenging"];
+            return defaultActions;
         }
     },
     usurp: {
