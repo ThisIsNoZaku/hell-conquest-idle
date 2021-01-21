@@ -10,6 +10,9 @@ import calculateInstantDeathLevel from "../engine/combat/calculateInstantDeathLe
 import {onIntimidation} from "../engine/general/onIntimidation";
 import reincarnateAs from "../engine/general/reincarnateAs";
 import cleanupDeadCharacters from "../engine/general/cleanupDeadCharacters";
+import triggerEvent from "../engine/general/triggerEvent";
+import {generateHitEvents} from "../engine/events/generate";
+import generateRoundActionLogItems from "../engine/general/generateRoundActionLogItems";
 
 export const Actions = {
     exploring: {
@@ -91,6 +94,23 @@ export const Actions = {
                     pushLogItem("Combat Begins!");
                     player.refreshBeforeCombat();
                     currentEncounter.currentTick += 100;
+                    const events = [];
+                    triggerEvent({
+                        type: "on_combat_start",
+                        combatants: {
+                            0: player,
+                            [enemy.id]: enemy
+                        },
+                        source: player,
+                        target: enemy,
+                        roundEvents: events
+                    });
+                    generateRoundActionLogItems({
+                        events
+                    }).forEach(event => {
+                        pushLogItem(event);
+                    })
+
                 }
                 const nextRound = resolveCombatRound(currentEncounter.currentTick, {
                     0: player,
