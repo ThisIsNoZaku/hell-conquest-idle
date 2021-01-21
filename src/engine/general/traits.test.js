@@ -621,13 +621,8 @@ describe("shared pain trait", function () {
         }, 1);
     });
     it("causes retaliation damage to attackers", function () {
-        resolveAttack.mockReturnValueOnce({
-            hitType: 0,
-            effects: generateHitEvents(0, player, enemy, 10, 0, 0, 0, 0)
-        }).mockReturnValueOnce({
-            hitType: 0,
-            effects: generateHitEvents(0, enemy, player, 10, 0, 0, 0, 0)
-        });
+        resolveAttack.mockReturnValueOnce(generateHitEvents(0, player, enemy, 10, 0, 0, 0, 0)
+        ).mockReturnValueOnce(generateHitEvents(0, enemy, player, 10, 0, 0, 0, 0));
         const result = resolveCombatRound(100, {0: player, 1: enemy});
         expect(result.events).toContainEqual({
             event: "damage",

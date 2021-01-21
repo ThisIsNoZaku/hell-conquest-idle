@@ -119,7 +119,7 @@ describe("character combat stats", function () {
 
                 }
             }, 0).combat.attackUpgradeCost;
-            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.05)).times(100));
+            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(Decimal(0.05).times(1.25))).times(100).ceil());
         }
     });
-})
+});
