@@ -7,6 +7,7 @@ import calculateDamageBy from "../combat/calculateDamageBy";
 import calculateAttackDowngradeCost from "../combat/calculateAttackDowngradeCost";
 import calculateAttackUpgradeCost from "../combat/calculateAttackUpgradeCost";
 import resolveAttack from "../combat/resolveAttack";
+import {generateHitEvents} from "../events/generate";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -575,5 +576,66 @@ describe("searing venom trait", function () {
             stacks: Decimal(2),
             uuid: expect.any(String)
         });
+    });
+})
+describe("shared pain trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            traits: {
+                sharedPain: 1
+            },
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                stamina: Decimal(0),
+            },
+        }, 1);
+    });
+    it("causes retaliation damage to attackers", function () {
+        resolveAttack.mockReturnValueOnce({
+            hitType: 0,
+            effects: generateHitEvents(0, player, enemy, 10, 0, 0, 0, 0)
+        }).mockReturnValueOnce({
+            hitType: 0,
+            effects: generateHitEvents(0, enemy, player, 10, 0, 0, 0, 0)
+        });
+        const result = resolveCombatRound(100, {0: player, 1: enemy});
+        expect(result.events).toContainEqual({
+            event: "damage",
+            parent: expect.any(String),
+            uuid: expect.any(String),
+            target: 1,
+            source: 0,
+            value: Decimal(2)
+        })
     });
 })

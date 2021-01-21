@@ -51,6 +51,13 @@ export default function resolveCombatRound(tick, combatants) {
             target: actionTarget,
             combatants,
         });
+        triggerEvent({
+            type: `on_taking_damage`,
+            roundEvents,
+            source: actingCharacter,
+            target: actionTarget,
+            combatants
+        });
 
         Object.values(combatants).forEach(combatant => {
             if (Decimal(combatant.hp).lte(0)) {

@@ -4,7 +4,7 @@ export function generateHitCombatResult(tick, attackingCharacterId, targetCharac
     return {
         uuid: v4(),
         tick,
-        result: "hit",
+        result: "attack",
         target: targetCharacterId,
         actor: attackingCharacterId,
         effects: [{

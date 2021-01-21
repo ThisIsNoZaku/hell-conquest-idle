@@ -3,6 +3,7 @@ import evaluateExpression from "../../general/evaluateExpression";
 import Decimal from "decimal.js";
 import {v4} from "node-uuid";
 import selectConditionTargets from "./selectConditionTargets";
+import * as _ from "lodash";
 
 export default function applyTraitEffects(effectsToApply, event, traitId) {
     for (const effect of Object.keys(effectsToApply)) {
@@ -88,6 +89,35 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
 
                 });
                 break;
+            case "inflict_damage":
+                const targets = selectConditionTargets(effectDefinition.target, event.source, event.target, event.combatants);
+                targets.forEach(target => {
+                    const damageEffect = _.flatMap(event.roundEvents.filter(ev => {
+                        return ev.effects;
+                    }), ev => ev.effects).find(ef => {
+                        return ef.event === "damage" &&
+                            ef.source === event.source.id &&
+                            ef.target === event.target.id;
+                    });
+                    const dealtDamage = damageEffect.value;
+                    const damageToDeal = evaluateExpression(effectDefinition.value, {
+                        attackDamage: dealtDamage,
+                        rank: event.source.traits[traitId]
+                    });
+                    target.hp = target.hp.minus(damageToDeal);
+                    const newDamageEffectUuid = v4();
+                    damageEffect.children = [
+                        newDamageEffectUuid
+                    ];
+                    event.roundEvents.push({
+                        event: "damage",
+                        uuid: newDamageEffectUuid,
+                        target: event.target.id,
+                        source: event.source.id,
+                        value: damageToDeal,
+                        parent: damageEffect.uuid
+                    });
+                });
         }
     }
 }

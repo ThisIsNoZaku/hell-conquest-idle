@@ -26,7 +26,7 @@ export default function triggerEvent(event) {
 }
 
 const eventMatcher = JOI.object({
-    type: JOI.valid("on_kill", "on_round_begin", "on_round_end", "on_miss_hit", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit").required(),
+    type: JOI.valid("on_kill", "on_taking_damage", "on_round_begin", "on_round_end", "on_miss_hit", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit").required(),
     combatants: JOI.object().required(),
     roundEvents: JOI.array().required(),
     source: JOI.object(),
