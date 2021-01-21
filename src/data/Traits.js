@@ -182,7 +182,7 @@ export const Traits = {
         description: _.template("You return the pain of injuries inflicted on you, reflecting <span style='color: orangered'>${rank.times(20).toFixed()}%</span> of the damage back."),
         on_taking_damage: {
             trigger_effects: {
-                inflict_damage: {
+                reflect_damage: {
                     target: "target_character",
                     value: "rank.times(20).div(100).times(attackDamage)"
                 }

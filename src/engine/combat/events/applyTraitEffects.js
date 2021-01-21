@@ -89,21 +89,19 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
 
                 });
                 break;
-            case "inflict_damage":
+            case "reflect_damage":
                 const targets = selectConditionTargets(effectDefinition.target, event.source, event.target, event.combatants);
                 targets.forEach(target => {
-                    const damageEffect = _.flatMap(event.roundEvents.filter(ev => {
-                        return ev.effects;
-                    }), ev => ev.effects).find(ef => {
+                    const damageEffect = event.roundEvents.find(ef => {
                         return ef.event === "damage" &&
-                            ef.source === event.source.id &&
-                            ef.target === event.target.id;
+                            ef.source === event.target.id &&
+                            ef.target === event.source.id;
                     });
                     const dealtDamage = damageEffect.value;
                     const damageToDeal = evaluateExpression(effectDefinition.value, {
                         attackDamage: dealtDamage,
                         rank: event.source.traits[traitId]
-                    });
+                    }).floor();
                     target.hp = target.hp.minus(damageToDeal);
                     const newDamageEffectUuid = v4();
                     damageEffect.children = [
