@@ -13,7 +13,7 @@ export const Statuses = {
             },
             attack_downgrade_cost_multiplier: {
                 target: "self",
-                modifier: 1.25
+                modifier: .25
             }
         }
     }),
@@ -51,11 +51,11 @@ export const Statuses = {
         effects: {
             attack_downgrade_cost_multiplier: {
                 target: "self",
-                modifier: 1.1
+                modifier: .1
             },
             attack_upgrade_cost_multiplier: {
                 target: "self",
-                modifier: 1.10
+                modifier: .1
             }
         }
     }),
