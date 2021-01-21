@@ -2,6 +2,7 @@ import {Tactics} from "../../../data/Tactics";
 import Tooltip from "@material-ui/core/Tooltip";
 import Grid from "@material-ui/core/Grid";
 import React from "react";
+import {HitTypes} from "../../../data/HitTypes";
 
 export default function (props) {
     return <Grid container>
@@ -39,14 +40,13 @@ export default function (props) {
             {Tactics[props.tactic].modifiers.max_hit_damage_modifier &&
             <Tooltip title="Critical hits deal extra damage">
                 <li style={{color: "green", textAlign: "left"}}>
-                    +{Tactics[props.tactic].modifiers.max_hit_damage_modifier * 100}% to Critical hit
-                    damage
+                    +{Tactics[props.tactic].modifiers.max_hit_damage_modifier * 100}% to {HitTypes[HitTypes.max].type} hit damage
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.health_modifier &&
             <Tooltip title="The demon is harder to kill">
                 <li style={{color: "green", textAlign: "left"}}>
-                    {Tactics[props.tactic].modifiers.health_modifier * 100}% increased Health
+                    +{Tactics[props.tactic].modifiers.health_modifier * 100}% to Health
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier &&
