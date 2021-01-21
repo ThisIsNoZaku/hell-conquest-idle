@@ -5,6 +5,8 @@ import {HitTypes} from "../../data/HitTypes";
 import {Tactics} from "../../data/Tactics";
 import {getConfigurationValue} from "../../config";
 import {Character} from "../../character";
+import triggerEvent from "./triggerEvent";
+import calculateDamageBy from "../combat/calculateDamageBy";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -130,6 +132,135 @@ describe("blood rage trait", function () {
         ])
     });
 })
+describe("cannibalism trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            traits: {
+                cannibalism: 1
+            },
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 1);
+    });
+    it("adds stack of engorged on kill", function () {
+        triggerEvent({
+            type: "on_kill",
+            source: player,
+            target: enemy,
+            combatants: {0: player, 1: enemy},
+            roundEvents: []
+        });
+        expect(player.statuses["engorged"])
+            .toEqual([
+                {
+                    duration: 999,
+                    uuid: expect.any(String),
+                    source: {
+                        character: 0,
+                        trait: "cannibalism"
+                    },
+                    stacks: Decimal(1),
+                }
+            ])
+    });
+    it("stacks of engorged gained on kill combine", function () {
+        player.statuses["engorged"] = [
+            {
+                source: {
+                    character: 0,
+                    trait: "cannibalism"
+                },
+                stacks: Decimal(1),
+                uuid: "1234567890"
+            }
+        ]
+
+        triggerEvent({
+            type: "on_kill",
+            source: player,
+            target: enemy,
+            combatants: {0: player, 1: enemy},
+            roundEvents: []
+        });
+        expect(player.statuses["engorged"])
+            .toEqual([
+                {
+                    duration: 999,
+                    uuid: expect.any(String),
+                    source: {
+                        character: 0,
+                        trait: "cannibalism"
+                    },
+                    stacks: Decimal(2),
+                }
+            ])
+    });
+    it("adds a max of 10 stacks of engorged", function () {
+        player.statuses["engorged"] = [
+            {
+                stacks: Decimal(10),
+                source: {
+                    character: 0,
+                    trait: "cannibalism"
+                },
+                duration: 999,
+                uuid: "1234567890"
+            }
+        ]
+        triggerEvent({
+            type: "on_kill",
+            source: player,
+            target: enemy,
+            combatants: {0: player, 1: enemy},
+            roundEvents: []
+        });
+        expect(player.statuses["engorged"])
+            .toEqual([
+                {
+                    duration: 999,
+                    uuid: expect.any(String),
+                    source: {
+                        character: 0,
+                        trait: "cannibalism"
+                    },
+                    stacks: Decimal(10),
+                }
+            ])
+    });
+});
 describe("inescapable grasp trait", function () {
     let player;
     let enemy;
@@ -193,5 +324,55 @@ describe("inescapable grasp trait", function () {
                 },
             ]
         });
+    });
+});
+
+describe("killing blow trait", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        resolveAttackMock.mockClear();
+
+        player = new Character({
+            isPc: true,
+            id: 0,
+            hp: 50,
+            tactics: "defensive",
+            powerLevel: 1,
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            traits: {
+                killingBlow: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 0);
+        enemy = new Character({
+            id: 1,
+            hp: 25,
+            powerLevel: 1,
+            tactics: "defensive",
+            attributes: {
+                baseBrutality: 1,
+                baseCunning: 1,
+                baseDeceit: 1,
+                baseMadness: 1
+            },
+            combat: {
+                evasionPoints: 0,
+                precisionPoints: 0
+            },
+        }, 1);
+    });
+    it("increases devastating hit damage", function () {
+        const calculatedDamage = calculateDamageBy(player)
+            .against(enemy);
+        expect(calculatedDamage[1]).toEqual(Decimal(10).times(1.5).times(1.1).floor());
     });
 });

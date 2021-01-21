@@ -42,8 +42,10 @@ export const Traits = {
             trigger_effects: {
                 add_statuses: {
                     engorged: {
-                        target: "self",
+                        cumulative: true,
+                        target: "source_character",
                         stacks: "rank",
+                        duration: 999,
                         max: "rank.times(10)"
                     }
                 }
@@ -101,11 +103,11 @@ export const Traits = {
         name: "Killing Blow",
         description: _.template("You seek to end fights with a single strike, dealing ${rank.times(10).plus(100).toFixed()}% damage on a Devastating hit."),
         icon: "icons/icons-1.png",
-        on_devastating_hit: {
+        continuous: {
             trigger_effects: {
-                damage_modifier: {
+                devastating_hit_damage_multiplier: {
                     target: "dealt",
-                    modifier: "rank.times(1.1)"
+                    modifier: "rank.times(0.1)"
                 }
             }
         }

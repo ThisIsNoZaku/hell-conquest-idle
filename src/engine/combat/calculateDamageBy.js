@@ -3,6 +3,8 @@ import * as _ from "lodash";
 import {getConfigurationValue} from "../../config";
 import {debugMessage} from "../../debugging";
 import {HitTypes} from "../../data/HitTypes";
+import {Traits} from "../../data/Traits";
+import evaluateExpression from "../general/evaluateExpression";
 
 export default function calculateDamageBy(attacker) {
     return {
@@ -22,11 +24,19 @@ export default function calculateDamageBy(attacker) {
             const damageModifier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
                 .plus(enemyReceivedDamageMultiplier);
             debugMessage(`Final damage multiplier = ${damageModifier}.`);
+            const attackerPowerLevel = Decimal(attacker.powerLevel);
             return Object.keys(HitTypes).reduce((damage, nextType) => {
-                const powerLevel = Decimal(attacker.powerLevel);
                 const perLevelDamage = getConfigurationValue("damage_per_level");
                 const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
-                damage[nextType] = powerLevel.times(perLevelDamage).times(damageModifier).times(hitTypeDamageMultiplier).floor();
+                const traitDamageMultiplier = Object.keys(attacker.traits).reduce((previousValue, currentValue) => {
+                    const traitDamageMultiplier = evaluateExpression(_.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`, "modifier"], 0), {
+                        rank: attacker.traits[currentValue]
+                    });
+                    return previousValue.plus(traitDamageMultiplier)
+                }, Decimal(1));
+                damage[nextType] = attackerPowerLevel.times(perLevelDamage).times(damageModifier).times(hitTypeDamageMultiplier)
+                    .times(traitDamageMultiplier)
+                    .floor();
                 return damage;
             }, {
                 base: attacker.combat.medianDamage,

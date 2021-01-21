@@ -22,7 +22,8 @@ const eventEffects = modifierEffects.keys({
             target: effectTarget,
             stacks: [JOI.string(), JOI.number().min(0)],
             duration: JOI.number().min(1).default(1),
-            max: [JOI.number().min(1), JOI.string()]
+            max: [JOI.number().min(1), JOI.string()],
+            cumulative: JOI.boolean()
         });
         return schemas;
     }, {})),
@@ -49,7 +50,10 @@ const onAttackHitValidator = onIntimidateValidator
 
 const onKillValidator = onAttackHitValidator;
 
-const continuousValidator = onRoundEndValidator;
+const continuousValidator = JOI.object({
+    trigger_effects: modifierEffects,
+    not_trigger_effects: modifierEffects
+});
 
 const onTakingDamageValidator = onAttackHitValidator;
 
