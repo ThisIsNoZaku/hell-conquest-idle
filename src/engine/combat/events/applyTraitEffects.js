@@ -99,8 +99,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     });
                     const dealtDamage = damageEffect.value;
                     const damageToDeal = evaluateExpression(effectDefinition.value, {
-                        attackDamage: dealtDamage,
-                        rank: event.source.traits[traitId]
+                        attackDamage: Decimal(dealtDamage),
+                        rank: Decimal(event.source.traits[traitId])
                     }).floor();
                     target.hp = target.hp.minus(damageToDeal);
                     const newDamageEffectUuid = v4();
