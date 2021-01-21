@@ -22,7 +22,7 @@ export default function generateRoundActionLogItems(round) {
 }
 
 function describeEvent(event) {
-    const sourceName = getCharacter(event.source).name;
+    const sourceName = getCharacter(event.source.character).name;
     const targetName = getCharacter(event.target).name;
     switch (event.event) {
         case "kill":
