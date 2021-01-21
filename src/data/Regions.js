@@ -37,7 +37,8 @@ class Region {
         if (getConfigurationValue("debug")) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const encounterDef = encounterWithRival ? this.encounters[getGlobalState().rival.appearance] : chooseRandomEncounter(this);
+        const rivalType = getGlobalState().rival.appearance;
+        const encounterDef = encounterWithRival ? this.encounters[rivalType] : chooseRandomEncounter(this);
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
