@@ -5,6 +5,8 @@ import {getConfigurationValue} from "../../config";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
 import {debugMessage} from "../../debugging";
+import calculateAttackUpgradeCost from "./calculateAttackUpgradeCost";
+import calculateAttackDowngradeCost from "./calculateAttackDowngradeCost";
 
 export default function resolveAttack(tick, attacker, target) {
     if (typeof tick !== "number") {
@@ -18,7 +20,7 @@ export default function resolveAttack(tick, attacker, target) {
     let spentEvasion = Decimal(0);
     // Can the attacker upgrade their attack?
     let timesUpgraded = 0;
-    const attackUpgradeCost = attacker.combat.attackUpgradeCost;
+    const attackUpgradeCost = calculateAttackUpgradeCost(attacker, target);
     const maxHitLevel = HitTypes.max;
     while (Decimal(attacker.combat.stamina).gte(Decimal(attackUpgradeCost).times(1 + timesUpgraded))
         && hitLevel != maxHitLevel
@@ -33,7 +35,7 @@ export default function resolveAttack(tick, attacker, target) {
 
     let timesDowngraded = 0;
     const minHitLevel = HitTypes.min;
-    const attackDowngradeCost = Tactics[target.tactics].modifiers.downgradeCostSameAsUpgrade ? attackUpgradeCost : target.combat.incomingAttackDowngradeCost;
+    const attackDowngradeCost = calculateAttackDowngradeCost(attacker, target);
 
     while (Decimal(target.combat.stamina).gte(attackDowngradeCost.times(1 + timesDowngraded).plus(spentEvasion)) &&
     hitLevel != minHitLevel && timesDowngraded === 0) {
