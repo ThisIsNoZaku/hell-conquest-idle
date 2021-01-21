@@ -15,8 +15,8 @@ export default function calculateAttackDowngradeCost(attacker, target) {
     }, Decimal(1));
     const targetStatusMultiplier = Object.keys(_.get(target, "statuses", {})).reduce((previousValue, currentValue) => {
         const effectDef = _.get(Statuses[currentValue], ["effects", "attack_downgrade_cost_multiplier"]);
-        const effectModifier = _.get(effectDef, "target") === "source_character" ? evaluateExpression(effectDef.modifier, {
-            rank: Decimal(target.traits[currentValue])
+        const effectModifier = _.get(effectDef, "target") === "self" ? evaluateExpression(effectDef.modifier, {
+            rank: Decimal(target.getStatusStacks(currentValue))
         }) : 0;
         return previousValue.plus(effectModifier);
     }, Decimal(1));
