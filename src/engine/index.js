@@ -8,8 +8,8 @@ import * as Package from "../../package.json";
 import {Tactics} from "../data/Tactics";
 import changelog from "../changelog.json";
 import pkg from "../../package.json";
-import { knuthShuffle } from "knuth-shuffle";
 import evaluateExpression from "./general/evaluateExpression";
+import calculateNPCBonuses from "./general/calculateNpcBonuses";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -221,48 +221,11 @@ export function clearGlobalState() {
     globalState = loadGlobalState()
 }
 
-function calculateNPCBonuses(points, adjectives) {
-    const attributeWeights = {
-        brutality: _.sum(adjectives.map(a => a.attributeMultipliers.brutality)),
-        cunning: _.sum(adjectives.map(a => a.attributeMultipliers.cunning)),
-        deceit: _.sum(adjectives.map(a => a.attributeMultipliers.deceit)),
-        madness: _.sum(adjectives.map(a => a.attributeMultipliers.madness))
-    };
-
-    const pointsAssigned = {
-        brutality: 0,
-        cunning: 0,
-        deceit: 0,
-        madness: 0
-    }
-
-    const attributeOrder = knuthShuffle(Object.keys(attributeWeights));
-
-    while (points > 0) {
-        const highestWeight = attributeOrder.reduce((highestWeight, next) => {
-            const adjustedWeightOfHighest = attributeWeights[highestWeight]/(1 + pointsAssigned[highestWeight]);
-            const adjustedWeightOfNext = attributeWeights[next]/(1 + pointsAssigned[next]);
-            return adjustedWeightOfHighest >= adjustedWeightOfNext ? highestWeight : next;
-        }, "brutality");
-        pointsAssigned[highestWeight]++;
-        points--;
-    }
-
-    return {
-        attributes: {
-            brutality: Decimal( inverseTriangleNumber(pointsAssigned.brutality) + 1).floor(),
-            cunning: Decimal( inverseTriangleNumber(pointsAssigned.cunning)  + 1).floor(),
-            deceit: Decimal( inverseTriangleNumber(pointsAssigned.deceit)  + 1).floor(),
-            madness:Decimal( inverseTriangleNumber(pointsAssigned.madness)  + 1).floor(),
-        }
-    }
-}
-
-function triangleNumber(number) {
+export function triangleNumber(number) {
     return (number * (number + 1))/2;
 }
 
-function inverseTriangleNumber(number) {
+export function inverseTriangleNumber(number) {
     return Math.floor(Math.sqrt(number * 2));
 
 }
