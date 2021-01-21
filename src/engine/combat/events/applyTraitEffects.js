@@ -96,7 +96,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 targets.forEach(target => {
                     const damageEffect = event.roundEvents.find(ef => {
                         return ef.event === "damage" &&
-                            ef.source === event.target.id &&
+                            ef.source.character === event.target.id &&
                             ef.target === event.source.id;
                     });
                     const dealtDamage = damageEffect.value;
