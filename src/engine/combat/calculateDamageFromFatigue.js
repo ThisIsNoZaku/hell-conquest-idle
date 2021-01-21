@@ -1,3 +1,3 @@
 export default function calculateDamageFromFatigue(character) {
-    return character.maximumHp.div(20).ceil();
+    return character.maximumHp.div(5).ceil();
 }
