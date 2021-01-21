@@ -101,7 +101,7 @@ export const Creatures  = {
     },
     fleshlessSoldier: {
         name: "Fleshless Soldier",
-        traits: ["mindlessAssault"],
+        traits: ["mindlessBlows"],
         enabled: true,
         appearance: "fleshlessSoldier",
         texture: "18_skeleton.png"
