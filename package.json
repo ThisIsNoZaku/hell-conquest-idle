@@ -38,7 +38,12 @@
     "build-storybook": "build-storybook -s public"
   },
   "jest": {
-    "resetMocks": false
+    "resetMocks": false,
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/components/**",
+      "!**/stories/**"
+    ]
   },
   "eslintConfig": {
     "extends": [
