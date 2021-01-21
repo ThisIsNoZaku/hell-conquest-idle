@@ -14,7 +14,7 @@ export default function doesTraitTrigger(eventDefinition, event) {
                             return healthPercentage.times(100).lte(conditionDefinition.below);
                         });
                         break;
-                    case "all_enemy":
+                    case "all_enemies":
                         nextConditionMet = targets.every(nextTarget => {
                             const healthPercentage = nextTarget.hp.div(nextTarget.maximumHp);
                             return healthPercentage.lte(conditionDefinition[nextCondition].below);
