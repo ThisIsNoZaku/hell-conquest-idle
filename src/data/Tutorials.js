@@ -14,8 +14,8 @@ export const Tutorials = {
         body: "<p>When you reincarnate into a new body, you can change how your points are spent to give yourself various bonuses.</p>" +
             "<p>Attributes are the base of your character and determine your combat statistics</p>" +
             "<p><strong>Brutality</strong> makes your attacks deal more damage and increases Health, making your character harder to kill.</p>" +
-            "<p><strong>Cunning</strong> increases your Evasion, which lets your character reduce the severity of incoming attacks.</p>" +
-            "<p><strong>Deceit</strong> increases your Precision, which leys your character increase the severity of their attacks.</p>" +
+            "<p><strong>Cunning</strong> increases your Evasion, which lets your character avoid incoming attacks.</p>" +
+            "<p><strong>Deceit</strong> increases your Precision, which lets your character increase the severity of their attacks.</p>" +
             "<p><strong>Madness</strong> increases the level of your Traits and Resilience, which reduces the damage from incoming attacks.</p>" +
             "<p>Spend your first starting points to proceed.</p>"
     },
