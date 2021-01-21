@@ -27,8 +27,8 @@ export const EventHandlers = {
         }
     },
     "kill": function (event, sourceCharacter, targetCharacter, pushLogItem) {
-        const deadCharacter = getCharacter(event.target);
-        const actingCharacter = getCharacter(event.source.character);
+        const actingCharacter = getCharacter(event.target);
+        const deadCharacter = getCharacter(event.source.character);
         if (actingCharacter.id === 0 && actingCharacter.id !== deadCharacter.id) {
             enableTutorial("leveling-up");
             debugMessage("Player killed an enemy and gained power.");
@@ -70,7 +70,7 @@ export const EventHandlers = {
                 })
             }
         } else if (deadCharacter.id === 0) {
-            if (Decimal(deadCharacter.powerLevel).gt(getGlobalState().rival.level || 0)) {
+            if (Decimal(deadCharacter.powerLevel).gt(getGlobalState().rival.level || 0) && deadCharacter.id !== actingCharacter.id) {
                 getGlobalState().rival = {...actingCharacter};
                 pushLogItem({
                     message: "<strong>You have a new rival!</strong>",
