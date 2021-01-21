@@ -54,8 +54,8 @@ export default function resolveCombatRound(tick, combatants) {
         triggerEvent({
             type: `on_taking_damage`,
             roundEvents,
-            source: actingCharacter,
-            target: actionTarget,
+            source: actionTarget,
+            target: actingCharacter,
             combatants
         });
 
