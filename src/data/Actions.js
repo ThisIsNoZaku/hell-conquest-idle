@@ -59,7 +59,7 @@ export const Actions = {
             if (player.combat.stamina.gte(costToFlee)) {
                 pushLogItem("Escaped!");
                 player.combat.stamina = player.combat.stamina.minus(costToFlee);
-                return "exploring";
+                return defaultActions;
             } else {
                 pushLogItem("You have been caught!");
                 return "fighting";
