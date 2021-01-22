@@ -8,6 +8,8 @@ import {v4} from "node-uuid";
 import * as _ from "lodash";
 import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
 import {enableTutorial} from "./tutorials";
+import triggerEvent from "./general/triggerEvent";
+import generateRoundActionLogItems from "./general/generateRoundActionLogItems";
 
 export const EventHandlers = {
     "add-status": function (event, sourceCharacter, targetCharacter) {
@@ -19,7 +21,7 @@ export const EventHandlers = {
     },
     "remove-status": function (event, sourceCharacter, targetCharacter) {
         const statusToRemove = targetCharacter.statuses[event.status].find(s => s.uuid === event.toRemove);
-        if(Decimal(statusToRemove.stacks).lte(event.stacks)) {
+        if (Decimal(statusToRemove.stacks).lte(event.stacks)) {
             targetCharacter.statuses[event.status] = targetCharacter.statuses[event.status]
                 .filter(s => s.uuid !== event.toRemove);
         } else {
@@ -27,8 +29,8 @@ export const EventHandlers = {
         }
     },
     "kill": function (event, sourceCharacter, targetCharacter, pushLogItem) {
-        const actingCharacter = getCharacter(event.target);
-        const deadCharacter = getCharacter(event.source.character);
+        const actingCharacter = getCharacter(event.source.character);
+        const deadCharacter = getCharacter(event.target);
         if (actingCharacter.id === 0 && actingCharacter.id !== deadCharacter.id && actingCharacter.isAlive) {
             enableTutorial("leveling-up");
             debugMessage("Player killed an enemy and gained power.");
@@ -36,8 +38,20 @@ export const EventHandlers = {
             const powerToGain = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromOtherDemon"), {
                 enemy: deadCharacter
             });
+            const roundEvents = [];
+            triggerEvent({
+                type: "on_kill",
+                combatants: {0: player},
+                source: {character: player},
+                target: deadCharacter,
+                roundEvents
+            });
+            const messages = generateRoundActionLogItems({
+                events: roundEvents
+            });
+            messages.forEach(pushLogItem);
             let multiplier = Object.keys(player.traits).reduce((multiplier, trait) => {
-                const traitMultiplier = evaluateExpression(_.get(Traits[trait].on_kill, ["effects", "power_gain_modifier"], 0),
+                const traitMultiplier = evaluateExpression(_.get(Traits[trait], ["continuous", "trigger_effects", "power_gain_modifier"], 0),
                     {
                         rank: Decimal(player.traits[trait])
                     });
