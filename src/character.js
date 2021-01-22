@@ -88,7 +88,9 @@ export class Character {
 
     get latentPowerModifier() {
         const effectiveLatentPower = Decimal.min(this.latentPowerCap, this.latentPower);
-        return effectiveLatentPower.times(getConfigurationValue("latent_power_effect_scale"));
+        return effectiveLatentPower
+            .plus(Decimal.max(0, this.latentPower.minus(effectiveLatentPower)).sqrt())
+            .times(getConfigurationValue("latent_power_effect_scale")).floor();
     }
 
     get maximumHp() {
@@ -124,7 +126,9 @@ export class Character {
         }
         this.appearance = newAppearance;
         this.traits = Object.keys(newTraits).reduce((previousValue, currentValue) => {
-            previousValue[currentValue] = getGlobalState().unlockedTraits[currentValue];
+            if(newTraits[currentValue]) {
+                previousValue[currentValue] = getGlobalState().unlockedTraits[currentValue];
+            }
             return previousValue;
         }, {});
         Creatures[newAppearance].traits.forEach(trait => {
