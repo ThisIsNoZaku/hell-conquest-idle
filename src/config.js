@@ -24,7 +24,7 @@ const config = {
     recovery_action_healing_percentage: .5,
     recover_action_stamina: 1,
     stamina_consumed_per_round: 25,
-    minimum_stamina: 300,
+    minimum_stamina: 350,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
