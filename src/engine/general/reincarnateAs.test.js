@@ -2,6 +2,7 @@ import {getCharacter, getGlobalState} from "../index";
 import Decimal from "decimal.js";
 import * as _ from "lodash";
 import reincarnateAs from "./reincarnateAs";
+import {Character} from "../../character";
 
 jest.mock("../");
 
@@ -9,18 +10,13 @@ describe("reincarnateAt", function () {
     let globalState;
     let player;
     beforeEach(() => {
-        player = {
-            reincarnate: jest.fn(),
+        player = new Character({
+            id: 0,
+            tactics: "defensive",
             highestLevelReached: Decimal(1),
             latentPower: Decimal(0),
             powerLevel: Decimal(1),
-            attributes: {
-                baseBrutality: Decimal(1),
-                baseDeceit:  Decimal(1),
-                baseCunning:Decimal(1),
-                baseMadness: Decimal(1),
-            }
-        };
+        });
         globalState = {
             characters: {
                 0: player
@@ -48,6 +44,7 @@ describe("reincarnateAt", function () {
         expect(getCharacter(0).highestLevelReached).toEqual(Decimal(2));
     });
     it("if monster is random, reincarnate as a different one", function () {
+        jest.spyOn(player, "reincarnate");
         reincarnateAs("random", {
             baseBrutality: 1,
             baseCunning: 1,
@@ -61,13 +58,13 @@ describe("reincarnateAt", function () {
     });
     it("recalculates latent power cap on reincarnations after first", function () {
         getGlobalState().reincarnationCount = 1;
-        getGlobalState().highestLevelEnemyDefeated = Decimal(1);
+        player.highestLevelEnemyDefeated = Decimal(1);
         reincarnateAs("random", {
             baseBrutality: 1,
             baseCunning: 1,
             baseMadness: 1,
             baseDeceit: 1
         });
-        expect(getGlobalState().latentPowerCap).toEqual(Decimal(25));
+        expect(player.latentPowerCap).toEqual(Decimal(25));
     });
 })

@@ -10,7 +10,8 @@ describe("onIntimidation", function () {
     let pushLogItem;
     beforeEach(() => {
         player = {
-            latentPower: Decimal(0)
+            latentPower: Decimal(0),
+            highestLevelEnemyDefeated: Decimal(1)
         };
         globalState = {
             passivePowerIncome: Decimal(0),

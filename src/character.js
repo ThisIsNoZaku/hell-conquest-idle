@@ -35,6 +35,7 @@ export class Character {
         this.latentPower = Decimal(props.latentPower || props._latentPower || 0);
         this.attributes = new Attributes({...props.attributes}, this);
         this.highestLevelReached = props.highestLevelReached;
+        this.highestLevelEnemyDefeated = props.highestLevelEnemyDefeated || 0;
         this.combat = new CombatStats(this, props.combat);
         this.appearance = props.appearance || props._appearance;
 
@@ -74,8 +75,15 @@ export class Character {
         return Decimal(this.hp).gt(0);
     }
 
+    get latentPowerCap() {
+        return evaluateExpression(getConfigurationValue("latent_power_cap"), {
+            highestLevelEnemyDefeated: Decimal(this.highestLevelEnemyDefeated)
+        });
+    }
+
     get latentPowerModifier() {
-        return this.latentPower.times(getConfigurationValue("latent_power_effect_scale")).plus(1);
+        const effectiveLatentPower = Decimal.min(this.latentPowerCap, this.latentPower);
+        return effectiveLatentPower.times(getConfigurationValue("latent_power_effect_scale"));
     }
 
     get maximumHp() {
@@ -132,7 +140,7 @@ export class Character {
     }
 
     gainPower(powerGained) {
-        const latentPowerMultiplier = this.latentPowerModifier;
+        const latentPowerMultiplier = this.latentPowerModifier.plus(1);
         powerGained = powerGained.times(latentPowerMultiplier).floor();
         this.absorbedPower = this.absorbedPower.plus(powerGained);
         return powerGained;
@@ -162,28 +170,28 @@ export class Attributes {
     get brutality() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseBrutality,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
         }).floor();
     }
 
     get cunning() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseCunning,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
         }).floor();
     }
 
     get deceit() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseDeceit,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
         }).floor();
     }
 
     get madness() {
         return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
             baseAttribute: this.baseMadness,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier)
+            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
         }).floor();
     }
 }

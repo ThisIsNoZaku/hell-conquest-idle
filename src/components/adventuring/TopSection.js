@@ -34,7 +34,7 @@ export default function TopSection(props) {
             </Grid>
             <Grid item xs>
                 {props.automaticReincarnateEnabled &&
-                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Strongest enemy defeated: Level {Decimal(getGlobalState().highestLevelEnemyDefeated).toFixed()})</Paper>}
+                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Strongest enemy defeated: Level {Decimal(getCharacter(0).highestLevelEnemyDefeated).toFixed()})</Paper>}
             </Grid>
         </Grid>
     </div>

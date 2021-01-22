@@ -23,7 +23,7 @@ export default function CharacterSheet(props) {
 
     const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
     const progressToNextLevel = Decimal(props.character.absorbedPower);
-    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPower.times(getConfigurationValue("latent_power_effect_scale")).times(100)), [
+    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPowerModifier.times(100)), [
         props.character.latentPower
     ]);
 
@@ -81,7 +81,7 @@ export default function CharacterSheet(props) {
             characterResilience={props.character.combat.resilience.toFixed()}
             characterEvasion={props.character.combat.evasion.toFixed()}
             characterPrecision={props.character.combat.precision.toFixed()}
-            evasionMultiplier={calculateAttackDowngradeCost(props.enemy, props.character)}
+            evasionMultiplier={calculateAttackDowngradeCost(props.character, props.enemy)}
             precisionMultiplier={calculateAttackUpgradeCost(props.character, props.enemy)}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}

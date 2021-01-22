@@ -29,17 +29,18 @@ export default function ReincarnationSelectionPage(props) {
         }, {}));
     const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
-    const newLatentPower = getCharacter(0).latentPower.plus(
-        evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
-            player
-        }));
+    const newLatentPower = getCharacter(0).latentPower
+        // .plus(
+        // evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
+        //     player
+        // }));
     const spendableBonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
-        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0),
-        highestLevelReached: Decimal(getCharacter(0).highestLevelReached)
+        highestLevelEnemyDefeated: Decimal(player.highestLevelEnemyDefeated || 0),
+        highestLevelReached: Decimal(player.highestLevelReached)
     });
     const latentPowerCap = evaluateExpression(getConfigurationValue("latent_power_cap"), {
-        highestLevelEnemyDefeated: Decimal(getGlobalState().highestLevelEnemyDefeated || 0),
-        highestLevelReached: Decimal(getCharacter(0).highestLevelReached)
+        highestLevelEnemyDefeated: Decimal(player.highestLevelEnemyDefeated || 0),
+        highestLevelReached: Decimal(player.highestLevelReached)
     });
     const availableBonusPoints = spendableBonusPoints
         .minus(Object.values(attributes).reduce((sum, next) => {
