@@ -32,7 +32,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         if (existingStatus) {
                             existingStatus.duration = duration;
                             existingStatus.stacks = effectDefinition[status].cumulative ?
-                                Decimal.min(existingStatus.stacks.plus(stacks), max) :
+                                Decimal.min(Decimal(existingStatus.stacks).plus(stacks), max) :
                                 stacks;
                         } else {
                             target.statuses[status] = (target.statuses[status] || []);
