@@ -72,9 +72,7 @@ export const EventHandlers = {
                     uuid: v4()
                 });
             }
-            if (!getGlobalState().automaticReincarnate) {
-                player.highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, deadCharacter.powerLevel);
-            }
+            player.highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, deadCharacter.powerLevel);
             getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel); // FIXME: Move into character levelup method.
             if (deadCharacter.isRival) {
                 getGlobalState().rival = {};
