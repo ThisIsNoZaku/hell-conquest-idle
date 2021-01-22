@@ -298,7 +298,6 @@ export function assertHasProperty(propertyName, object) {
         object[`_${propertyName}`] === undefined) {
         throw new Error(`Missing required property ${propertyName} or _${propertyName}`);
     }
-    ;
 }
 
 const characterPropsSchema = JOI.object({
@@ -321,6 +320,8 @@ const characterPropsSchema = JOI.object({
     statuses: JOI.object().default({}),
     highestLevelReached: JOI.alternatives().try(JOI.number(), JOI.object().instance(Decimal), JOI.string())
         .default(Decimal(1)),
+    highestLevelEnemyDefeated: JOI.alternatives().try(JOI.number(), JOI.object().instance(Decimal), JOI.string())
+        .default(Decimal(0)),
     isPc: JOI.boolean().default(false),
     name: JOI.string(),
     appearance: JOI.string().empty(''),
