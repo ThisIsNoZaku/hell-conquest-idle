@@ -36,7 +36,7 @@ export const Traits = {
     }),
     cannibalism: validatedTrait({
         name: "Cannibalism",
-        icon: "icons/icons-1.png",
+        icon: "./icons/icons-1.png",
         description: _.template("When this demon kills another, it gains ${rank} stacks of of Engorged, to a maximum of ${rank.times(10)}"),
         on_kill: {
             trigger_effects: {
