@@ -14,5 +14,5 @@ export function onIntimidation(player, enemy, pushLogItem) {
         enemy
     });
     player.latentPower = player.latentPower.plus(periodicPowerIncreases);
-    getGlobalState().highestLevelEnemyDefeated = Decimal.max(getGlobalState().highestLevelEnemyDefeated, enemy.powerLevel);
+    player.highestLevelEnemyDefeated = Decimal.max(player.highestLevelEnemyDefeated, enemy.powerLevel);
 }
