@@ -360,7 +360,7 @@ describe('The combat round resolution', function () {
                     },
                     target: 1,
                     precisionUsed: Decimal(72),
-                    evasionUsed: Decimal(118),
+                    evasionUsed: Decimal(95 * 1.25).floor(),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
                     hitType: -1
