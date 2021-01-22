@@ -211,7 +211,8 @@ export const Traits = {
                 add_statuses: {
                     terrified: {
                         target: "enemy",
-                        stacks: "rank.times(2)"
+                        stacks: "rank",
+                        duration: 3
                     }
                 }
             }
