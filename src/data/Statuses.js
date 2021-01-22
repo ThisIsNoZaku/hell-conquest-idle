@@ -20,7 +20,7 @@ export const Statuses = {
     engorged: validatedStatus({
         name: "Engorged",
         icon: "./icons/icons-1.png",
-        description: _.template("Your size gives a ${health_modifier.times(100)}% bonus to max Health."),
+        description: _.template("Your size gives a ${maximum_hp_multiplier.times(100)}% bonus to max Health."),
         effects: {
             maximum_hp_multiplier: {
                 target: "self",
