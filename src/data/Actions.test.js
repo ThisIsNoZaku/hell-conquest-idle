@@ -323,7 +323,7 @@ describe("intimidating action", function () {
         const player = {
             highestLevelReached: 1,
             combat: {
-                stamina: Decimal(50)
+                stamina: Decimal(100)
             }
         }
         Actions["intimidating"].complete(null, player, pushLogItem);

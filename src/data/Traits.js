@@ -98,7 +98,7 @@ export const Traits = {
     }),
     killingBlow: validatedTrait({
         name: "Killing Blow",
-        description: _.template("You seek to end fights with a single strike, dealing ${rank.times(10).plus(100).toFixed()}% damage on a Devastating hit."),
+        description: _.template("You seek to end fights with a single strike, dealing ${rank.times(10)}% extra damage on a Devastating hit."),
         icon: "icons/icons-1.png",
         continuous: {
             trigger_effects: {
@@ -152,11 +152,11 @@ export const Traits = {
         name: "Sadistic Joy",
         icon: "icons/icons-852.png",
         description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${rank.times(25)}% power from killing other demons."),
-        on_kill: {
+        on_hit: {
             trigger_effects: {
-                power_gain_modifier: {
+                gain_stamina: {
                     target: "self",
-                    modifier: "rank.times(.25)"
+                    value: "player.combat.maximumStamina.times(rank).times(.05)"
                 }
             }
         }
@@ -165,12 +165,12 @@ export const Traits = {
         name: "Searing Venom",
         icon: "icons/icons-4.png",
         description: _.template("Your agonizing venom causes such intense pain that the victim suffers an extra ${rank.times(5)}% damage from attacks."),
-        on_devastating_hit: {
+        on_hit: {
             trigger_effects: {
                 add_statuses: {
                     agonizingPoison: {
                         target: "enemy",
-                        stacks: "rank.times(2)"
+                        stacks: "rank"
                     }
                 }
             }

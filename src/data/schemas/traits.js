@@ -34,7 +34,11 @@ const eventEffects = modifierEffects.keys({
             stacks: [JOI.string(), JOI.number().min(0)]
         });
         return schemas;
-    }, {}))
+    }, {})),
+    gain_stamina: JOI.object({
+        target: effectTarget,
+        value: [JOI.string(), JOI.number()]
+    })
 });
 
 // Validators
@@ -64,6 +68,7 @@ const traitValidator = JOI.object({
     icon: JOI.string().required(),
     description: JOI.function(),
     on_round_end: onRoundEndValidator,
+    on_hit: onAttackHitValidator,
     on_intimidate: onIntimidateValidator,
     on_solid_hit: onAttackHitValidator,
     on_serious_hit: onAttackHitValidator,

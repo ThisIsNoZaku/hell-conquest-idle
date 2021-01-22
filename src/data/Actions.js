@@ -102,7 +102,7 @@ export const Actions = {
                             0: player,
                             [enemy.id]: enemy
                         },
-                        source: player,
+                        source: {character:player},
                         target: enemy,
                         roundEvents: events
                     });
@@ -112,7 +112,7 @@ export const Actions = {
                             0: player,
                             [enemy.id]: enemy
                         },
-                        source: enemy,
+                        source: {character:enemy},
                         target: player,
                         roundEvents: events
                     });
@@ -174,8 +174,8 @@ export const Actions = {
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem(`Your force of will seizes control of ${enemy.name}'s mind!`);
                 intimidateSuccess = true;
-            } else if (player.combat.stamina.gte(enemy.powerLevel.times(50))) {
-                player.combat.stamina = player.combat.stamina.minus(enemy.powerLevel.times(50));
+            } else if (player.combat.stamina.gte(enemy.powerLevel.times(100))) { // FIXME: Make configuration
+                player.combat.stamina = player.combat.stamina.minus(enemy.powerLevel.times(100));
                 intimidateSuccess = true;
             } else {
                 pushLogItem(`Your lack of stamina allows ${enemy.name} to escape!`);

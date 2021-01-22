@@ -98,11 +98,7 @@ describe("blood rage trait", function () {
                 uuid: "2345678901"
             }
         ];
-        enemy.combat.evasionPoints = Decimal(0);
-        enemy.combat.precisionPoints = Decimal(0);
 
-        player.combat.evasionPoints = Decimal(0);
-        player.combat.precisionPoints = Decimal(0);
         enemy.powerLevel = Decimal(10);
         enemy.hp = enemy.maximumHp;
         const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
@@ -180,7 +176,7 @@ describe("cannibalism trait", function () {
     it("adds stack of engorged on kill", function () {
         triggerEvent({
             type: "on_kill",
-            source: player,
+            source: {character: player},
             target: enemy,
             combatants: {0: player, 1: enemy},
             roundEvents: []
@@ -212,7 +208,7 @@ describe("cannibalism trait", function () {
 
         triggerEvent({
             type: "on_kill",
-            source: player,
+            source: {character: player},
             target: enemy,
             combatants: {0: player, 1: enemy},
             roundEvents: []
@@ -244,7 +240,7 @@ describe("cannibalism trait", function () {
         ]
         triggerEvent({
             type: "on_kill",
-            source: player,
+            source: { character: player },
             target: enemy,
             combatants: {0: player, 1: enemy},
             roundEvents: []
@@ -574,7 +570,7 @@ describe("searing venom trait", function () {
             },
             status: "agonizingPoison",
             target: 1,
-            stacks: Decimal(2),
+            stacks: Decimal(1),
             uuid: expect.any(String)
         });
     });
@@ -634,6 +630,21 @@ describe("shared pain trait", function () {
             target: 1,
             source: {character:0},
             value: Decimal(2)
-        })
+        });
+    });
+    it("player does not take any damage from their own attacks", function(){
+        getCharacter.mockReturnValueOnce(player)
+            .mockReturnValueOnce(enemy);
+        resolveAttack.mockReturnValueOnce(generateHitEvents(0, player, enemy, 10, 0, 0, 0, 0)
+        ).mockReturnValueOnce(generateHitEvents(0, enemy, player, 10, 0, 0, 0, 0));
+        const result = resolveCombatRound(100, {0: player, 1: enemy});
+        expect(result.events).not.toContainEqual({
+            event: "damage",
+            parent: expect.any(String),
+            uuid: expect.any(String),
+            target: 0,
+            source: {character:1},
+            value: Decimal(2)
+        });
     });
 })

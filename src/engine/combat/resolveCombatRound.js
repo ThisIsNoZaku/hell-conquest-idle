@@ -23,7 +23,7 @@ export default function resolveCombatRound(tick, combatants) {
         triggerEvent(
             {
                 type: "on_round_begin",
-                source: combatant,
+                source: {character:combatant},
                 combatants,
                 roundEvents
             }
@@ -41,14 +41,22 @@ export default function resolveCombatRound(tick, combatants) {
         triggerEvent({
             type: "on_hit",
             roundEvents,
-            source: actingCharacter,
+            source: {
+                character: actingCharacter,
+                attack: attackResult.effects.find(ev => ev.event === "attack"),
+                damage: attackResult.effects.find(ev => ev.event === "damage"),
+            },
             target: actionTarget,
             combatants,
         });
         triggerEvent({
             type: `on_${HitTypes[attackResult.hitType].summary}_hit`,
             roundEvents,
-            source: actingCharacter,
+            source: {
+                character: actingCharacter,
+                attack: attackResult.effects.find(ev => ev.event === "attack"),
+                damage: attackResult.effects.find(ev => ev.event === "damage"),
+            },
             target: actionTarget,
             combatants,
         });
@@ -56,7 +64,11 @@ export default function resolveCombatRound(tick, combatants) {
             triggerEvent({
                 type: `on_taking_damage`,
                 roundEvents,
-                source: actionTarget,
+                source: {
+                    character: actionTarget,
+                    attack: attackResult.effects.find(ev => ev.event === "attack"),
+                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                },
                 target: actingCharacter,
                 combatants
             });
@@ -87,7 +99,7 @@ export default function resolveCombatRound(tick, combatants) {
                 type: "on_round_end",
                 combatants,
                 roundEvents,
-                source: combatant
+                source: {character:combatant}
             }
         );
     })

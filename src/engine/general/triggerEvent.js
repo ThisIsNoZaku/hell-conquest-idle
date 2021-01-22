@@ -11,7 +11,7 @@ export default function triggerEvent(event) {
     }
     // Trigger traits for event
     debugMessage(`Triggering event ${event.type}`);
-    Object.keys(event.source.traits).forEach(traitId => {
+    Object.keys(event.source.character.traits).forEach(traitId => {
         const trait = Traits[traitId];
         const eventDefinition = trait[event.type];
         if (eventDefinition) {
