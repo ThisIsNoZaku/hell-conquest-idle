@@ -29,7 +29,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                                 return s.source.character === event.source.character.id &&
                                     s.source.trait === traitId;
                             });
-                        if(existingStatus) {
+                        if (existingStatus) {
                             existingStatus.duration = duration;
                             existingStatus.stacks = effectDefinition[status].cumulative ?
                                 Decimal.min(existingStatus.stacks.plus(stacks), max) :
@@ -46,7 +46,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                                 stacks
                             });
                         }
-                        if(duration < 999) {
+                        if (duration < 999) {
                             event.roundEvents.push({
                                 uuid: statusUuid,
                                 event: "add-status",
@@ -80,7 +80,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                             target.statuses[status] = target.statuses[status].filter(s => s != existingStatus);
                             event.roundEvents.push({
                                 event: "remove-status",
-                                source: event.source.character.id,
+                                source: {character: event.source.character.id},
                                 target: target.id,
                                 toRemove: existingStatus.uuid,
                                 status,
@@ -111,7 +111,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         damageToDeal,
                         damageEffect.uuid,
                         newDamageEffectUuid
-                        ));
+                    ));
                 });
                 break;
             case "gain_stamina": {
