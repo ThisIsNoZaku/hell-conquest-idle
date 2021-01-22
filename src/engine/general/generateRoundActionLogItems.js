@@ -25,6 +25,8 @@ function describeEvent(event) {
     const sourceName = getCharacter(event.source.character).name;
     const targetName = getCharacter(event.target).name;
     switch (event.event) {
+        case "stamina-change":
+            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} energy`;
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
