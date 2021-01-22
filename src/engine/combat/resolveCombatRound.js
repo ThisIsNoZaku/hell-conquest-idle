@@ -8,6 +8,7 @@ import {Character} from "../../character";
 import {v4} from "node-uuid";
 import {getConfigurationValue} from "../../config";
 import {generateFatigueDamageEvent, generateKillEvent} from "../events/generate";
+import {getCharacter} from "../index";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -85,7 +86,7 @@ export default function resolveCombatRound(tick, combatants) {
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
             roundEvents.push(generateFatigueDamageEvent(actingCharacter, actingCharacter, damageToInflictDueToFatigue));
             if (!actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill" && re.target !== actingCharacter.id)) {
-                roundEvents.push(generateKillEvent(actingCharacter, actingCharacter));
+                roundEvents.push(generateKillEvent(actingCharacter, actingCharacter.id !== 0 ? getCharacter(0) : actingCharacter));
             }
         } else {
             const perRoundStamina = getConfigurationValue("stamina_consumed_per_round");
