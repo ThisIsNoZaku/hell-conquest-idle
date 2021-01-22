@@ -76,7 +76,7 @@ export default function resolveCombatRound(tick, combatants) {
 
         Object.values(combatants).forEach(combatant => {
             if (!combatant.isAlive && !roundEvents.find(re => re.type === "kill" && re.target !== combatant.id)) {
-                roundEvents.push(generateKillEvent(combatant, actingCharacter));
+                roundEvents.push(generateKillEvent(actingCharacter, combatant));
             }
         });
 
