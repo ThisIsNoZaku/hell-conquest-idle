@@ -36,7 +36,7 @@ export default function resolveAttack(tick, attacker, target) {
 
     let timesDowngraded = 0;
     const minHitLevel = HitTypes.min;
-    const attackDowngradeCost = calculateAttackDowngradeCost(attacker, target);
+    const attackDowngradeCost = calculateAttackDowngradeCost(target, attacker);
 
     while (Decimal(target.combat.stamina).gte(attackDowngradeCost.times(1 + timesDowngraded).plus(spentEvasion)) &&
     hitLevel != minHitLevel && timesDowngraded === 0) {
