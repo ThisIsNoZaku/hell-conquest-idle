@@ -68,14 +68,12 @@ export default function resolveCombatRound(tick, combatants) {
             }
         });
 
-        if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive) {
+        if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill")) {
             const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
             actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
             roundEvents.push(generateFatigueDamageEvent(actingCharacter, actingCharacter, damageToInflictDueToFatigue));
-            if (actingCharacter.hp.lte(0)) {
-                if(!roundEvents.find(re => re.type === "kill" && re.target !== actingCharacter.id)) {
-                    roundEvents.push(generateKillEvent(actingCharacter, actingCharacter));
-                }
+            if (!actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill" && re.target !== actingCharacter.id)) {
+                roundEvents.push(generateKillEvent(actingCharacter, actingCharacter));
             }
         } else {
             const perRoundStamina = getConfigurationValue("stamina_consumed_per_round");
