@@ -53,7 +53,12 @@ export class Character {
     }
 
     clearStatuses() {
-        Object.keys(this.statuses).forEach(status => delete this.statuses[status]);
+        Object.keys(this.statuses).forEach(status => {
+            this.statuses[status] = this.statuses[status].filter(instance => instance.duration === 999);
+            if(this.statuses[status].length === 0) {
+                delete this.statuses[status];
+            }
+        });
     }
 
     getStatusStacks(status) {
@@ -125,6 +130,7 @@ export class Character {
         Creatures[newAppearance].traits.forEach(trait => {
             this.traits[trait] = Math.max(1, this.traits[trait] || 0);
         });
+        this.statuses = {};
         this.absorbedPower = Decimal(0);
         this.powerLevel = Decimal(1);
         this.combat.stamina = this.combat.maximumStamina;
@@ -133,7 +139,7 @@ export class Character {
 
     reset() {
         this.hp = this.maximumHp;
-        this.statuses = {};
+        this.clearStatuses();
         this.combat.refresh();
     }
 
@@ -166,7 +172,7 @@ export class Character {
     }
 
     refreshBeforeCombat() {
-        this.statuses = {};
+        this.clearStatuses();
     }
 }
 
