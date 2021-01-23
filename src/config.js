@@ -17,14 +17,15 @@ const config = {
     base_attack_upgrade_cost: 100,
     base_attack_downgrade_cost: 100,
     minimum_attribute_score: 1,
-    damage_per_level: 10,
+    damage_per_level: 5,
     flee_stamina_cost_base: 5,
     flee_stamina_minimum_cost: 1,
     instant_death_offset: 5,
     recovery_action_healing_percentage: .5,
-    recover_action_stamina: 1,
+    recover_action_stamina_percentage: .5,
     stamina_consumed_per_round: 25,
     minimum_stamina: 400,
+    bonus_stamina_per_level: 100,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -102,14 +103,6 @@ const config = {
                 baseAttribute: "brutality",
                 effectPerPoint: .1
             },
-            baseHitChance: 90,
-            baseDamage: "player.powerLevel.times(10)",
-            defaultMinDamageMultiplier: .8,
-            defaultMedDamageMultiplier: 1,
-            defaultMaxDamageMultiplier: 1.2,
-            baseMinimumDamageWeight: 5,
-            baseMedianDamageWeight: 90,
-            baseMaximumDamageWeight: 5
         }
     },
     // Artifacts
