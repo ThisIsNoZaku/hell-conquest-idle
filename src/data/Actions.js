@@ -167,13 +167,14 @@ export const Actions = {
             const enemy = getGlobalState().currentEncounter.enemies[0];
             const instantDeathLevel = calculateInstantDeathLevel(player);
             let intimidateSuccess = false;
+            const energyNeededToBind = enemy.powerLevel.times(100);
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem(`Your force of will seizes control of ${enemy.name}'s mind!`);
                 intimidateSuccess = true;
-            } else if (player.combat.stamina.gte(enemy.powerLevel.times(100))) { // FIXME: Make configuration
-                player.combat.stamina = player.combat.stamina.minus(enemy.powerLevel.times(100));
+            } else if (player.combat.stamina.gte(energyNeededToBind)) { // FIXME: Make configuration
+                player.combat.stamina = player.combat.stamina.minus(energyNeededToBind);
                 intimidateSuccess = true;
-                pushLogItem(`You spend ${enemy.powerLevel.times(50).toFixed()} energy to bind ${enemy.name}!`);
+                pushLogItem(`You spend ${energyNeededToBind} energy to bind ${enemy.name}!`);
             } else {
                 pushLogItem(`Your lack of stamina allows ${enemy.name} to escape! (Required ${enemy.powerLevel.times(100)} but had ${player.combat.stamina})`);
                 getGlobalState().currentEncounter = null;
