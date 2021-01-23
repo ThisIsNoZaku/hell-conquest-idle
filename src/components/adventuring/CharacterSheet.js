@@ -5,7 +5,7 @@ import {
     getSpriteForCreature
 } from "../../engine";
 import {getConfigurationValue} from "../../config";
-import CharacterAttributes from "./charactersheet/CharacterAttributes";
+import {MemoizedCharacterAttributes as CharacterAttributes} from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
 import TacticsSection from "./charactersheet/TacticsSection";
@@ -17,33 +17,22 @@ import {Help} from "@material-ui/icons";
 import calculateAttackDowngradeCost from "../../engine/combat/calculateAttackDowngradeCost";
 import calculateAttackUpgradeCost from "../../engine/combat/calculateAttackUpgradeCost";
 
-export default function CharacterSheet(props) {
-    const spriteSrc = useMemo(() => getSpriteForCreature(props.character.appearance), [props.character.appearance]);
-
-    const powerNeededForNextLevel = getPowerNeededForLevel(props.character.powerLevel.plus(1));
-    const progressToNextLevel = Decimal(props.character.absorbedPower);
-    const latentPowerModifier = useMemo(() => Decimal(props.character.latentPowerModifier.times(100)), [
-        props.character.latentPower
-    ]);
-
-    const calculatedDamage = useMemo(() => calculateDamageBy(props.character).against(props.enemy), [
-        props.character,
-        props.enemy
-    ]);
+export function CharacterSheet(props) {
+    const spriteSrc = useMemo(() => getSpriteForCreature(props.appearance), [props.appearance]);
 
     return <Grid container>
         <Grid item xs={12}>
             <img src={spriteSrc} style={{height: "75px"}}/>
         </Grid>
-        {props.character.id !== 0 && <Grid item xs={12}>
-            {props.character.adjectives.map(a => a.name).join(" ")} {props.character.name}
+        { <Grid item xs={12}>
+            {props.characterAdjectives.map(a => a.name).join(" ")} {props.characterName}
         </Grid>}
         <Grid item container>
             <Grid item xs>
                 Level
             </Grid>
             <Grid item xs>
-                {props.character.powerLevel.toFixed()}
+                {props.characterPowerLevel}
             </Grid>
             <Grid item xs>
                 Inherited Power Bonus
@@ -53,16 +42,16 @@ export default function CharacterSheet(props) {
                 </Tooltip>
             </Grid>
             <Grid item xs >
-                    <div style={{color: props.character.latentPower.gte(props.character.latentPowerCap) ? "orange" : "inherit"}}>
-                        {latentPowerModifier.toFixed()}%
+                    <div style={{color: props.latentPower.gte(props.latentPowerCap) ? "orange" : "inherit"}}>
+                        {props.latentPowerModifier}%
                     </div>
             </Grid>
         </Grid>
-        {props.character.absorbedPower !== undefined && <Grid item xs={12}>
+        {props.characterAbsorbedPower !== undefined && <Grid item xs={12}>
             <progress
-                value={progressToNextLevel.div(powerNeededForNextLevel).times(100).toNumber()}
+                value={Decimal(props.progressToNextLevel).div(props.powerNeededForNextLevel).times(100).toNumber()}
                 max={100}
-                title={`${progressToNextLevel.toFixed()}/${powerNeededForNextLevel.toFixed()}`}
+                title={`${props.progressToNextLevel}/${props.powerNeededForNextLevel}`}
             ></progress>
         </Grid>}
         <Grid container>
@@ -71,17 +60,21 @@ export default function CharacterSheet(props) {
                     <strong>Attributes</strong>
                 </Grid>
             </Grid>
-            <CharacterAttributes character={props.character}/>
+            <CharacterAttributes
+                hp={props.characterHp}
+                maximumHp={props.characterMaximumHp}
+                characterAttributes={props.characterAttributes}
+            />
         </Grid>
         <CharacterCombatStatistics
-            characterStamina={props.character.combat.stamina}
-            calculatedDamage={calculatedDamage}
-            characterPower={props.character.combat.power.toFixed()}
-            characterResilience={props.character.combat.resilience.toFixed()}
-            characterEvasion={props.character.combat.evasion.toFixed()}
-            characterPrecision={props.character.combat.precision.toFixed()}
-            evasionMultiplier={calculateAttackDowngradeCost(props.character, props.enemy)}
-            precisionMultiplier={calculateAttackUpgradeCost(props.character, props.enemy)}
+            characterStamina={props.characterStamina}
+            calculatedDamage={props.calculatedDamage}
+            characterPower={props.characterPower}
+            characterResilience={props.characterResilience}
+            characterEvasion={props.characterEvasion}
+            characterPrecision={props.characterPrecision}
+            evasionMultiplier={props.attackDowngradeCost}
+            precisionMultiplier={props.attackUpgradeCost}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}
         />
@@ -89,7 +82,7 @@ export default function CharacterSheet(props) {
             <Grid item xs={12}>
                 <strong>Traits</strong>
             </Grid>
-            <CharacterTraits character={props.character}/>
+            <CharacterTraits characterTraits={props.characterTraits}/>
         </Grid>
         {getConfigurationValue("artifacts_enabled") && <Grid container>
             <Grid item xs={12}>
@@ -101,7 +94,9 @@ export default function CharacterSheet(props) {
                 }
             </Grid>
         </Grid>}
-        <TacticsSection characterTactics={props.character.tactics}/>
+        <TacticsSection characterTactics={props.characterTactics}/>
     </Grid>
 
 }
+
+export const MemoizedCharacterSheet = React.memo(CharacterSheet);

@@ -19,22 +19,18 @@ const styles = {
 
 export default function TopSection(props) {
     const history = useHistory();
-    const reincarnateEnabled = useMemo(() => getCharacter(0).powerLevel.gt(1) || !getCharacter(0).isAlive, [
-        getCharacter(0).powerLevel,
-        getCharacter(0).isAlive
-    ])
     return <div style={styles.root}>
         <Grid container direction="column">
             <Grid item xs>
-                {reincarnateEnabled &&
+                {props.reincarnateEnabled &&
                 <Button onClick={() => history.push("/reincarnating")} style={styles.buttons} variant="contained"
-                        color="secondary" disabled={!reincarnateEnabled}>
+                        color="secondary" disabled={!props.reincarnateEnabled}>
                     Reincarnate
                 </Button>}
             </Grid>
             <Grid item xs>
                 {props.automaticReincarnateEnabled &&
-                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Strongest enemy defeated: Level {Decimal(getCharacter(0).highestLevelEnemyDefeated).toFixed()})</Paper>}
+                <Paper style={{width: "100%", backgroundColor: "orange"}}>Automatic Reincarnation Enabled (Strongest enemy defeated: Level {Decimal(props.highestLevelEnemyDefeated).toFixed()})</Paper>}
             </Grid>
         </Grid>
     </div>

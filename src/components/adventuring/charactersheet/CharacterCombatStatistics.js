@@ -46,7 +46,7 @@ export default function CharacterCombatStatistics(props) {
                             Energy
                         </TableCell>
                         <TableCell>
-                            {props.characterStamina.toFixed()}
+                            {props.characterStamina}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Energy is used to perform various actions and trigger special effects">

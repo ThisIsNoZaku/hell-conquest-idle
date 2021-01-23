@@ -18,8 +18,6 @@ import {useHotkeys} from "react-hotkeys-hook";
 import generateRoundActionLogItems from "../../engine/general/generateRoundActionLogItems";
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
-import {completeTutorial, enableTutorial} from "../../engine/tutorials";
-import Decimal from "decimal.js";
 
 const styles = {
     root: {
@@ -76,7 +74,7 @@ export default function AdventuringPage(props) {
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const [paused, setPaused] = useState(getGlobalState().paused);
     const [displayedTime, setDisplayedTime] = useState(0);
-    const [player, setPlayer] = useState(getCharacter(0));
+    const player = useRef(getCharacter(0));
     const manualSpeedUpActive = useRef(false);
 
     function togglePause() {
@@ -109,8 +107,7 @@ export default function AdventuringPage(props) {
             if (!lastTime) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
-                const actionDuration = typeof Actions[getGlobalState().currentAction].duration === "number" ?
-                    Actions[getGlobalState().currentAction].duration : _.get(getGlobalState(), Actions[getGlobalState().currentAction].duration);
+                const actionDuration = Actions[getGlobalState().currentAction].duration;
                 if (accruedTime.current >= actionDuration) {
                     saveGlobalState();
                     accruedTime.current = 0;
@@ -185,11 +182,14 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
-        <PlayerStats player={player} enemy={enemy}/>
+        <PlayerStats player={player.current} enemy={enemy}/>
         <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
-            <TopSection character={player} automaticReincarnateEnabled={getGlobalState().automaticReincarnate}/>
+            <TopSection highestLevelEnemyDefeated={player.current.highestLevelEnemyDefeated}
+                        automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
+                        reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive}
+            />
             <BottomSection state={getGlobalState()} actionLog={actionLog}
-                           player={player}
+                           player={player.current}
                            enemy={enemy}
                            togglePause={togglePause}
                            paused={paused}
@@ -204,11 +204,7 @@ export default function AdventuringPage(props) {
                            togglePause={p => setPaused(p)}
             />
         </div>
-        <EnemySidebar player={player} enemy={enemy}/>
+        <EnemySidebar player={player.current} enemy={enemy}/>
 
     </div>
-}
-
-function endCombat() {
-
 }
