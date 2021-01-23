@@ -71,66 +71,13 @@ describe("blood rage trait", function () {
                     character: 0,
                     trait: "bloodrage"
                 },
-                duration: 999,
+                duration: 3,
                 uuid: expect.any(String)
             }]
         });
     });
-    it("removes stacks on round end if doesn't trigger", function () {
-        _.set(player, ["traits", "bloodrage"], 1);
-        player.statuses["berserk"] = [
-            {
-                source: {
-                    character: 0,
-                    trait: "bloodrage"
-                },
-                stacks: 1,
-                duration: 999,
-                uuid: "1234567890"
-            },
-            {
-                source: {
-                    character: 0,
-                    trait: "other"
-                },
-                stacks: 1,
-                duration: 999,
-                uuid: "2345678901"
-            }
-        ];
-
-        enemy.powerLevel = Decimal(10);
-        enemy.hp = enemy.maximumHp;
-        const combatResults = resolveCombatRound(100, {0: player, 1: enemy});
-        expect(combatResults).toEqual({
-            tick: 100,
-            end: false,
-            initiativeOrder: [0, 1],
-            events: [
-                {
-                    event: "remove-status",
-                    source: 0,
-                    target: 0,
-                    toRemove: "1234567890",
-                    status: "berserk",
-                    stacks: 999
-                }
-            ]
-        });
-        expect(player.statuses["berserk"]).toEqual([
-            {
-                source: {
-                    character: 0,
-                    trait: "other"
-                },
-                stacks: 1,
-                duration: 999,
-                uuid: "2345678901"
-            }
-        ])
-    });
 })
-describe("cannibalism trait", function () {
+describe("carrion_feeder trait", function () {
     let player;
     let enemy;
     beforeEach(() => {
@@ -143,7 +90,7 @@ describe("cannibalism trait", function () {
             tactics: "defensive",
             powerLevel: 1,
             traits: {
-                cannibalism: 1
+                carrion_feeder: 1
             },
             attributes: {
                 baseBrutality: 1,
@@ -184,11 +131,11 @@ describe("cannibalism trait", function () {
         expect(player.statuses["engorged"])
             .toEqual([
                 {
-                    duration: 999,
+                    duration: -1,
                     uuid: expect.any(String),
                     source: {
                         character: 0,
-                        trait: "cannibalism"
+                        trait: "carrion_feeder"
                     },
                     stacks: Decimal(1),
                 }
@@ -199,7 +146,7 @@ describe("cannibalism trait", function () {
             {
                 source: {
                     character: 0,
-                    trait: "cannibalism"
+                    trait: "carrion_feeder"
                 },
                 stacks: Decimal(1),
                 uuid: "1234567890"
@@ -216,11 +163,11 @@ describe("cannibalism trait", function () {
         expect(player.statuses["engorged"])
             .toEqual([
                 {
-                    duration: 999,
+                    duration: -1,
                     uuid: expect.any(String),
                     source: {
                         character: 0,
-                        trait: "cannibalism"
+                        trait: "carrion_feeder"
                     },
                     stacks: Decimal(2),
                 }
@@ -232,7 +179,7 @@ describe("cannibalism trait", function () {
                 stacks: Decimal(10),
                 source: {
                     character: 0,
-                    trait: "cannibalism"
+                    trait: "carrion_feeder"
                 },
                 duration: 999,
                 uuid: "1234567890"
@@ -248,11 +195,11 @@ describe("cannibalism trait", function () {
         expect(player.statuses["engorged"])
             .toEqual([
                 {
-                    duration: 999,
+                    duration: -1,
                     uuid: expect.any(String),
                     source: {
                         character: 0,
-                        trait: "cannibalism"
+                        trait: "carrion_feeder"
                     },
                     stacks: Decimal(10),
                 }
@@ -318,7 +265,7 @@ describe("inescapable grasp trait", function () {
                     status: "restrained",
                     uuid: expect.any(String),
                     stacks: Decimal(1),
-                    duration: 5
+                    duration: 1
                 },
             ]
         });
@@ -386,7 +333,7 @@ describe("mindless blow trait", function () {
             tactics: "defensive",
             powerLevel: 1,
             traits: {
-                mindlessBlows: 1
+                immortalWarrior: 1
             },
             attributes: {
                 baseBrutality: 1,
@@ -513,7 +460,7 @@ describe("relentless trait", function () {
         }, 1);
     });
     it("increases your maximum stamina", function () {
-        expect(player.combat.maximumStamina).toEqual(Decimal(325 * 1.25).floor());
+        expect(player.combat.maximumStamina).toEqual(Decimal(400).floor());
     })
 });
 describe("searing venom trait", function () {
@@ -559,16 +506,19 @@ describe("searing venom trait", function () {
         }, 1);
     });
     it("adds stacks on critical hit", function () {
+        resolveAttackMock
+            .mockReturnValueOnce(generateHitEvents(0, player, enemy, 5, 0, 0, 0, 0))
+            .mockReturnValueOnce(generateHitEvents(0, enemy, player, 5, 0, 0, 0, 0))
         const result = resolveCombatRound(100, {0: player, 1: enemy});
-        expect(enemy.statuses["agonizingPoison"]).toBeDefined();
+        expect(enemy.statuses["painfulVenom"]).toBeDefined();
         expect(result.events).toContainEqual({
             event: "add-status",
-            duration: 1,
+            duration: 2,
             source: {
                 character: 0,
                 trait: "searingVenom"
             },
-            status: "agonizingPoison",
+            status: "painfulVenom",
             target: 1,
             stacks: Decimal(1),
             uuid: expect.any(String)

@@ -20,15 +20,15 @@ export const Statuses = {
     engorged: validatedStatus({
         name: "Engorged",
         icon: "./icons/icons-1.png",
-        description: _.template("Your size gives a ${maximum_hp_multiplier.times(100)}% bonus to max Health."),
+        description: _.template("Your size gives a ${maximum_health_modifier.times(100)}% bonus to max Health."),
         effects: {
-            maximum_hp_multiplier: {
+            maximum_health_modifier: {
                 target: "self",
                 modifier: .01
             }
         }
     }),
-    terrified: validatedStatus({
+    frightened: validatedStatus({
         name: "Terrified",
         icon: "icons/icons-130.png",
         description: _.template("The fear in your heart inflicts a ${precision_modifier.times(100)}% penalty to Precision and a ${power_modifier.times(100)}% penalty to Power."),
@@ -59,7 +59,7 @@ export const Statuses = {
             }
         }
     }),
-    agonizingPoison: validatedStatus({
+    painfulVenom: validatedStatus({
         name: "Agonizing Poison",
         description: _.template("Take ${received_damage_modifier.toFixed()}% damage from attacks."),
         icon: "icons/icons-129.png",
@@ -73,9 +73,9 @@ export const Statuses = {
     famished: validatedStatus({
         name: "Famished",
         icon: "icons/icons-149.png",
-        description: _.template("Reduce your maximum health by ${maximum_hp_multiplier}%"),
+        description: _.template("Reduce your maximum health by ${maximum_health_modifier}%"),
         effects: {
-            maximum_hp_multiplier:{
+            maximum_health_modifier:{
                 target: "self",
                 modifier: -.01
             }

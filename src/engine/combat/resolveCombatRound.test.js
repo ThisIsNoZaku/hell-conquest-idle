@@ -153,7 +153,7 @@ describe('The combat round resolution', function () {
                     },
                     target: 1,
                     uuid: expect.any(String),
-                    value: Decimal(7)
+                    value: Decimal(4)
                 }
             ],
             tick: 100
@@ -216,7 +216,7 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 1,
-                    value: Decimal(7)
+                    value: Decimal(4)
                 }
             ],
             tick: 100
@@ -360,7 +360,7 @@ describe('The combat round resolution', function () {
                     },
                     target: 1,
                     precisionUsed: Decimal(72),
-                    evasionUsed: Decimal(95 * 1.25).floor(),
+                    evasionUsed: Decimal(141).floor(),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
                     hitType: -1

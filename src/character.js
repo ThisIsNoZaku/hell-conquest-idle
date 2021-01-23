@@ -99,13 +99,13 @@ export class Character {
         const attributeMultiplier = this.attributes[getConfigurationValue("mechanics.combat.hp.baseAttribute")]
             .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
-            const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_hp_multiplier"]);
+            const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
             return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.modifier, {
                 rank: this.traits[currentValue]
             }) : 0);
         }, Decimal(1));
         const statusMultiplier = Object.keys(this.statuses).reduce((previousValue, currentValue) => {
-            const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_hp_multiplier", "modifier"], 0), {
+            const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "modifier"], 0), {
                 ranks: this.getStatusStacks(currentValue)
             });
             return previousValue.plus(traitModifier || 0);

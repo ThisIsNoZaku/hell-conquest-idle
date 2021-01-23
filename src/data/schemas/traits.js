@@ -21,7 +21,7 @@ const eventEffects = modifierEffects.keys({
         schemas[nextStatus] = JOI.object({
             target: effectTarget,
             stacks: [JOI.string(), JOI.number().min(0)],
-            duration: JOI.number().min(1).default(1),
+            duration: JOI.number().min(-1).default(1),
             max: [JOI.number().min(1), JOI.string()],
             cumulative: JOI.boolean()
         });
@@ -35,7 +35,7 @@ const eventEffects = modifierEffects.keys({
         });
         return schemas;
     }, {})),
-    gain_stamina: JOI.object({
+    change_stamina: JOI.object({
         target: effectTarget,
         value: [JOI.string(), JOI.number()]
     })

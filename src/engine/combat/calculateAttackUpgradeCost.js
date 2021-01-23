@@ -9,14 +9,14 @@ export default function calculateAttackUpgradeCost(character, enemy) {
     const targetTraitMultiplier = Object.keys(_.get(enemy, "traits", {})).reduce((previousValue, currentValue) => {
         const effectDef = _.get(Traits[currentValue], ["continuous", "trigger_effects", "attack_upgrade_cost_multiplier"]);
         const effectModifier = _.get(effectDef, "target") === "enemy" ? evaluateExpression(effectDef.modifier, {
-            rank: Decimal(enemy.traits[currentValue])
+            tier: Decimal(enemy.traits[currentValue])
         }) : 0;
         return previousValue.plus(effectModifier)
     }, Decimal(1));
     const targetStatusMultiplier = Object.keys(_.get(enemy, "statuses", {})).reduce((previousValue, currentValue) => {
         const effectDef = _.get(Statuses[currentValue], ["effects", "attack_upgrade_cost_multiplier"]);
         const effectModifier = _.get(effectDef, "target") === "enemy" ? evaluateExpression(effectDef.modifier, {
-            rank: Decimal(enemy.getStatusStacks(currentValue))
+            tier: Decimal(enemy.getStatusStacks(currentValue))
         }) : 0;
         return previousValue.plus(effectModifier);
     }, Decimal(1));

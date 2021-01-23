@@ -18,11 +18,12 @@ export const modifierEffects = JOI.object({
     damage_modifier: effectModifier,
     devastating_hit_damage_multiplier: effectModifier,
     power_modifier: effectModifier,
+    resilience_modifier: effectModifier,
     precision_modifier: effectModifier,
     evasion_modifier: effectModifier,
-    stamina_modifier: effectModifier,
+    maximum_stamina_modifier: effectModifier,
     attack_downgrade_cost_multiplier: effectModifier,
     attack_upgrade_cost_multiplier: effectModifier,
-    maximum_hp_multiplier: effectModifier,
+    maximum_health_modifier: effectModifier,
     power_gain_modifier: effectModifier
 });

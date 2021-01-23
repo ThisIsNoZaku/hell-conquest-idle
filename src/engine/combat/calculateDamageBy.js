@@ -30,7 +30,7 @@ export default function calculateDamageBy(attacker) {
                 const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
                 const traitDamageMultiplier = Object.keys(attacker.traits).reduce((previousValue, currentValue) => {
                     const traitDamageMultiplier = evaluateExpression(_.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`, "modifier"], 0), {
-                        rank: Decimal(attacker.traits[currentValue])
+                        tier: Decimal(attacker.traits[currentValue])
                     });
                     return previousValue.plus(traitDamageMultiplier)
                 }, Decimal(1));

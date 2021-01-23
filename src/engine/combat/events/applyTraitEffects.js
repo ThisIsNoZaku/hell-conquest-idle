@@ -16,10 +16,10 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
                     const stacks = evaluateExpression(effectDefinition[status].stacks, {
-                        rank: Decimal(event.source.character.traits[traitId])
+                        tier: Decimal(event.source.character.traits[traitId])
                     });
                     const max = evaluateExpression(effectDefinition[status].max, {
-                        rank: Decimal(event.source.character.traits[traitId])
+                        tier: Decimal(event.source.character.traits[traitId])
                     });
                     const duration = evaluateExpression(effectDefinition[status].duration, {});
                     targets.forEach(target => {
@@ -68,7 +68,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.combatants);
                     const stacks = evaluateExpression(effectDefinition[status].stacks, {
-                        rank: event.source.character.traits[traitId]
+                        tier: event.source.character.traits[traitId]
                     });
                     targets.forEach(target => {
                         const existingStatus = (target.statuses[status] || [])
@@ -97,8 +97,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
                     const damageToDeal = evaluateExpression(effectDefinition.value, {
-                        attackDamage: Decimal(dealtDamage),
-                        rank: Decimal(event.source.character.traits[traitId])
+                        damageTaken: Decimal(dealtDamage),
+                        tier: Decimal(event.source.character.traits[traitId])
                     }).floor();
                     target.hp = target.hp.minus(damageToDeal);
                     const newDamageEffectUuid = v4();
@@ -118,7 +118,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
                 targets.forEach(target => {
                     const staminaChange = evaluateExpression(effectDefinition.value, {
-                        rank: Decimal(event.source.character.traits[traitId]),
+                        tier: Decimal(event.source.character.traits[traitId]),
                         player: event.source.character
                     }).floor();
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);

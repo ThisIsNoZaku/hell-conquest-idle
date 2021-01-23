@@ -94,14 +94,14 @@ export const Creatures  = {
     },
     carrionBeetle: {
         name: "Corpse Beetle",
-        traits: ["cannibalism"],
+        traits: ["carrion_feeder"],
         enabled: true,
         appearance: "carrionBeetle",
         texture: "17_scarab.png"
     },
     fleshlessSoldier: {
         name: "Fleshless Soldier",
-        traits: ["mindlessBlows"],
+        traits: ["immortalWarrior"],
         enabled: true,
         appearance: "fleshlessSoldier",
         texture: "18_skeleton.png"
