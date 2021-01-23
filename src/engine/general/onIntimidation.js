@@ -7,8 +7,6 @@ export function onIntimidation(player, enemy, pushLogItem) {
     if (enemy.isRival) {
         pushLogItem("<strong>You bind your rival to your will!</strong>");
         getGlobalState().rival = {};
-    } else {
-        pushLogItem(`You spend ${enemy.powerLevel.times(50).toFixed()} energy to bind ${enemy.name}!`);
     }
     const periodicPowerIncreases = evaluateExpression(getConfigurationValue("mechanics.xp.gainedFromLesserDemon"), {
         enemy

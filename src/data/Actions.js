@@ -12,6 +12,7 @@ import reincarnateAs from "../engine/general/reincarnateAs";
 import cleanupDeadCharacters from "../engine/general/cleanupDeadCharacters";
 import triggerEvent from "../engine/general/triggerEvent";
 import generateRoundActionLogItems from "../engine/general/generateRoundActionLogItems";
+import {generateKillEvent} from "../engine/events/generate";
 
 const defaultActions = ["exploring", "challenging"];
 
@@ -59,7 +60,7 @@ export const Actions = {
             if (player.combat.stamina.gte(costToFlee)) {
                 pushLogItem("Escaped!");
                 player.combat.stamina = player.combat.stamina.minus(costToFlee);
-                return defaultActions;
+                return "recovering";
             } else {
                 pushLogItem("You have been caught!");
                 return "fighting";
@@ -78,14 +79,9 @@ export const Actions = {
                     message: `The raw power of your killer instinct destroys ${enemy.name}!`,
                     uuid: v4()
                 });
+                enemy.hp = Decimal(0);
                 applyAction({
-                    events: [{
-                        uuid: v4(),
-                        event: "kill",
-                        target: enemy.id,
-                        source: 0,
-                        tick: 0
-                    }]
+                    events: [generateKillEvent(player, enemy)]
                 });
                 return defaultActions;
             } else {
@@ -177,8 +173,9 @@ export const Actions = {
             } else if (player.combat.stamina.gte(enemy.powerLevel.times(100))) { // FIXME: Make configuration
                 player.combat.stamina = player.combat.stamina.minus(enemy.powerLevel.times(100));
                 intimidateSuccess = true;
+                pushLogItem(`You spend ${enemy.powerLevel.times(50).toFixed()} energy to bind ${enemy.name}!`);
             } else {
-                pushLogItem(`Your lack of stamina allows ${enemy.name} to escape!`);
+                pushLogItem(`Your lack of stamina allows ${enemy.name} to escape! (Required ${enemy.powerLevel.times(100)} but had ${player.combat.stamina})`);
                 getGlobalState().currentEncounter = null;
             }
             if (intimidateSuccess) {
