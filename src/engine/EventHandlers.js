@@ -6,7 +6,6 @@ import {Traits} from "../data/Traits";
 import {Decimal} from "decimal.js";
 import {v4} from "node-uuid";
 import * as _ from "lodash";
-import getPowerNeededForLevel from "./general/getPowerNeededForLevel";
 import {enableTutorial} from "./tutorials";
 import triggerEvent from "./general/triggerEvent";
 import generateRoundActionLogItems from "./general/generateRoundActionLogItems";
@@ -57,23 +56,12 @@ export const EventHandlers = {
                     });
                 return multiplier.plus(traitMultiplier);
             }, Decimal(1));
-            const pregainLevel = player.powerLevel;
+
             const powerGained = player.gainPower(powerToGain.times(multiplier).floor());
             pushLogItem(`You gained ${powerGained.toFixed()} power.`);
-            if (player.absorbedPower.gte(getPowerNeededForLevel(player.powerLevel.plus(1)))) {
-                player.levelUp();
-            }
-            if (!pregainLevel.eq(player.powerLevel)) {
-                const hp = player.hp;
-                player.hp = player.maximumHp;
-                player.combat.stamina = player.combat.maximumStamina;
-                pushLogItem({
-                    message: `The surge of new power heals you for ${player.hp.minus(hp)} health.`,
-                    uuid: v4()
-                });
-            }
             player.highestLevelEnemyDefeated = Decimal.max(player.highestLevelEnemyDefeated, deadCharacter.powerLevel);
             getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel); // FIXME: Move into character levelup method.
+
             if (deadCharacter.isRival) {
                 getGlobalState().rival = {};
                 pushLogItem({
