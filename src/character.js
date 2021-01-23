@@ -101,12 +101,12 @@ export class Character {
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
             return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.modifier, {
-                rank: this.traits[currentValue]
+                tier: this.traits[currentValue]
             }) : 0);
         }, Decimal(1));
         const statusMultiplier = Object.keys(this.statuses).reduce((previousValue, currentValue) => {
             const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "modifier"], 0), {
-                ranks: this.getStatusStacks(currentValue)
+                tiers: this.getStatusStacks(currentValue)
             });
             return previousValue.plus(traitModifier || 0);
         }, Decimal(1));
@@ -309,7 +309,7 @@ export function calculateCombatStat(character, combatAttribute) {
         const traitDefinition = Traits[trait];
         if (_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "target"]) === "self") {
             return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "modifier"]), {
-                rank: Decimal(character.traits[trait])
+                tier: Decimal(character.traits[trait])
             }));
         }
         return previousValue;

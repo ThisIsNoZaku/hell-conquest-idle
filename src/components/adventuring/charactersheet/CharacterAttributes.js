@@ -30,7 +30,7 @@ export default function CharacterAttributes(props) {
                 const baseAttribute = `base${attribute.substring(0, 1).toUpperCase()}${attribute.substring(1)}`;
                 return <Grid item xs>
                     <Tooltip title={Attributes[attribute].description({
-                        rank: Decimal(characterAttributes[attribute]).toFixed()
+                        tier: Decimal(characterAttributes[attribute]).toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
                             <img src={Attributes[attribute].icon}/>

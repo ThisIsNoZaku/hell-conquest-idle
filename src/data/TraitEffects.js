@@ -69,7 +69,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "fire",
-                    value: "rank.times(.05)"
+                    value: "tier.times(.05)"
                 }
             }
         }

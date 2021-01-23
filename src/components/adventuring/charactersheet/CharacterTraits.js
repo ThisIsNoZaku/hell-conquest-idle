@@ -7,10 +7,10 @@ export default function CharacterTraits(props) {
     return <React.Fragment>
         {Object.keys(props.character.traits).map(trait => <Tooltip key={trait} title={
             <React.Fragment>
-                <span>Tier {Decimal(props.character.traits[trait]).toFixed()}: </span>
+                <span>{Traits[trait].name} {Decimal(props.character.traits[trait]).toFixed()}:</span>
             <span dangerouslySetInnerHTML={{
                 __html: Traits[trait].description({
-                    rank: Decimal(props.character.traits[trait])
+                    tier: Decimal(props.character.traits[trait])
                 })
             }}></span>
             </React.Fragment>}>

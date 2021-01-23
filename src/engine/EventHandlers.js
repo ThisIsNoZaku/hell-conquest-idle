@@ -53,7 +53,7 @@ export const EventHandlers = {
             let multiplier = Object.keys(player.traits).reduce((multiplier, trait) => {
                 const traitMultiplier = evaluateExpression(_.get(Traits[trait], ["continuous", "trigger_effects", "power_gain_modifier"], 0),
                     {
-                        rank: Decimal(player.traits[trait])
+                        tier: Decimal(player.traits[trait])
                     });
                 return multiplier.plus(traitMultiplier);
             }, Decimal(1));

@@ -10,7 +10,7 @@ export default _.memoize(function (powerLevel, traits) {
         const staminaModifier = _.get(Traits, [trait, "continuous", "trigger_effects", "stamina_modifier"]);
         if(_.get(staminaModifier, "target") === "self") {
             const modifier = evaluateExpression(staminaModifier.modifier, {
-                rank: Decimal(traits[trait])
+                tier: Decimal(traits[trait])
             });
             return total.plus(modifier);
         }

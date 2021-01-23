@@ -106,7 +106,7 @@ export default function ReincarnationSelectionPage(props) {
                 const attributeDef = Attributes[attribute.substring(4).toLowerCase()];
                 return <Grid item xs={3}>
                     <Tooltip title={attributeDef.description({
-                        rank: Decimal(attributes[attribute]).toFixed()
+                        tier: Decimal(attributes[attribute]).toFixed()
                     })}>
                         <div style={{textAlign: "center"}}>
                             <img src={attributeDef.icon}/>
@@ -156,8 +156,8 @@ export default function ReincarnationSelectionPage(props) {
                                 }}
                         >
                             <Tooltip title={<div dangerouslySetInnerHTML={{
-                                __html: `Rank ${Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}: ${Traits[traitId].description({
-                                    rank: Decimal(getGlobalState().unlockedTraits[traitId])
+                                __html: `Tier ${Decimal(getGlobalState().unlockedTraits[traitId]).toFixed()}: ${Traits[traitId].description({
+                                    tier: Decimal(getGlobalState().unlockedTraits[traitId])
                                 })}`
                             }}>
                             </div>}>
