@@ -30,7 +30,7 @@ export default function ApproachingActionsSection(props) {
     return <Paper style={styles.actions.container}>
         {actionButton("intimidating", "Intimidate", `Try to cow the enemy, compelling them to continuously provide you a portion of their life force.`, props)}
         {actionButton("fighting", "Fight", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
-        {actionButton("fleeing", "Flee", `Escape!.`, props)}
+        {actionButton("fleeing", "Flee", `Escape if you need to recover. `, props)}
         {getConfigurationValue("negotiation_enabled") && actionButton("negotiating", "Negotiate", "Combat the enemy. On victory, steal some of the power of the vanquished foe.", props)}
     </Paper>
 }
