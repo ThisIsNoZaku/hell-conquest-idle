@@ -9,8 +9,8 @@ import evaluateExpression from "../general/evaluateExpression";
 export default function calculateDamageBy(attacker) {
     return {
         against: function (target, debugOutput) {
-            const attackerPower = Decimal(attacker.combat.power);
-            debugMessage(`Attacker ${attacker.id} has power ${attackerPower}.`);
+            const attackerPower = Decimal(_.get(attacker, ["combat", "power"], 0));
+            debugMessage(`Attacker ${_.get(attacker, "id")} has power ${attackerPower}.`);
             const defenderResilience = Decimal(_.get(target, ["combat", "resilience"], attackerPower));
 
             if(target) {
@@ -24,11 +24,11 @@ export default function calculateDamageBy(attacker) {
             const damageModifier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
                 .plus(enemyReceivedDamageMultiplier);
             debugMessage(`Final damage multiplier = ${damageModifier}.`);
-            const attackerPowerLevel = Decimal(attacker.powerLevel);
+            const attackerPowerLevel = Decimal(_.get(attacker, "powerLevel", 0));
             return Object.keys(HitTypes).reduce((damage, nextType) => {
                 const perLevelDamage = getConfigurationValue("damage_per_level");
                 const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
-                const traitDamageMultiplier = Object.keys(attacker.traits).reduce((previousValue, currentValue) => {
+                const traitDamageMultiplier = Object.keys(_.get(attacker, "traits", {})).reduce((previousValue, currentValue) => {
                     const traitDamageMultiplier = evaluateExpression(_.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`, "modifier"], 0), {
                         tier: Decimal(attacker.traits[currentValue])
                     });
@@ -39,7 +39,7 @@ export default function calculateDamageBy(attacker) {
                     .floor();
                 return damage;
             }, {
-                base: attacker.combat.medianDamage,
+                base: Decimal(_.get(attacker, ["combat", "medianDamage"], 0)),
                 multiplier: damageModifier
             })
         }

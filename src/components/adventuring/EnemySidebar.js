@@ -26,10 +26,10 @@ export default function EnemySidebar(props) {
     ]);
     const attackDowngradeCost = calculateAttackDowngradeCost(props.enemy, props.player);
     const attackUpgradeCost = calculateAttackUpgradeCost(props.enemy, props.player);
-    const powerNeededForNextLevel = getPowerNeededForLevel(props.enemy.powerLevel.plus(1));
-    const progressToNextLevel = Decimal(props.enemy.absorbedPower);
-    const latentPowerModifier = useMemo(() => Decimal(props.enemy.latentPowerModifier.times(100).toFixed()), [
-        props.enemy.latentPower
+    const powerNeededForNextLevel = getPowerNeededForLevel(Decimal(_.get(props.enemy, ["powerLevel"], 0)).plus(1));
+    const progressToNextLevel = Decimal(_.get(props.enemy, "absorbedPower", 0));
+    const latentPowerModifier = useMemo(() => Decimal(_.get(props.enemy, "latentPowerModifier", 0)).times(100), [
+        _.get(props.enemy, "latentPower")
     ]);
     return <Paper style={!props.enemy || props.enemy.isAlive ? styles.alive : styles.dead}>
         {props.enemy && <CharacterSheet
