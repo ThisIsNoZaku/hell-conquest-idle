@@ -53,6 +53,7 @@ export default function EnemySidebar(props) {
             characterEvasion={_.get(props.enemy, "combat.evasion", Decimal(0)).toFixed()}
             characterPrecision={_.get(props.enemy, "combat.precision", Decimal(0)).toFixed()}
 
+            characterStamina={_.get(props.enemy, "combat.maximumStamina", Decimal(0)).toFixed()}
             attackUpgradeCost={attackUpgradeCost}
             attackDowngradeCost={attackDowngradeCost}
             calculatedDamage={calculatedDamage}/>}

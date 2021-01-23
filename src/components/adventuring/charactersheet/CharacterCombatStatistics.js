@@ -13,6 +13,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
+import {useMediaQuery, useTheme} from "@material-ui/core";
 
 export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
@@ -23,12 +24,14 @@ export default function CharacterCombatStatistics(props) {
         props.characterResilience,
         props.enemyPower
     ]);
+    const theme = useTheme();
+    const smallScreen = useMediaQuery(theme.breakpoints.down("lg"));
     return <Grid container>
         <Grid item xs={12}>
             <strong>Combat Statistics</strong>
         </Grid>
         <TableContainer component={Paper}>
-            <Table>
+            {!smallScreen && <Table>
                 <TableBody>
                     <TableRow>
                         <TableCell>
@@ -125,7 +128,102 @@ export default function CharacterCombatStatistics(props) {
                         </TableCell>
                     </TableRow>
                 </TableBody>
-            </Table>
+            </Table>}
+            {smallScreen && <Table>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>
+                            Power
+                        </TableCell>
+                        <TableCell>
+                            {props.characterPower}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={powerTooltip}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Energy
+                        </TableCell>
+                        <TableCell>
+                            {props.characterStamina}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Resilience
+                        </TableCell>
+                        <TableCell>
+                            {props.characterResilience}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={resilienceTooltip}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Evasion
+                        </TableCell>
+                        <TableCell>
+                            {props.characterEvasion}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title={`This character's evasion reduces the energy cost to downgrade attacks.`}>
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Downgrade Cost
+                        </TableCell>
+                        <TableCell>
+                            {props.evasionMultiplier.toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Precision
+                        </TableCell>
+                        <TableCell>
+                            {props.characterPrecision}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Precision reduces the energy cost to upgrade attacks.">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Upgrade Cost
+                        </TableCell>
+                        <TableCell>
+                            {props.precisionMultiplier.toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="How much energy is consumed to downgrade incoming attacks">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>}
         </TableContainer>
         <Grid container>
             <Grid item xs={12}>
