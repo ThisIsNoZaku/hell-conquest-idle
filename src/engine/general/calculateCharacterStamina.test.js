@@ -6,7 +6,7 @@ describe("character stamina calculation", function () {
         let i = 1;
         for(i; i <= 100; i++) {
             const calculatedStamina = calculateCharacterStamina(Decimal(i), {});
-            expect(calculatedStamina).toEqual(Decimal( 300 + (i * 25)));
+            expect(calculatedStamina).toEqual(Decimal( 350 + (i * 50)));
         }
     });
 });
