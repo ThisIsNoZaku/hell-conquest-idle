@@ -48,12 +48,12 @@ export default function CharacterSheet(props) {
             <Grid item xs>
                 Inherited Power Bonus
                 <Tooltip
-                    title="Inherited power multiplies power gain and attributes. Inherited power increases when you reincarnate and is capped based on the strongest enemy defeated.">
+                    title="Inherited power increases attributes and multiplies gained power. Inherited power increases when you intimidate enemy demons and is soft-capped by the level of the strongest enemy you've defeated.">
                     <Help/>
                 </Tooltip>
             </Grid>
             <Grid item xs >
-                    <div style={{color: props.character.latentPower.eq(props.character.latentPowerCap) ? "red" : "inherit"}}>
+                    <div style={{color: props.character.latentPower.gte(props.character.latentPowerCap) ? "orange" : "inherit"}}>
                         {latentPowerModifier.toFixed()}%
                     </div>
             </Grid>
