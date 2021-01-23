@@ -86,7 +86,7 @@ describe("Fleeing action", function () {
         expect(nextAction).toEqual("fighting");
         expect(pushLogItem).toHaveBeenCalled();
     });
-    it("moves to exploring and consumes the stamina if the player has enough", function () {
+    it("moves to recovering", function () {
         const player = {
             powerLevel: Decimal(1),
             combat: {
@@ -95,7 +95,7 @@ describe("Fleeing action", function () {
         };
         const pushLogItem = jest.fn();
         const nextAction = Actions["fleeing"].complete(null, player, pushLogItem);
-        expect(nextAction).toEqual("exploring");
+        expect(nextAction).toEqual("recovering");
         expect(player.combat.stamina).toEqual(Decimal(94));
         expect(pushLogItem).toHaveBeenCalled();
     });
@@ -353,7 +353,7 @@ describe("intimidating action", function () {
         Actions["intimidating"].complete(null, player, pushLogItem);
         expect(player.combat.stamina).toEqual(Decimal(1));
         expect(onIntimidation).not.toHaveBeenCalledTimes(1);
-        expect(pushLogItem).toHaveBeenCalledWith("Your lack of stamina allows Enemy to escape!");
+        expect(pushLogItem).toHaveBeenCalledWith("Your lack of stamina allows Enemy to escape! (Required 100 but had 1)");
     });
 });
 
