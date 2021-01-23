@@ -16,7 +16,7 @@ export default _.memoize(function (powerLevel, traits) {
         }
         return total;
     }, Decimal(1));
-    return minimumStamina.plus(Decimal(powerLevel).times(50)) // FIXME: Configure energy per level.
+    return minimumStamina.plus(Decimal(powerLevel).times(100)) // FIXME: Configure energy per level.
         .times(traitMultiplier)
         .floor();
 });
