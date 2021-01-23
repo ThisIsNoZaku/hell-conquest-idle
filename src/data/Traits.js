@@ -59,7 +59,7 @@ export const Traits = {
     sadisticJoy: validatedTrait(generateTrait({
         name: "Sadistic Joy",
         icon: "./icons/icons-852.png",
-        description: _.template("The demon gains vile pleasure from the pain it inflicts, absorbing an additional ${tier.times(25)}% power from killing other demons."),
+        description: _.template("The demon gains vile pleasure from the pain it inflicts, regaining Energy equal to ${tier.times(5)}% from hitting."),
     }, ["bloodthirsty", "sadistic"])),
     searingVenom: validatedTrait(generateTrait({
         name: "Poisonous Hunter",

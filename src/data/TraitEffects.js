@@ -234,7 +234,7 @@ export const TraitEffects = {
             trigger_effects: {
                 change_stamina: {
                     target: "self",
-                    value: "tier.times(.1).times(self.combat.maximumStamina)"
+                    value: "tier.times(.05).times(self.combat.maximumStamina)"
                 }
             }
         }
