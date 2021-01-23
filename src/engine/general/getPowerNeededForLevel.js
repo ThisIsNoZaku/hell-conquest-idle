@@ -3,7 +3,7 @@ import {Decimal} from "decimal.js";
 import evaluateExpression from "./evaluateExpression";
 
 export default function getPowerNeededForLevel(level) {
-    return Decimal(evaluateExpression(getConfigurationValue("mechanics.levelToPowerEquation"), {
+    return Decimal(evaluateExpression(getConfigurationValue("mechanics.powerNeededForLevel"), {
         level: Decimal(level)
     }));
 }

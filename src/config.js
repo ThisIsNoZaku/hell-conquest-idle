@@ -33,11 +33,10 @@ const config = {
         },
         xp: {
             gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(10)",
-            gainedFromLesserDemon: "Decimal.sqrt(enemy.powerLevel).times(10).ceil()",
-            gainedFromOtherDemon: "enemy.powerLevel.times(10)"
+            gainedFromLesserDemon: "Decimal(enemy.powerLevel).times(10)",
+            gainedFromOtherDemon: "enemy.powerLevel.times(100)"
         },
-        levelToPowerEquation: "level.eq(1) ? 0 : Decimal.floor(Decimal(2).pow(level.minus(1))).times(5)",
-        powerToLevelEquation: "Decimal(powerPoints).eq(0) ? 1 : Decimal.floor(Decimal.log(powerPoints.div(5), 2)).plus(1)",
+        powerNeededForLevel: "level.eq(1) ? 0 : Decimal(level.minus(1)).pow(2).times(100)",
         maxLevel: 25,
         combat: {
             startingHitLevel: 0,
