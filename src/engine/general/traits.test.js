@@ -9,6 +9,7 @@ import calculateAttackUpgradeCost from "../combat/calculateAttackUpgradeCost";
 import resolveAttack from "../combat/resolveAttack";
 import {generateHitEvents} from "../events/generate";
 import {getCharacter} from "../index";
+import {getConfigurationValue} from "../../config";
 
 jest.mock("../index");
 jest.mock("../combat/resolveAttack");
@@ -317,7 +318,7 @@ describe("killing blow trait", function () {
     it("increases devastating hit damage", function () {
         const calculatedDamage = calculateDamageBy(player)
             .against(enemy);
-        expect(calculatedDamage[1]).toEqual(Decimal(10).times(1.5).times(1.1).floor());
+        expect(calculatedDamage[1]).toEqual(Decimal(getConfigurationValue("damage_per_level")).times(1.5).times(1.1).floor());
     });
 });
 describe("mindless blow trait", function () {
@@ -460,7 +461,7 @@ describe("relentless trait", function () {
         }, 1);
     });
     it("increases your maximum stamina", function () {
-        expect(player.combat.maximumStamina).toEqual(Decimal(400).floor());
+        expect(player.combat.maximumStamina).toEqual(Decimal(500).floor());
     })
 });
 describe("searing venom trait", function () {

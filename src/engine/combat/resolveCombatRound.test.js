@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 import {HitTypes} from "../../data/HitTypes";
 import {Character} from "../../character";
 import {getConfigurationValue} from "../../config";
+import {Tactics} from "../../data/Tactics";
 
 jest.mock("../index");
 
@@ -68,7 +69,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    value: Decimal(10),
+                    value: Decimal(getConfigurationValue("damage_per_level")),
                 },
                 {
                     event: "attack",
@@ -93,7 +94,7 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    value: Decimal(10),
+                    value: Decimal(getConfigurationValue("damage_per_level")),
                 }
             ]
         })
@@ -129,7 +130,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    value: Decimal(Math.floor(HitTypes[1].damageMultiplier * 10))
+                    value: Decimal(Math.floor(HitTypes[1].damageMultiplier * getConfigurationValue("damage_per_level")))
                 },
                 {
                     event: "attack",
@@ -178,7 +179,7 @@ describe('The combat round resolution', function () {
                     },
                     target: 1,
                     hit: true,
-                    precisionUsed: Decimal(72),
+                    precisionUsed: Decimal(95),
                     evasionUsed: Decimal(0),
                     hitType: 1,
                     timesUpgraded: 1,
@@ -192,7 +193,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    value: Decimal(HitTypes[1].damageMultiplier * 10),
+                    value: Decimal(HitTypes[1].damageMultiplier * getConfigurationValue("damage_per_level") * (1 + Tactics["aggressive"].modifiers.devastating_hit_damage_multiplier)).floor(),
                 },
                 {
                     event: "attack",
@@ -271,7 +272,7 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    value: Decimal(10)
+                    value: Decimal(getConfigurationValue("damage_per_level"))
                 }
             ],
             tick: 100
@@ -308,7 +309,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    value: Decimal(Math.floor(10)),
+                    value: Decimal(Math.floor(getConfigurationValue("damage_per_level"))),
                 },
                 {
                     event: "attack",
@@ -335,7 +336,7 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    value: Decimal(10)
+                    value: Decimal(getConfigurationValue("damage_per_level"))
                 }
             ],
             tick: 100
@@ -359,7 +360,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    precisionUsed: Decimal(72),
+                    precisionUsed: Decimal(95),
                     evasionUsed: Decimal(141).floor(),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
@@ -390,7 +391,7 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    value: Decimal(10)
+                    value: Decimal(getConfigurationValue("damage_per_level"))
                 }
             ],
             tick: 100
