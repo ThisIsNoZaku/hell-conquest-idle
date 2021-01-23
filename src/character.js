@@ -90,7 +90,7 @@ export class Character {
         const effectiveLatentPower = Decimal.min(this.latentPowerCap, this.latentPower);
         return effectiveLatentPower
             .plus(Decimal.max(0, this.latentPower.minus(effectiveLatentPower)).sqrt())
-            .times(getConfigurationValue("latent_power_effect_scale")).floor();
+            .times(getConfigurationValue("latent_power_effect_scale")).toDP(2);
     }
 
     get maximumHp() {
