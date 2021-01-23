@@ -5,6 +5,7 @@ import {debugMessage} from "../../debugging";
 import {HitTypes} from "../../data/HitTypes";
 import {Traits} from "../../data/Traits";
 import evaluateExpression from "../general/evaluateExpression";
+import {Tactics} from "../../data/Tactics";
 
 export default function calculateDamageBy(attacker) {
     return {
@@ -34,7 +35,11 @@ export default function calculateDamageBy(attacker) {
                     });
                     return previousValue.plus(traitDamageMultiplier)
                 }, Decimal(1));
-                damage[nextType] = attackerPowerLevel.times(perLevelDamage).times(damageModifier).times(hitTypeDamageMultiplier)
+                const tacticsMultiplier = Decimal(1).plus(_.get(Tactics, [_.get(attacker, "tactics"), "modifiers", `${HitTypes[nextType].summary}_hit_damage_multiplier`], 0));
+                damage[nextType] = attackerPowerLevel.times(perLevelDamage)
+                    .times(damageModifier)
+                    .times(hitTypeDamageMultiplier)
+                    .times(tacticsMultiplier)
                     .times(traitDamageMultiplier)
                     .floor();
                 return damage;

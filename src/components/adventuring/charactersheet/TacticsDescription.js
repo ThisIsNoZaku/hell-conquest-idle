@@ -37,10 +37,10 @@ export default function (props) {
                     +{Tactics[props.tactic].modifiers.evasion_modifier * 100}% to Evasion
                 </li>
             </Tooltip>}
-            {Tactics[props.tactic].modifiers.max_hit_damage_modifier &&
-            <Tooltip title="Critical hits deal extra damage">
+            {Tactics[props.tactic].modifiers.devastating_hit_damage_multiplier &&
+            <Tooltip title="Devastating hits deal extra damage">
                 <li style={{color: "green", textAlign: "left"}}>
-                    +{Tactics[props.tactic].modifiers.max_hit_damage_modifier * 100}% to {HitTypes[HitTypes.max].type} hit damage
+                    +{Tactics[props.tactic].modifiers.devastating_hit_damage_multiplier * 100}% to {HitTypes[HitTypes.max].type} hit damage
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.health_modifier &&

@@ -5,7 +5,7 @@ export const Tactics = {
         modifiers: {
             power_modifier: .25,
             health_modifier: .25,
-            attack_upgrade_cost_multiplier: .75
+            devastating_hit_damage_multiplier: .25
         },
         strategy: {
             attack_floor: .1 // Don't spend stamina to upgrade attacks at/below this %
