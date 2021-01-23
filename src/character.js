@@ -44,9 +44,6 @@ export class Character {
 
     levelUp() {
         this.powerLevel = this.powerLevel.plus(1);
-        while (this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel))) {
-            this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel));
-        }
         Creatures[this.appearance].traits.forEach(trait => {
             getGlobalState().unlockedTraits[trait] = this.powerLevel.div(10).ceil();
         });
@@ -167,6 +164,10 @@ export class Character {
         const latentPowerMultiplier = this.latentPowerModifier.plus(1);
         powerGained = powerGained.times(latentPowerMultiplier).floor();
         this.absorbedPower = this.absorbedPower.plus(powerGained);
+        while(this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel.plus(1)))) {
+            this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel.plus(1)));
+            this.levelUp()
+        }
         return powerGained;
     }
 
@@ -246,7 +247,7 @@ class CombatStats {
 
     get receivedDamageMultiplier() {
         return Object.keys(this.character.statuses).reduce((previousValue, currentValue) => {
-            const statusModifier = Statuses[currentValue].effects.received_damage_modifier || 0;
+            const statusModifier = _.get(Statuses[currentValue], ["effects", "damage_modifier", "target"]) === "self" ? Statuses[currentValue].effects.damage_modifier.modifier : 0;
             const statusRank = this.character.getStatusStacks(currentValue);
             const modifier = Decimal.max(0, Decimal(statusModifier).pow(statusRank).minus(1));
             return previousValue.plus(modifier || 0);
