@@ -18,7 +18,7 @@ const config = {
     base_attack_downgrade_cost: 100,
     minimum_attribute_score: 1,
     damage_per_level: 5,
-    flee_stamina_cost_base: 5,
+    flee_stamina_cost_base: 25,
     flee_stamina_minimum_cost: 1,
     instant_death_offset: 5,
     recovery_action_healing_percentage: .5,
