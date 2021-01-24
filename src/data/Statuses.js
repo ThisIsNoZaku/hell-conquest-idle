@@ -27,7 +27,7 @@ export const Statuses = {
         effects: {
             inflict_damage_at_start_of_round: {
                 target: "self",
-                value: 5
+                value: 2
             }
         }
     }),

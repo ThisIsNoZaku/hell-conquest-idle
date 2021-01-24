@@ -40,13 +40,13 @@ export const TraitEffects = {
         }
     },
     crushing: {
-        on_hit: {
+        on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
                     crushed: {
                         target: "enemy",
                         stacks: "tier",
-                        duration: 1
+                        duration: 3
                     }
                 }
             }
