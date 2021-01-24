@@ -5,10 +5,11 @@ import triggerEvent from "../general/triggerEvent";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
 import {Character} from "../../character";
-import {v4} from "node-uuid";
 import {getConfigurationValue} from "../../config";
-import {generateFatigueDamageEvent, generateKillEvent} from "../events/generate";
+import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../events/generate";
 import {getCharacter} from "../index";
+import {FOR_COMBAT, PERMANENT} from "../../data/Statuses";
+import * as _ from "lodash";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -103,6 +104,19 @@ export default function resolveCombatRound(tick, combatants) {
                 source: {character:combatant}
             }
         );
+        Object.keys(combatant.statuses).forEach(status => {
+            combatant.statuses[status] = _.get(combatant.statuses, [status], []).filter(instance => {
+                if(instance.duration === PERMANENT || instance.duration === FOR_COMBAT || instance.duration) {
+                    return true;
+                }
+                return false;
+            })
+                .map(instance => {
+                    roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
+                    instance.duration--;
+                    return instance;
+                });
+        })
     })
 
     return {

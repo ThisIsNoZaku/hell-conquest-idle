@@ -87,3 +87,17 @@ export function generateStaminaChangeEvent(source, target, value, parent, uuid) 
         parent
     }
 }
+
+export function generateRemoveStatusEvent(source, targetCharacter, targetStatusUuid, status, stacks) {
+    return {
+        event: "remove-status",
+        status,
+        stacks,
+        source: {
+            character: source.id
+        },
+        uuid: v4(),
+        target: targetCharacter.id,
+        toRemove: targetStatusUuid
+    }
+}
