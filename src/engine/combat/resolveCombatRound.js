@@ -117,7 +117,8 @@ export default function resolveCombatRound(tick, combatants) {
                         instance.duration--;
                         return instance;
                     })
-            } else {
+            }
+            if(combatant.statuses[status] && combatant.statuses[status].length === 0) {
                 delete combatant.statuses[status];
             }
         })
