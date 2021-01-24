@@ -179,13 +179,13 @@ export const TraitEffects = {
         }
     },
     painfulVenom: {
-        on_hit: {
+        on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
                     painfulVenom: {
                         target: "enemy",
                         stacks: "tier",
-                        duration: 2
+                        duration: 3
                     }
                 }
             }
