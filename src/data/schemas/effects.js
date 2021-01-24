@@ -25,5 +25,9 @@ export const modifierEffects = JOI.object({
     attack_downgrade_cost_multiplier: effectModifier,
     attack_upgrade_cost_multiplier: effectModifier,
     maximum_health_modifier: effectModifier,
-    power_gain_modifier: effectModifier
+    power_gain_modifier: effectModifier,
+    inflict_damage_at_start_of_round: JOI.object({
+        target: effectTarget,
+        value: [JOI.string(), JOI.number()]
+    })
 });
