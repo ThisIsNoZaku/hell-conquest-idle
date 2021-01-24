@@ -40,8 +40,13 @@ export default function CharacterCombatSummary(props) {
                     return Decimal.max(highest, next.stacks);
                 }, 0);
                 const modifiers = Object.keys(Statuses[status].effects).reduce((combined, next) => {
-                    const modifier = Decimal(Statuses[status].effects[next].modifier).times(numStacks);
-                    combined[next] = Decimal.abs(modifier);
+                    if(Statuses[status].effects[next].modifier) {
+                        const modifier = Decimal(Statuses[status].effects[next].modifier).times(numStacks);
+                        combined[next] = Decimal.abs(modifier);
+                    } else {
+                        const value = Decimal(Statuses[status].effects[next].value).times(numStacks);
+                        combined[next] = Decimal.abs(value);
+                    }
                     return combined;
                 }, {});
                 return <Grid item xs={1}>
