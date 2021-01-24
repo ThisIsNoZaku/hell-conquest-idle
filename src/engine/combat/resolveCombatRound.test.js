@@ -115,7 +115,7 @@ describe('The combat round resolution', function () {
                     target: 1,
                     uuid: expect.any(String),
                     children: [expect.any(String)],
-                    precisionUsed: Decimal(95),
+                    precisionUsed: Decimal(90),
                     evasionUsed: Decimal(0),
                     timesUpgraded: 1,
                     timesDowngraded: 0,
@@ -143,7 +143,7 @@ describe('The combat round resolution', function () {
                     hitType: -1,
                     timesUpgraded: 0,
                     timesDowngraded: 1,
-                    evasionUsed: Decimal(72),
+                    evasionUsed: Decimal(68),
                     hit: false,
                     precisionUsed: Decimal(0)
                 },
@@ -179,7 +179,7 @@ describe('The combat round resolution', function () {
                     },
                     target: 1,
                     hit: true,
-                    precisionUsed: Decimal(95),
+                    precisionUsed: Decimal(90),
                     evasionUsed: Decimal(0),
                     hitType: 1,
                     timesUpgraded: 1,
@@ -205,7 +205,7 @@ describe('The combat round resolution', function () {
                     target: 0,
                     hit: false,
                     precisionUsed: Decimal(0),
-                    evasionUsed: Decimal(95),
+                    evasionUsed: Decimal(90),
                     hitType: -1,
                     timesUpgraded: 0,
                     timesDowngraded: 1,
@@ -240,7 +240,7 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    evasionUsed: Decimal(72),
+                    evasionUsed: Decimal(68),
                     precisionUsed: Decimal(0),
                     timesDowngraded: 1,
                     timesUpgraded: 0,
@@ -294,8 +294,8 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    evasionUsed: Decimal(72),
-                    precisionUsed: Decimal(95),
+                    evasionUsed: Decimal(68),
+                    precisionUsed: Decimal(90),
                     timesDowngraded: 1,
                     timesUpgraded: 1,
                     hitType: 0,
@@ -321,8 +321,8 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    evasionUsed: Decimal(72),
-                    precisionUsed: Decimal(95),
+                    evasionUsed: Decimal(68),
+                    precisionUsed: Decimal(90),
                     timesDowngraded: 1,
                     timesUpgraded: 1,
                     hit: true,
@@ -360,8 +360,8 @@ describe('The combat round resolution', function () {
                         character: 0
                     },
                     target: 1,
-                    precisionUsed: Decimal(95),
-                    evasionUsed: Decimal(141).floor(),
+                    precisionUsed: Decimal(90),
+                    evasionUsed: Decimal(154).floor(),
                     timesUpgraded: 1,
                     timesDowngraded: 2,
                     hitType: -1
@@ -377,8 +377,8 @@ describe('The combat round resolution', function () {
                         character: 1
                     },
                     target: 0,
-                    precisionUsed: Decimal(94),
-                    evasionUsed: Decimal(95),
+                    precisionUsed: Decimal(88),
+                    evasionUsed: Decimal(90),
                     timesUpgraded: 1,
                     timesDowngraded: 1,
                     hitType: 0

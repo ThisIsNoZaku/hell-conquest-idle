@@ -67,12 +67,13 @@ describe("blood rage trait", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(player.statuses).toEqual({
             berserk: [{
-                stacks: Decimal(1),
+                stacks: 1,
                 source: {
                     character: 0,
                     trait: "bloodrage"
                 },
-                duration: 3,
+                status: "berserk",
+                duration: 2,
                 uuid: expect.any(String)
             }]
         });
@@ -138,7 +139,8 @@ describe("carrion_feeder trait", function () {
                         character: 0,
                         trait: "carrion_feeder"
                     },
-                    stacks: Decimal(1),
+                    status: "engorged",
+                    stacks: 1,
                 }
             ])
     });
@@ -263,10 +265,19 @@ describe("inescapable grasp trait", function () {
                     event: "add-status",
                     source: {character: 0, trait: "inescapableGrasp"},
                     target: 1,
+                    status: "crushed",
+                    uuid: expect.any(String),
+                    stacks: 1,
+                    duration: 5
+                },
+                {
+                    event: "add-status",
+                    source: {character: 0, trait: "inescapableGrasp"},
+                    target: 1,
                     status: "restrained",
                     uuid: expect.any(String),
-                    stacks: Decimal(1),
-                    duration: 1
+                    stacks: 1,
+                    duration: 5
                 },
             ]
         });
@@ -318,7 +329,7 @@ describe("killing blow trait", function () {
     it("increases devastating hit damage", function () {
         const calculatedDamage = calculateDamageBy(player)
             .against(enemy);
-        expect(calculatedDamage[1]).toEqual(Decimal(getConfigurationValue("damage_per_level")).times(1.5).times(1.1).floor());
+        expect(calculatedDamage[1]).toEqual(Decimal(getConfigurationValue("damage_per_level")).times(1.5).times(1.5).floor());
     });
 });
 describe("mindless blow trait", function () {
@@ -366,7 +377,7 @@ describe("mindless blow trait", function () {
     });
     it("increases the cost to downgrade your attacks", function () {
         const cost = calculateAttackDowngradeCost(enemy, player);
-        expect(cost).toEqual(Decimal(72 * 1.1).floor());
+        expect(cost).toEqual(Decimal(68 * 1.1).floor());
     });
 });
 describe("piercing strike trait", function () {
@@ -414,7 +425,7 @@ describe("piercing strike trait", function () {
     });
     it("decreases the cost to upgrade your attacks", function () {
         const cost = calculateAttackUpgradeCost(player, enemy);
-        expect(cost).toEqual(Decimal(100).times(1 - (1.1 * .05)).ceil());
+        expect(cost).toEqual(Decimal(88).ceil());
     });
 });
 describe("relentless trait", function () {
@@ -461,7 +472,7 @@ describe("relentless trait", function () {
         }, 1);
     });
     it("increases your maximum stamina", function () {
-        expect(player.combat.maximumStamina).toEqual(Decimal(500).floor());
+        expect(player.combat.maximumStamina).toEqual(Decimal(665).floor());
     })
 });
 describe("searing venom trait", function () {
@@ -508,20 +519,20 @@ describe("searing venom trait", function () {
     });
     it("adds stacks on critical hit", function () {
         resolveAttackMock
-            .mockReturnValueOnce(generateHitEvents(0, player, enemy, 5, 0, 0, 0, 0))
+            .mockReturnValueOnce(generateHitEvents(1, player, enemy, 5, 0, 0, 0, 0))
             .mockReturnValueOnce(generateHitEvents(0, enemy, player, 5, 0, 0, 0, 0))
         const result = resolveCombatRound(100, {0: player, 1: enemy});
         expect(enemy.statuses["painfulVenom"]).toBeDefined();
         expect(result.events).toContainEqual({
             event: "add-status",
-            duration: 2,
+            duration: 5,
             source: {
                 character: 0,
                 trait: "searingVenom"
             },
             status: "painfulVenom",
             target: 1,
-            stacks: Decimal(1),
+            stacks: 1,
             uuid: expect.any(String)
         });
     });

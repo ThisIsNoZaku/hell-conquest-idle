@@ -6,7 +6,7 @@ export const TraitEffects = {
             trigger_effects: {
                 arcaneShield: {
                     target: "self",
-                    value: "tier.times(.1)"
+                    value: .1
                 }
             }
         }
@@ -17,8 +17,8 @@ export const TraitEffects = {
                 add_statuses: {
                     berserk: {
                         target: "self",
-                        stacks: "tier",
-                        duration: 1
+                        stacks: 1,
+                        duration: 3
                     }
                 }
             }
@@ -30,10 +30,10 @@ export const TraitEffects = {
                 add_statuses: {
                     engorged: {
                         target: "self",
-                        stacks: "tier",
+                        stacks: 1,
                         duration: PERMANENT,
                         cumulative: true,
-                        max: "tier.times(10)"
+                        max: 10
                     }
                 }
             }
@@ -45,7 +45,7 @@ export const TraitEffects = {
                 add_statuses: {
                     crushed: {
                         target: "enemy",
-                        stacks: "tier",
+                        stacks: 1,
                         duration: 5
                     }
                 }
@@ -58,7 +58,7 @@ export const TraitEffects = {
                 add_statuses: {
                     infected: {
                         target: "enemy",
-                        stacks: "tier"
+                        stacks: 1
                     }
                 }
             }
@@ -69,7 +69,7 @@ export const TraitEffects = {
             trigger_effects: {
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.4)"
+                    modifier: .4
                 }
             }
         }
@@ -84,7 +84,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "fire",
-                    value: "tier.times(.2)"
+                    value: .2
                 }
             }
         }
@@ -95,7 +95,7 @@ export const TraitEffects = {
                 add_statuses: {
                     frightened: {
                         target: "enemy",
-                        stacks: "tier",
+                        stacks: 1,
                         duration: 5
                     }
                 }
@@ -108,7 +108,7 @@ export const TraitEffects = {
                 add_statuses: {
                     restrained: {
                         target: "enemy",
-                        stacks: "tier",
+                        stacks: 1,
                         duration: 5
                     }
                 }
@@ -120,7 +120,7 @@ export const TraitEffects = {
             trigger_effects: {
                 damage_modifier: {
                     target: "all",
-                    value: "tier.times(.25).times(-1)"
+                    value: -.25
                 }
             }
         }
@@ -130,7 +130,7 @@ export const TraitEffects = {
             trigger_effects: {
                 devastating_hit_damage_multiplier: {
                     target: "self",
-                    modifier: "tier.times(.5)"
+                    modifier: .5
                 }
             }
         }
@@ -140,19 +140,19 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    modifier: .2
                 },
                 resilience_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    modifier: .2
                 },
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1).times(-1)"
+                    modifier: -.1
                 },
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1).times(-1)"
+                    modifier: -.1
                 }
             }
         }
@@ -162,7 +162,7 @@ export const TraitEffects = {
             trigger_effects: {
                 trait_mirror: {
                     target: "self",
-                    value: "tier"
+                    value: 1
                 }
             }
         }
@@ -172,7 +172,7 @@ export const TraitEffects = {
             trigger_effects: {
                 damage_resistance: {
                     target: "self",
-                    value: "tier.times(.2)",
+                    value: .2,
                     type: "psychic"
                 }
             }
@@ -184,7 +184,7 @@ export const TraitEffects = {
                 add_statuses: {
                     painfulVenom: {
                         target: "enemy",
-                        stacks: "tier",
+                        stacks: 1,
                         duration: 5
                     }
                 }
@@ -196,7 +196,7 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.33)"
+                    modifier: .33
                 }
             }
         }
@@ -206,7 +206,7 @@ export const TraitEffects = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    modifier: .2
                 }
             }
         }
@@ -216,11 +216,11 @@ export const TraitEffects = {
             trigger_effects: {
                 health_change: {
                     target: "self",
-                    value: "player.maximumHealth.times(.05)"
+                    percentage_of_maximum_health: .05
                 },
                 change_stamina: {
                     target: "self",
-                    value: "player.combat.maximumStamina.times(.01).times(-1)"
+                    percentage_of_maximum_stamina: -.1
                 }
             }
         }
@@ -230,7 +230,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_stamina_modifier: {
                     target: "self",
-                    modifier: "tier.times(.33)"
+                    modifier: .33
                 }
             }
         }
@@ -240,7 +240,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_health_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    modifier: .2
                 }
             }
         }

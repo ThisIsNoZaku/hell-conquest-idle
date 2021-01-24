@@ -168,8 +168,8 @@ export const Actions = {
             const instantDeathLevel = calculateInstantDeathLevel(player);
             let intimidateSuccess = false;
             const energyNeededToBind = enemy.powerLevel.times(100)
-                .times(Decimal(1).minus(player.attributes[getConfigurationValue("intimidation_cost_attribute")])
-                .times(0.05)); // FIXME: Move to configuration.
+                .times(Decimal(1)
+                    .minus(Decimal(player.attributes[getConfigurationValue("intimidation_cost_attribute")]).times(0.05))); // FIXME: Move to configuration.
             if (enemy.powerLevel.lte(instantDeathLevel)) {
                 pushLogItem(`Your force of will seizes control of ${enemy.name}'s mind!`);
                 intimidateSuccess = true;

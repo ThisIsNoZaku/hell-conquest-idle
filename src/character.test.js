@@ -102,7 +102,7 @@ describe("character combat stats", function () {
 
                 }
             }, 0).combat.incomingAttackDowngradeCost;
-            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.05)).times(100));
+            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.1)).times(100));
         }
     });
     it("attack upgrade cost is reduced by precision", function () {
@@ -114,12 +114,11 @@ describe("character combat stats", function () {
                 attributes: {
                     baseDeceit: Decimal(i)
                 },
-                tactics: "deceptive",
-                combat: {
-
-                }
+                tactics: "deceptive"
             }, 0).combat.attackUpgradeCost;
-            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(Decimal(0.05).times(1.25))).times(100).ceil());
+            const attributeMod = Decimal(1).minus(Decimal(i).times(1.25).times(Decimal(0.1)));
+            expect(calculatedCost).toEqual(Decimal(100)
+                .times(attributeMod).times(1).ceil());
         }
     });
 });

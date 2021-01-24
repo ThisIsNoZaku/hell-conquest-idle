@@ -75,9 +75,26 @@ describe("Approaching action", function () {
 });
 
 describe("Fleeing action", function () {
+    let globalState;
+    beforeEach(() => {
+        getGlobalState.mockClear();
+        globalState = {
+            currentEncounter: {
+                enemies: [
+                    {
+                        powerLevel: Decimal(1)
+                    }
+                ]
+            }
+        }
+        getGlobalState.mockReturnValue(globalState);
+    });
     it("starts a battle if the player lacks the Stamina", function () {
         const pushLogItem = jest.fn();
         const nextAction = Actions["fleeing"].complete(null, {
+            attributes: {
+                deceit: 1
+            },
             powerLevel: Decimal(1),
             combat: {
                 stamina: Decimal(0)
@@ -88,15 +105,18 @@ describe("Fleeing action", function () {
     });
     it("moves to recovering", function () {
         const player = {
+            attributes: {
+                deceit: 1
+            },
             powerLevel: Decimal(1),
             combat: {
-                stamina: Decimal(99)
+                stamina: Decimal(100)
             }
         };
         const pushLogItem = jest.fn();
         const nextAction = Actions["fleeing"].complete(null, player, pushLogItem);
         expect(nextAction).toEqual("recovering");
-        expect(player.combat.stamina).toEqual(Decimal(94));
+        expect(player.combat.stamina).toEqual(Decimal(76));
         expect(pushLogItem).toHaveBeenCalled();
     });
 });
@@ -301,6 +321,9 @@ describe("intimidating action", function () {
         }
         const pushLogItem = jest.fn();
         Actions["intimidating"].complete(null, {
+            attributes: {
+                cunning: 1
+            },
             highestLevelReached: Decimal(11)
         }, pushLogItem);
         expect(pushLogItem).toHaveBeenCalledWith("Your force of will seizes control of Enemy's mind!");
@@ -322,8 +345,11 @@ describe("intimidating action", function () {
         const pushLogItem = jest.fn();
         const player = {
             highestLevelReached: 1,
+            attributes: {
+                cunning: 1
+            },
             combat: {
-                stamina: Decimal(100)
+                stamina: Decimal(95)
             }
         }
         Actions["intimidating"].complete(null, player, pushLogItem);
@@ -346,6 +372,9 @@ describe("intimidating action", function () {
         const pushLogItem = jest.fn();
         const player = {
             highestLevelReached: 1,
+            attributes: {
+                cunning: Decimal(1)
+            },
             combat: {
                 stamina: Decimal(1)
             }

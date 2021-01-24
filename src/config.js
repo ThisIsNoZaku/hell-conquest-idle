@@ -26,6 +26,7 @@ const config = {
     stamina_consumed_per_round: 25,
     minimum_stamina: 400,
     bonus_stamina_per_level: 100,
+    intimidation_cost_attribute: "cunning",
     trait_tier_up_levels: 20, // Traits upgrade when reaching a multiple of this level.
     mechanics: {
         reincarnation: {
