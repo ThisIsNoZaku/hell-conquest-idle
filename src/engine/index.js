@@ -143,12 +143,13 @@ export function generateCreature(id, powerLevel, rng) {
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
-        latentPower: Decimal(0),
+        latentPower: Decimal(powerLevel.minus(1).times(15)),
         tactics,
         adjectives: [adjective],
         traits: startingTraits,
         powerLevel: powerLevel,
         party: 1,
+        highestLevelEnemyDefeated: Decimal(powerLevel),
         attributes: {
             baseBrutality: bonuses.attributes.brutality,
             baseCunning:bonuses.attributes.cunning,
