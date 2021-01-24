@@ -37,7 +37,7 @@ export function CharacterSheet(props) {
             <Grid item xs>
                 Inherited Power Bonus
                 <Tooltip
-                    title="Inherited power increases attributes and multiplies gained power. Inherited power increases when you intimidate enemy demons and is soft-capped by the level of the strongest enemy you've defeated.">
+                    title="Inherited power increases attributes and multiplies gained power and Health. Inherited power increases when you intimidate enemy demons and is soft-capped by the level of the strongest enemy you've defeated.">
                     <Help/>
                 </Tooltip>
             </Grid>
