@@ -35,23 +35,30 @@ export default function CharacterCombatSummary(props) {
             </Grid>
         </Grid>
         <Grid container item xs={12} style={{height: "40px"}} direction={props.direction}>
-            {props.statuses && Object.keys(props.statuses).map(status => {
-                const numStacks = props.statuses[status].reduce((highest, next) => {
-                    return Decimal.max(highest, next.stacks);
-                }, 0);
-                const modifiers = Object.keys(Statuses[status].effects).reduce((combined, next) => {
-                    if(Statuses[status].effects[next].modifier) {
-                        const modifier = Decimal(Statuses[status].effects[next].modifier).times(numStacks);
+            {props.statuses && props.statuses.map(statusInstance => {
+                const numStacks = statusInstance.stacks;
+                const statusDef = Statuses[statusInstance.status];
+                const modifiers = Object.keys(statusDef.effects).reduce((combined, next) => {
+                    if(statusDef.effects[next].modifier) {
+                        const modifier = Decimal(statusDef.effects[next].modifier).times(numStacks);
                         combined[next] = Decimal.abs(modifier);
                     } else {
-                        const value = Decimal(Statuses[status].effects[next].value).times(numStacks);
+                        const value = Decimal(statusDef.effects[next].value).times(numStacks);
                         combined[next] = Decimal.abs(value);
                     }
                     return combined;
                 }, {});
                 return <Grid item xs={1}>
-                    <Tooltip title={<div dangerouslySetInnerHTML={{__html: `<strong>${Statuses[status].name}</strong>: ${Statuses[status].description(modifiers)}`}}/>} >
-                        <img src={Statuses[status].icon}/>
+                    <Tooltip title={<div dangerouslySetInnerHTML={{__html: `<strong>${Statuses[statusInstance.status].name}</strong>: ${Statuses[statusInstance.status].description(modifiers)}`}}/>} >
+                        <Grid container direction={props.direction}>
+                            <Grid item xs>
+                                <img src={Statuses[statusInstance.status].icon}/>
+                            </Grid>
+                            <Grid item xs style={{textAlign: "center"}}>
+                                {Decimal(statusInstance.duration).plus(1).toFixed()}
+                            </Grid>
+
+                        </Grid>
                     </Tooltip>
                 </Grid>
             })}

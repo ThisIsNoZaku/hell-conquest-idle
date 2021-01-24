@@ -69,14 +69,16 @@ export default function BottomSection(props) {
             <Grid container>
                 <CharacterCombatSummary name="Player" hp={props.player.hp}
                                         maximumHp={props.player.maximumHp}
-                                        statuses={_.get(props.player, "statuses")}
+                                        statuses={Object.keys(_.get(props.player, "statuses", {})).map(s => props.player.getActiveStatusInstance(s))
+                                            .filter(_.identity)}
                                         direction="row"
                                         stamina={props.player.combat.stamina}
                                         maxStamina={props.player.combat.maximumStamina}
                 />
                 <CharacterCombatSummary name={_.get(props.enemy, "name")} hp={_.get(props.enemy, "hp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
-                                        statuses={_.get(props.enemy, "statuses")}
+                                        statuses={Object.keys(_.get(props.enemy, "statuses", {})).map(s => props.enemy.getActiveStatusInstance(s))
+                                            .filter(_.identity)}
                                         direction="row-reverse"
                                         isRival={_.get(props.enemy, "isRival")}
                                         stamina={_.get(props.enemy, ["combat","stamina"], Decimal(0)).toNumber()}

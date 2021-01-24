@@ -38,6 +38,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                             target.statuses[status] = (target.statuses[status] || []);
                             target.statuses[status].push({
                                 uuid: statusUuid,
+                                status,
                                 source: {
                                     character: event.source.character.id,
                                     trait: traitId
