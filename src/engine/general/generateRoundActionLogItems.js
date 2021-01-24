@@ -44,9 +44,7 @@ function describeEvent(event) {
             const duration = Decimal(event.duration);
             return `${targetName} gained ${numStacks.toFixed()} stack${numStacks.eq(1) ? "" : "s"} of ${Statuses[event.status].name} for ${event.duration} action${duration.eq(1) ? "" : "s"}.`;
         case "remove-status": {
-            const statusToRemove = getCharacter(event.target).statuses[event.status]
-                .find(s => s.uuid === event.toRemove);
-            const stacks = Decimal(statusToRemove.stacks);
+            const stacks = Decimal(event.stacks);
             return `${targetName} removed ${stacks.toFixed()} stack${stacks.eq(0)?"":"s"} of ${Statuses[event.status].name}.`;
         }
     }
