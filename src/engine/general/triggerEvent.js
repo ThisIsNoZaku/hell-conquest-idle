@@ -32,12 +32,16 @@ export default function triggerEvent(event) {
         Object.keys(status.effects).forEach(effect => {
             switch (effect) {
                 case "inflict_damage_at_start_of_round":
+                    if(event.type !== "on_start_round") {
+                        return;
+                    }
                     const targets = selectConditionTargets(status.effects[effect].target, event.source.character, event.target, event.combatants);
                     targets.forEach(target => {
-                        const damageToDeal = Decimal(status.effects[effect].value).times(target.getStatusStacks(status));
+                        const damageToDeal = Decimal(status.effects[effect].value).times(target.getStatusStacks(statusId));
                         target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
                         event.roundEvents.push(generateDamageEvent(event.source.character, target, damageToDeal))
                     })
+                    break;
             }
         })
     })
