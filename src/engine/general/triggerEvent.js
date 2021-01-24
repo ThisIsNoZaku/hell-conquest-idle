@@ -7,6 +7,7 @@ import selectConditionTargets from "../combat/events/selectConditionTargets";
 import {Statuses} from "../../data/Statuses";
 import {generateDamageEvent} from "../events/generate";
 import {Decimal} from "decimal.js";
+import {getCharacter} from "../index";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
@@ -37,9 +38,12 @@ export default function triggerEvent(event) {
                     }
                     const targets = selectConditionTargets(status.effects[effect].target, event.source.character, event.target, event.combatants);
                     targets.forEach(target => {
-                        const damageToDeal = Decimal(status.effects[effect].value).times(target.getStatusStacks(statusId));
+                        const activeStatus = target.getActiveStatusInstance(statusId);
+                        const damageToDeal = Decimal(status.effects[effect].value)
+                            .times(target.getStatusStacks(statusId))
+                            .times(getCharacter(activeStatus.source.character).powerLevel);
                         target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
-                        event.roundEvents.push(generateDamageEvent(event.source.character, target, damageToDeal))
+                        event.roundEvents.push(generateDamageEvent(activeStatus, target, damageToDeal))
                     })
                     break;
             }

@@ -59,10 +59,13 @@ export class Character {
     }
 
     getStatusStacks(status) {
-        const statusInstances = this.statuses[status] || [];
-        return Decimal(statusInstances.reduce((highestRank, nextInstance) => {
-            return Decimal.max(highestRank, nextInstance.stacks);
-        }, 0));
+        return _.get(this.getActiveStatusInstance(status), "stacks", Decimal(0));
+    }
+
+    getActiveStatusInstance(status) {
+        return this.statuses[status].reduce((instance, next) => {
+            return Decimal(_.get(instance, "ranks", 0)).gt(next.stacks) ? instance : next;
+        }, null)
     }
 
     setHp(newHealth) {
