@@ -30,7 +30,7 @@ export const Tactics = {
             precision_modifier: .25,
             evasion_modifier: .25,
             always_downgrade_to_glancing: true,
-            attack_downgrade_cost_multiplier: 1.5
+            attack_downgrade_cost_multiplier: 1.75
         },
         strategy: {
             attack_floor: .25 // Don't spend stamina to upgrade attacks at/below this %
