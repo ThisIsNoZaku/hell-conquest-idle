@@ -138,6 +138,7 @@ export class Character {
         this.absorbedPower = Decimal(0);
         this.powerLevel = Decimal(1);
         this.combat.stamina = this.combat.maximumStamina;
+        this.latentPower = this.latentPower.plus(this.powerLevel);
         this.reset();
     }
 
