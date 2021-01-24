@@ -3,6 +3,10 @@ import {Traits} from "../../data/Traits";
 import * as JOI from "joi";
 import doesTraitTrigger from "../combat/events/doesTraitTrigger";
 import applyTraitEffects from "../combat/events/applyTraitEffects";
+import selectConditionTargets from "../combat/events/selectConditionTargets";
+import {Statuses} from "../../data/Statuses";
+import {generateDamageEvent} from "../events/generate";
+import {Decimal} from "decimal.js";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
@@ -16,13 +20,27 @@ export default function triggerEvent(event) {
         const eventDefinition = trait[event.type];
         if (eventDefinition) {
             const traitTriggered = doesTraitTrigger(eventDefinition, event);
-            debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not' } trigger.`);
+            debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
                 applyTraitEffects(effectsToApply, event, traitId);
             }
         }
     });
+    Object.keys(event.source.character.statuses).forEach(statusId => {
+        const status = Statuses[statusId];
+        Object.keys(status.effects).forEach(effect => {
+            switch (effect) {
+                case "inflict_damage_at_start_of_round":
+                    const targets = selectConditionTargets(status.effects[effect].target, event.source.character, event.target, event.combatants);
+                    targets.forEach(target => {
+                        const damageToDeal = Decimal(status.effects[effect].value).times(target.getStatusStacks(status));
+                        target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
+                        event.roundEvents.push(generateDamageEvent(event.source.character, target, damageToDeal))
+                    })
+            }
+        })
+    })
 }
 
 const eventMatcher = JOI.object({

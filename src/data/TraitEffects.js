@@ -1,3 +1,5 @@
+import {PERMANENT} from "./Statuses";
+
 export const TraitEffects = {
     arcane: {
         continuous: {
@@ -29,9 +31,22 @@ export const TraitEffects = {
                     engorged: {
                         target: "self",
                         stacks: "tier",
-                        duration: -1,
+                        duration: PERMANENT,
                         cumulative: true,
                         max: "tier.times(10)"
+                    }
+                }
+            }
+        }
+    },
+    crushing: {
+        on_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    crushed: {
+                        target: "enemy",
+                        stacks: "tier",
+                        duration: 1
                     }
                 }
             }

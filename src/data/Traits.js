@@ -7,13 +7,13 @@ export const Traits = {
     bloodrage: validatedTrait(generateTrait({
         name: "Blood Rage",
         icon: "./icons/icons-139.png",
-        description: _.template("This demon's unquenchable thirst for blood causes it to gain ${tier} stacks of Berserk when an enemy has 50% or less health.")
+        description: _.template("A brutal and savage warrior, this Demon gains ${tier} stacks of <strong>Beserk</strong> when hitting with an attack and gains a ${tier.times(10)}% bonus to <strong>Resilience</strong>.")
     }, ["bloodthirsty", "tough"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
         icon: "./icons/icons-1.png",
-        description: _.template("When this demon kills another, it gains ${tier} stacks of of Engorged, to a maximum of ${tier.times(10)}")
-    }, ["cannibal"])),
+        description: _.template("By consuming not just the energy but the flesh of it's victims, this Demon gains ${tier} stacks of of <strong>Engorged</strong> each kill, to a maximum of ${tier.times(10)}")
+    }, ["cannibal", "small"])),
     cupidity: validatedTrait({
         name: "Cupidity",
         icon: "./icons/icons-2503.png",
@@ -34,11 +34,11 @@ export const Traits = {
     inescapableGrasp: validatedTrait(generateTrait({
         name: "Inescapable Grasp",
         icon: "./icons/icons-2221.png",
-        description: _.template("On a critical hit you wrap around your enemy, inflicting ${tier} stack${tier.eq(1) ? '': 's'} of <em>Restrained</em> for 5 rounds."),
-    }, ["grappler"])),
+        description: _.template("This Demon's main strategy is to restrain and crush it's foes, inflicting a stack of <strong>Restrained</strong> for ${tier} rounds and also ${tier} stacks of <strong>Crushed</strong> on hit."),
+    }, ["grappler", "crushing"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
-        description: _.template("You seek to end fights with a single strike, dealing ${tier.times(10)}% extra damage on a Devastating hit."),
+        description: _.template("This demon seeks to end fights with killer blows and deadly venom, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> on hits and inflicting ${tier.times(10)}% more damage on Devastating hits."),
         icon: "./icons/icons-1.png"
     }, ["killer", "painfulVenom"])),
     immortalWarrior: validatedTrait(generateTrait({

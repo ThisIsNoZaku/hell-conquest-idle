@@ -1,6 +1,9 @@
 import * as _ from "lodash";
 import validatedStatus from "./schemas/statuses";
 
+export const FOR_COMBAT = 999;
+export const PERMANENT = -1;
+
 export const Statuses = {
     berserk: validatedStatus({
         name: "Berserk",
@@ -14,6 +17,17 @@ export const Statuses = {
             attack_downgrade_cost_multiplier: {
                 target: "self",
                 modifier: .25
+            }
+        }
+    }),
+    crushed: validatedStatus({
+        name: "Crushed",
+        icon: "./icons/icons-1.png",
+        description: _.template("This Demon is being crushed, taking ${inflict_damage_at_start_of_round} at the beginning of each round."),
+        effects: {
+            inflict_damage_at_start_of_round: {
+                target: "self",
+                value: 5
             }
         }
     }),
