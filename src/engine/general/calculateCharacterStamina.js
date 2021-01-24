@@ -7,7 +7,7 @@ import evaluateExpression from "./evaluateExpression";
 export default _.memoize(function (powerLevel, traits) {
     const minimumStamina = Decimal(getConfigurationValue("minimum_stamina"));
     const traitMultiplier = Object.keys(traits).reduce((total, trait) => {
-        const staminaModifier = _.get(Traits, [trait, "continuous", "trigger_effects", "stamina_modifier"]);
+        const staminaModifier = _.get(Traits, [trait, "continuous", "trigger_effects", "maximum_stamina_modifier"]);
         if(_.get(staminaModifier, "target") === "self") {
             const modifier = evaluateExpression(staminaModifier.modifier, {
                 tier: Decimal(traits[trait])
