@@ -48,7 +48,7 @@ export default function CharacterCombatSummary(props) {
                     }
                     return combined;
                 }, {});
-                return <Grid item xs={1}>
+                return <Grid item xs={2}>
                     <Tooltip title={<div dangerouslySetInnerHTML={{__html: `<strong>${Statuses[statusInstance.status].name}</strong>: ${Statuses[statusInstance.status].description(modifiers)}`}}/>} >
                         <Grid container direction={props.direction}>
                             <Grid item xs>
