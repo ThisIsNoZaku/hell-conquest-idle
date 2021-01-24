@@ -43,7 +43,7 @@ export default function triggerEvent(event) {
                             .times(target.getStatusStacks(statusId))
                             .times(getCharacter(activeStatus.source.character).powerLevel);
                         target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
-                        event.roundEvents.push(generateDamageEvent(activeStatus, target, damageToDeal))
+                        event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal))
                     })
                     break;
             }
