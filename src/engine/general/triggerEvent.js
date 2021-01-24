@@ -32,7 +32,7 @@ export default function triggerEvent(event) {
         Object.keys(status.effects).forEach(effect => {
             switch (effect) {
                 case "inflict_damage_at_start_of_round":
-                    if(event.type !== "on_start_round") {
+                    if(event.type !== "on_round_begin") {
                         return;
                     }
                     const targets = selectConditionTargets(status.effects[effect].target, event.source.character, event.target, event.combatants);
