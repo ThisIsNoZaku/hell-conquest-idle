@@ -95,6 +95,7 @@ export class Character {
 
     get maximumHp() {
         const base = Decimal(getConfigurationValue("mechanics.combat.hp.baseHp"));
+
         const fromLevel = this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.pointsPerLevel"));
         const attributeMultiplier = this.attributes[getConfigurationValue("mechanics.combat.hp.baseAttribute")]
             .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
@@ -111,8 +112,7 @@ export class Character {
             return previousValue.plus(traitModifier || 0);
         }, Decimal(1));
 
-        return base.plus(fromLevel)
-            .plus(this.isPc ? getConfigurationValue("mechanics.combat.hp.pcBonus") : 0)
+        return base.plus(fromLevel).times(this.latentPowerModifier.plus(1))
             .times(attributeMultiplier)
             .times(traitMultiplier)
             .times(statusMultiplier)
@@ -139,6 +139,7 @@ export class Character {
         this.powerLevel = Decimal(1);
         this.combat.stamina = this.combat.maximumStamina;
         this.latentPower = this.latentPower.plus(this.powerLevel);
+        this.hp = this.maximumHp;
         this.reset();
     }
 
