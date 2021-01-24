@@ -18,7 +18,7 @@ export const TraitEffects = {
                     berserk: {
                         target: "self",
                         stacks: "tier",
-                        duration: 3
+                        duration: 1
                     }
                 }
             }
@@ -46,7 +46,7 @@ export const TraitEffects = {
                     crushed: {
                         target: "enemy",
                         stacks: "tier",
-                        duration: 3
+                        duration: 5
                     }
                 }
             }
@@ -69,7 +69,7 @@ export const TraitEffects = {
             trigger_effects: {
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.4)"
                 }
             }
         }
@@ -84,7 +84,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "fire",
-                    value: "tier.times(.05)"
+                    value: "tier.times(.2)"
                 }
             }
         }
@@ -109,7 +109,7 @@ export const TraitEffects = {
                     restrained: {
                         target: "enemy",
                         stacks: "tier",
-                        duration: 3
+                        duration: 5
                     }
                 }
             }
@@ -119,8 +119,8 @@ export const TraitEffects = {
         continuous: {
             trigger_effects: {
                 damage_modifier: {
-                    target: "self",
-                    value: "tier.times(.05).times(-1)"
+                    target: "all",
+                    value: "tier.times(.25).times(-1)"
                 }
             }
         }
@@ -130,7 +130,7 @@ export const TraitEffects = {
             trigger_effects: {
                 devastating_hit_damage_multiplier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.5)"
                 }
             }
         }
@@ -140,19 +140,19 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 },
                 resilience_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 },
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.05).times(-1)"
+                    modifier: "tier.times(.1).times(-1)"
                 },
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.05).times(-1)"
+                    modifier: "tier.times(.1).times(-1)"
                 }
             }
         }
@@ -172,7 +172,7 @@ export const TraitEffects = {
             trigger_effects: {
                 damage_resistance: {
                     target: "self",
-                    value: "tier.times(.1)",
+                    value: "tier.times(.2)",
                     type: "psychic"
                 }
             }
@@ -185,7 +185,7 @@ export const TraitEffects = {
                     painfulVenom: {
                         target: "enemy",
                         stacks: "tier",
-                        duration: 3
+                        duration: 5
                     }
                 }
             }
@@ -196,7 +196,7 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.33)"
                 }
             }
         }
@@ -206,7 +206,7 @@ export const TraitEffects = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 }
             }
         }
@@ -230,7 +230,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_stamina_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    modifier: "tier.times(.33)"
                 }
             }
         }
@@ -240,7 +240,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_health_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 }
             }
         }
@@ -260,7 +260,7 @@ export const TraitEffects = {
             trigger_effects: {
                 minimum_damage: {
                     target: "self",
-                    value: "self.combat.baseDamage.times(tier).times(.05)"
+                    value: "self.combat.baseDamage.times(tier).times(.1)"
                 }
             }
         }
@@ -270,15 +270,15 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.05).times(-1)"
+                    modifier: "tier.times(.1).times(-1)"
                 },
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 },
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.2)"
                 }
             }
         }
@@ -299,7 +299,7 @@ export const TraitEffects = {
             trigger_effects: {
                 resilience_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1)"
+                    modifier: "tier.times(.4)"
                 }
             }
         }

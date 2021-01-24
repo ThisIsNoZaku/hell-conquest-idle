@@ -26,7 +26,7 @@ const config = {
     stamina_consumed_per_round: 25,
     minimum_stamina: 400,
     bonus_stamina_per_level: 100,
-    trait_tier_up_levels: 10, // Traits upgrade when reaching a multiple of this level.
+    trait_tier_up_levels: 20, // Traits upgrade when reaching a multiple of this level.
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
