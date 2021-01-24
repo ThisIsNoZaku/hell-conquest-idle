@@ -110,10 +110,10 @@ export default function resolveCombatRound(tick, combatants) {
                     if (instance.duration === PERMANENT || instance.duration === FOR_COMBAT || instance.duration) {
                         return true;
                     }
+                    roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
                     return false;
                 })
                     .map(instance => {
-                        roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
                         instance.duration--;
                         return instance;
                     })
