@@ -25,7 +25,7 @@ export default function resolveCombatRound(tick, combatants) {
         triggerEvent(
             {
                 type: "on_round_begin",
-                source: {character:combatant},
+                source: {character: combatant},
                 combatants,
                 roundEvents
             }
@@ -62,7 +62,7 @@ export default function resolveCombatRound(tick, combatants) {
             target: actionTarget,
             combatants,
         });
-        if(!HitTypes[attackResult.hitType].preventHit) {
+        if (!HitTypes[attackResult.hitType].preventHit) {
             triggerEvent({
                 type: `on_taking_damage`,
                 roundEvents,
@@ -101,21 +101,25 @@ export default function resolveCombatRound(tick, combatants) {
                 type: "on_round_end",
                 combatants,
                 roundEvents,
-                source: {character:combatant}
+                source: {character: combatant}
             }
         );
         Object.keys(combatant.statuses).forEach(status => {
-            combatant.statuses[status] = _.get(combatant.statuses, [status], []).filter(instance => {
-                if(instance.duration === PERMANENT || instance.duration === FOR_COMBAT || instance.duration) {
-                    return true;
-                }
-                return false;
-            })
-                .map(instance => {
-                    roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
-                    instance.duration--;
-                    return instance;
-                });
+            if (combatant.statuses[status]) {
+                combatant.statuses[status] = combatant.statuses[status].filter(instance => {
+                    if (instance.duration === PERMANENT || instance.duration === FOR_COMBAT || instance.duration) {
+                        return true;
+                    }
+                    return false;
+                })
+                    .map(instance => {
+                        roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
+                        instance.duration--;
+                        return instance;
+                    })
+            } else {
+                delete combatant.statuses[status];
+            }
         })
     })
 
@@ -123,7 +127,7 @@ export default function resolveCombatRound(tick, combatants) {
         initiativeOrder: initiativeOrder.map(c => c.id),
         events: roundEvents,
         tick,
-        end: Object.values(combatants).some(c =>!c.isAlive)
+        end: Object.values(combatants).some(c => !c.isAlive)
     }
 }
 
