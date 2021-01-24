@@ -103,12 +103,13 @@ export const TraitEffects = {
         }
     },
     grappler: {
-        on_hit: {
+        on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
                     restrained: {
                         target: "enemy",
-                        stacks: "tier"
+                        stacks: "tier",
+                        duration: 3
                     }
                 }
             }
