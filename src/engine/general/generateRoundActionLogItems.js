@@ -31,8 +31,8 @@ function describeEvent(event) {
             return `<strong>${targetName} died!</strong>`
         case "attack":
             const base = event.hit ? `${sourceName} scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} missed!`;
-            const upgrade = Decimal(event.precisionUsed).gt(0) ? `${event.precisionUsed} Precision was used to upgrade the attack ${event.timesUpgraded} step${event.timesUpgraded !== 1 ? 's' : ''}. ` : null;
-            const downgrade = Decimal(event.evasionUsed).gt(0) ? `${event.evasionUsed} Evasion was used to downgrade the attack ${event.timesDowngraded} step${event.timesDowngraded !== 1 ? 's' : ''}. ` : null;
+            const upgrade = Decimal(event.precisionUsed).gt(0) ? `${event.precisionUsed} Energy was used to upgrade the attack ${event.timesUpgraded} step${event.timesUpgraded !== 1 ? 's' : ''}. ` : null;
+            const downgrade = Decimal(event.evasionUsed).gt(0) ? `${event.evasionUsed} Energy was used to downgrade the attack ${event.timesDowngraded} step${event.timesDowngraded !== 1 ? 's' : ''}. ` : null;
             return [base, upgrade, downgrade].filter(e => e !== null).join(" ");
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
