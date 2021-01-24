@@ -10,12 +10,14 @@ import * as _ from "lodash";
 
 const styles = {
     alive: {
+        overflowY: "scroll",
         width: "25%",
         backgroundColor: "#eeeeee"
     },
     dead: {
         width: "25%",
-        backgroundColor: "#b3827f"
+        backgroundColor: "#b3827f",
+        overflowY: "scroll",
     }
 }
 
