@@ -3,7 +3,7 @@ import {getCharacter, getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
-import {Statuses} from "./data/Statuses";
+import {PERMANENT, Statuses} from "./data/Statuses";
 import * as _ from "lodash";
 import {Traits} from "./data/Traits";
 import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
@@ -51,7 +51,7 @@ export class Character {
 
     clearStatuses() {
         Object.keys(this.statuses).forEach(status => {
-            this.statuses[status] = this.statuses[status].filter(instance => instance.duration === 999);
+            this.statuses[status] = this.statuses[status].filter(instance => instance.duration === PERMANENT);
             if(this.statuses[status].length === 0) {
                 delete this.statuses[status];
             }
@@ -59,10 +59,10 @@ export class Character {
     }
 
     getStatusStacks(status) {
-        const statusInstances = this.statuses[status];
-        return statusInstances.reduce((highestRank, nextInstance) => {
+        const statusInstances = this.statuses[status] || [];
+        return Decimal(statusInstances.reduce((highestRank, nextInstance) => {
             return Decimal.max(highestRank, nextInstance.stacks);
-        }, 0)
+        }, 0));
     }
 
     setHp(newHealth) {
