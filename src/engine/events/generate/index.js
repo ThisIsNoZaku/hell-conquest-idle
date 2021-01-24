@@ -66,6 +66,7 @@ export function generateFatigueDamageEvent(source, target, damage) {
 }
 
 export function generateDamageEvent(source, target, damageDone, parentUuid, effectUuid) {
+    effectUuid = effectUuid ? effectUuid : v4();
     return {
         event: "damage",
         uuid: effectUuid,
