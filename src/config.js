@@ -47,10 +47,6 @@ const config = {
             stolenPowerScale: 0.25,
             randomEncounterChance: "player.powerLevel.div(10).floor().times(10)",
             determineHit: "roll >= target ? 'hit' : 'miss'",
-            precision: { // Determines how precision rolls work
-                baseAttribute: "deceit",
-                effectPerPoint: .05
-            },
             attributeDifferenceMultipliers: {
                 "-10" : 0.001,
                 "-9" : 0.01,
@@ -79,9 +75,13 @@ const config = {
                 baseAttribute: "madness",
                 effectPerPoint: .05
             },
+            precision: {
+                baseAttribute: "deceit",
+                effectPerPoint: .1
+            },
             evasion: {
                 baseAttribute: "cunning",
-                effectPerPoint: .05
+                effectPerPoint: .1
             },
             power: {
                 baseAttribute: "brutality",
