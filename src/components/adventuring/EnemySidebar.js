@@ -36,6 +36,7 @@ export default function EnemySidebar(props) {
     return <Paper style={!props.enemy || props.enemy.isAlive ? styles.alive : styles.dead}>
         {props.enemy && <CharacterSheet
             appearance={_.get(props.enemy, "appearance")}
+            characterName={_.get(props.enemy, "name")}
             characterPowerLevel={_.get(props.enemy, "powerLevel", Decimal(1)).toFixed()}
             characterAbsorbedPower={_.get(props.enemy, "absorbedPower", Decimal(1)).toFixed()}
             characterAdjectives={_.get(props.enemy, "adjectives", [])}
