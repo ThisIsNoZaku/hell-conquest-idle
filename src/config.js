@@ -14,9 +14,12 @@ const config = {
     latent_power_gain_on_reincarnate:  "player.powerLevel.times(5)",
     latent_power_effect_scale: .01,
     trait_point_cost: "Decimal.max(1, traitsOwned.times(2))",
-    base_attack_upgrade_cost: 100,
-    base_attack_downgrade_cost: 100,
     minimum_attribute_score: 1,
+    // Combat
+    base_attack_upgrade_cost: 25,
+    base_attack_downgrade_cost: 25,
+    attack_upgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to upgrade your attacks
+    attack_downgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to downgrade enemy attacks
     damage_per_level: 5,
     flee_stamina_cost_base: 25,
     flee_stamina_minimum_cost: 1,
