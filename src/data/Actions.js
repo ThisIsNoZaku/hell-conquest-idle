@@ -204,12 +204,13 @@ export const Actions = {
         duration: 1000,
         description: "Recovering...",
         complete: function (rng, player, pushLogItem) {
+            player.refreshBeforeCombat();
             const playerHealing = player.healing;
 
             const amountToHeal = Decimal.min(playerHealing, player.maximumHp.minus(player.hp));
             player.hp = player.hp.plus(amountToHeal);
 
-            const staminaToRecover = Decimal.min(player.combat.maximumStamina.div(2).ceil(),
+            const staminaToRecover = Decimal.min(player.combat.maximumStamina.times(getConfigurationValue("recover_action_stamina_percentage")).ceil(),
                 player.combat.maximumStamina.minus(player.combat.stamina));
             player.combat.stamina = player.combat.stamina.plus(staminaToRecover);
             if (staminaToRecover.gt(0) || amountToHeal.gt(0)) {
