@@ -40,29 +40,29 @@ export default function resolveCombatRound(tick, combatants) {
         const actionTarget = possibleTargets[0];
         const attackResult = resolveAttack(tick, actingCharacter, actionTarget);
         roundEvents = roundEvents.concat(attackResult.effects);
-        triggerEvent({
-            type: "on_hit",
-            roundEvents,
-            source: {
-                character: actingCharacter,
-                attack: attackResult.effects.find(ev => ev.event === "attack"),
-                damage: attackResult.effects.find(ev => ev.event === "damage"),
-            },
-            target: actionTarget,
-            combatants,
-        });
-        triggerEvent({
-            type: `on_${HitTypes[attackResult.hitType].summary}_hit`,
-            roundEvents,
-            source: {
-                character: actingCharacter,
-                attack: attackResult.effects.find(ev => ev.event === "attack"),
-                damage: attackResult.effects.find(ev => ev.event === "damage"),
-            },
-            target: actionTarget,
-            combatants,
-        });
         if (!HitTypes[attackResult.hitType].preventHit) {
+            triggerEvent({
+                type: "on_hit",
+                roundEvents,
+                source: {
+                    character: actingCharacter,
+                    attack: attackResult.effects.find(ev => ev.event === "attack"),
+                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                },
+                target: actionTarget,
+                combatants,
+            });
+            triggerEvent({
+                type: `on_${HitTypes[attackResult.hitType].summary}_hit`,
+                roundEvents,
+                source: {
+                    character: actingCharacter,
+                    attack: attackResult.effects.find(ev => ev.event === "attack"),
+                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                },
+                target: actionTarget,
+                combatants,
+            });
             triggerEvent({
                 type: `on_taking_damage`,
                 roundEvents,
