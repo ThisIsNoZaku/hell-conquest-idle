@@ -124,7 +124,7 @@ export function generateCreature(id, powerLevel, rng) {
         return traits;
     }, {});
     const alreadySelected = [id];
-    for(let i = 0; i < numberOfBonusTraits; i++) {
+    for (let i = 0; i < numberOfBonusTraits; i++) {
         const options = Object.keys(Creatures).filter(x => !alreadySelected.includes(x));
         const index = Math.floor(rng.double() * options.length);
         const selectedCreature = Creatures[options[index]];
@@ -152,9 +152,9 @@ export function generateCreature(id, powerLevel, rng) {
         highestLevelEnemyDefeated: Decimal(powerLevel),
         attributes: {
             baseBrutality: bonuses.attributes.brutality,
-            baseCunning:bonuses.attributes.cunning,
-            baseDeceit:bonuses.attributes.deceit,
-            baseMadness:bonuses.attributes.madness
+            baseCunning: bonuses.attributes.cunning,
+            baseDeceit: bonuses.attributes.deceit,
+            baseMadness: bonuses.attributes.madness
         }
     }, 1);
     saveGlobalState();
@@ -223,7 +223,7 @@ export function clearGlobalState() {
 }
 
 export function triangleNumber(number) {
-    return (number * (number + 1))/2;
+    return (number * (number + 1)) / 2;
 }
 
 export function inverseTriangleNumber(number) {
