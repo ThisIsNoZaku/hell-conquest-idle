@@ -7,6 +7,8 @@ import calculateDamageBy from "./calculateDamageBy";
 import {debugMessage} from "../../debugging";
 import calculateAttackUpgradeCost from "./calculateAttackUpgradeCost";
 import calculateAttackDowngradeCost from "./calculateAttackDowngradeCost";
+import attackerWillUpgrade from "./attackerWillUpgrade";
+import defenderWillDowngrade from "./defenderWillDowngrade";
 
 export default function resolveAttack(tick, attacker, target) {
     if (typeof tick !== "number") {
@@ -20,28 +22,21 @@ export default function resolveAttack(tick, attacker, target) {
     let spentEvasion = Decimal(0);
     // Can the attacker upgrade their attack?
     let timesUpgraded = 0;
-    let attackerStaminaPercentage = attacker.combat.stamina.div(attacker.combat.maximumStamina);
-    const attackUpgradeCost = calculateAttackUpgradeCost(attacker, target);
-    const maxHitLevel = HitTypes.max;
-    while (Decimal(attacker.combat.stamina).gte(Decimal(attackUpgradeCost).times(1 + timesUpgraded))
-        && hitLevel != maxHitLevel
-        && timesUpgraded === 0 &&
-        attackerStaminaPercentage.gt(Tactics[attacker.tactics].strategy.attack_floor)
-        ) {
-        spentPrecision = spentPrecision.plus(attackUpgradeCost.times(1 + timesUpgraded));
 
-        hitLevel++;timesUpgraded++;
+    const attackUpgradeCost = calculateAttackUpgradeCost(attacker, target);
+    while (attackerWillUpgrade(attacker, target, Decimal(attackUpgradeCost), hitLevel, timesUpgraded)) {
+        spentPrecision = spentPrecision.plus(attackUpgradeCost.times(1 + timesUpgraded));
+        hitLevel++;
+        timesUpgraded++;
     }
     attacker.combat.stamina = Decimal(attacker.combat.stamina).minus(spentPrecision);
 
     let timesDowngraded = 0;
-    const minHitLevel = HitTypes.min;
     const attackDowngradeCost = calculateAttackDowngradeCost(target, attacker);
 
-    while (Decimal(target.combat.stamina).gte(attackDowngradeCost.times(1 + timesDowngraded).plus(spentEvasion)) &&
-    hitLevel != minHitLevel && timesDowngraded === 0) {
+    while (defenderWillDowngrade(attacker, target, Decimal(attackDowngradeCost), hitLevel, timesDowngraded)) {
         spentEvasion = spentEvasion.plus(attackDowngradeCost.times(1 + timesDowngraded));
-        if (Tactics[target.tactics].modifiers.always_downgrade_to_glancing) {
+        if (Tactics[target.tactics].modifiers.downgrade_devastating_to_miss && HitTypes.max === hitLevel) {
             timesDowngraded = hitLevel + 1;
             hitLevel = -1;
         } else {
