@@ -240,7 +240,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_health_modifier: {
                     target: "self",
-                    value: .2
+                    value: .5
                 }
             }
         }
