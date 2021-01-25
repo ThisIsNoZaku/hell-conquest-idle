@@ -25,25 +25,25 @@ export default function resolveAttack(tick, attacker, target) {
 
     const attackUpgradeCost = calculateAttackUpgradeCost(attacker, target);
     while (attackerWillUpgrade(attacker, target, Decimal(attackUpgradeCost), hitLevel, timesUpgraded)) {
-        spentPrecision = spentPrecision.plus(attackUpgradeCost.times(1 + timesUpgraded));
         hitLevel++;
         timesUpgraded++;
     }
+    spentPrecision = attackUpgradeCost.times(timesUpgraded);
     attacker.combat.stamina = Decimal(attacker.combat.stamina).minus(spentPrecision);
 
     let timesDowngraded = 0;
     const attackDowngradeCost = calculateAttackDowngradeCost(target, attacker);
 
     while (defenderWillDowngrade(attacker, target, Decimal(attackDowngradeCost), hitLevel, timesDowngraded)) {
-        spentEvasion = spentEvasion.plus(attackDowngradeCost.times(1 + timesDowngraded));
         if (Tactics[target.tactics].modifiers.downgrade_devastating_to_miss && HitTypes.max === hitLevel) {
-            timesDowngraded = hitLevel + 1;
+            timesDowngraded = 1;
             hitLevel = -1;
         } else {
             hitLevel--;
             timesDowngraded++;
         }
     }
+    spentEvasion = attackDowngradeCost.times(timesDowngraded);
     target.combat.stamina = Decimal(target.combat.stamina).minus(spentEvasion);
 
     const damageToDeal = calculatedDamage[hitLevel].floor();
