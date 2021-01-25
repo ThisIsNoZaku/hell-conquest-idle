@@ -9,13 +9,9 @@ import {MemoizedCharacterAttributes as CharacterAttributes} from "./charactershe
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
 import TacticsSection from "./charactersheet/TacticsSection";
-import calculateDamageBy from "../../engine/combat/calculateDamageBy";
 import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
-import getPowerNeededForLevel from "../../engine/general/getPowerNeededForLevel";
 import {Help} from "@material-ui/icons";
-import calculateAttackDowngradeCost from "../../engine/combat/calculateAttackDowngradeCost";
-import calculateAttackUpgradeCost from "../../engine/combat/calculateAttackUpgradeCost";
 
 export function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.appearance), [props.appearance]);
