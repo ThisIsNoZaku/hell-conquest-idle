@@ -3,6 +3,9 @@ import {Traits} from "../../data/Traits";
 import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import {Statuses} from "../../data/Statuses";
+import {getConfigurationValue} from "../../config";
+
+const minimumCost = getConfigurationValue("minimum_attack_upgrade_cost");
 
 export default function calculateAttackUpgradeCost(character, enemy) {
     const baseCost = _.get(character, ["combat","attackUpgradeCost"], Decimal(100)); // Inner calculation already includes its own traits/statuses.
@@ -20,9 +23,9 @@ export default function calculateAttackUpgradeCost(character, enemy) {
         }) : 0;
         return previousValue.plus(effectModifier);
     }, Decimal(1));
-    return baseCost
+    return Decimal.max(1, baseCost
         .times(targetTraitMultiplier)
         .times(targetStatusMultiplier)
-        .floor();
+        .floor());
 
 }
