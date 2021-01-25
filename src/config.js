@@ -16,8 +16,8 @@ const config = {
     trait_point_cost: "Decimal.max(1, traitsOwned.times(2))",
     minimum_attribute_score: 1,
     // Combat
-    base_attack_upgrade_cost: 25,
-    base_attack_downgrade_cost: 25,
+    base_attack_upgrade_cost: 0,
+    base_attack_downgrade_cost: 0,
     attack_upgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to upgrade your attacks
     attack_downgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to downgrade enemy attacks
     damage_per_level: 5,
@@ -33,6 +33,8 @@ const config = {
     trait_tier_up_levels: 20, // Traits upgrade when reaching a multiple of this level.,
     minimum_attack_upgrade_cost: 10,
     minimum_attack_downgrade_cost: 10,
+    maximum_upgrade_times: 2,
+    maximum_downgrade_times: 1,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -47,7 +49,7 @@ const config = {
         powerNeededForLevel: "level.eq(1) ? 0 : Decimal(level.minus(1)).pow(2).times(100)",
         maxLevel: 25,
         combat: {
-            startingHitLevel: 0,
+            startingHitLevel: -1,
             fatigueDamageMultiplier: 0.25,
             attackUpgradeBaseCost: 100,
             incomingAttackDowngradeBaseCost: 100,
@@ -104,8 +106,8 @@ const config = {
             },
             hp: {
                 pcBonus: 25,
-                baseHp: 15,
-                pointsPerLevel: 15,
+                baseHp: 0,
+                pointsPerLevel: 20,
                 healingPercentage: .5,
                 baseAttribute: "brutality",
                 effectPerPoint: .1
