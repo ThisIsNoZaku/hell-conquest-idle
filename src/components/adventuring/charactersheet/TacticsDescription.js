@@ -55,12 +55,6 @@ export default function (props) {
                     +{Tactics[props.tactic].modifiers.health_modifier * 100}% to Health
                 </li>
             </Tooltip>}
-            {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier &&
-            <Tooltip title="The demon's attacks are easier to upgrade in severity">
-                <li style={{color: "green", textAlign: "left"}}>
-                    Multiplies cost to upgrade attacks by {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier * 100}%.
-                </li>
-            </Tooltip>}
             {Tactics[props.tactic].modifiers.downgrade_devastating_to_miss &&
             <Tooltip title="This Demon has a special effect when it downgrades an attack.">
                 <li style={{textAlign: "left"}}>
@@ -91,7 +85,7 @@ export default function (props) {
             </li>}
             {Tactics[props.tactic].strategy.attack === "advantage" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to upgrade attacks when enemy has less Energy.
+                Spend Energy to upgrade attacks if you will still have more than the Enemy.
             </li>}
             {Tactics[props.tactic].strategy.defend === "always" &&
             <li style={{color: "green", textAlign: "left"}}>
@@ -99,11 +93,11 @@ export default function (props) {
             </li>}
             {Tactics[props.tactic].strategy.defend === "advantage" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to downgrade incoming attacks when enemy has less Energy.
+                Spend Energy to downgrade incoming attacks if you will still have more than the Enemy.
             </li>}
             {Tactics[props.tactic].strategy.defend === "upgraded" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to downgrade incoming attacks after the enemy has upgraded their attack.
+                Spend Energy to downgrade incoming attacks if the Enemy upgraded their attack.
             </li>}
         </ul>
     </Grid>
