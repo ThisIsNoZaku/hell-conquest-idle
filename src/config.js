@@ -27,7 +27,9 @@ const config = {
     minimum_stamina: 400,
     bonus_stamina_per_level: 100,
     intimidation_cost_attribute: "cunning",
-    trait_tier_up_levels: 20, // Traits upgrade when reaching a multiple of this level.
+    trait_tier_up_levels: 20, // Traits upgrade when reaching a multiple of this level.,
+    minimum_attack_upgrade_cost: 10,
+    minimum_attack_downgrade_cost: 10,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
