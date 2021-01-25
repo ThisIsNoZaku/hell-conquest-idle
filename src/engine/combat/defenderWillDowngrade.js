@@ -8,7 +8,6 @@ export default function defenderWillDowngrade(attacker, defender, downgradeCost,
     const defenderWantsTo = Tactics[defender.tactics].strategy.defend === "always" ||
         (Tactics[defender.tactics].strategy.defend === "upgraded" && hitIsCurrentlyMaxLevel) ||
         (Tactics[defender.tactics].strategy.defend === "advantage" && defenderHasMoreStamina);
-    return downgradeCost.lte(defender.combat.stamina) && currentHitLevel !== HitTypes.min && defenderWantsTo &&
+    return downgradeCost.times(1 + timesDowngraded).lte(defender.combat.stamina) && currentHitLevel !== HitTypes.min && defenderWantsTo &&
         timesDowngraded < getConfigurationValue("maximum_downgrade_times");
-        ;
 }
