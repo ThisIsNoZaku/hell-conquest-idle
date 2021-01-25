@@ -63,6 +63,7 @@ export function CharacterSheet(props) {
             />
         </Grid>
         <CharacterCombatStatistics
+            characterPowerLevel={props.characterPowerLevel}
             characterStamina={props.characterStamina}
             calculatedDamage={props.calculatedDamage}
             characterPower={props.characterPower}

@@ -3,7 +3,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import {Help} from "@material-ui/icons";
 import React, {useMemo} from "react";
 import {Decimal} from "decimal.js";
-import {config} from "../../../config";
+import {config, getConfigurationValue} from "../../../config";
 import {HitTypes} from "../../../data/HitTypes";
 import calculateDamageBy from "../../../engine/combat/calculateDamageBy";
 import calculateAttributeDifferentMultiplier from "../../../engine/combat/calculateAttributeDifferentMultiplier";
@@ -237,10 +237,14 @@ export default function CharacterCombatStatistics(props) {
             {[-1, -0, 1].map(type => {
                 return <Grid item container xs={12}>
                     <Grid item xs><em>{HitTypes[type].type}</em></Grid>
-                    <Grid item xs><em>{props.calculatedDamage[type].toFixed()}</em></Grid>
+                    <Grid item xs><em style={{color: props.calculatedDamage[type].lt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level"))) ? "red" : (
+                            props.calculatedDamage[type].gt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level"))) ? "lightgreen" : "inherit"
+                        ) }}>
+                        {props.calculatedDamage[type].toFixed()}
+                    </em></Grid>
                     <Grid item xs={1}>
                         <Tooltip
-                            title={`${HitTypes[type].type} deals ${HitTypes[type].damageMultiplier * 100}% of base damage.`}>
+                            title={`${HitTypes[type].type} normally deals ${HitTypes[type].damageMultiplier * 100}% of Solid hit damage.`}>
                             <Help/>
                         </Tooltip>
                     </Grid>
