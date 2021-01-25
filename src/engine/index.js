@@ -120,7 +120,7 @@ export function generateCreature(id, powerLevel, rng) {
     // Bonus traits
     const numberOfBonusTraits = powerLevel.div(20).floor();
     const startingTraits = Creatures[id].traits.reduce((traits, next) => {
-        traits[next] = powerLevel.div(10).ceil();
+        traits[next] = powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
         return traits;
     }, {});
     const alreadySelected = [id];
