@@ -6,7 +6,12 @@ import {HitTypes} from "../../data/HitTypes";
 import calculateDamageFromFatigue from "./calculateDamageFromFatigue";
 import {Character} from "../../character";
 import {getConfigurationValue} from "../../config";
-import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../events/generate";
+import {
+    generateFatigueDamageEvent,
+    generateKillEvent,
+    generateRemoveStatusEvent,
+    generateStaminaChangeEvent
+} from "../events/generate";
 import {getCharacter} from "../index";
 import {FOR_COMBAT, PERMANENT} from "../../data/Statuses";
 import * as _ from "lodash";
@@ -82,16 +87,20 @@ export default function resolveCombatRound(tick, combatants) {
             }
         });
 
-        if (actingCharacter.combat.stamina.lte(0) && actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill")) {
-            const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
-            actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
-            roundEvents.push(generateFatigueDamageEvent(actingCharacter, actingCharacter, damageToInflictDueToFatigue));
-            if (!actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill")) {
-                roundEvents.push(generateKillEvent(actingCharacter.id !== 0 ? getCharacter(0) : actingCharacter, actingCharacter));
+        if (actingCharacter.isAlive) {
+            actingCharacter.combat.fatigue = Decimal(actingCharacter.combat.fatigue).plus(1);
+            // Recover stamina
+            if (actingCharacter.combat.maximumStamina.eq(0)) {
+                const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
+                actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
+                roundEvents.push(generateFatigueDamageEvent(actingCharacter, actingCharacter, damageToInflictDueToFatigue));
+                if (!actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill")) {
+                    roundEvents.push(generateKillEvent(actingCharacter.id !== 0 ? getCharacter(0) : actingCharacter, actingCharacter));
+                }
+            } else {
+                actingCharacter.combat.stamina = Decimal.min(actingCharacter.combat.stamina.plus(actingCharacter.combat.staminaRecovery), actingCharacter.combat.maximumStamina);
+                roundEvents.push(generateStaminaChangeEvent(actingCharacter, actingCharacter, actingCharacter.combat.staminaRecovery));
             }
-        } else {
-            const perRoundStamina = getConfigurationValue("stamina_consumed_per_round");
-            actingCharacter.combat.stamina = Decimal.max(actingCharacter.combat.stamina.minus(perRoundStamina), 0);
         }
     });
 
@@ -118,7 +127,7 @@ export default function resolveCombatRound(tick, combatants) {
                         return instance;
                     })
             }
-            if(combatant.statuses[status] && combatant.statuses[status].length === 0) {
+            if (combatant.statuses[status] && combatant.statuses[status].length === 0) {
                 delete combatant.statuses[status];
             }
         })
