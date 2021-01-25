@@ -78,6 +78,7 @@ export function generateDamageEvent(source, target, damageDone, parentUuid, effe
 }
 
 export function generateStaminaChangeEvent(source, target, value, parent, uuid) {
+    uuid = uuid || v4();
     return {
         event: "stamina-change",
         uuid,
