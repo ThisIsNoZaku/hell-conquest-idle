@@ -43,6 +43,12 @@ export default function (props) {
                     +{Tactics[props.tactic].modifiers.devastating_hit_damage_multiplier * 100}% to {HitTypes[HitTypes.max].type} hit damage
                 </li>
             </Tooltip>}
+            {Tactics[props.tactic].modifiers.solid_hit_received_damage_multiplier &&
+            <Tooltip title="Solid hits are a standard hit.">
+                <li style={{color: "green", textAlign: "left"}}>
+                    {Tactics[props.tactic].modifiers.solid_hit_received_damage_multiplier * 100}% to damage from {HitTypes[0].type} hits
+                </li>
+            </Tooltip>}
             {Tactics[props.tactic].modifiers.health_modifier &&
             <Tooltip title="The demon is harder to kill">
                 <li style={{color: "green", textAlign: "left"}}>
@@ -56,15 +62,27 @@ export default function (props) {
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.downgrade_devastating_to_miss &&
-            <Tooltip title="When the demon downgrades.">
+            <Tooltip title="This Demon has a special effect when it downgrades an attack.">
                 <li style={{textAlign: "left"}}>
                     <span style={{color: "green"}}>Downgrades Devastating hits to Misses,</span><span style={{color: "red"}}> but does not downgrade Solid hits</span>.
                 </li>
             </Tooltip>}
+            {Tactics[props.tactic].modifiers.upgrade_to_devastating &&
+            <Tooltip title="This demon has a special effect when it upgrades an attack.">
+                <li style={{textAlign: "left"}}>
+                    <span style={{color: "green"}}>Upgrading an attack</span>.
+                </li>
+            </Tooltip>}
             {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier &&
             <Tooltip title="The demon uses a different amount of points to reduce the severity of incoming attacks.">
-                <li style={{color: Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier > 1 ? "red" : "green", textAlign: "left"}}>
-                    Multiplies cost to downgrade incoming attacks by {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier * 100}%.
+                <li style={{color: Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier > 0 ? "red" : "green", textAlign: "left"}}>
+                    Multiplies cost to downgrade incoming attacks by {(1 + Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier) * 100}%.
+                </li>
+            </Tooltip>}
+            {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier &&
+            <Tooltip title="The demon uses a different amount of points to increase the severity of their attacks.">
+                <li style={{color: Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier > 0 ? "red" : "green", textAlign: "left"}}>
+                    Multiplies cost to upgrade attacks by {(1 + Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier) * 100}%.
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].strategy.attack === "always" &&
