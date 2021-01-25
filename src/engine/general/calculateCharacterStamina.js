@@ -4,7 +4,7 @@ import {Decimal} from "decimal.js";
 import {Traits} from "../../data/Traits";
 import evaluateExpression from "./evaluateExpression";
 
-export default _.memoize(function (powerLevel, traits) {
+export default function (powerLevel, fatigue, traits) {
     const minimumStamina = Decimal(getConfigurationValue("minimum_stamina"));
     const traitMultiplier = Object.keys(traits).reduce((total, trait) => {
         const staminaModifier = _.get(Traits, [trait, "continuous", "trigger_effects", "maximum_stamina_modifier"]);
@@ -16,7 +16,9 @@ export default _.memoize(function (powerLevel, traits) {
         }
         return total;
     }, Decimal(1));
-    return minimumStamina.plus(Decimal(powerLevel).times(100)) // FIXME: Configure energy per level.
+    const fatigueModifier = Decimal(1).minus(Decimal(fatigue).times(getConfigurationValue("fatigue_penalty_per_point")));
+    return Decimal.max(0, minimumStamina.plus(Decimal(powerLevel).times(100)) // FIXME: Configure energy per level.
         .times(traitMultiplier)
-        .floor();
-});
+        .times(fatigueModifier)
+        .floor());
+};
