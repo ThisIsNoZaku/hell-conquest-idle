@@ -55,10 +55,10 @@ export default function (props) {
                     Multiplies cost to upgrade attacks by {Tactics[props.tactic].modifiers.attack_upgrade_cost_multiplier * 100}%.
                 </li>
             </Tooltip>}
-            {Tactics[props.tactic].modifiers.always_downgrade_to_glancing &&
-            <Tooltip title="When the demon downgrades both Critical and Solid hits to reduced to Glancing.">
-                <li style={{color: "green", textAlign: "left"}}>
-                    Downgrades both Devastating and Solid hits to Misses.
+            {Tactics[props.tactic].modifiers.downgrade_devastating_to_miss &&
+            <Tooltip title="When the demon downgrades.">
+                <li style={{textAlign: "left"}}>
+                    <span style={{color: "green"}}>Downgrades Devastating hits to Misses,</span><span style={{color: "red"}}> but does not downgrade Solid hits</span>.
                 </li>
             </Tooltip>}
             {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier &&
@@ -67,6 +67,26 @@ export default function (props) {
                     Multiplies cost to downgrade incoming attacks by {Tactics[props.tactic].modifiers.attack_downgrade_cost_multiplier * 100}%.
                 </li>
             </Tooltip>}
+            {Tactics[props.tactic].strategy.attack === "always" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Always try to spend Energy to upgrade attacks.
+            </li>}
+            {Tactics[props.tactic].strategy.attack === "advantage" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Spend Energy to upgrade attacks when enemy has less Energy.
+            </li>}
+            {Tactics[props.tactic].strategy.defend === "always" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Always try to spend Energy to downgrade incoming attacks.
+            </li>}
+            {Tactics[props.tactic].strategy.defend === "advantage" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Spend Energy to downgrade incoming attacks when enemy has less Energy.
+            </li>}
+            {Tactics[props.tactic].strategy.defend === "upgraded" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Spend Energy to downgrade incoming attacks after the enemy has upgraded their attack.
+            </li>}
         </ul>
     </Grid>
 }
