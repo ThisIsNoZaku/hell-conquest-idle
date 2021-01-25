@@ -126,7 +126,7 @@ export function generateCreature(id, powerLevel, rng) {
     const alreadySelected = [id];
     for(let i = 0; i < numberOfBonusTraits; i++) {
         const options = Object.keys(Creatures).filter(x => !alreadySelected.includes(x));
-        const index = rng.double() * options.length;
+        const index = Math.floor(rng.double() * options.length);
         const selectedCreature = Creatures[options[index]];
         selectedCreature.traits.forEach(trait => {
             startingTraits[trait] = powerLevel.div(10).minus(1).ceil();
