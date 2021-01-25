@@ -112,21 +112,19 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     ));
                 });
                 break;
-            case "gain_stamina": {
+            case "change_stamina": {
                 const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
                 targets.forEach(target => {
-                    const staminaChange = evaluateExpression(effectDefinition.value, {
-                        tier: Decimal(event.source.character.traits[traitId]),
-                        player: event.source.character
-                    }).floor();
+                    const staminaChange = event.source.character.combat.maximumStamina.times(effectDefinition.value).floor();
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);
-                    const newDamageEffectUuid = v4();
+                    const newEffectUuid = v4();
+                    event.source.attack.children.push(newEffectUuid);
                     event.roundEvents.push(generateStaminaChangeEvent(
                         event.source.character,
                         target,
                         staminaChange,
                         event.source.attack.uuid,
-                        newDamageEffectUuid
+                        newEffectUuid
                     ));
                 });
             }
