@@ -22,30 +22,33 @@ export default function calculateDamageBy(attacker) {
             Decimal.set({rounding: Decimal.ROUND_DOWN});
             const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
             const enemyReceivedDamageMultiplier = _.get(target, "combat.receivedDamageMultiplier", Decimal(1)).minus(1);
-            const damageModifier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
+            const attributeDamageMultiplier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
                 .plus(enemyReceivedDamageMultiplier);
-            debugMessage(`Final damage multiplier = ${damageModifier}.`);
+            debugMessage(`Final damage multiplier = ${attributeDamageMultiplier}.`);
             const attackerPowerLevel = Decimal(_.get(attacker, "powerLevel", 0));
             return Object.keys(HitTypes).reduce((damage, nextType) => {
                 const perLevelDamage = getConfigurationValue("damage_per_level");
                 const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
                 const traitDamageMultiplier = Object.keys(_.get(attacker, "traits", {})).reduce((previousValue, currentValue) => {
-                    const traitDamageMultiplier = evaluateExpression(_.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`, "modifier"], 0), {
+                    const traitDamageMultiplier = evaluateExpression(_.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`, "value"], 0), {
                         tier: Decimal(attacker.traits[currentValue])
                     });
                     return previousValue.plus(traitDamageMultiplier)
-                }, Decimal(1));
-                const tacticsMultiplier = Decimal(1).plus(_.get(Tactics, [_.get(attacker, "tactics"), "modifiers", `${HitTypes[nextType].summary}_hit_damage_multiplier`], 0));
-                damage[nextType] = attackerPowerLevel.times(perLevelDamage)
-                    .times(damageModifier)
+                }, Decimal(0));
+                const attackerTacticsMultiplier = Decimal(0).plus(_.get(Tactics, [_.get(attacker, "tactics"), "modifiers", `${HitTypes[nextType].summary}_hit_damage_multiplier`], 0));
+                const defenderTacticsMultiplier = Decimal(0).plus(_.get(Tactics, [_.get(target, "tactics"), "modifiers", `${HitTypes[nextType].summary}_hit_received_damage_multiplier`], 0));
+                const totalMultiplier = Decimal(attributeDamageMultiplier)
+                    .plus(traitDamageMultiplier)
+                    .plus(attackerTacticsMultiplier)
+                    .plus(defenderTacticsMultiplier)
+                damage[nextType] = Decimal.max(0, attackerPowerLevel.times(perLevelDamage)
                     .times(hitTypeDamageMultiplier)
-                    .times(tacticsMultiplier)
-                    .times(traitDamageMultiplier)
+                    .times(totalMultiplier))
                     .floor();
                 return damage;
             }, {
                 base: Decimal(_.get(attacker, ["combat", "medianDamage"], 0)),
-                multiplier: damageModifier
+                multiplier: attributeDamageMultiplier
             })
         }
     }
