@@ -4,17 +4,14 @@ export const effectTarget = JOI.valid("self", "enemy");
 
 const effectModifier = JOI.object({
     target: effectTarget,
-    modifier: [JOI.number(), JOI.string()]
+    value: [JOI.number(), JOI.string()]
 });
 
 export const modifierEffects = JOI.object({
     steal_item: JOI.object({
         target: effectTarget
     }),
-    reflect_damage: JOI.object({
-        target: effectTarget,
-        value: [JOI.string(), JOI.number()]
-    }),
+    reflect_damage: effectModifier,
     damage_modifier: effectModifier,
     devastating_hit_damage_multiplier: effectModifier,
     power_modifier: effectModifier,
@@ -31,8 +28,5 @@ export const modifierEffects = JOI.object({
         type: JOI.string(),
         value: [JOI.string(), JOI.number()]
     },
-    inflict_damage_at_start_of_round: JOI.object({
-        target: effectTarget,
-        value: [JOI.string(), JOI.number()]
-    })
+    inflict_damage_at_start_of_round: effectModifier
 });

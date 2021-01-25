@@ -101,12 +101,12 @@ export class Character {
             .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
-            return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.modifier, {
+            return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.value, {
                 tier: this.traits[currentValue]
             }) : 0);
         }, Decimal(1));
         const statusMultiplier = Object.keys(this.statuses).reduce((previousValue, currentValue) => {
-            const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "modifier"], 0), {
+            const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "value"], 0), {
                 tiers: this.getStatusStacks(currentValue)
             });
             return previousValue.plus(traitModifier || 0);
@@ -252,7 +252,7 @@ class CombatStats {
 
     get receivedDamageMultiplier() {
         return Object.keys(this.character.statuses).reduce((previousValue, currentValue) => {
-            const statusModifier = _.get(Statuses[currentValue], ["effects", "damage_modifier", "target"]) === "self" ? Statuses[currentValue].effects.damage_modifier.modifier : 0;
+            const statusModifier = _.get(Statuses[currentValue], ["effects", "damage_modifier", "target"]) === "self" ? Statuses[currentValue].effects.damage_modifier.value : 0;
             const statusRank = this.character.getStatusStacks(currentValue);
             const modifier = Decimal.max(0, Decimal(statusModifier).pow(statusRank).minus(1));
             return previousValue.plus(modifier || 0);
@@ -280,25 +280,23 @@ class CombatStats {
     }
 
     get attackUpgradeCostMultiplier() {
-        const base = Decimal(getConfigurationValue("base_attack_upgrade_cost"));
         const tacticsCostMultiplier = Decimal(Tactics[this.character.tactics].modifiers.attack_upgrade_cost_multiplier || 0);
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
         }, Decimal(0));
         const effectScale = Decimal(getConfigurationValue("mechanics.combat.precision.effectPerPoint"));
-        const attributeMultiplier = Decimal(1).minus(effectScale.pow(this.precision));
+        const attributeMultiplier = effectScale.times(this.precision).times(-1);
         return tacticsCostMultiplier.plus(statusesCostMultiplier)
             .plus(attributeMultiplier);
     }
 
     get incomingAttackDowngradeCostMultiplier() {
-        const base = Decimal(getConfigurationValue("base_attack_downgrade_cost"));
         const tacticsCostMultiplier = Decimal(Tactics[this.character.tactics].modifiers.attack_downgrade_cost_multiplier || 0);
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
         }, Decimal(0));
         const effectScale = Decimal(getConfigurationValue("mechanics.combat.evasion.effectPerPoint"));
-        const attributeMultiplier = Decimal(1).minus(effectScale.pow(this.evasion));
+        const attributeMultiplier = effectScale.times(this.evasion).times(-1);
         return tacticsCostMultiplier.plus(statusesCostMultiplier)
             .plus(attributeMultiplier);
     }
@@ -309,12 +307,12 @@ export function calculateCombatStat(character, combatAttribute) {
     const tacticsModifier = Decimal(0).plus(Tactics[character.tactics].modifiers[`${combatAttribute}_modifier`] || 0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];
-        return currentValue.plus(_.get(statusDefinition, ["effects", `${combatAttribute}_modifier`, "modifier"], 0));
+        return currentValue.plus(_.get(statusDefinition, ["effects", `${combatAttribute}_modifier`, "value"], 0));
     }, Decimal(0));
     const traitModifier = Object.keys(character.traits).reduce((previousValue, trait) => {
         const traitDefinition = Traits[trait];
         if (_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "target"]) === "self") {
-            return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "modifier"]), {
+            return previousValue.plus(evaluateExpression(_.get(traitDefinition, ["continuous", "trigger_effects", `${combatAttribute}_modifier`, "value"]), {
                 tier: Decimal(character.traits[trait])
             }));
         }

@@ -39,8 +39,8 @@ export default function CharacterCombatSummary(props) {
                 const numStacks = statusInstance.stacks;
                 const statusDef = Statuses[statusInstance.status];
                 const modifiers = Object.keys(statusDef.effects).reduce((combined, next) => {
-                    if(statusDef.effects[next].modifier) {
-                        const modifier = Decimal(statusDef.effects[next].modifier).times(numStacks);
+                    if(statusDef.effects[next].value) {
+                        const modifier = Decimal(statusDef.effects[next].value).times(numStacks);
                         combined[next] = Decimal.abs(modifier);
                     } else {
                         const value = Decimal(statusDef.effects[next].value).times(numStacks);
