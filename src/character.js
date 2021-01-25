@@ -136,11 +136,12 @@ export class Character {
         });
         this.statuses = {};
         this.absorbedPower = Decimal(0);
-        this.powerLevel = Decimal(1);
-        this.combat.stamina = this.combat.maximumStamina;
+        this.powerLevel = Decimal(0);
         this.latentPower = this.latentPower.plus(this.powerLevel);
         this.hp = this.maximumHp;
+        this.levelUp();
         this.reset();
+        this.combat.stamina = this.combat.maximumStamina;
     }
 
     reset() {
@@ -183,6 +184,7 @@ export class Character {
 
     refreshBeforeCombat() {
         this.clearStatuses();
+        this.combat.fatigue = Decimal(0);
     }
 }
 
@@ -231,11 +233,12 @@ class CombatStats {
         Object.defineProperty(this, "character", {
             value: character
         });
+        this.fatigue = Decimal(overrides.fatigue || 0);
         this.stamina = Decimal(overrides.stamina || this.maximumStamina);
     }
 
     refresh() {
-
+        this.fatigue = Decimal(0);
     }
 
     get damage() {
@@ -248,6 +251,13 @@ class CombatStats {
                 .times(hitTypeMultiplier).ceil();
             return previousValue;
         }), {})
+    }
+
+    get staminaRecovery() {
+        const recoveryPerLevel = getConfigurationValue("stamina_recovery_per_level");
+        const fatigueModifier = Decimal(1)//.minus(Decimal(this.fatigue).times(getConfigurationValue("fatigue_penalty_per_point")));
+        return Decimal.max(0, Decimal(this.character.powerLevel).times(recoveryPerLevel)
+            .times(fatigueModifier).floor());
     }
 
     get receivedDamageMultiplier() {
@@ -272,7 +282,7 @@ class CombatStats {
     }
 
     get maximumStamina() {
-        return calculateCharacterStamina(this.character.powerLevel, this.character.traits);
+        return calculateCharacterStamina(this.character.powerLevel, this.fatigue, this.character.traits);
     }
 
     get power() {
@@ -359,6 +369,7 @@ const characterPropsSchema = JOI.object({
         stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         evasionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        fatigue: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     }).default({}),
     adjectives: JOI.array().items(JOI.object()),
     absorbedPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number())
