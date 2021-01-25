@@ -97,10 +97,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 targets.forEach(target => {
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
-                    const damageToDeal = evaluateExpression(effectDefinition.value, {
-                        damageTaken: Decimal(dealtDamage),
-                        tier: Decimal(event.source.character.traits[traitId])
-                    }).floor();
+                    const damageToDeal = Decimal(effectDefinition.value).times(dealtDamage).times(event.source.character.traits[traitId]).floor();
                     target.hp = target.hp.minus(damageToDeal);
                     const newDamageEffectUuid = v4();
                     damageEffect.children = [

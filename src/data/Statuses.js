@@ -12,11 +12,11 @@ export const Statuses = {
         effects: {
             power_modifier: {
                 target: "self",
-                modifier: .25
+                value: .25
             },
             attack_downgrade_cost_multiplier: {
                 target: "self",
-                modifier: .25
+                value: .25
             }
         }
     }),
@@ -38,7 +38,7 @@ export const Statuses = {
         effects: {
             maximum_health_modifier: {
                 target: "self",
-                modifier: .01
+                value: .01
             }
         }
     }),
@@ -49,12 +49,11 @@ export const Statuses = {
         effects: {
             precision_modifier: {
                 target: "self",
-                modifier: -.1
+                value: -.2
             },
             power_modifier: {
                 target: "self",
-                modifier:
-                -.1
+                value: -.2
             }
         }
     }),
@@ -65,11 +64,11 @@ export const Statuses = {
         effects: {
             attack_downgrade_cost_multiplier: {
                 target: "self",
-                modifier: .1
+                value: .1
             },
             attack_upgrade_cost_multiplier: {
                 target: "self",
-                modifier: .1
+                value: .1
             }
         }
     }),
@@ -80,7 +79,7 @@ export const Statuses = {
         effects: {
             damage_modifier: {
                 target: "self",
-                modifier: 1.1
+                value: 1.1
             }
         }
     }),
@@ -91,7 +90,7 @@ export const Statuses = {
         effects: {
             maximum_health_modifier:{
                 target: "self",
-                modifier: -.01
+                value: -.01
             }
         }
     })

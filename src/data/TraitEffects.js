@@ -69,7 +69,7 @@ export const TraitEffects = {
             trigger_effects: {
                 evasion_modifier: {
                     target: "self",
-                    modifier: .4
+                    value: .4
                 }
             }
         }
@@ -130,7 +130,7 @@ export const TraitEffects = {
             trigger_effects: {
                 devastating_hit_damage_multiplier: {
                     target: "self",
-                    modifier: .5
+                    value: .5
                 }
             }
         }
@@ -140,19 +140,19 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: .2
+                    value: .2
                 },
                 resilience_modifier: {
                     target: "self",
-                    modifier: .2
+                    value: .2
                 },
                 precision_modifier: {
                     target: "self",
-                    modifier: -.1
+                    value: -.1
                 },
                 evasion_modifier: {
                     target: "self",
-                    modifier: -.1
+                    value: -.1
                 }
             }
         }
@@ -196,7 +196,7 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: .33
+                    value: .33
                 }
             }
         }
@@ -206,7 +206,7 @@ export const TraitEffects = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    modifier: .2
+                    value: .2
                 }
             }
         }
@@ -230,7 +230,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_stamina_modifier: {
                     target: "self",
-                    modifier: .33
+                    value: .1
                 }
             }
         }
@@ -240,7 +240,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_health_modifier: {
                     target: "self",
-                    modifier: .2
+                    value: .2
                 }
             }
         }
@@ -250,7 +250,7 @@ export const TraitEffects = {
             trigger_effects: {
                 change_stamina: {
                     target: "self",
-                    value: "tier.times(.05).times(self.combat.maximumStamina)"
+                    value: .05
                 }
             }
         }
@@ -260,7 +260,7 @@ export const TraitEffects = {
             trigger_effects: {
                 minimum_damage: {
                     target: "self",
-                    value: "self.combat.baseDamage.times(tier).times(.1)"
+                    value: .1
                 }
             }
         }
@@ -270,15 +270,15 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    modifier: "tier.times(.1).times(-1)"
+                    value: -.1
                 },
                 evasion_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    value: .2
                 },
                 precision_modifier: {
                     target: "self",
-                    modifier: "tier.times(.2)"
+                    value: .2
                 }
             }
         }
@@ -289,7 +289,7 @@ export const TraitEffects = {
             trigger_effects: {
                 reflect_damage: {
                     target: "enemy",
-                    value: "tier.times(.2).times(damageTaken)"
+                    value: .2
                 }
             }
         }
@@ -299,7 +299,7 @@ export const TraitEffects = {
             trigger_effects: {
                 resilience_modifier: {
                     target: "self",
-                    modifier: "tier.times(.4)"
+                    value: .4
                 }
             }
         }
@@ -309,7 +309,7 @@ export const TraitEffects = {
             trigger_effects: {
                 attack_downgrade_cost_multiplier: {
                     target: "enemy",
-                    modifier: "tier.times(.1)"
+                    value: .1
                 }
             }
         }
@@ -319,7 +319,7 @@ export const TraitEffects = {
             trigger_effects: {
                 gain_health: {
                     target: "self",
-                    value: "damageDealt.times(.1)"
+                    value: .1
                 }
             }
         }
