@@ -14,10 +14,10 @@ export const Tactics = {
         title: "Defensive",
         description: "Your tactics emphasize caution and husbanding your strength.",
         modifiers: {
-            // solid_hit_received_damage_multiplier: -.25
+            // attack_downgrade_cost_multiplier: -.1
         },
         strategy: {
-            attack: "advantage",
+            attack: "cautious",
             defend: "always"
         }
     },
