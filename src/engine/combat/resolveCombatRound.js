@@ -88,8 +88,12 @@ export default function resolveCombatRound(tick, combatants) {
         });
 
         if (actingCharacter.isAlive) {
-            actingCharacter.combat.fatigue = Decimal(actingCharacter.combat.fatigue).plus(1);
+            const attackMade = attackResult.effects.find(e => e.event === "attack");
+            actingCharacter.combat.fatigue = Decimal(actingCharacter.combat.fatigue).plus(attackMade.timesUpgraded + 1);
+            getCharacter(attackMade.target).combat.fatigue = getCharacter(attackMade.target).combat.fatigue.plus(attackMade.timesDowngraded + 1);
             // Recover stamina
+            const staminaToRecover = Decimal.min(actingCharacter.combat.staminaRecovery,  Decimal.max(0, actingCharacter.combat.maximumStamina.minus(actingCharacter.combat.stamina)));
+            actingCharacter.combat.stamina = Decimal.min(actingCharacter.combat.stamina.plus(staminaToRecover), actingCharacter.combat.maximumStamina);
             if (actingCharacter.combat.maximumStamina.eq(0)) {
                 const damageToInflictDueToFatigue = calculateDamageFromFatigue(actingCharacter);
                 actingCharacter.hp = Decimal.max(0, actingCharacter.hp.minus(damageToInflictDueToFatigue));
@@ -97,9 +101,8 @@ export default function resolveCombatRound(tick, combatants) {
                 if (!actingCharacter.isAlive && !roundEvents.find(re => re.type === "kill")) {
                     roundEvents.push(generateKillEvent(actingCharacter.id !== 0 ? getCharacter(0) : actingCharacter, actingCharacter));
                 }
-            } else {
-                actingCharacter.combat.stamina = Decimal.min(actingCharacter.combat.stamina.plus(actingCharacter.combat.staminaRecovery), actingCharacter.combat.maximumStamina);
-                roundEvents.push(generateStaminaChangeEvent(actingCharacter, actingCharacter, actingCharacter.combat.staminaRecovery));
+            } else if(staminaToRecover.gt(0)){
+                roundEvents.push(generateStaminaChangeEvent(actingCharacter, actingCharacter, staminaToRecover));
             }
         }
     });
