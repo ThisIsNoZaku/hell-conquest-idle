@@ -15,9 +15,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
             case "add_statuses":
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
-                    const stacks = evaluateExpression(effectDefinition[status].stacks, {
-                        tier: Decimal(event.source.character.traits[traitId])
-                    });
+                    const stacks = Decimal(effectDefinition[status].stacks)
+                        .times(event.source.character.traits[traitId]);
                     const max = evaluateExpression(effectDefinition[status].max, {
                         tier: Decimal(event.source.character.traits[traitId])
                     });
