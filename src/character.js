@@ -98,25 +98,25 @@ export class Character {
 
         const fromLevel = this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.pointsPerLevel"));
         const attributeMultiplier = this.attributes[getConfigurationValue("mechanics.combat.hp.baseAttribute")]
-            .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint")).plus(1);
+            .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint"));
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
             return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.value, {
                 tier: this.traits[currentValue]
             }) : 0);
-        }, Decimal(1));
+        }, Decimal(0));
         const statusMultiplier = Object.keys(this.statuses).reduce((previousValue, currentValue) => {
             const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "value"], 0), {
                 tiers: this.getStatusStacks(currentValue)
             });
             return previousValue.plus(traitModifier || 0);
-        }, Decimal(1));
+        }, Decimal(0));
 
-        return base.plus(fromLevel).times(this.latentPowerModifier.plus(1))
-            .times(attributeMultiplier)
-            .times(traitMultiplier)
-            .times(statusMultiplier)
-            .floor();
+        const totalMultiplier = attributeMultiplier.plus(traitMultiplier).plus(statusMultiplier).plus(1);
+
+        return Decimal.max(1, base.plus(fromLevel).times(this.latentPowerModifier.plus(1))
+            .times(totalMultiplier)
+            .floor());
     }
 
     reincarnate(newAppearance, newTraits) {
@@ -137,11 +137,11 @@ export class Character {
         this.statuses = {};
         this.absorbedPower = Decimal(0);
         this.powerLevel = Decimal(0);
-        this.latentPower = this.latentPower.plus(this.powerLevel);
         this.hp = this.maximumHp;
         this.levelUp();
         this.reset();
         this.combat.stamina = this.combat.maximumStamina;
+        this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
     }
 
     reset() {
@@ -282,7 +282,11 @@ class CombatStats {
     }
 
     get maximumStamina() {
-        return calculateCharacterStamina(this.character.powerLevel, this.fatigue, this.character.traits);
+        return calculateCharacterStamina(this.character.powerLevel, this.fatigue, Decimal(this.character.latentPowerModifier), this.character.traits);
+    }
+
+    get unmodifiedMaximumStamina() {
+        return calculateCharacterStamina(this.character.powerLevel, 0, Decimal(this.character.latentPowerModifier), this.character.traits);
     }
 
     get power() {
