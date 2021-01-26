@@ -7,12 +7,12 @@ export const Traits = {
     bloodrage: validatedTrait(generateTrait({
         name: "Blood Rage",
         icon: "./icons/icons-139.png",
-        description: _.template("A brutal and savage warrior, this Demon gains a ${tier.plus(1).times(100)}% multiplier to Resilience and ${tier} stacks of <strong>Beserk</strong> when hitting with an attack and gains a ${tier.times(10)}% bonus to <strong>Resilience</strong>.")
+        description: _.template("A brutal and savage warrior, this Demon gains a  gains a ${tier.times(10)}% bonus to <strong>Resilience</strong> and ${tier} stacks of <strong>Beserk</strong> when hitting with an attack.")
     }, ["bloodthirsty", "tough"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
         icon: "./icons/icons-1.png",
-        description: _.template("Consuming not just the energy but the flesh of the vanquished, this Demon has a ${tier.times(.1)}% penalty to Power and a ${tier.times(.1)}% bonus to Evasion and Precision and gains ${tier} stack(s) of <strong>Engorged</strong> on kill, to a max of ${tier.times(10)}.")
+        description: _.template("Consuming not just the energy but the flesh of the vanquished, this Demon has a ${tier.times(10)}% penalty to Power and a ${tier.times(20)}% bonus to Evasion and Precision and gains ${tier} stack(s) of <strong>Engorged</strong> on kill, to a max of ${tier.times(10)}.")
     }, ["cannibal", "small"])),
     cupidity: validatedTrait({
         name: "Cupidity",
@@ -38,13 +38,13 @@ export const Traits = {
     }, ["grappler", "crushing"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
-        description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> and inflicting ${tier.times(10)}% more damage on Devastating hits."),
+        description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> and inflicting ${tier.times(50)}% more damage on Devastating hits."),
         icon: "./icons/icons-1.png"
     }, ["killer", "painfulVenom"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-1.png",
-        description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}% and increases its Energy by ${tier.times(20)}.")
+        description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}%.")
     }, ["mindless", "unstoppable"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
@@ -52,8 +52,8 @@ export const Traits = {
         description: _.template("This Demon dances around foes while it's fierce attacks can punch right through even armor, increasing both Precision and Evasion by ${tier.times(20)}%. ")
     }, ["precise", "evasive"])),
     relentless: validatedTrait(generateTrait({
-        name: "Tirelress",
-        description: _.template("The indomitability of this Demon increases Energy by ${tier.times(20)}% and increases resilience by ${tier.times(40)}%."),
+        name: "Tireless",
+        description: _.template("The indomitability of this Demon increases Energy by ${tier.times(10)}% and increases resilience by ${tier.times(40)}%."),
         icon: "./icons/icons-110.png"
     }, ["relentless", "tough"])),
     sadisticJoy: validatedTrait(generateTrait({
@@ -97,6 +97,16 @@ export function generateTrait(baseObject, traits) {
                 case "add_statuses":
                     return Object.assign(srcValue, objValue || {});
                 case "evasion_modifier":
+                case "precision_modifier":
+                case "power_modifier":
+                case "resilience_modifier":
+                    if(objValue &&_.get(objValue, "target") !== srcValue.target) {
+                        throw new Error();
+                    }
+                    return {
+                        target: srcValue.target,
+                        value: srcValue.value + _.get(objValue, "value", 0)
+                    }
             }
         });
     }, baseObject);
