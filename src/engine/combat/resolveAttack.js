@@ -37,7 +37,7 @@ export default function resolveAttack(tick, attacker, target) {
     while (defenderWillDowngrade(attacker, target, Decimal(attackDowngradeCost), hitLevel, timesDowngraded)) {
         if (Tactics[target.tactics].modifiers.downgrade_devastating_to_miss && HitTypes.max === hitLevel) {
             timesDowngraded = 1;
-            hitLevel = -1;
+            hitLevel = HitTypes.min;
         } else {
             hitLevel--;
             timesDowngraded++;
