@@ -27,7 +27,7 @@ export const Statuses = {
         effects: {
             inflict_damage_at_start_of_round: {
                 target: "self",
-                value: 2
+                value: 5
             }
         }
     }),
@@ -74,12 +74,16 @@ export const Statuses = {
     }),
     painfulVenom: validatedStatus({
         name: "Agonizing Venom",
-        description: _.template("Take ${damage_modifier.times(100)}% damage from attacks."),
+        description: _.template("Take ${damage_modifier.times(100)}% damage from attacks and ${inflict_damage_at_start_of_round} damage per round."),
         icon: "icons/icons-129.png",
         effects: {
             damage_modifier: {
                 target: "self",
                 value: 1.1
+            },
+            inflict_damage_at_start_of_round: {
+                target: "self",
+                value: 1
             }
         }
     }),

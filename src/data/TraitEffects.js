@@ -40,6 +40,17 @@ export const TraitEffects = {
         }
     },
     crushing: {
+        on_solid_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    crushed: {
+                        target: "enemy",
+                        stacks: 1,
+                        duration: 2
+                    }
+                }
+            }
+        },
         on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
@@ -103,6 +114,17 @@ export const TraitEffects = {
         }
     },
     grappler: {
+        on_solid_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    restrained: {
+                        target: "enemy",
+                        stacks: 1,
+                        duration: 2
+                    }
+                }
+            }
+        },
         on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
@@ -179,6 +201,17 @@ export const TraitEffects = {
         }
     },
     painfulVenom: {
+        on_solid_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    painfulVenom: {
+                        target: "enemy",
+                        stacks: 1,
+                        duration: 5
+                    }
+                }
+            }
+        },
         on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
