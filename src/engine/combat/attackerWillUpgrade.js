@@ -6,7 +6,8 @@ export default function attackerWillUpgrade(attacker, defender, upgradeCost, cur
     const totalUpgradeCost = upgradeCost.times(timesUpgraded + 1);
     const attackerHasMoreStamina = attacker.combat.stamina.minus(totalUpgradeCost).gt(defender.combat.stamina);
     const attackerWantsTo = Tactics[attacker.tactics].strategy.attack === "always" ||
-        attackerHasMoreStamina;
+        (Tactics[attacker.tactics].strategy.attack === "cautious" && timesUpgraded < 1) ||
+        (Tactics[attacker.tactics].strategy.attack === "advantage" && attackerHasMoreStamina && timesUpgraded < 1);
     return totalUpgradeCost.lte(attacker.combat.stamina) &&
         ((currentHitLevel !== HitTypes.max && attackerWantsTo && timesUpgraded < getConfigurationValue("maximum_upgrade_times")) ||
             (attacker.combat.stamina.eq(attacker.combat.maximumStamina) && timesUpgraded === 0));
