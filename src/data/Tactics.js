@@ -31,7 +31,7 @@ export const Tactics = {
         },
         strategy: {
             attack: "advantage",
-            defend: "upgraded"
+            defend: "advantage"
         }
     }
 }
