@@ -74,6 +74,7 @@ export default function BottomSection(props) {
                                         direction="row"
                                         stamina={props.player.combat.stamina}
                                         maxStamina={props.player.combat.maximumStamina}
+                                        baseMaxStamina={props.player.combat.unmodifiedMaximumStamina}
                 />
                 <CharacterCombatSummary name={_.get(props.enemy, "name")} hp={_.get(props.enemy, "hp", Decimal(0))}
                                         maximumHp={_.get(props.enemy, "maximumHp", Decimal(100))}
@@ -83,6 +84,7 @@ export default function BottomSection(props) {
                                         isRival={_.get(props.enemy, "isRival")}
                                         stamina={_.get(props.enemy, ["combat","stamina"], Decimal(0)).toNumber()}
                                         maxStamina={_.get(props.enemy, ["combat","maximumStamina"], Decimal(0)).toNumber()}
+                                        baseMaxStamina={_.get(props.enemy, ["combat","unmodifiedMaximumStamina"], Decimal(0)).toNumber()}
                 />
             </Grid>
         </Paper>
