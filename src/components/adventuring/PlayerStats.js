@@ -55,7 +55,7 @@ export default function PlayerStats(props) {
             characterEvasion={_.get(props.player, "combat.evasion", Decimal(0)).toFixed()}
             characterPrecision={_.get(props.player, "combat.precision", Decimal(0)).toFixed()}
 
-            characterStamina={_.get(props.player, "combat.maximumStamina", Decimal(0)).toFixed()}
+            characterStamina={_.get(props.player, "combat.unmodifiedMaximumStamina", Decimal(0)).toFixed()}
             attackUpgradeCost={attackUpgradeCost}
             attackDowngradeCost={attackDowngradeCost}
             calculatedDamage={calculatedDamage}/>
