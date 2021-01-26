@@ -145,7 +145,7 @@ export const Actions = {
     },
     reincarnating: {
         id: "reincarnating",
-        duration: 30000,
+        duration: 10000,
         description: "Reincarnating...",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             getGlobalState().automaticReincarnate = true;
@@ -155,6 +155,7 @@ export const Actions = {
                 baseDeceit: player.attributes.baseDeceit,
                 baseMadness: player.attributes.baseMadness
             });
+            setEnemy(null);
             return defaultActions;
         }
 
