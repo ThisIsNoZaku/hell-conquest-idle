@@ -41,7 +41,8 @@ export default function triggerEvent(event) {
                         const activeStatus = target.getActiveStatusInstance(statusId);
                         const damageToDeal = Decimal(status.effects[effect].value)
                             .times(target.getStatusStacks(statusId))
-                            .times(getCharacter(activeStatus.source.character).powerLevel);
+                            .times(getCharacter(activeStatus.source.character).powerLevel)
+                            .floor();
                         target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
                         event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal))
                     })
