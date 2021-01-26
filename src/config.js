@@ -35,6 +35,8 @@ const config = {
     minimum_attack_downgrade_cost: 10,
     maximum_upgrade_times: 2,
     maximum_downgrade_times: 1,
+    fatigue_penalty_per_point: 25,
+    stamina_recovery_per_level: 50,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
