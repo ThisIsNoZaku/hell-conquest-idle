@@ -136,12 +136,13 @@ export class Character {
         });
         this.statuses = {};
         this.absorbedPower = Decimal(0);
+        this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
         this.powerLevel = Decimal(0);
         this.hp = this.maximumHp;
         this.levelUp();
         this.reset();
         this.combat.stamina = this.combat.maximumStamina;
-        this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
+
     }
 
     reset() {
@@ -167,7 +168,7 @@ export class Character {
     }
 
     gainPower(powerGained) {
-        const latentPowerMultiplier = this.latentPowerModifier.plus(1);
+        const latentPowerMultiplier = 1// this.latentPowerModifier.plus(1);
         powerGained = powerGained.times(latentPowerMultiplier).floor();
         this.absorbedPower = this.absorbedPower.plus(powerGained);
         while(this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel.plus(1)))) {

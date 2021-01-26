@@ -42,9 +42,9 @@ const config = {
             attributePointCost: "Decimal.max(1, attributeScore)"
         },
         xp: {
-            gainedFromGreaterDemon: "enemy.powerLevel.pow(2).times(10)",
-            gainedFromLesserDemon: "Decimal(enemy.powerLevel).times(10)",
-            gainedFromOtherDemon: "enemy.powerLevel.times(100)"
+            gainedFromGreaterDemon: "Decimal(enemy.powerLevel).plus(1).pow(2).times(100)",
+            gainedFromLesserDemon: "Decimal(enemy.powerLevel).pow(2).times(10)",
+            gainedFromOtherDemon: "Decimal(enemy.powerLevel).pow(2).times(100)"
         },
         powerNeededForLevel: "level.eq(1) ? 0 : Decimal(level.minus(1)).pow(2).times(100)",
         maxLevel: 25,
