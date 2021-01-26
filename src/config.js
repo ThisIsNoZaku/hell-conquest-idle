@@ -19,8 +19,8 @@ const config = {
     base_attack_upgrade_cost: 0,
     base_attack_downgrade_cost: 0,
     attack_upgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to upgrade your attacks
-    attack_downgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to downgrade enemy attacks
-    damage_per_level: 5,
+    attack_downgrade_cost_per_enemy_level: 50, // Add this amount times enemy level to downgrade enemy attacks
+    damage_per_level: 15,
     flee_stamina_cost_base: 25,
     flee_stamina_minimum_cost: 1,
     instant_death_offset: 5,
@@ -99,7 +99,7 @@ const config = {
             hp: {
                 pcBonus: 25,
                 baseHp: 0,
-                pointsPerLevel: 20,
+                pointsPerLevel: 50,
                 healingPercentage: .5,
                 baseAttribute: "brutality",
                 effectPerPoint: .1
