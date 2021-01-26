@@ -236,7 +236,7 @@ export const Actions = {
 }
 
 function precombat(rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
-    if (getCharacter(0).powerLevel.gte(getConfigurationValue("mechanics.maxLevel"))) {
+    if (getCharacter(0).powerLevel.gte(getConfigurationValue("game_level_cap"))) {
         pushLogItem({
             message: "Congratulations, you've reached the level cap. 👍",
             uuid: v4()

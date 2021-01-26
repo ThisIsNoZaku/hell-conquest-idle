@@ -36,6 +36,7 @@ const config = {
     maximum_downgrade_times: 1,
     fatigue_penalty_per_point: 25,
     stamina_recovery_per_level: 50,
+    game_level_cap: 11,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
@@ -48,7 +49,6 @@ const config = {
             gainedFromOtherDemon: "Decimal(enemy.powerLevel).pow(2).times(100)"
         },
         powerNeededForLevel: "level.eq(1) ? 0 : Decimal(level.minus(1)).pow(2).times(100)",
-        maxLevel: 25,
         combat: {
             startingHitLevel: -1,
             fatigueDamageMultiplier: 0.25,
