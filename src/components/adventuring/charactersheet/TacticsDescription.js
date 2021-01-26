@@ -81,23 +81,27 @@ export default function (props) {
             </Tooltip>}
             {Tactics[props.tactic].strategy.attack === "always" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Always try to spend Energy to upgrade attacks.
+                Always try to spend Energy to upgrade attacks up to two times.
+            </li>}
+            {Tactics[props.tactic].strategy.attack === "cautious" &&
+            <li style={{color: "green", textAlign: "left"}}>
+                Always spend Energy to upgrade attacks one time.
             </li>}
             {Tactics[props.tactic].strategy.attack === "advantage" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to upgrade attacks if you will still have more than the Enemy.
+                Spend Energy to upgrade attacks once when has more than Enemy.
             </li>}
             {Tactics[props.tactic].strategy.defend === "always" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Always try to spend Energy to downgrade incoming attacks.
+                Always try to spend Energy to downgrade incoming attacks once.
             </li>}
             {Tactics[props.tactic].strategy.defend === "advantage" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to downgrade incoming attacks if you will still have more than the Enemy.
+                Spend Energy to downgrade incoming attack once if you have more than the Enemy.
             </li>}
             {Tactics[props.tactic].strategy.defend === "upgraded" &&
             <li style={{color: "green", textAlign: "left"}}>
-                Spend Energy to downgrade incoming attacks if the Enemy upgraded their attack.
+                Spend Energy to downgrade incoming attack once if the Enemy upgraded their attack.
             </li>}
         </ul>
     </Grid>
