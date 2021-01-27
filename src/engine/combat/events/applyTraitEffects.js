@@ -103,11 +103,12 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         newDamageEffectUuid
                     ];
                     event.roundEvents.push(generateDamageEvent(
-                        getCharacter(damageEffect.target),
+                        event.source.character,
                         target,
                         damageToDeal,
                         damageEffect.uuid,
-                        newDamageEffectUuid
+                        newDamageEffectUuid,
+                        traitId
                     ));
                 });
                 break;
