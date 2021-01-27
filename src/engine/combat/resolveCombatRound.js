@@ -44,15 +44,16 @@ export default function resolveCombatRound(tick, combatants) {
         const possibleTargets = Object.values(combatants).filter(c => c.party !== actingCharacter.id);
         const actionTarget = possibleTargets[0];
         const attackResult = resolveAttack(tick, actingCharacter, actionTarget);
-        roundEvents = roundEvents.concat(attackResult.effects);
-        if (!HitTypes[attackResult.hitType].preventHit) {
+        roundEvents.push(attackResult.attack);
+        roundEvents.push(attackResult.damage);
+        if (!HitTypes[attackResult.attack.hitType].preventHit) {
             triggerEvent({
                 type: "on_hit",
                 roundEvents,
                 source: {
                     character: actingCharacter,
-                    attack: attackResult.effects.find(ev => ev.event === "attack"),
-                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                    attack: attackResult.attack,
+                    damage: attackResult.damage,
                 },
                 target: actionTarget,
                 combatants,
@@ -62,8 +63,8 @@ export default function resolveCombatRound(tick, combatants) {
                 roundEvents,
                 source: {
                     character: actingCharacter,
-                    attack: attackResult.effects.find(ev => ev.event === "attack"),
-                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                    attack: attackResult.attack,
+                    damage: attackResult.damage,
                 },
                 target: actionTarget,
                 combatants,
@@ -73,8 +74,8 @@ export default function resolveCombatRound(tick, combatants) {
                 roundEvents,
                 source: {
                     character: actionTarget,
-                    attack: attackResult.effects.find(ev => ev.event === "attack"),
-                    damage: attackResult.effects.find(ev => ev.event === "damage"),
+                    attack: attackResult.attack,
+                    damage: attackResult.damage,
                 },
                 target: actingCharacter,
                 combatants
@@ -88,7 +89,7 @@ export default function resolveCombatRound(tick, combatants) {
         });
 
         if (actingCharacter.isAlive) {
-            const attackMade = attackResult.effects.find(e => e.event === "attack");
+            const attackMade = attackResult.attack;
             actingCharacter.combat.fatigue = Decimal(actingCharacter.combat.fatigue).plus(attackMade.timesUpgraded + 1);
             getCharacter(attackMade.target).combat.fatigue = getCharacter(attackMade.target).combat.fatigue.plus(attackMade.timesDowngraded + 1);
             // Recover stamina

@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import {Tactics} from "../../data/Tactics";
-import {generateHitEvents} from "../events/generate";
+import {generateDamageEvent, generateHitEvents} from "../events/generate";
 import {getConfigurationValue} from "../../config";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
@@ -49,6 +49,5 @@ export default function resolveAttack(tick, attacker, target) {
     const damageToDeal = calculatedDamage[hitLevel].floor();
 
     target.setHp(Decimal.max(Decimal(target.hp).minus(damageToDeal), 0));
-    const resultEvents = generateHitEvents(hitLevel, attacker, target, damageToDeal, spentPrecision, spentEvasion, timesUpgraded, timesDowngraded);
-    return resultEvents;
+    return generateHitEvents(hitLevel, attacker, target, damageToDeal, spentPrecision, spentEvasion, timesUpgraded, timesDowngraded);
 }

@@ -7,42 +7,38 @@ export function generateHitEvents(hitType, attacker, target, damageToDeal, spent
     if (HitTypes[hitType].preventHit) {
         return {
             hitType,
-            effects: [
-                {
-                    event: "attack",
-                    uuid: hitEventUuid,
-                    source: {character: attacker.id},
-                    target: target.id,
-                    children: [],
-                    hitType,
-                    hit: false,
-                    precisionUsed: spentPrecision,
-                    evasionUsed: spentEvasion,
-                    timesUpgraded,
-                    timesDowngraded
-                }
-            ]
+            attack: {
+                event: "attack",
+                uuid: hitEventUuid,
+                source: {character: attacker.id},
+                target: target.id,
+                children: [],
+                hitType,
+                hit: false,
+                precisionUsed: spentPrecision,
+                evasionUsed: spentEvasion,
+                timesUpgraded,
+                timesDowngraded
+            }
         }
     } else {
         const damageEventUuid = v4();
         return {
             hitType,
-            effects: [
-                {
-                    event: "attack",
-                    hit: true,
-                    uuid: hitEventUuid,
-                    source: {character: attacker.id},
-                    target: target.id,
-                    children: [damageEventUuid],
-                    hitType,
-                    precisionUsed: spentPrecision,
-                    evasionUsed: spentEvasion,
-                    timesUpgraded,
-                    timesDowngraded
-                },
-                generateDamageEvent(attacker, target, damageToDeal, hitEventUuid, damageEventUuid)
-            ]
+            attack: {
+                event: "attack",
+                hit: true,
+                uuid: hitEventUuid,
+                source: {character: attacker.id},
+                target: target.id,
+                children: [damageEventUuid],
+                hitType,
+                precisionUsed: spentPrecision,
+                evasionUsed: spentEvasion,
+                timesUpgraded,
+                timesDowngraded
+            },
+            damage: generateDamageEvent(attacker, target, damageToDeal, hitEventUuid, damageEventUuid)
         }
     }
 }
@@ -65,13 +61,16 @@ export function generateFatigueDamageEvent(source, target, damage) {
     }
 }
 
-export function generateDamageEvent(source, target, damageDone, parentUuid, effectUuid) {
+export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, parentUuid, effectUuid, traitId) {
     effectUuid = effectUuid ? effectUuid : v4();
     return {
         event: "damage",
         uuid: effectUuid,
-        target: target.id,
-        source: {character: source.id},
+        target: targetCharacter.id,
+        source: {
+            character: sourceCharacter.id,
+            trait: traitId
+        },
         value: Decimal(damageDone),
         parent: parentUuid
     }
