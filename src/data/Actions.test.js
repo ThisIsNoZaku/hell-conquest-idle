@@ -269,6 +269,9 @@ describe("reincarnating action", function () {
     const action = Actions["reincarnating"];
     let globalState;
     let player;
+    let pushLogItem;
+    let setPaused;
+    let setEnemy;
     beforeEach(() => {
         getGlobalState.mockClear();
         player = {
@@ -279,6 +282,9 @@ describe("reincarnating action", function () {
         };
         getGlobalState.mockReturnValue(globalState);
         reincarnateAs.mockClear();
+        pushLogItem = jest.fn();
+        setPaused = jest.fn();
+        setEnemy = jest.fn();
     });
     it("return exploring", function () {
         expect(action.complete(null, {
@@ -288,7 +294,7 @@ describe("reincarnating action", function () {
                 baseDeceit: Decimal(1),
                 baseMadness: Decimal(1),
             }
-        })).toEqual(["exploring", "challenging"]);
+        }, pushLogItem, setPaused, setEnemy)).toEqual(["exploring", "challenging"]);
     });
     it("enables automatic reincarnation", function () {
         expect(globalState.automaticReincarnate).toBeFalsy();
@@ -299,7 +305,7 @@ describe("reincarnating action", function () {
                 baseDeceit: Decimal(1),
                 baseMadness: Decimal(1),
             }
-        });
+        }, jest.fn(), jest.fn(), jest.fn());
         expect(getGlobalState().automaticReincarnate).toEqual(true);
         expect(reincarnateAs).toHaveBeenCalled();
     })
@@ -397,7 +403,8 @@ describe("recovering action", function () {
             combat: {
                 stamina: Decimal(2),
                 maximumStamina: Decimal(2)
-            }
+            },
+            refreshBeforeCombat: jest.fn()
         };
         pushLogItem = jest.fn();
     });
