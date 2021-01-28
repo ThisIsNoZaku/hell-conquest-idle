@@ -6,7 +6,7 @@ export const AttackActions = {
         performsAttack: true,
         basic: true
     },
-    simpleAttack: {
+    basicAttack: {
         name: "Basic",
         energyCostMultiplier: 1,
         hitLevel: 0,

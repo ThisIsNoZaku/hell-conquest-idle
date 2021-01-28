@@ -5,7 +5,7 @@ import calculateReactionCost from "./calculateReactionCost";
 
 export default function determineCharacterCombatAction(actingCharacter, enemy) {
     const attackEnergyCosts = {
-        small: calculateActionCost(actingCharacter, "simpleAttack", enemy),
+        small: calculateActionCost(actingCharacter, "basicAttack", enemy),
         power: calculateActionCost(actingCharacter, "powerAttack", enemy),
         none: Decimal(0)
     }
@@ -23,7 +23,7 @@ export default function determineCharacterCombatAction(actingCharacter, enemy) {
             }
         case "attrit":
             if(attackEnergyCosts.small.lte(actingCharacter.combat.stamina)) {
-                return "simpleAttack";
+                return "basicAttack";
             } else {
                 return "none"
             }
