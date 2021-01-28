@@ -101,7 +101,7 @@ describe("character combat stats", function () {
                 combat: {
 
                 }
-            }, 0).combat.incomingAttackDowngradeCost;
+            }, 0).combat.incomingAttackDowngradeCostMultiplier;
             expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.1)).times(100));
         }
     });
@@ -115,7 +115,7 @@ describe("character combat stats", function () {
                     baseDeceit: Decimal(i)
                 },
                 tactics: "deceptive"
-            }, 0).combat.attackUpgradeCost;
+            }, 0).combat.attackUpgradeCostMultiplier;
             const attributeMod = Decimal(1).minus(Decimal(i).times(1.25).times(Decimal(0.1)));
             expect(calculatedCost).toEqual(Decimal(100)
                 .times(attributeMod).times(1).ceil());

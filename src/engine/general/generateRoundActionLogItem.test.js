@@ -19,8 +19,10 @@ describe("generate round action log", function () {
                     character: 0
                 },
                 children: ["1"],
-                precisionUsed: 0,
-                evasionUsed: 0,
+                action: "simpleAttack",
+                actionEnergyCost: Decimal(25),
+                reaction: "dodge",
+                reactionEnergyCost: Decimal(25),
                 target: 1,
                 damage: Decimal(1),
                 uuid: "0"

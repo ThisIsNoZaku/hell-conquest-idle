@@ -2,44 +2,40 @@ import Decimal from "decimal.js";
 import {v4} from "node-uuid";
 import {HitTypes} from "../../../data/HitTypes";
 
-export function generateHitEvents(hitType, attacker, target, damageToDeal, spentPrecision, spentEvasion, timesUpgraded, timesDowngraded) {
-    const hitEventUuid = v4();
-    if (HitTypes[hitType].preventHit) {
-        return {
-            hitType,
-            attack: {
-                event: "attack",
-                uuid: hitEventUuid,
-                source: {character: attacker.id},
-                target: target.id,
-                children: [],
-                hitType,
-                hit: false,
-                precisionUsed: spentPrecision,
-                evasionUsed: spentEvasion,
-                timesUpgraded,
-                timesDowngraded
-            }
-        }
-    } else {
-        const damageEventUuid = v4();
-        return {
-            hitType,
-            attack: {
-                event: "attack",
-                hit: true,
-                uuid: hitEventUuid,
-                source: {character: attacker.id},
-                target: target.id,
-                children: [damageEventUuid],
-                hitType,
-                precisionUsed: spentPrecision,
-                evasionUsed: spentEvasion,
-                timesUpgraded,
-                timesDowngraded
-            },
-            damage: generateDamageEvent(attacker, target, damageToDeal, hitEventUuid, damageEventUuid)
-        }
+function linkEvents(parent, child) {
+    parent.children = [...parent.children || [], child.uuid];
+    child.parent = parent.uuid;
+}
+
+export function generateAttackEvent(hitType, attacker, target, didHit, action, actionEnergyCost, reaction, reactionEnergyCost) {
+    return {
+        event: "attack",
+        uuid: v4(),
+        source: {
+            character: attacker.id,
+        },
+        target: target.id,
+        children: [],
+        hitType,
+        hit: didHit,
+        action,
+        actionEnergyCost,
+        reaction,
+        reactionEnergyCost
+    }
+}
+
+export function generateHitEvents(hitType, attacker, target, damageToDeal, damageType, action, actionEnergyCost, reaction, reactionEnergyCost) {
+    const attack = generateAttackEvent(hitType, attacker, target, !HitTypes[hitType].preventHit, action, actionEnergyCost, reaction, reactionEnergyCost);
+    let damage;
+    if (!HitTypes[hitType].preventHit) {
+        damage = generateDamageEvent(attacker, target, damageToDeal, damageType)
+        linkEvents(attack, damage);
+    }
+    return {
+        hitType,
+        attack,
+        damage
     }
 }
 
@@ -61,18 +57,17 @@ export function generateFatigueDamageEvent(source, target, damage) {
     }
 }
 
-export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, parentUuid, effectUuid, traitId) {
-    effectUuid = effectUuid ? effectUuid : v4();
+export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, damageType, traitId) {
     return {
         event: "damage",
-        uuid: effectUuid,
+        uuid: v4(),
         target: targetCharacter.id,
         source: {
             character: sourceCharacter.id,
             trait: traitId
         },
         value: Decimal(damageDone),
-        parent: parentUuid
+        type: damageType
     }
 }
 
@@ -99,5 +94,17 @@ export function generateRemoveStatusEvent(source, targetCharacter, targetStatusU
         uuid: v4(),
         target: targetCharacter.id,
         toRemove: targetStatusUuid
+    }
+}
+
+export function generateActionSkipEvent(character, tick, reason) {
+    return {
+        uuid: v4(),
+        event: "action-skipped",
+        source: {
+            character: character.id
+        },
+        reason,
+        tick
     }
 }

@@ -74,7 +74,7 @@ export const Traits = {
     swiftEvasion: validatedTrait(generateTrait({
         name: "Night Hunter",
         icon: "./icons/icons-595.png",
-        description: _.template("Your agility and size increases your Evasion by ${tier.times(50)}%, Precision by ${tier.times(20)}% and reduces Power by ${tier.times(10)}%.")
+        description: _.template("Your agility and size increases your Evasion by ${tier.times(60)}%, Precision by ${tier.times(20)}% and reduces Power by ${tier.times(10)}%.")
     }, ["evasive", "small"])),
     terrifyingSkitter: validatedTrait(generateTrait({
         name: "Sinister Hunter",

@@ -1,6 +1,13 @@
 import {PERMANENT} from "./Statuses";
 
 export const TraitEffects = {
+    acidic: {
+        continuous: {
+            trigger_effects: {
+
+            }
+        }
+    },
     arcane: {
         continuous: {
             trigger_effects: {

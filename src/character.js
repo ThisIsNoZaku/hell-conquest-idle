@@ -58,6 +58,10 @@ export class Character {
         });
     }
 
+    get energyGeneration() {
+        return this.powerLevel.times(.1);
+    }
+
     getStatusStacks(status) {
         return _.get(this.getActiveStatusInstance(status), "stacks", Decimal(0));
     }
@@ -141,7 +145,7 @@ export class Character {
         this.hp = this.maximumHp;
         this.levelUp();
         this.reset();
-        this.combat.stamina = this.combat.maximumStamina;
+        this.combat.stamina = Decimal(0);
 
     }
 
@@ -235,7 +239,7 @@ class CombatStats {
             value: character
         });
         this.fatigue = Decimal(overrides.fatigue || 0);
-        this.stamina = Decimal(overrides.stamina || this.maximumStamina);
+        this.stamina = Decimal(overrides.stamina || 0);
     }
 
     refresh() {
@@ -295,7 +299,7 @@ class CombatStats {
     }
 
     get attackUpgradeCostMultiplier() {
-        const tacticsCostMultiplier = Decimal(Tactics[this.character.tactics].modifiers.attack_upgrade_cost_multiplier || 0);
+        const tacticsCostMultiplier = Decimal(0);
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
         }, Decimal(0));
@@ -306,7 +310,7 @@ class CombatStats {
     }
 
     get incomingAttackDowngradeCostMultiplier() {
-        const tacticsCostMultiplier = Decimal(Tactics[this.character.tactics].modifiers.attack_downgrade_cost_multiplier || 0);
+        const tacticsCostMultiplier = Decimal(0);
         const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
             return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
         }, Decimal(0));
@@ -319,7 +323,7 @@ class CombatStats {
 
 export function calculateCombatStat(character, combatAttribute) {
     const attributeBase = character.attributes[getConfigurationValue(["mechanics", "combat", combatAttribute, "baseAttribute"])];
-    const tacticsModifier = Decimal(0).plus(Tactics[character.tactics].modifiers[`${combatAttribute}_modifier`] || 0);
+    const tacticsModifier = Decimal(0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];
         return currentValue.plus(_.get(statusDefinition, ["effects", `${combatAttribute}_modifier`, "value"], 0));
@@ -369,7 +373,10 @@ const characterPropsSchema = JOI.object({
     name: JOI.string(),
     appearance: JOI.string().empty(''),
     traits: JOI.object().default({}),
-    tactics: JOI.string().valid(...Object.keys(Tactics)).required(),
+    tactics: JOI.object({
+        offensive: JOI.valid(...Object.keys(Tactics.offensive)).required(),
+        defensive: JOI.valid(...Object.keys(Tactics.defensive)).required(),
+    }).required(),
     combat: JOI.object({
         stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),

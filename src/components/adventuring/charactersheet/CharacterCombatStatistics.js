@@ -46,13 +46,13 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                         <TableCell>
-                            Energy
+                            Max Energy
                         </TableCell>
                         <TableCell>
                             {props.characterStamina}
                         </TableCell>
                         <TableCell>
-                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
+                            <Tooltip title="The maximum Energy you can have safely.">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
@@ -70,13 +70,15 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                         <TableCell>
-
+                            Energy Regen
                         </TableCell>
                         <TableCell>
-
+                            {props.characterEnergyGeneration.times(100).toFixed()}
                         </TableCell>
                         <TableCell>
-
+                            <Tooltip title="Gain this much energy every 100 ticks of combat.">
+                                <Help/>
+                            </Tooltip>
                         </TableCell>
                     </TableRow>
                     <TableRow>
@@ -91,17 +93,17 @@ export default function CharacterCombatStatistics(props) {
                                 <Help/>
                             </Tooltip>
                         </TableCell>
-                        <TableCell>
-                            Downgrade Cost
-                        </TableCell>
-                        <TableCell>
-                            {props.evasionMultiplier.toFixed()}
-                        </TableCell>
-                        <TableCell>
-                            <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">
-                                <Help/>
-                            </Tooltip>
-                        </TableCell>
+                        {/*<TableCell>*/}
+                        {/*    Downgrade Cost*/}
+                        {/*</TableCell>*/}
+                        {/*<TableCell>*/}
+                        {/*    {props.evasionMultiplier.toFixed()}*/}
+                        {/*</TableCell>*/}
+                        {/*<TableCell>*/}
+                        {/*    <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">*/}
+                        {/*        <Help/>*/}
+                        {/*    </Tooltip>*/}
+                        {/*</TableCell>*/}
                     </TableRow>
                     <TableRow>
                         <TableCell>
@@ -115,17 +117,17 @@ export default function CharacterCombatStatistics(props) {
                                 <Help/>
                             </Tooltip>
                         </TableCell>
-                        <TableCell>
-                            Upgrade Cost
-                        </TableCell>
-                        <TableCell>
-                            {props.precisionMultiplier.toFixed()}
-                        </TableCell>
-                        <TableCell>
-                            <Tooltip title="How much energy is consumed to downgrade incoming attacks">
-                                <Help/>
-                            </Tooltip>
-                        </TableCell>
+                        {/*<TableCell>*/}
+                        {/*    Upgrade Cost*/}
+                        {/*</TableCell>*/}
+                        {/*<TableCell>*/}
+                        {/*    {props.precisionMultiplier.toFixed()}*/}
+                        {/*</TableCell>*/}
+                        {/*<TableCell>*/}
+                        {/*    <Tooltip title="How much energy is consumed to downgrade incoming attacks">*/}
+                        {/*        <Help/>*/}
+                        {/*    </Tooltip>*/}
+                        {/*</TableCell>*/}
                     </TableRow>
                 </TableBody>
             </Table>}
@@ -183,19 +185,19 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                     </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            Downgrade Cost
-                        </TableCell>
-                        <TableCell>
-                            {props.evasionMultiplier.toFixed()}
-                        </TableCell>
-                        <TableCell>
-                            <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">
-                                <Help/>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
+                    {/*<TableRow>*/}
+                    {/*    <TableCell>*/}
+                    {/*        Downgrade Cost*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell>*/}
+                    {/*        {props.evasionMultiplier.toFixed()}*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell>*/}
+                    {/*        <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">*/}
+                    {/*            <Help/>*/}
+                    {/*        </Tooltip>*/}
+                    {/*    </TableCell>*/}
+                    {/*</TableRow>*/}
                     <TableRow>
                         <TableCell>
                             Precision
@@ -209,19 +211,19 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                     </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            Upgrade Cost
-                        </TableCell>
-                        <TableCell>
-                            {props.precisionMultiplier.toFixed()}
-                        </TableCell>
-                        <TableCell>
-                            <Tooltip title="How much energy is consumed to downgrade incoming attacks">
-                                <Help/>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
+                    {/*<TableRow>*/}
+                    {/*    <TableCell>*/}
+                    {/*        Upgrade Cost*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell>*/}
+                    {/*        {props.precisionMultiplier.toFixed()}*/}
+                    {/*    </TableCell>*/}
+                    {/*    <TableCell>*/}
+                    {/*        <Tooltip title="How much energy is consumed to downgrade incoming attacks">*/}
+                    {/*            <Help/>*/}
+                    {/*        </Tooltip>*/}
+                    {/*    </TableCell>*/}
+                    {/*</TableRow>*/}
                 </TableBody>
             </Table>}
         </TableContainer>
@@ -238,7 +240,7 @@ export default function CharacterCombatStatistics(props) {
                 return <Grid item container xs={12}>
                     <Grid item xs><em>{HitTypes[type].type}</em></Grid>
                     <Grid item xs><em style={{color: props.calculatedDamage[type].lt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level"))) ? "red" : (
-                            props.calculatedDamage[type].gt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level"))) ? "lightgreen" : "inherit"
+                            props.calculatedDamage[type].gt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level")).floor()) ? "lightgreen" : "inherit"
                         ) }}>
                         {props.calculatedDamage[type].toFixed()}
                     </em></Grid>

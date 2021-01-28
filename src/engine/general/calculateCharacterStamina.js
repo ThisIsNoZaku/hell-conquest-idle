@@ -5,7 +5,7 @@ import {Traits} from "../../data/Traits";
 import evaluateExpression from "./evaluateExpression";
 
 export default function (powerLevel, fatigue, latentPowerModifier, traits) {
-    const minimumStamina = Decimal(getConfigurationValue("minimum_stamina"));
+    const baseStamina = Decimal(getConfigurationValue("minimum_stamina"));
     const traitMultiplier = Object.keys(traits).reduce((total, trait) => {
         const staminaModifier = _.get(Traits, [trait, "continuous", "trigger_effects", "maximum_stamina_modifier"]);
         if(_.get(staminaModifier, "target") === "self") {
@@ -17,7 +17,7 @@ export default function (powerLevel, fatigue, latentPowerModifier, traits) {
         return total;
     }, Decimal(1));
     const fatigueModifier = Decimal(fatigue).times(getConfigurationValue("fatigue_penalty_per_point"));
-    return Decimal.max(0, minimumStamina.plus(Decimal(powerLevel).times(100)) // FIXME: Configure energy per level.
+    return Decimal.max(0, baseStamina.plus(Decimal(powerLevel).times(250)) // FIXME: Configure energy per level.
         .times(traitMultiplier)
         .times(latentPowerModifier.plus(1))
         .minus(fatigueModifier)

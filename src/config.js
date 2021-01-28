@@ -19,14 +19,14 @@ const config = {
     base_attack_upgrade_cost: 0,
     base_attack_downgrade_cost: 0,
     attack_upgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to upgrade your attacks
-    attack_downgrade_cost_per_enemy_level: 50, // Add this amount times enemy level to downgrade enemy attacks
+    attack_downgrade_cost_per_enemy_level: 25, // Add this amount times enemy level to downgrade enemy attacks
     damage_per_level: 15,
     flee_stamina_cost_base: 25,
     flee_stamina_minimum_cost: 1,
     instant_death_offset: 5,
     recovery_action_healing_percentage: .5,
     recover_action_stamina_percentage: 1,
-    minimum_stamina: 400,
+    minimum_stamina: 250,
     bonus_stamina_per_level: 100,
     intimidation_cost_attribute: "cunning",
     trait_tier_up_levels: 25, // Traits upgrade when reaching a multiple of this level.

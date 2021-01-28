@@ -25,9 +25,9 @@ describe('action with overwhelming tactics', function () {
             }
         }, 1);
     });
-    it("is a power-attack with enough stamina", function () {
+    it("is a powerAttack with enough stamina", function () {
         expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("power-attack");
+            .toEqual("powerAttack");
     });
     it("is none if not enough stamina", function () {
         player.combat.stamina = Decimal(0);
@@ -59,7 +59,7 @@ describe("action with 'attrit' tactics", function () {
     });
     it("is a small attack with enough stamina", function () {
         expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("small-attack");
+            .toEqual("simpleAttack");
     });
     it("is none small attack without enough stamina", function () {
         player.combat.stamina = Decimal(0);
@@ -96,6 +96,6 @@ describe("action with 'counter' tactics", function () {
     it("is a power attack when enemy cannot dodge", function () {
         player.combat.stamina = Decimal(0);
         expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("power-attack");
+            .toEqual("powerAttack");
     });
 });

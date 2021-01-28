@@ -79,7 +79,10 @@ export function loadGlobalState() {
                 appearance: "",
                 statuses: {},
                 traits: {},
-                tactics: "defensive",
+                tactics: {
+                    offensive: "attrit",
+                    defensive: "block"
+                },
                 attributes: {
                     baseBrutality: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
                     baseCunning: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
@@ -115,7 +118,8 @@ export function generateCreature(id, powerLevel, rng) {
     if (Number.isNaN(powerLevel)) {
         throw new Error("Level cannot be NaN");
     }
-    const tactics = Object.keys(Tactics)[Math.floor(rng.double() * 3)];
+    const offensiveTactics = Object.keys(Tactics.offensive)[Math.floor(rng.double() * 3)];
+    const defensiveTactics = Object.keys(Tactics.defensive)[Math.floor(rng.double() * 3)];
     const nextId = nextMonsterId++;
     // Bonus traits
     const numberOfBonusTraits = powerLevel.div(20).floor();
@@ -144,7 +148,10 @@ export function generateCreature(id, powerLevel, rng) {
         id: nextId,
         ...Creatures[id],
         latentPower: Decimal(powerLevel.minus(1).times(15)),
-        tactics,
+        tactics: {
+            offensive: offensiveTactics,
+            defensive: defensiveTactics
+        },
         adjectives: [adjective],
         traits: startingTraits,
         powerLevel: powerLevel,

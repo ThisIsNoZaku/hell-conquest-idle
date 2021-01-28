@@ -181,29 +181,54 @@ export default function ReincarnationSelectionPage(props) {
         <Grid container item>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <Tooltip title="Tactics provide modifiers based on your fighting style">
-                    <strong>Choose Tactics</strong>
+                    <strong>Choose Offensive Tactics</strong>
                 </Tooltip>
             </Grid>
             <Grid container item xs={12} justify="space-around" direction="row">
-                {Object.keys(Tactics).map(tactic =>
+                {Object.keys(Tactics.offensive).map(tactic =>
                     <Grid item>
                         <Button variant="contained" onClick={() => {
-                            if(getCharacter(0).tactics !== tactic) {
-                                enableTutorial("reincarnation-demon-select");
-                            }
-                            setPlayerTactics(getCharacter(0).tactics = tactic);
+                            enableTutorial("reincarnation-demon-select");
+                            const playerTactics = getCharacter(0).tactics;
+                            playerTactics.offensive = tactic;
+                            setPlayerTactics({...playerTactics});
                         }} disabled={!tacticsEnabled}
-                                color={player.tactics === tactic ? "primary" : "default"}
-                        >{Tactics[tactic].title}</Button>
+                                color={playerTactics.offensive === tactic ? "primary" : "default"}
+                        >{Tactics.offensive[tactic].title}</Button>
+                    </Grid>
+                )}
+            </Grid>
+
+            <Grid item style={{textAlign: "center"}}>
+                <em>{Tactics.offensive[playerTactics.offensive].description}</em>
+            </Grid>
+
+            <TacticsDescription tactic={Tactics.offensive[player.tactics.offensive]}/>
+
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <Tooltip title="Tactics provide modifiers based on your fighting style">
+                    <strong>Choose Defensive Tactics</strong>
+                </Tooltip>
+            </Grid>
+            <Grid container item xs={12} justify="space-around" direction="row">
+                {Object.keys(Tactics.defensive).map(tactic =>
+                    <Grid item>
+                        <Button variant="contained" onClick={() => {
+                            enableTutorial("reincarnation-demon-select");
+                            const playerTactics = getCharacter(0).tactics;
+                            playerTactics.defensive = tactic;
+                            setPlayerTactics({...playerTactics});
+                        }} disabled={!tacticsEnabled}
+                                color={player.tactics.defensive === tactic ? "primary" : "default"}
+                        >{Tactics.defensive[tactic].title}</Button>
                     </Grid>
                 )}
             </Grid>
             <Grid item style={{textAlign: "center"}}>
-                <em>{Tactics[player.tactics].description}</em>
+                <em>{Tactics.defensive[playerTactics.defensive].description}</em>
             </Grid>
 
-            <TacticsDescription tactic={player.tactics}/>
-
+            <TacticsDescription tactic={Tactics.defensive[playerTactics.defensive]}/>
         </Grid>
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>

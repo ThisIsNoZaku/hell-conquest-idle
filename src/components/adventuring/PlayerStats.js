@@ -50,6 +50,8 @@ export default function PlayerStats(props) {
             characterTactics={_.get(props.player, "tactics")}
             characterTraits={_.get(props.player, "traits")}
 
+            characterEnergyGeneration={_.get(props.player, "energyGeneration")}
+
             characterPower={_.get(props.player, "combat.power", Decimal(0)).toFixed()}
             characterResilience={_.get(props.player, "combat.resilience", Decimal(0)).toFixed()}
             characterEvasion={_.get(props.player, "combat.evasion", Decimal(0)).toFixed()}

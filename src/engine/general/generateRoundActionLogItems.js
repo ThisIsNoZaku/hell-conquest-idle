@@ -2,6 +2,7 @@ import {getCharacter} from "../index";
 import {Statuses} from "../../data/Statuses";
 import {Decimal} from "decimal.js";
 import {HitTypes} from "../../data/HitTypes";
+import {AttackActions, DefenseActions} from "../../data/CombatActions";
 
 export default function generateRoundActionLogItems(round) {
     const actionMessages = [];
@@ -23,22 +24,21 @@ export default function generateRoundActionLogItems(round) {
 
 function describeEvent(event) {
     const sourceName = getCharacter(event.source.character).name;
-    const targetName = getCharacter(event.target).name;
+    const targetName = event.target !== undefined ? getCharacter(event.target).name : null;
     switch (event.event) {
         case "stamina-change":
             return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} energy`;
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
-            const base = event.hit ? `${sourceName} scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} missed!`;
-            const upgrade = Decimal(event.precisionUsed).gt(0) ? `${event.precisionUsed} Energy was used to upgrade the attack ${event.timesUpgraded} step${event.timesUpgraded !== 1 ? 's' : ''}. ` : null;
-            const downgrade = Decimal(event.evasionUsed).gt(0) ? `${event.evasionUsed} Energy was used to downgrade the attack ${event.timesDowngraded} step${event.timesDowngraded !== 1 ? 's' : ''}. ` : null;
-            return [base, upgrade, downgrade].filter(e => e !== null).join(" ");
+            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack but missed!`;
+            const reaction = event.reaction !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction].name} the attack.` : "";
+            return [base, reaction].filter(e => e !== null).join(" ");
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
         case "fatigue-damage":
             const damage = Decimal(event.value);
-            return `${targetName} lose${targetName === "You" ? "" : "s"} ${damage.toFixed()} health from exhaustion.`;
+            return `${targetName} lose${targetName === "You" ? "" : "s"} ${damage.toFixed()} health from Energy Burn.`;
         case "add-status":
             const numStacks = Decimal(event.stacks);
             const duration = Decimal(event.duration);
@@ -46,6 +46,11 @@ function describeEvent(event) {
         case "remove-status": {
             const stacks = Decimal(event.stacks);
             return `${targetName} removed ${stacks.toFixed()} stack${stacks.eq(0)?"":"s"} of ${Statuses[event.status].name}.`;
+        }
+        case "action-skipped": {
+            const base = `${sourceName} did not act`
+            let reason = event.reason ? " " + event.reason : "" ;
+            return base + reason + ".";
         }
     }
 }

@@ -1,33 +1,35 @@
 import {Decimal} from "decimal.js";
 import {getConfigurationValue} from "../../../config";
+import calculateActionCost from "./calculateActionCost";
+import calculateReactionCost from "./calculateReactionCost";
 
 export default function determineCharacterCombatAction(actingCharacter, enemy) {
     const attackEnergyCosts = {
-        small: enemy.powerLevel.times(getConfigurationValue("attack_upgrade_cost_per_enemy_level")).floor(),
-        power: enemy.powerLevel.times(getConfigurationValue("attack_upgrade_cost_per_enemy_level")).times(1.5).floor(),
+        small: calculateActionCost(actingCharacter, "simpleAttack", enemy),
+        power: calculateActionCost(actingCharacter, "powerAttack", enemy),
         none: Decimal(0)
     }
     const defenseEnergyCosts = {
         none: Decimal(0),
-        block: actingCharacter.powerLevel.times(getConfigurationValue("attack_downgrade_cost_per_enemy_level")),
-        dodge: actingCharacter.powerLevel.times(getConfigurationValue("attack_downgrade_cost_per_enemy_level")).times(2)
+        block: calculateReactionCost(actingCharacter, "block", enemy),
+        dodge: calculateReactionCost(actingCharacter, "dodge", enemy)
     }
     switch (actingCharacter.tactics.offensive) {
         case "overwhelm":
             if(attackEnergyCosts.power.lte(actingCharacter.combat.stamina)) {
-                return "power-attack";
+                return "powerAttack";
             } else {
                 return "none"
             }
         case "attrit":
             if(attackEnergyCosts.small.lte(actingCharacter.combat.stamina)) {
-                return "small-attack";
+                return "simpleAttack";
             } else {
                 return "none"
             }
         case "counter":
-            if(defenseEnergyCosts.dodge.gt(enemy.combat.stamina)) {
-                return "power-attack";
+            if(defenseEnergyCosts.dodge.gt(enemy.combat.stamina) && attackEnergyCosts.power.lte(actingCharacter.combat.stamina)) {
+                return "powerAttack";
             } else {
                 return "none";
             }

@@ -71,6 +71,7 @@ export function CharacterSheet(props) {
             characterEvasion={props.characterEvasion}
             characterPrecision={props.characterPrecision}
             evasionMultiplier={props.attackDowngradeCost}
+            characterEnergyGeneration={props.characterEnergyGeneration}
             precisionMultiplier={props.attackUpgradeCost}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}

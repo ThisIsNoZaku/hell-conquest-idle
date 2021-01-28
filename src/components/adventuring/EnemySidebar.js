@@ -51,6 +51,8 @@ export default function EnemySidebar(props) {
             characterTactics={_.get(props.enemy, "tactics")}
             characterTraits={_.get(props.enemy, "traits")}
 
+            characterEnergyGeneration={_.get(props.enemy, "energyGeneration")}
+
             characterPower={_.get(props.enemy, "combat.power", Decimal(0)).toFixed()}
             characterResilience={_.get(props.enemy, "combat.resilience", Decimal(0)).toFixed()}
             characterEvasion={_.get(props.enemy, "combat.evasion", Decimal(0)).toFixed()}
