@@ -131,6 +131,7 @@ export const Actions = {
                 setActionLog([...getGlobalState().actionLog]);
 
                 if (nextRound.end) {
+                    player.combat.stamina = Decimal(0);
                     if (player.isAlive) {
                         return "recovering";
                     } else {
@@ -211,8 +212,7 @@ export const Actions = {
             const amountToHeal = Decimal.min(playerHealing, player.maximumHp.minus(player.hp));
             player.hp = player.hp.plus(amountToHeal);
 
-            const staminaToRecover = Decimal.min(player.combat.maximumStamina.times(getConfigurationValue("recover_action_stamina_percentage")).ceil(),
-                player.combat.maximumStamina.minus(player.combat.stamina));
+            const staminaToRecover = Decimal(0);
             player.combat.stamina = player.combat.stamina.plus(staminaToRecover);
             if (staminaToRecover.gt(0) || amountToHeal.gt(0)) {
                 const elements = [

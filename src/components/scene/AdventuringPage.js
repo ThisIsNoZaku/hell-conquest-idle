@@ -92,7 +92,7 @@ export default function AdventuringPage(props) {
             roundMessages.forEach(message => pushLogItem(message));
             round.events.forEach(event => {
                 const sourceCharacter = event.source !== null ? getCharacter(event.source.character) : undefined;
-                const targetCharacter = getCharacter(event.target);
+                const targetCharacter = event.target ? getCharacter(event.target) : undefined;
                 const eventHandler = EventHandlers[event.event];
                 switch (event.event) {
                     case "kill":
