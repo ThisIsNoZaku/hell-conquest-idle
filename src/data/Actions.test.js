@@ -43,7 +43,6 @@ describe("Approaching action", function () {
         enemy = new Character({
             id: 1,
             attributes: {},
-            tactics: "defensive",
             powerLevel: 1
         });
         globalState = {
@@ -59,7 +58,6 @@ describe("Approaching action", function () {
         player = new Character({
             id: 0,
             attributes: {},
-            tactics: "defensive",
             powerLevel: 1
         });
     })
@@ -143,7 +141,6 @@ describe("fighting action", function () {
             highestLevelReached: 6,
             traits: {},
             party: 0,
-            tactics: "defensive",
             combat: {
                 precisionPoints: 0,
                 evasionPoints: 0
@@ -160,8 +157,7 @@ describe("fighting action", function () {
                 baseCunning: 1,
                 baseDeceit: 1,
                 baseMadness: 1
-            },
-            tactics: "defensive",
+            }
         });
         globalState = {
             characters: {
@@ -182,7 +178,6 @@ describe("fighting action", function () {
             pendingActions: [],
             enemies: [new Character({
                 id: 1,
-                tactics: "defensive",
                 powerLevel: Decimal(1)
             })]
         };
@@ -207,9 +202,7 @@ describe("fighting action", function () {
             ],
             enemies: [new Character({
                 id: 1,
-                powerLevel: Decimal(1),
-                traits: {},
-                tactics: "defensive"
+                powerLevel: Decimal(1)
             })]
         };
         const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction, setActionLog);
@@ -228,7 +221,6 @@ describe("fighting action", function () {
                 hp: 0,
                 traits: {},
                 party: 1,
-                tactics: "defensive",
                 combat: {
                     precisionPoints: 0,
                     evasionPoints: 0,
@@ -414,13 +406,6 @@ describe("recovering action", function () {
 
         expect(player.hp).toEqual(player.maximumHp);
         expect(pushLogItem).toHaveBeenCalledWith("You recovered 1 health.");
-    });
-    it("if player is missing stamina, they recover some", function () {
-        player.combat.stamina = Decimal(1);
-        Actions["recovering"].complete(null, player, pushLogItem);
-
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina);
-        expect(pushLogItem).toHaveBeenCalledWith("You recovered 1 stamina.");
     });
     it("returns exploring and challenging as next actions", function () {
         const nextActions = Actions["recovering"].complete(null, player, pushLogItem);;
