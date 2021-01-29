@@ -72,18 +72,14 @@ export const Statuses = {
             }
         }
     }),
-    painfulVenom: validatedStatus({
-        name: "Agonizing Venom",
-        description: _.template("Take ${damage_modifier.times(100)}% damage from attacks and ${inflict_damage_at_start_of_round} damage per round."),
+    poisoned: validatedStatus({
+        name: "Poisoned",
+        description: _.template("Take ${inflict_damage_at_start_of_round} damage per round."),
         icon: "icons/icons-129.png",
         effects: {
-            damage_modifier: {
-                target: "self",
-                value: 1.1
-            },
             inflict_damage_at_start_of_round: {
                 target: "self",
-                value: 2.5
+                value: 5
             }
         }
     }),
