@@ -27,9 +27,8 @@ export default function CharacterCombatSummary(props) {
                 <Tooltip title={`Energy ${props.stamina}/${props.maxStamina}`}>
                     <div style={{display: "flex", flexDirection: props.direction, alignItems: "center"}}>
                         <img src="./icons/icons-64.png"/>
-                        <meter style={{width: "100%"}} min={0} max={props.baseMaxStamina}
-                               value={props.stamina}>
-                        </meter>
+                        <meter style={{width: "100%"}} min={0} optimum={1} high={props.maxStamina} value={props.stamina} max={props.maxStamina * 1.001}
+                        />
                     </div>
                 </Tooltip>
             </Grid>
