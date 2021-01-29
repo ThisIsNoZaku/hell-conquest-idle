@@ -8,23 +8,26 @@ describe("character", function () {
     it("throws error if no id", function () {
         expect(() => new Character()).toThrowErrorMatchingSnapshot();
     });
-    it("throws error if no tactics", function () {
-        expect(() => new Character({id: 1, attributes: {}, traits: {}})).toThrowErrorMatchingSnapshot();
+    it("missing tactics becomes 'attrit' and 'block'", function () {
+        expect( new Character({id: 1, attributes: {}, traits: {}}).tactics).toEqual({
+            offensive: "attrit",
+            defensive: "block"
+        });
     });
     it("missing 'statuses' becomes an empty object", function () {
-        expect(new Character({id: 1, attributes: {}, traits: {}, tactics: "defensive", powerLevel: Decimal(1)}))
+        expect(new Character({id: 1, attributes: {}, powerLevel: Decimal(1)}))
             .toMatchObject({
                 statuses: {}
             });
     });
     it("missing 'highestLevelReached' becomes 1", function () {
-        expect(new Character({id: 1, attributes: {}, traits: {}, tactics: "defensive", powerLevel: Decimal(1)}))
+        expect(new Character({id: 1, attributes: {}, traits: {}, powerLevel: Decimal(1)}))
             .toMatchObject({
                 highestLevelReached: Decimal(1)
             });
     });
     it("missing 'isPc' becomes false", function () {
-        expect(new Character({id: 1, attributes: {}, traits: {}, tactics: "defensive", powerLevel: Decimal(1)}))
+        expect(new Character({id: 1, attributes: {}, traits: {}, powerLevel: Decimal(1)}))
             .toMatchObject({
                 isPc: false
             });
@@ -43,7 +46,6 @@ describe("reincarnate", function () {
             id: 0,
             powerLevel: 1,
             attributes: {},
-            tactics: "deceptive"
         });
         getGlobalState.mockReturnValue(globalState);
     });
@@ -86,39 +88,3 @@ describe("reincarnate", function () {
         expect(character.statuses).toEqual({});
     });
 })
-
-describe("character combat stats", function () {
-    it("incoming attack downgrade cost is reduced by evasion", function () {
-        let i = 1;
-        for(i; i <= 20; i++) {
-            const calculatedCost = new Character({
-                id: 0,
-                powerLevel: 1,
-                attributes: {
-                    baseCunning: Decimal(i)
-                },
-                tactics: "aggressive",
-                combat: {
-
-                }
-            }, 0).combat.incomingAttackDowngradeCostMultiplier;
-            expect(calculatedCost).toEqual(Decimal(1).minus(Decimal(i).times(0.1)).times(100));
-        }
-    });
-    it("attack upgrade cost is reduced by precision", function () {
-        let i = 1;
-        for(i; i <= 20; i++) {
-            const calculatedCost = new Character({
-                id: 0,
-                powerLevel: 1,
-                attributes: {
-                    baseDeceit: Decimal(i)
-                },
-                tactics: "deceptive"
-            }, 0).combat.attackUpgradeCostMultiplier;
-            const attributeMod = Decimal(1).minus(Decimal(i).times(1.25).times(Decimal(0.1)));
-            expect(calculatedCost).toEqual(Decimal(100)
-                .times(attributeMod).times(1).ceil());
-        }
-    });
-});

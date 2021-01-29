@@ -1,5 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`character throws error if no id 1`] = `"Cannot read property 'tactics' of undefined"`;
-
-exports[`character throws error if no tactics 1`] = `"Character failed validation: ValidationError: \\"tactics\\" is required"`;
