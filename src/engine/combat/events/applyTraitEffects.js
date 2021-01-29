@@ -13,6 +13,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
         const effectDefinition = effectsToApply[effect];
         switch (effect) {
             case "add_statuses":
+                // TODO: Refactor into method.
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
                     const stacks = Decimal(effectDefinition[status].stacks)
@@ -20,7 +21,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     const max = evaluateExpression(effectDefinition[status].max, {
                         tier: Decimal(event.source.character.traits[traitId])
                     });
-                    const duration = evaluateExpression(effectDefinition[status].duration, {});
+                    const duration = effectDefinition[status].duration || 1;
                     targets.forEach(target => {
                         const statusUuid = v4();
                         const existingStatus = (target.statuses[status] || [])
@@ -46,20 +47,18 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                                 stacks
                             });
                         }
-                        if (duration < 999) {
-                            event.roundEvents.push({
-                                uuid: statusUuid,
-                                event: "add-status",
-                                source: {
-                                    character: event.source.character.id,
-                                    trait: traitId
-                                },
-                                target: target.id,
-                                duration,
-                                status,
-                                stacks
-                            });
-                        }
+                        event.roundEvents.push({
+                            uuid: statusUuid,
+                            event: "add-status",
+                            source: {
+                                character: event.source.character.id,
+                                trait: traitId
+                            },
+                            target: target.id,
+                            duration,
+                            status,
+                            stacks
+                        });
                     })
 
                 });
