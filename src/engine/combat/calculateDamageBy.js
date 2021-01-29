@@ -55,10 +55,7 @@ export default function calculateDamageBy(attacker) {
                     .times(totalMultiplier))
                     .floor();
                 return damage;
-            }, {
-                base: Decimal(_.get(attacker, ["combat", "medianDamage"], 0)),
-                multiplier: attributeDamageMultiplier
-            })
+            }, {})
         }
     }
 
