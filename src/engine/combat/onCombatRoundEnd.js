@@ -3,6 +3,7 @@ import {FOR_COMBAT, PERMANENT} from "../../data/Statuses";
 import {generateFatigueDamageEvent, generateRemoveStatusEvent} from "../events/generate";
 import {getCharacter} from "../index";
 import {Decimal} from "decimal.js";
+import {getConfigurationValue} from "../../config";
 
 export default function onCombatRoundEnd(combatants, roundEvents, tick) {
     Object.values(combatants).forEach(combatant => {
@@ -35,12 +36,14 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
             }
         });
         // Gain end-of-round Energy
-        const endOfRoundStaminaGain = combatant.energyGeneration.times(tick).floor();
-        combatant.combat.stamina = combatant.combat.stamina.plus(endOfRoundStaminaGain);
-        const burnDamage = combatant.combat.stamina.minus(combatant.combat.maximumStamina);
+        const endOfRoundStaminaGain = combatant.energyGeneration.times(tick - combatant.lastActedTick).minus(combatant.combat.fatigue.times(10));
+        combatant.combat.stamina = Decimal.min(combatant.combat.stamina.plus(Decimal.max(endOfRoundStaminaGain, 50)), combatant.combat.maximumStamina);
+        const burnDamage = Decimal.max(0, Decimal(10).minus(endOfRoundStaminaGain));
         if(burnDamage.gt(0)) {
             roundEvents.push(generateFatigueDamageEvent(combatant, combatant, burnDamage));
             combatant.hp = Decimal.max(0, combatant.hp.minus(burnDamage));
         }
+        combatant.combat.fatigue = combatant.combat.fatigue.plus(1);
+        combatant.lastActedTick = tick;
     })
 }
