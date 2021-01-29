@@ -1,5 +1,5 @@
 import {getConfigurationValue} from "./config";
-import {getCharacter, getGlobalState} from "./engine";
+import {getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
@@ -11,6 +11,8 @@ import evaluateExpression from "./engine/general/evaluateExpression";
 import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
 import calculateCharacterStamina from "./engine/general/calculateCharacterStamina";
+import {AttackActions, DefenseActions} from "./data/CombatActions";
+import {DamageTypes} from "./data/DamageTypes";
 
 export class Character {
     constructor(props, party) {
@@ -38,28 +40,63 @@ export class Character {
         this.highestLevelEnemyDefeated = props.highestLevelEnemyDefeated || 0;
         this.combat = new CombatStats(this, props.combat);
         this.appearance = props.appearance || props._appearance;
+        this.lastActedTick = props.lastActedTick || 0;
 
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
+    }
+
+    get damageResistances() {
+        return Object.keys(DamageTypes).reduce((resistances, nextType)=>{
+            resistances[nextType] = Object.keys(Traits)
+                .reduce((total, nextTrait)=>{
+                    const damageResistance = _.get(Traits[nextTrait], ["continuous", "trigger_effects", "damage_resistance"], {});
+                    return total.plus(damageResistance.type === nextType ? damageResistance.percentage * this.traits[nextTrait] : 0);
+                }, Decimal(0));
+            return resistances;
+        }, {})
     }
 
     levelUp() {
         this.powerLevel = this.powerLevel.plus(1);
         Creatures[this.appearance].traits.forEach(trait => {
-            getGlobalState().unlockedTraits[trait] = this.powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
+            const gs = getGlobalState();
+            gs.unlockedTraits[trait] = this.powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
         });
+    }
+
+    get attacks() {
+        return Tactics.offensive[this.tactics.offensive].actions.filter(action => {
+            return AttackActions[action].basic ||
+                Object.keys(this.traits).reduce((providesAttack, next) => {
+                    return providesAttack || _.get(Traits[next], ["special_actions"], []).includes(action);
+                }, false);
+        });
+    }
+
+    get defenses() {
+        return Tactics.defensive[this.tactics.defensive].actions.filter(action => {
+            return DefenseActions[action].basic ||
+                Object.keys(this.traits).reduce((providesDefense, next) => {
+                    return providesDefense || _.get(Traits[next], ["special_attacks"], []).includes(action);
+                }, false);
+        });
+    }
+
+    applyStatus(status, stacks, sourceCharacter, sourceTrait) {
+
     }
 
     clearStatuses() {
         Object.keys(this.statuses).forEach(status => {
             this.statuses[status] = this.statuses[status].filter(instance => instance.duration === PERMANENT);
-            if(this.statuses[status].length === 0) {
+            if (this.statuses[status].length === 0) {
                 delete this.statuses[status];
             }
         });
     }
 
     get energyGeneration() {
-        return this.powerLevel.times(.1);
+        return this.latentPowerModifier.plus(1).times(getConfigurationValue("base_power_generated_per_level_per_tick")).floor();
     }
 
     getStatusStacks(status) {
@@ -67,17 +104,9 @@ export class Character {
     }
 
     getActiveStatusInstance(status) {
-        return this.statuses[status].reduce((instance, next) => {
+        return _.get(this.statuses, status, []).reduce((instance, next) => {
             return Decimal(_.get(instance, "ranks", 0)).gt(next.stacks) ? instance : next;
         }, null)
-    }
-
-    setHp(newHealth) {
-        if (this.maximumHp.lt(newHealth)) {
-            this.hp = this.maximumHp;
-        } else {
-            this.hp = newHealth;
-        }
     }
 
     get isAlive() {
@@ -125,12 +154,12 @@ export class Character {
 
     reincarnate(newAppearance, newTraits) {
         const newTraitsValidation = newTraitsSchema.validate(newTraits);
-        if(newTraitsValidation.error) {
+        if (newTraitsValidation.error) {
             throw new Error(`Failed validation: ${newTraitsValidation}`);
         }
         this.appearance = newAppearance;
         this.traits = Object.keys(newTraits).reduce((previousValue, currentValue) => {
-            if(newTraits[currentValue]) {
+            if (newTraits[currentValue]) {
                 previousValue[currentValue] = getGlobalState().unlockedTraits[currentValue];
             }
             return previousValue;
@@ -175,7 +204,7 @@ export class Character {
         const latentPowerMultiplier = 1// this.latentPowerModifier.plus(1);
         powerGained = powerGained.times(latentPowerMultiplier).floor();
         this.absorbedPower = this.absorbedPower.plus(powerGained);
-        while(this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel.plus(1)))) {
+        while (this.absorbedPower.gte(getPowerNeededForLevel(this.powerLevel.plus(1)))) {
             this.absorbedPower = this.absorbedPower.minus(getPowerNeededForLevel(this.powerLevel.plus(1)));
             this.levelUp()
         }
@@ -190,6 +219,7 @@ export class Character {
     refreshBeforeCombat() {
         this.clearStatuses();
         this.combat.fatigue = Decimal(0);
+        this.lastActedTick = 0;
     }
 }
 
@@ -297,28 +327,6 @@ class CombatStats {
     get power() {
         return calculateCombatStat(this.character, "power");
     }
-
-    get attackUpgradeCostMultiplier() {
-        const tacticsCostMultiplier = Decimal(0);
-        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
-            return total.plus(Statuses[next].attack_upgrade_cost_multiplier || 0);
-        }, Decimal(0));
-        const effectScale = Decimal(getConfigurationValue("mechanics.combat.precision.effectPerPoint"));
-        const attributeMultiplier = effectScale.times(this.precision).times(-1);
-        return tacticsCostMultiplier.plus(statusesCostMultiplier)
-            .plus(attributeMultiplier);
-    }
-
-    get incomingAttackDowngradeCostMultiplier() {
-        const tacticsCostMultiplier = Decimal(0);
-        const statusesCostMultiplier = Object.keys(this.character.statuses).reduce((total, next) => {
-            return total.plus(Statuses[next].attack_downgrade_cost_multiplier || 0);
-        }, Decimal(0));
-        const effectScale = Decimal(getConfigurationValue("mechanics.combat.evasion.effectPerPoint"));
-        const attributeMultiplier = effectScale.times(this.evasion).times(-1);
-        return tacticsCostMultiplier.plus(statusesCostMultiplier)
-            .plus(attributeMultiplier);
-    }
 }
 
 export function calculateCombatStat(character, combatAttribute) {
@@ -349,6 +357,7 @@ export function assertHasProperty(propertyName, object) {
 
 const characterPropsSchema = JOI.object({
     id: JOI.number().required(),
+    lastActedTick: JOI.number(),
     attributes: JOI.alternatives().try(
         JOI.object({
             baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
@@ -374,9 +383,9 @@ const characterPropsSchema = JOI.object({
     appearance: JOI.string().empty(''),
     traits: JOI.object().default({}),
     tactics: JOI.object({
-        offensive: JOI.valid(...Object.keys(Tactics.offensive)).required(),
-        defensive: JOI.valid(...Object.keys(Tactics.defensive)).required(),
-    }).required(),
+        offensive: JOI.valid(...Object.keys(Tactics.offensive)).default("attrit"),
+        defensive: JOI.valid(...Object.keys(Tactics.defensive)).default("block"),
+    }).default({offensive: "attrit", defensive: "block"}),
     combat: JOI.object({
         stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
@@ -392,7 +401,12 @@ const characterPropsSchema = JOI.object({
     enabled: JOI.boolean(),
     texture: JOI.string(),
     description: JOI.string(),
-    isRival: JOI.boolean()
+    isRival: JOI.boolean(),
+    damageResistances: JOI.object({
+        acid: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+    }).default({
+        acid: Decimal(0)
+    })
 });
 
 const newTraitsSchema = JOI.object().pattern(JOI.string(), JOI.boolean());
