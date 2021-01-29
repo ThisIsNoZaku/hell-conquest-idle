@@ -112,6 +112,8 @@ export const Actions = {
                         target: player,
                         roundEvents: events
                     });
+                    player.combat.stamina = player.energyGeneration;
+                    enemy.combat.stamina = enemy.energyGeneration;
                     generateRoundActionLogItems({
                         events
                     }).forEach(event => {
