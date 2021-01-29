@@ -17,9 +17,9 @@ export default function (powerLevel, fatigue, latentPowerModifier, traits) {
         return total;
     }, Decimal(1));
     const fatigueModifier = 0;
-    return Decimal.max(0, baseStamina.plus(Decimal(powerLevel).times(250)) // FIXME: Configure energy per level.
+    return Decimal.max(0, baseStamina.plus(Decimal(powerLevel).times(100)) // FIXME: Configure energy per level.
         .times(traitMultiplier)
-        .times(latentPowerModifier.plus(1))
+        // .times(latentPowerModifier.plus(1))
         .minus(fatigueModifier)
         .floor());
 };
