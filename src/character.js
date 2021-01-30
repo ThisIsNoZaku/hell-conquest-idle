@@ -11,7 +11,6 @@ import evaluateExpression from "./engine/general/evaluateExpression";
 import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
 import calculateCharacterStamina from "./engine/general/calculateCharacterStamina";
-import {AttackActions, DefenseActions} from "./data/CombatActions";
 import {DamageTypes} from "./data/DamageTypes";
 
 export class Character {
@@ -41,13 +40,20 @@ export class Character {
         this.combat = new CombatStats(this, props.combat);
         this.appearance = props.appearance || props._appearance;
         this.lastActedTick = props.lastActedTick || 0;
+        this.temporaryTraits = props.temporaryTraits || {};
 
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
 
+    get allTraits() {
+        return _.mergeWith({}, this.traits, this.temporaryTraits, function (permanentTrait, temporaryTrait, traitId) {
+            return Decimal.max(permanentTrait || 0, temporaryTrait || 0);
+        })
+    }
+
     get damageResistances() {
         return Object.keys(DamageTypes).reduce((resistances, nextType)=>{
-            resistances[nextType] = Object.keys(Traits)
+            resistances[nextType] = Object.keys(this.allTraits)
                 .reduce((total, nextTrait)=>{
                     const damageResistance = _.get(Traits[nextTrait], ["continuous", "trigger_effects", "damage_resistance"], {});
                     return total.plus(damageResistance.type === nextType ? damageResistance.percentage * this.traits[nextTrait] : 0);
@@ -64,22 +70,16 @@ export class Character {
         });
     }
 
-    get attacks() {
-        return Tactics.offensive[this.tactics.offensive].actions.filter(action => {
-            return AttackActions[action].basic ||
-                Object.keys(this.traits).reduce((providesAttack, next) => {
-                    return providesAttack || _.get(Traits[next], ["special_actions"], []).includes(action);
-                }, false);
-        });
+    get attackEnhancements() {
+        return Object.keys(this.traits)
+            .map((trait) => _.get(Traits[trait], ["attack_enhancement"]))
+            .filter(x => x);
     }
 
-    get defenses() {
-        return Tactics.defensive[this.tactics.defensive].actions.filter(action => {
-            return DefenseActions[action].basic ||
-                Object.keys(this.traits).reduce((providesDefense, next) => {
-                    return providesDefense || _.get(Traits[next], ["special_attacks"], []).includes(action);
-                }, false);
-        });
+    get defenseEnhancements() {
+        return Object.keys(this.traits)
+            .map((trait) => _.get(Traits[trait], ["defense_enhancement"]))
+            .filter(x => x);
     }
 
     applyStatus(status, stacks, sourceCharacter, sourceTrait) {

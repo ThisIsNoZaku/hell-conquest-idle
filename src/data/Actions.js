@@ -134,6 +134,8 @@ export const Actions = {
 
                 if (nextRound.end) {
                     player.combat.stamina = Decimal(0);
+                    player.combat.temporaryTraits = {};
+                    enemy.combat.temporaryTraits = {};
                     if (player.isAlive) {
                         return "recovering";
                     } else {
