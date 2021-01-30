@@ -37,7 +37,7 @@ const eventEffects = modifierEffects.keys({
     }, {})),
     change_stamina: JOI.object({
         target: effectTarget,
-        value: [JOI.string(), JOI.number()]
+        percentage_of_maximum_stamina: [JOI.string(), JOI.number()]
     })
 });
 

@@ -40,16 +40,16 @@ export const Traits = {
         name: "Fatal Sting",
         description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> and inflicting ${tier.times(50)}% more damage on Devastating hits."),
         icon: "./icons/icons-1.png"
-    }, ["killer", "painfulVenom"])),
+    }, ["killer", "venomous"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-1.png",
-        description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}%.")
+        description: _.template("This Demon's undead stamina increases the cost to downgrade its attackEnhancements by ${tier.times(10)}%.")
     }, ["mindless", "unstoppable"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
         icon: "./icons/icons-113.png",
-        description: _.template("This Demon dances around foes while it's fierce attacks can punch right through even armor, increasing both Precision and Evasion by ${tier.times(20)}%. ")
+        description: _.template("This Demon dances around foes while it's fierce attackEnhancements can punch right through even armor, increasing both Precision and Evasion by ${tier.times(20)}%. ")
     }, ["precise", "evasive"])),
     relentless: validatedTrait(generateTrait({
         name: "Tireless",
@@ -65,7 +65,7 @@ export const Traits = {
         name: "Poisonous Hunter",
         icon: "./icons/icons-4.png",
         description: _.template("Sudden strikes and deadly venom are what this Demon uses to kill, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> with Devastating hits.")
-    }, ["painfulVenom", "swift"])),
+    }, ["venomous", "swift"])),
     sharedPain: validatedTrait(generateTrait({
         name: "Shared Pain",
         icon: "./icons/icons-146.png",

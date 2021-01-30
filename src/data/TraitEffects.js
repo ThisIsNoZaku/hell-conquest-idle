@@ -2,21 +2,22 @@ import {PERMANENT} from "./Statuses";
 
 export const TraitEffects = {
     acidic: {
+        attack_enhancement: {
+            energy_cost_multiplier: 2,
+            change_damage_type: "acid"
+        },
         continuous: {
             trigger_effects: {
-
+                damage_resistance: {
+                    target: "self",
+                    type: "acid",
+                    percentage: 20
+                }
             }
         }
     },
     arcane: {
-        continuous: {
-            trigger_effects: {
-                arcaneShield: {
-                    target: "self",
-                    value: .1
-                }
-            }
-        }
+        defense_enhancement: "arcaneShield"
     },
     bloodthirsty: {
         on_hit: {
@@ -76,7 +77,8 @@ export const TraitEffects = {
                 add_statuses: {
                     infected: {
                         target: "enemy",
-                        stacks: 1
+                        stacks: 1,
+                        duration: 999
                     }
                 }
             }
@@ -93,16 +95,16 @@ export const TraitEffects = {
         }
     },
     fiery: {
+        attack_enhancement: {
+            energy_cost_multiplier: 2,
+            change_damage_type: "fire"
+        },
         continuous: {
             trigger_effects: {
-                elemental_attack: {
-                    target: "self",
-                    element: "fire"
-                },
                 damage_resistance: {
                     target: "self",
                     type: "fire",
-                    value: .2
+                    percentage: .2
                 }
             }
         }
@@ -114,7 +116,7 @@ export const TraitEffects = {
                     frightened: {
                         target: "enemy",
                         stacks: 1,
-                        duration: 5
+                        duration: 10
                     }
                 }
             }
@@ -187,7 +189,7 @@ export const TraitEffects = {
         }
     },
     learned: {
-        continuous: {
+        on_combat_start: {
             trigger_effects: {
                 trait_mirror: {
                     target: "self",
@@ -201,17 +203,17 @@ export const TraitEffects = {
             trigger_effects: {
                 damage_resistance: {
                     target: "self",
-                    value: .2,
-                    type: "psychic"
+                    type: "psychic",
+                    percentage: 20,
                 }
             }
         }
     },
-    painfulVenom: {
+    venomous: {
         on_solid_hit: {
             trigger_effects: {
                 add_statuses: {
-                    painfulVenom: {
+                    poisoned: {
                         target: "enemy",
                         stacks: 1,
                         duration: 5
@@ -222,7 +224,7 @@ export const TraitEffects = {
         on_devastating_hit: {
             trigger_effects: {
                 add_statuses: {
-                    painfulVenom: {
+                    poisoned: {
                         target: "enemy",
                         stacks: 1,
                         duration: 5
@@ -236,7 +238,7 @@ export const TraitEffects = {
             trigger_effects: {
                 power_modifier: {
                     target: "self",
-                    value: .33
+                    value: .5
                 }
             }
         }
@@ -246,7 +248,7 @@ export const TraitEffects = {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
-                    value: .2
+                    value: .25
                 }
             }
         }
@@ -260,7 +262,7 @@ export const TraitEffects = {
                 },
                 change_stamina: {
                     target: "self",
-                    percentage_of_maximum_stamina: -.1
+                    percentage_of_maximum_stamina: -.05
                 }
             }
         }
@@ -270,7 +272,11 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_stamina_modifier: {
                     target: "self",
-                    value: .1
+                    value: .25
+                },
+                energy_generation_modifier: {
+                    target: "self",
+                    value: .25
                 }
             }
         }
@@ -290,17 +296,17 @@ export const TraitEffects = {
             trigger_effects: {
                 change_stamina: {
                     target: "self",
-                    value: .05
+                    percentage_of_maximum_stamina: .05
                 }
             }
         }
     },
     swarming: {
-        continuous: {
+        on_round_end: {
             trigger_effects: {
-                minimum_damage: {
-                    target: "self",
-                    value: .1
+                health_change: {
+                    target: "enemy",
+                    value: 5
                 }
             }
         }
@@ -309,6 +315,10 @@ export const TraitEffects = {
         continuous: {
             trigger_effects: {
                 power_modifier: {
+                    target: "self",
+                    value: -.1
+                },
+                resilience_modifier: {
                     target: "self",
                     value: -.1
                 },
@@ -329,6 +339,7 @@ export const TraitEffects = {
             trigger_effects: {
                 reflect_damage: {
                     target: "enemy",
+                    type: "psychic",
                     value: .2
                 }
             }
@@ -339,7 +350,7 @@ export const TraitEffects = {
             trigger_effects: {
                 resilience_modifier: {
                     target: "self",
-                    value: .4
+                    value: .25
                 }
             }
         }
@@ -347,9 +358,9 @@ export const TraitEffects = {
     unstoppable: {
         continuous: {
             trigger_effects: {
-                attack_downgrade_cost_multiplier: {
+                block_cost_modifier: {
                     target: "enemy",
-                    value: .1
+                    value: .25
                 }
             }
         }
