@@ -20,7 +20,8 @@ const eventEffects = modifierEffects.keys({
     add_statuses: JOI.object().keys(statusNames.reduce((schemas, nextStatus) => {
         schemas[nextStatus] = JOI.object({
             target: effectTarget,
-            stacks: [JOI.string(), JOI.number().min(0)],
+            stacks: [JOI.string(), JOI.number().min(1)],
+            stacks_per_level: JOI.number().min(1),
             duration: JOI.number().min(-1).default(1),
             max: [JOI.number().min(1), JOI.string()],
             cumulative: JOI.boolean()
