@@ -83,7 +83,7 @@ export const Actions = {
                 applyAction({
                     events: [generateKillEvent(player, enemy)]
                 });
-                return defaultActions;
+                return "recovering";
             } else {
                 const currentEncounter = getGlobalState().currentEncounter;
                 // Start of combat
