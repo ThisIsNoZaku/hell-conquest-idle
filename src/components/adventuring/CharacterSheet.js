@@ -65,7 +65,6 @@ export function CharacterSheet(props) {
         <CharacterCombatStatistics
             characterPowerLevel={props.characterPowerLevel}
             characterStamina={props.characterStamina}
-            calculatedDamage={props.calculatedDamage}
             characterPower={props.characterPower}
             characterResilience={props.characterResilience}
             characterEvasion={props.characterEvasion}
@@ -75,6 +74,15 @@ export function CharacterSheet(props) {
             precisionMultiplier={props.attackUpgradeCost}
             enemyPower={Decimal(_.get(props.enemy, ["combat", "power"], 0)).toFixed()}
             enemyResilience={Decimal(_.get(props.enemy, ["combat", "resilience"], 0)).toFixed()}
+            blockCost={props.blockCost}
+            blockEffect={props.blockEffect}
+            dodgeCost={props.dodgeCost}
+
+            basicAttackCost={props.basicAttackCost}
+            basicAttackDamage={props.basicAttackDamage}
+
+            powerAttackCost={props.powerAttackCost}
+            powerAttackDamage={props.powerAttackDamage}
         />
         <Grid container>
             <Grid item xs={12}>

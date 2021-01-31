@@ -14,6 +14,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {useMediaQuery, useTheme} from "@material-ui/core";
+import calculateReactionCost from "../../../engine/combat/actions/calculateReactionCost";
 
 export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
@@ -228,33 +229,38 @@ export default function CharacterCombatStatistics(props) {
             </Table>}
         </TableContainer>
         <Grid container>
-            <Grid item xs={12}>
-                <strong>Hit Types</strong>
+            <Grid item container xs={12}>
+                <Grid item xs><strong>Attack Type</strong></Grid>
+                <Grid item xs><strong>Cost</strong></Grid>
+                <Grid item xs><strong>Dmg.</strong></Grid>
             </Grid>
             <Grid item container xs={12}>
-                <Grid item xs><em>Type</em></Grid>
-                <Grid item xs><em>Damage</em></Grid>
-                <Grid item xs={1}></Grid>
+                <Grid item xs><strong>Basic Attack</strong></Grid>
+                <Grid item xs>{props.basicAttackCost}</Grid>
+                <Grid item xs>{props.basicAttackDamage}</Grid>
             </Grid>
-            {[-2, -1, -0, 1].map(type => {
-                return <Grid item container xs={12}>
-                    <Grid item xs><em>{HitTypes[type].type}</em></Grid>
-                    <Grid item xs><em style={{color: props.calculatedDamage[type].lt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level"))) ? "red" : (
-                            props.calculatedDamage[type].gt(Decimal(props.characterPowerLevel).times(HitTypes[type].damageMultiplier).times(getConfigurationValue("damage_per_level")).floor()) ? "lightgreen" : "inherit"
-                        ) }}>
-                        {props.calculatedDamage[type].toFixed()}
-                    </em></Grid>
-                    <Grid item xs={1}>
-                        <Tooltip
-                            title={`${HitTypes[type].type} normally deals ${HitTypes[type].damageMultiplier * 100}% of Solid hit damage.`}>
-                            <Help/>
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-            })}
+            <Grid item container xs={12}>
+                <Grid item xs><strong>Power Attack</strong></Grid>
+                <Grid item xs>{props.powerAttackCost}</Grid>
+                <Grid item xs>{props.powerAttackDamage}</Grid>
+            </Grid>
         </Grid>
         <Grid container>
-
+            <Grid item container xs={12}>
+                <Grid item xs><strong>Defense Type</strong></Grid>
+                <Grid item xs><strong>Cost</strong></Grid>
+                <Grid item xs><strong>Effect</strong></Grid>
+            </Grid>
+            <Grid item container xs={12}>
+                <Grid item xs><strong>Block</strong></Grid>
+                <Grid item xs>{props.blockCost}</Grid>
+                <Grid item xs>{props.blockEffect}% Damage</Grid>
+            </Grid>
+            <Grid item container xs={12}>
+                <Grid item xs><strong>Dodge</strong></Grid>
+                <Grid item xs>{props.dodgeCost}</Grid>
+                <Grid item xs>Attack Misses</Grid>
+            </Grid>
         </Grid>
     </Grid>
 }
