@@ -4,7 +4,7 @@ export const Tactics = {
             title: "Overwhelming",
             description: "",
             strategy: "power",
-            actions: ["acidSpit", "fireBlast", "powerAttack"],
+            actions: ["powerAttack", "basicAttack"],
             energyCeiling: 0, // Always spend energy to perform actions if energy is above this percentage.
             energyFloor: 0
         },
@@ -12,7 +12,7 @@ export const Tactics = {
             title: "Attrition",
             description: "",
             strategy: "attrition",
-            actions: ["arcaneShield", "acidSpit", "fireBlast", "basicAttack"],
+            actions: ["basicAttack"],
             energyCeiling: .8, // Always spend energy to perform actions if energy is above this percentage.
             energyFloor: .5 // Don't spend energy to perform actions if energy is below this percentage
         },
@@ -20,7 +20,7 @@ export const Tactics = {
             title: "Counter",
             description: "",
             strategy: "counter",
-            actions: ["acidSpit", "fireBlast", "powerAttack", "arcaneShield"],
+            actions: ["powerAttack"],
             energyCeiling: .75, // Always spend energy to perform actions if energy is above this percentage.
             energyFloor: .25 // Don't spend energy to perform actions if energy is below this percentage
         }
