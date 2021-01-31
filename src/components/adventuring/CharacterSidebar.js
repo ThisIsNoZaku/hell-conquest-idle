@@ -49,6 +49,7 @@ export default function CharacterSidebar(props) {
     return <Paper style={!character || character.isAlive ? styles.alive : styles.dead}>
         {props.player && <CharacterSheet
             appearance={_.get(character, "appearance")}
+            characterName={_.get(character, "name")}
             characterPowerLevel={_.get(character, "powerLevel", Decimal(1)).toFixed()}
             characterAbsorbedPower={_.get(character, "absorbedPower", Decimal(1)).toFixed()}
             characterAdjectives={_.get(character, "adjectives", [])}
