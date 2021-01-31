@@ -7,14 +7,20 @@ import resolveAction from "../combat/actions/resolveAction";
 import triggerEvent from "./triggerEvent";
 import calculateDamageBy from "../combat/calculateDamageBy";
 import calculateReactionCost from "../combat/actions/calculateReactionCost";
+import {HitTypes} from "../../data/HitTypes";
 
 jest.mock("../index");
+
+const traitBase = {
+    name: "test",
+    icon: "icon"
+}
 
 describe("acidic effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.acidEffect = generateTrait({}, ["acidic"]);
+        Traits.acidEffect = generateTrait({...traitBase}, ["acidic"]);
         player = new Character({
             id: 0,
             traits: {
@@ -25,10 +31,13 @@ describe("acidic effect", function () {
             id: 1
         });
     });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("gives an 'acid' attack enhancement ", function () {
         expect(player.attackEnhancements).toContainEqual({
             change_damage_type: "acid",
-            energy_cost_multiplier: 2
+            additional_energy_cost_modifier: .25
         });
     });
     it("gives acid damage resistance", function () {
@@ -40,7 +49,7 @@ describe("arcane effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["arcane"]);
+        Traits.test = generateTrait({...traitBase}, ["arcane"]);
         player = new Character({
             id: 0,
             traits: {
@@ -50,15 +59,23 @@ describe("arcane effect", function () {
         enemy = new Character({
             id: 1
         });
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("gives arcane shield defense enhancement", function () {
-        expect(player.defenseEnhancements).toContain("arcaneShield");
+        expect(player.defenseEnhancements).toContainEqual({
+            additional_block_damage_reduction: -.15,
+            additional_energy_cost_modifier: .25
+        });
     });
     it("performing block with Arcane shield costs additional stamina and reduces damage further", function () {
         const roundEvents = [];
-        player.combat.stamina = Decimal(1000);
-        resolveAction(player, {0: player, 1: enemy}, roundEvents, 100);
-
+        player.combat.stamina = Decimal(100);
+        enemy.combat.stamina = Decimal(100);
+        resolveAction(enemy, {0: player, 1: enemy}, roundEvents, 100);
+        expect(player.combat.stamina).toEqual(Decimal(100).minus(Decimal(25).times(1.15).floor()));
+        expect(player.hp).toEqual(player.maximumHp.minus(15 * (HitTypes[-1].damageMultiplier - .15)));
     });
 })
 
@@ -66,7 +83,7 @@ describe("bloodthirsty effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["bloodthirsty"]);
+        Traits.test = generateTrait({...traitBase}, ["bloodthirsty"]);
         player = new Character({
             id: 0,
             traits: {
@@ -76,6 +93,9 @@ describe("bloodthirsty effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("add stacks of Berserk on hit", function () {
         const roundEvents = [];
@@ -111,7 +131,7 @@ describe("cannibal effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["cannibal"]);
+        Traits.test = generateTrait({...traitBase}, ["cannibal"]);
         player = new Character({
             id: 0,
             traits: {
@@ -121,6 +141,9 @@ describe("cannibal effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds stacks of Engorged on kill", function () {
         const roundEvents = [];
@@ -166,7 +189,7 @@ describe("crushing effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["crushing"]);
+        Traits.test = generateTrait({...traitBase}, ["crushing"]);
         player = new Character({
             id: 0,
             traits: {
@@ -176,6 +199,9 @@ describe("crushing effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds stacks of Crushed on solid hit for 2 actions", function () {
         const roundEvents = [];
@@ -261,7 +287,7 @@ describe("diseased effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["diseased"]);
+        Traits.test = generateTrait({...traitBase}, ["diseased"]);
         player = new Character({
             id: 0,
             traits: {
@@ -271,6 +297,9 @@ describe("diseased effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds stacks of diseased to enemy on being hit", function () {
         const roundEvents = [];
@@ -318,12 +347,15 @@ describe("diseased effect", function () {
 describe("evasive effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["evasive"]);
+        Traits.test = generateTrait({...traitBase}, ["evasive"]);
         player = new Character({
             id: 0,
             traits: {test: 1}
         })
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("increases character evasion", function () {
         expect(player.combat.evasion).toEqual(Decimal(1.4));
     })
@@ -332,17 +364,20 @@ describe("evasive effect", function () {
 describe("fiery effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["fiery"]);
+        Traits.test = generateTrait({...traitBase}, ["fiery"]);
         player = new Character({
             id: 0,
             traits: {
                 test: 1
             }
         })
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("gives the fire attack enhancement", function () {
         expect(player.attackEnhancements).toContainEqual({
-            energy_cost_multiplier: 2,
+            additional_energy_cost_modifier: .5,
             change_damage_type: "fire"
         });
     });
@@ -357,7 +392,7 @@ describe("frightening effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["frightening"]);
+        Traits.test = generateTrait({...traitBase}, ["frightening"]);
         player = new Character({
             id: 0,
             traits: {
@@ -367,6 +402,9 @@ describe("frightening effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds stacks of frightened at combat start", function () {
         const roundEvents = [];
@@ -401,7 +439,7 @@ describe("grappler effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["grappler"]);
+        Traits.test = generateTrait({...traitBase}, ["grappler"]);
         player = new Character({
             id: 0,
             traits: {
@@ -411,6 +449,9 @@ describe("grappler effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("add stacks of restrained on solid hit", function () {
         const roundEvents = [];
@@ -492,7 +533,7 @@ describe("insubstantial effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["insubstantial"]);
+        Traits.test = generateTrait({...traitBase}, ["insubstantial"]);
         player = new Character({
             id: 0,
             traits: {
@@ -511,6 +552,9 @@ describe("insubstantial effect", function () {
             }
         });
     });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("reduces the physical damage you deal and take", function () {
         const playerStartingHp = player.hp;
         player.combat.stamina = player.combat.maximumStamina;
@@ -526,11 +570,12 @@ describe("killer effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["killer"]);
+        delete Traits.killer;
+        Traits.killer = generateTrait({...traitBase}, ["killer"]);
         player = new Character({
             id: 0,
             traits: {
-                test: 1
+                killer: 1
             }
         });
         enemy = new Character({
@@ -538,14 +583,15 @@ describe("killer effect", function () {
         });
     });
     it("increases devastating hit damage", function () {
-        const damage = calculateDamageBy(player).against(enemy);
+        const damage = calculateDamageBy(player).using({primary: "basicAttack", enhancements: []})
+            .against(enemy).using({primary: "none", enhancements: []});
         expect(damage)
             .toEqual({
                 "-2": Decimal(0),
-                "-1": Decimal(.33 * 15).floor(),
+                "-1": Decimal(.75 * 15).floor(),
                 0: Decimal(15),
                 1: Decimal(33).floor()
-            })
+            });
     });
 });
 
@@ -553,7 +599,7 @@ describe("large effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["large"]);
+        Traits.test = generateTrait({...traitBase}, ["large"]);
         player = new Character({
             id: 0,
             traits: {
@@ -563,6 +609,9 @@ describe("large effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("modifies power, resilience, precision and evasion", function () {
         expect(player.combat.power).toEqual(Decimal(1.2));
@@ -576,7 +625,7 @@ describe("learned effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["learned"])
+        Traits.test = generateTrait({...traitBase}, ["learned"])
         player = new Character({
             id: 0,
             traits: {
@@ -589,6 +638,9 @@ describe("learned effect", function () {
                 terrifyingSkitter: 1
             }
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds the enemy's traits to your own", function () {
         triggerEvent({
@@ -611,7 +663,7 @@ describe("mindless effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.acidEffect = generateTrait({}, ["mindless"]);
+        Traits.acidEffect = generateTrait({...traitBase}, ["mindless"]);
         player = new Character({
             id: 0,
             traits: {
@@ -622,6 +674,9 @@ describe("mindless effect", function () {
             id: 1
         });
     });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("gives psychic damage resistance", function () {
         expect(player.damageResistances.psychic).toEqual(Decimal(20));
     });
@@ -631,7 +686,7 @@ describe("venomous effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["venomous"]);
+        Traits.test = generateTrait({...traitBase}, ["venomous"]);
         player = new Character({
             id: 0,
             traits: {
@@ -641,6 +696,9 @@ describe("venomous effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("adds stacks of Poisoned on devastating hit", function () {
         triggerEvent({
@@ -675,12 +733,15 @@ describe("venomous effect", function () {
 describe("powerful effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["powerful"]);
+        Traits.test = generateTrait({...traitBase}, ["powerful"]);
         player = new Character({
             id: 0,
             traits: {test: 1}
         })
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("increases character power", function () {
         expect(player.combat.power).toEqual(Decimal(1.5));
     })
@@ -689,12 +750,15 @@ describe("powerful effect", function () {
 describe("precise effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["precise"]);
+        Traits.test = generateTrait({...traitBase}, ["precise"]);
         player = new Character({
             id: 0,
             traits: {test: 1}
         })
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("increases character precision", function () {
         expect(player.combat.precision).toEqual(Decimal(1.25));
     })
@@ -703,14 +767,17 @@ describe("precise effect", function () {
 describe("regenerative effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["regenerative"]);
+        Traits.test = generateTrait({...traitBase}, ["regenerative"]);
         player = new Character({
             id: 0,
             traits: {
                 test: 1
             }
         });
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("recovers hp on end of round", function () {
         player.hp = Decimal(1);
         const roundEvents = [];
@@ -745,13 +812,16 @@ describe("regenerative effect", function () {
 describe("relentless effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["relentless"]);
+        Traits.test = generateTrait({...traitBase}, ["relentless"]);
         player = new Character({
             id: 0,
             traits: {
                 test: 1
             }
         })
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("increases maximum stamina", function () {
         expect(player.combat.maximumStamina).toEqual(Decimal(250));
@@ -764,7 +834,7 @@ describe("relentless effect", function () {
 describe("robust effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["robust"]);
+        Traits.test = generateTrait({...traitBase}, ["robust"]);
         player = new Character({
             id: 0,
             traits: {
@@ -781,7 +851,7 @@ describe("sadistic effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["sadistic"]);
+        Traits.test = generateTrait({...traitBase}, ["sadistic"]);
         player = new Character({
             id: 0,
             traits: {
@@ -791,6 +861,9 @@ describe("sadistic effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("gives energy on hit", function () {
         const roundEvents = [];
@@ -815,7 +888,7 @@ describe("swarming effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["swarming"]);
+        Traits.test = generateTrait({...traitBase}, ["swarming"]);
         player = new Character({
             id: 0,
             traits: {
@@ -825,6 +898,9 @@ describe("swarming effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("inflicts damage at end of round", function () {
         const roundEvents = [];
@@ -858,7 +934,7 @@ describe("small effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["small"]);
+        Traits.test = generateTrait({...traitBase}, ["small"]);
         player = new Character({
             id: 0,
             traits: {
@@ -868,6 +944,9 @@ describe("small effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("modifies power, resilience, precision and evasion", function () {
         expect(player.combat.power).toEqual(Decimal(.9));
@@ -881,7 +960,7 @@ describe("thorns effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["thorns"]);
+        Traits.test = generateTrait({...traitBase}, ["thorns"]);
         player = new Character({
             id: 0,
             traits: {
@@ -891,6 +970,9 @@ describe("thorns effect", function () {
         enemy = new Character({
             id: 1
         });
+    });
+    afterEach(() => {
+        delete Traits.test;
     });
     it("reflects damage", function () {
         const roundEvents = [];
@@ -913,12 +995,15 @@ describe("thorns effect", function () {
 describe("tough effect", function () {
     let player;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["tough"]);
+        Traits.test = generateTrait({...traitBase}, ["tough"]);
         player = new Character({
             id: 0,
             traits: {test: 1}
-        })
-    })
+        });
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("increases character resilience", function () {
         expect(player.combat.resilience).toEqual(Decimal(1.25));
     })
@@ -928,7 +1013,7 @@ describe("unstoppable effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({}, ["unstoppable"]);
+        Traits.test = generateTrait({...traitBase}, ["unstoppable"]);
         player = new Character({
             id: 0,
             traits: {test: 1}
@@ -936,9 +1021,12 @@ describe("unstoppable effect", function () {
         enemy = new Character({
             id: 1
         });
-    })
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
     it("increases energy cost to block your attacks", function () {
         const blockCost = calculateReactionCost(player, {primary:"block", enhancements: []}, player);
         expect(blockCost).toEqual(Decimal(25 * 1.15).floor());
-    })
+    });
 });
