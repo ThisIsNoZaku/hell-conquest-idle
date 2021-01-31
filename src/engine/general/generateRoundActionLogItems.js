@@ -3,6 +3,7 @@ import {Statuses} from "../../data/Statuses";
 import {Decimal} from "decimal.js";
 import {HitTypes} from "../../data/HitTypes";
 import {AttackActions, DefenseActions} from "../../data/CombatActions";
+import {enableTutorial} from "../tutorials";
 
 export default function generateRoundActionLogItems(round) {
     const actionMessages = [];
@@ -31,8 +32,8 @@ function describeEvent(event) {
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
-            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack but missed!`;
-            const reaction = event.reaction !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction].name} the attack.` : null;
+            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action.primary].name} and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action.primary].name} attack but missed!`;
+            const reaction = event.reaction.primary !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction.primary].name} the attack.` : null;
             return [base, reaction].filter(e => e !== null).join(" ");
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
