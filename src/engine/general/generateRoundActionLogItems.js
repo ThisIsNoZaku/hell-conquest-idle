@@ -31,8 +31,8 @@ function describeEvent(event) {
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
-            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack but missed!`;
-            const reaction = event.reaction !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction].name} the attack.` : "";
+            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${AttackActions[event.action].name} attack but missed!`;
+            const reaction = event.reaction !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction].name} the attack.` : null;
             return [base, reaction].filter(e => e !== null).join(" ");
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
@@ -42,7 +42,8 @@ function describeEvent(event) {
         case "add-status":
             const numStacks = Decimal(event.stacks);
             const duration = Decimal(event.duration);
-            return `${targetName} gained ${numStacks.toFixed()} stack${numStacks.eq(1) ? "" : "s"} of ${Statuses[event.status].name} for ${event.duration} action${duration.eq(1) ? "" : "s"}.`;
+            const durationDescription = event.duration === -1 ? 'permanently.' : `for ${event.duration} action${duration.eq(1) ? "" : "s"}.`;
+            return `${targetName} gained ${numStacks.toFixed()} stack${numStacks.eq(1) ? "" : "s"} of ${Statuses[event.status].name} ${durationDescription}`;
         case "remove-status": {
             const stacks = Decimal(event.stacks);
             return `${targetName} removed ${stacks.toFixed()} stack${stacks.eq(0)?"":"s"} of ${Statuses[event.status].name}.`;
