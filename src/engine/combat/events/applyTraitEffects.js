@@ -15,8 +15,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 // TODO: Refactor into method.
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
-                    const stacks = Decimal(effectDefinition[status].stacks)
-                        .times(event.source.character.traits[traitId]);
+                    const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(event.source.character.traits[traitId]) :
+                        Decimal(effectDefinition[status].stacks_per_level).times(event.source.character.traits[traitId]).times(event.source.character.powerLevel);
                     const max = evaluateExpression(effectDefinition[status].max, {
                         tier: Decimal(event.source.character.traits[traitId])
                     });
