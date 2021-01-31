@@ -96,7 +96,10 @@ export class Character {
     }
 
     get energyGeneration() {
-        return this.latentPowerModifier.plus(1).times(getConfigurationValue("base_power_generated_per_level_per_tick")).floor();
+        const traitModifier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
+            return previousValue.plus(_.get(Traits[currentValue], ["continuous", "trigger_effects", "energy_generation_modifier", "value"], 0));
+        }, Decimal(0))
+        return this.latentPowerModifier.plus(traitModifier).plus(1).times(getConfigurationValue("base_power_generated_per_level_per_tick"));
     }
 
     getStatusStacks(status) {
@@ -134,9 +137,7 @@ export class Character {
             .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint"));
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
-            return previousValue.plus(_.get(traitModifier, "target") === "self" ? evaluateExpression(traitModifier.value, {
-                tier: this.traits[currentValue]
-            }) : 0);
+            return previousValue.plus(_.get(traitModifier, "target") === "self" ? traitModifier.value : 0);
         }, Decimal(0));
         const statusMultiplier = Object.keys(this.statuses).reduce((previousValue, currentValue) => {
             const traitModifier = evaluateExpression(_.get(Statuses, [currentValue, "effects", "maximum_health_modifier", "value"], 0), {
@@ -148,8 +149,7 @@ export class Character {
         const totalMultiplier = attributeMultiplier.plus(traitMultiplier).plus(statusMultiplier).plus(1);
 
         return Decimal.max(1, base.plus(fromLevel).times(this.latentPowerModifier.plus(1))
-            .times(totalMultiplier)
-            .floor());
+            .times(totalMultiplier)).floor();
     }
 
     reincarnate(newAppearance, newTraits) {
