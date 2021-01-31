@@ -218,7 +218,7 @@ export const TraitEffects = {
                 add_statuses: {
                     poisoned: {
                         target: "enemy",
-                        stacks: 1,
+                        stacks_per_level: 1,
                         duration: 5
                     }
                 }
@@ -229,7 +229,7 @@ export const TraitEffects = {
                 add_statuses: {
                     poisoned: {
                         target: "enemy",
-                        stacks: 1,
+                        stacks_per_level: 1,
                         duration: 5
                     }
                 }
