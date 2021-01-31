@@ -38,6 +38,15 @@ const eventEffects = modifierEffects.keys({
     change_stamina: JOI.object({
         target: effectTarget,
         percentage_of_maximum_stamina: [JOI.string(), JOI.number()]
+    }),
+    change_health: JOI.object({
+        target: effectTarget,
+        percentage_of_maximum_health: [JOI.string(), JOI.number()],
+        value: [JOI.string(), JOI.number()]
+    }),
+    trait_mirror: JOI.object({
+        target: effectTarget,
+        value: JOI.number()
     })
 });
 
@@ -66,6 +75,14 @@ const onCombatStartValidator = onRoundEndValidator;
 const traitValidator = JOI.object({
     name: JOI.string().required(),
     icon: JOI.string().required(),
+    attack_enhancement: JOI.object({
+        additional_energy_cost_modifier: JOI.number(),
+        change_damage_type: JOI.string()
+    }),
+    defense_enhancement: JOI.object({
+        additional_energy_cost_modifier: JOI.number(),
+        additional_block_damage_reduction: JOI.number(),
+    }),
     description: JOI.function(),
     on_round_end: onRoundEndValidator,
     on_hit: onAttackHitValidator,

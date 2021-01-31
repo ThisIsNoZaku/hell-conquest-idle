@@ -3,7 +3,7 @@ import {PERMANENT} from "./Statuses";
 export const TraitEffects = {
     acidic: {
         attack_enhancement: {
-            energy_cost_multiplier: 2,
+            additional_energy_cost_modifier: .25,
             change_damage_type: "acid"
         },
         continuous: {
@@ -17,7 +17,10 @@ export const TraitEffects = {
         }
     },
     arcane: {
-        defense_enhancement: "arcaneShield"
+        defense_enhancement: {
+            additional_energy_cost_modifier: .25,
+            additional_block_damage_reduction: -.15
+        }
     },
     bloodthirsty: {
         on_hit: {
@@ -96,7 +99,7 @@ export const TraitEffects = {
     },
     fiery: {
         attack_enhancement: {
-            energy_cost_multiplier: 2,
+            additional_energy_cost_modifier: .5,
             change_damage_type: "fire"
         },
         continuous: {
@@ -256,7 +259,7 @@ export const TraitEffects = {
     regenerative: {
         on_round_end: {
             trigger_effects: {
-                health_change: {
+                change_health: {
                     target: "self",
                     percentage_of_maximum_health: .05
                 },
@@ -304,7 +307,7 @@ export const TraitEffects = {
     swarming: {
         on_round_end: {
             trigger_effects: {
-                health_change: {
+                change_health: {
                     target: "enemy",
                     value: 5
                 }

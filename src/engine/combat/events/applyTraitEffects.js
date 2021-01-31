@@ -4,8 +4,7 @@ import Decimal from "decimal.js";
 import {v4} from "node-uuid";
 import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
-import {generateDamageEvent, generateStaminaChangeEvent} from "../../events/generate";
-import {getCharacter} from "../../index";
+import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
 
 export default function applyTraitEffects(effectsToApply, event, traitId) {
     for (const effect of Object.keys(effectsToApply)) {
@@ -105,8 +104,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         event.source.character,
                         target,
                         damageToDeal,
-                        damageEffect.uuid,
-                        newDamageEffectUuid,
+                        effectDefinition.type,
                         traitId
                     ));
                 });
@@ -114,19 +112,54 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
             case "change_stamina": {
                 const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
                 targets.forEach(target => {
-                    const staminaChange = event.source.character.combat.maximumStamina.times(effectDefinition.value).floor();
+                    const staminaChange = event.source.character.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).floor();
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);
                     const newEffectUuid = v4();
-                    event.source.attack.children.push(newEffectUuid);
+                    if (event.source.attack) {
+                        event.source.attack.children.push(newEffectUuid);
+                    }
                     event.roundEvents.push(generateStaminaChangeEvent(
                         event.source.character,
                         target,
                         staminaChange,
-                        event.source.attack.uuid,
-                        newEffectUuid
+                        _.get(event.source, ["attack", "uuid"]),
+                        traitId,
+                        newEffectUuid,
                     ));
                 });
             }
+                break;
+            case "change_health": {
+                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                targets.forEach(target => {
+                    const healthChange = effectDefinition.percentage_of_maximum_health ?
+                        event.source.character.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(event.source.character.traits[traitId]).floor() :
+                        Decimal(effectDefinition.value).times(event.source.character.traits[traitId]).floor();
+                    target.hp = target.hp.plus(healthChange);
+                    const newEffectUuid = v4();
+                    if (event.source.attack) {
+                        event.source.attack.children.push(newEffectUuid);
+                    }
+                    event.roundEvents.push(generateHealthChangeEvent(
+                        event.source.character,
+                        target,
+                        healthChange,
+                        _.get(event.source, ["attack", "uuid"]),
+                        newEffectUuid,
+                        traitId
+                    ));
+                });
+            }
+                break;
+            case "trait_mirror":
+                const {target} = event;
+                Object.keys(target.traits).forEach(trait => {
+                    const actor = event.source.character;
+                    actor.temporaryTraits = {...target.traits};
+                })
+                break;
+            default:
+                debugMessage(`Did not process effect ${effect}`);
         }
     }
 }

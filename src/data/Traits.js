@@ -88,7 +88,7 @@ export function getTrait(traitId) {
 }
 
 export function generateTrait(baseObject, traits) {
-    return traits.reduce((previousValue, currentValue)=>{
+    return validatedTrait(traits.reduce((previousValue, currentValue)=>{
         if(!TraitEffects[currentValue]) {
             throw new Error(currentValue);
         }
@@ -109,5 +109,5 @@ export function generateTrait(baseObject, traits) {
                     }
             }
         });
-    }, baseObject);
+    }, baseObject));
 }
