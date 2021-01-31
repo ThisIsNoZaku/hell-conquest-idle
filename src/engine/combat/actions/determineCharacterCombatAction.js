@@ -8,16 +8,16 @@ export default function determineCharacterCombatAction(actingCharacter, actorSta
     debugMessage(`Determining action for '${actingCharacter.id}'`)
     const defenseEnergyCosts = {
         none: Decimal(0),
-        block: calculateReactionCost(actingCharacter, "block", enemy),
-        dodge: calculateReactionCost(actingCharacter, "dodge", enemy)
+        block: calculateReactionCost(actingCharacter, {primary: "block", enhancements: enemy.defenseEnhancements}, enemy),
+        dodge: calculateReactionCost(actingCharacter, {primary: "dodge", enhancements: enemy.defenseEnhancements}, enemy)
     }
     // TODO: Over energy ceiling, use most powerful attack
     const energyPercentage = actorStartingEnergy.div(actingCharacter.combat.maximumStamina);
-    return actingCharacter.attacks.reduce((chosen, next)=>{
+    const primaryAction = Tactics.offensive[actingCharacter.tactics.offensive].actions.reduce((chosen, next)=>{
         if(chosen) {
             return chosen;
         }
-        const actionCost = calculateActionCost(actingCharacter, next, enemy);
+        const actionCost = calculateActionCost(actingCharacter, {primary:next, enhancements: actingCharacter.attackEnhancements}, enemy);
         const canAffordAction = actionCost.lte(actingCharacter.combat.stamina);
         const energyPercentAboveFloor = energyPercentage.gte(Tactics.offensive[actingCharacter.tactics.offensive].energyFloor);
         const belowEnergyFloor = energyPercentage.gte(Tactics.offensive[actingCharacter.tactics.offensive].energyCeiling);
@@ -34,4 +34,8 @@ export default function determineCharacterCombatAction(actingCharacter, actorSta
         }
         return chosen;
     }, null) || "none";
+    return {
+        primary: primaryAction,
+        enhancements: actingCharacter.attackEnhancements
+    }
 }

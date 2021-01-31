@@ -13,8 +13,11 @@ export default function calculateReactionCost(actor, reaction, target) {
         const applies = _.get(modifier, "target") === "any" || _.get(modifier, "target") === "enemy";
         return previousValue.plus(applies ? Decimal(modifier.value).times(actor.traits[currentValue]) : 0);
     }, Decimal(0));
+    const enhancementModifier = reaction.enhancements.reduce((previousValue, currentValue, currentIndex) => {
+        return previousValue + (currentValue.additional_energy_cost_modifier || 0);
+    }, 0);
     return base.times(actionCostMultiplier)
-        .times(attributeMultiplier.plus(attackerTraitModifier))
+        .times(attributeMultiplier.plus(attackerTraitModifier).plus(enhancementModifier))
         .floor();
 
 }

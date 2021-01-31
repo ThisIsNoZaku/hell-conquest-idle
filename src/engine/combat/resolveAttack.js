@@ -12,6 +12,7 @@ import defenderWillDowngrade from "./defenderWillDowngrade";
 import calculateActionCost from "./actions/calculateActionCost";
 import calculateReactionCost from "./actions/calculateReactionCost";
 import {AttackActions, DefenseActions} from "../../data/CombatActions";
+import * as _ from "lodash";
 
 export default function resolveAttack(actingCharacter, action, targetedCharacter, reaction, tick) {
     if (typeof tick !== "number") {
@@ -22,7 +23,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     const actionEnergyCost = calculateActionCost(actingCharacter, action, targetedCharacter);
     if(actionEnergyCost.lte(actingCharacter.combat.stamina)) {
         actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(actionEnergyCost);
-        hitLevel = AttackActions[action].hitLevel;
+        hitLevel = AttackActions[action.primary].hitLevel;
     } else {
         action = "none";
     }
@@ -30,7 +31,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     const reactionEnergyCost = calculateReactionCost(targetedCharacter, reaction, actingCharacter);
     if(reactionEnergyCost.lte(targetedCharacter.combat.stamina)) {
         targetedCharacter.combat.stamina = targetedCharacter.combat.stamina.minus(reactionEnergyCost);
-        hitLevel = Math.max(HitTypes.min, hitLevel + DefenseActions[reaction].hitLevelModifier);
+        hitLevel = Math.max(HitTypes.min, hitLevel + DefenseActions[reaction.primary].hitLevelModifier);
     } else {
         reaction = "none";
     }
@@ -39,6 +40,9 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
             attack: generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost)
         };
     }
-    const damageDone = calculateDamageBy(actingCharacter).against(targetedCharacter)[hitLevel];
+    const baseDamage = calculateDamageBy(actingCharacter).using(action)
+        .against(targetedCharacter).using(reaction)[hitLevel];
+    const damageDone = baseDamage;
+    targetedCharacter.hp = Decimal.max(0, targetedCharacter.hp.minus(damageDone));
     return generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
 }
