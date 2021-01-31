@@ -54,9 +54,7 @@ export default function calculateDamageBy(attacker) {
 
                                 const totalMultiplier = Decimal(attributeDamageMultiplier)
                                     .plus(attackerTraitDamageMultiplier)
-                                    .plus(attackerTacticsMultiplier)
                                     .plus(reactionEnhancementModifier)
-                                    .plus(defenderTacticsMultiplier)
                                     .plus(defenderTraitDamageMultiplier);
                                 const latentPowerModifier = Decimal(_.get(attacker, "latentPowerModifier", 0)).plus(1);
                                 damage[nextType] = Decimal.max(0, attackerPowerLevel.times(perLevelDamage)
