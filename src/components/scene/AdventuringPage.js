@@ -1,4 +1,4 @@
-import PlayerStats from "../adventuring/PlayerStats";
+import CharacterSidebar from "../adventuring/CharacterSidebar";
 import TopSection from "../adventuring/TopSection";
 import {
     getCharacter,
@@ -18,6 +18,7 @@ import {useHotkeys} from "react-hotkeys-hook";
 import generateRoundActionLogItems from "../../engine/general/generateRoundActionLogItems";
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
+import {CharacterSheet} from "../adventuring/CharacterSheet";
 
 const styles = {
     root: {
@@ -182,7 +183,7 @@ export default function AdventuringPage(props) {
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
             <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
         </div>
-        <PlayerStats player={player.current} enemy={enemy}/>
+        <CharacterSidebar player={player.current} enemy={enemy}/>
         <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
             <TopSection highestLevelEnemyDefeated={player.current.highestLevelEnemyDefeated}
                         automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
@@ -204,7 +205,7 @@ export default function AdventuringPage(props) {
                            togglePause={p => setPaused(p)}
             />
         </div>
-        <EnemySidebar player={player.current} enemy={enemy}/>
+        <CharacterSidebar player={enemy} enemy={player.current}/>
 
     </div>
 }
