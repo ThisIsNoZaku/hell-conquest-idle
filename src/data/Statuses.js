@@ -57,6 +57,17 @@ export const Statuses = {
             }
         }
     }),
+    infected: validatedStatus({
+        name: "Infected",
+        icon: "icon/icons-1.png",
+        description: _.template(""),
+        effects: {
+            maximum_health_modifier: {
+                target: "self",
+                value: -.01
+            }
+        }
+    }),
     restrained: validatedStatus({
         name: "Restrained",
         description: _.template("Your limbs are bound, multiplying attack upgrade cost by ${attack_upgrade_cost_multiplier.times(100)}% and attack downgrade cost by ${attack_downgrade_cost_multiplier.times(100)}."),
