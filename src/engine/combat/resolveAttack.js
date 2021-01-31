@@ -1,18 +1,10 @@
 import Decimal from "decimal.js";
-import {Tactics} from "../../data/Tactics";
-import {generateAttackEvent, generateDamageEvent, generateHitEvents} from "../events/generate";
-import {getConfigurationValue} from "../../config";
+import {generateAttackEvent,  generateHitEvents} from "../events/generate";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
-import {debugMessage} from "../../debugging";
-import calculateAttackUpgradeCost from "./calculateAttackUpgradeCost";
-import calculateAttackDowngradeCost from "./calculateAttackDowngradeCost";
-import attackerWillUpgrade from "./attackerWillUpgrade";
-import defenderWillDowngrade from "./defenderWillDowngrade";
 import calculateActionCost from "./actions/calculateActionCost";
 import calculateReactionCost from "./actions/calculateReactionCost";
 import {AttackActions, DefenseActions} from "../../data/CombatActions";
-import * as _ from "lodash";
 
 export default function resolveAttack(actingCharacter, action, targetedCharacter, reaction, tick) {
     if (typeof tick !== "number") {
@@ -25,7 +17,8 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(actionEnergyCost);
         hitLevel = AttackActions[action.primary].hitLevel;
     } else {
-        action = "none";
+        action = {primary: "none", enhancements: []};
+        hitLevel = HitTypes.min;
     }
 
     const reactionEnergyCost = calculateReactionCost(targetedCharacter, reaction, actingCharacter);
@@ -33,7 +26,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         targetedCharacter.combat.stamina = targetedCharacter.combat.stamina.minus(reactionEnergyCost);
         hitLevel = Math.max(HitTypes.min, hitLevel + DefenseActions[reaction.primary].hitLevelModifier);
     } else {
-        reaction = "none";
+        reaction = {primary: "none", enhancements: []};
     }
     if(hitLevel === HitTypes.min) {
         return {
