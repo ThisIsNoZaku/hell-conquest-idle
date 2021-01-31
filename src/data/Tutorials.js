@@ -16,7 +16,7 @@ export const Tutorials = {
             "<p><strong>Brutality</strong> makes your attacks deal more damage and increases Health, making your character harder to kill.</p>" +
             "<p><strong>Cunning</strong> increases your Evasion, which lets your character avoid incoming attacks.</p>" +
             "<p><strong>Deceit</strong> increases your Precision, which lets your character increase the severity of their attacks.</p>" +
-            "<p><strong>Madness</strong> increases the level of your Traits and Resilience, which reduces the damage from incoming attacks.</p>" +
+            "<p><strong>Madness</strong> increases your Resilience, which reduces the damage from incoming attacks. High levels additionally increase the Tiers of your traits.</p>" +
             "<p>Spend your first starting points to proceed.</p>"
     },
     "tactics" : {
@@ -46,5 +46,11 @@ export const Tutorials = {
             "<p>When you absorb enough power from other demons your level increases; eventually however, you will find that your current physical form is simply not powerful enough to defeat your enemies.</p>" +
             "<p>When this occurs, you should Reincarnate, selecting a new body, strengthened by the spiritual energy you've absorbed.</p>" +
             "<p>When you reincarnate, you can spend some of your bonus points to also gain Traits from demon you had previously reincarnated as, in addition to the innate one of your new form..</p>"
+    },
+    "energy-burn" : {
+        title: "Energy Burn",
+        body: "<p>When a character generates too much energy during battle, they suffer a phenomenon called Energy Burn.</p>" +
+            "<p>In the same way that mortal creatures will consume their own fat and muscle when starving, Demons will burn their physical forms back into energy to use in battle.</p>" +
+            "<p>Don't</p>"
     }
 }

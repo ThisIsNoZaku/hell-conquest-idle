@@ -38,6 +38,7 @@ function describeEvent(event) {
         case "damage":
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
         case "fatigue-damage":
+            enableTutorial("energy-burn");
             const damage = Decimal(event.value);
             return `${targetName} lose${targetName === "You" ? "" : "s"} ${damage.toFixed()} health from Energy Burn.`;
         case "add-status":
