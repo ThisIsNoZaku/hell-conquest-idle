@@ -182,7 +182,7 @@ describe("fighting action", function () {
             })]
         };
         const nextAction = Actions["fighting"].complete(null, player, pushLogItem, null, null, applyAction);
-        expect(nextAction).toEqual(["exploring", "challenging"]);
+        expect(nextAction).toEqual("recovering");
     });
     it("End of combat when player is dead", function () {
         player.highestLevelReached = 1;
