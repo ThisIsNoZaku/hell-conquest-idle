@@ -7,10 +7,9 @@ import {
     saveGlobalState
 } from "../../engine";
 import BottomSection from "../adventuring/BottomSection";
-import EnemySidebar from "../adventuring/EnemySidebar";
 import React, {useEffect, useRef, useState} from "react";
 import * as _ from "lodash";
-import {config, getConfigurationValue} from "../../config";
+import {getConfigurationValue} from "../../config";
 import {Actions} from "../../data/Actions";
 import {debugMessage} from "../../debugging";
 import {v4} from "node-uuid";
@@ -18,7 +17,6 @@ import {useHotkeys} from "react-hotkeys-hook";
 import generateRoundActionLogItems from "../../engine/general/generateRoundActionLogItems";
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
-import {CharacterSheet} from "../adventuring/CharacterSheet";
 
 const styles = {
     root: {
