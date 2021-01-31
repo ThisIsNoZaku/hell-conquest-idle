@@ -19,9 +19,13 @@ describe("generate round action log", function () {
                     character: 0
                 },
                 children: ["1"],
-                action: "basicAttack",
+                action: {
+                    primary: "basicAttack"
+                },
                 actionEnergyCost: Decimal(25),
-                reaction: "none",
+                reaction: {
+                    primary: "none"
+                },
                 reactionEnergyCost: Decimal(0),
                 target: 1,
                 damage: Decimal(1),
@@ -44,7 +48,7 @@ describe("generate round action log", function () {
         const messages = generateRoundActionLogItems({
             events: [{
                 event: "kill",
-                source: {character:0},
+                source: {character: 0},
                 target: 1,
                 uuid: "0"
             },]
