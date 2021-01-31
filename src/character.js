@@ -41,6 +41,7 @@ export class Character {
         this.appearance = props.appearance || props._appearance;
         this.lastActedTick = props.lastActedTick || 0;
         this.temporaryTraits = props.temporaryTraits || {};
+        this.totalStaminaGainedThisCombat = props.totalStaminaGainedThisCombat;
 
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
@@ -182,6 +183,7 @@ export class Character {
         this.hp = this.maximumHp;
         this.clearStatuses();
         this.combat.refresh();
+        this.totalStaminaGainedThisCombat = Decimal(0);
     }
 
     otherDemonIsGreaterDemon(other) {
@@ -358,6 +360,8 @@ export function assertHasProperty(propertyName, object) {
 const characterPropsSchema = JOI.object({
     id: JOI.number().required(),
     lastActedTick: JOI.number(),
+    temporaryTraits: JOI.object().default({}),
+    totalStaminaGainedThisCombat: JOI.alternatives().try(JOI.object().instance(Decimal), JOI.string(), JOI.number()).default(Decimal(0)),
     attributes: JOI.alternatives().try(
         JOI.object({
             baseBrutality: JOI.alternatives().try(JOI.number(), JOI.string(), JOI.object().instance(Decimal)),
