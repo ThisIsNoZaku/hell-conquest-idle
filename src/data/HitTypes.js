@@ -8,7 +8,7 @@ export const HitTypes = {
     "-1" : {
         type: "Glancing",
         summary: "glancing",
-        damageMultiplier: .33
+        damageMultiplier: .75
     },
     0: {
         type: "Solid",
