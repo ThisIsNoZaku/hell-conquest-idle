@@ -26,13 +26,20 @@ describe('action with overwhelming tactics', function () {
         }, 1);
     });
     it("is a powerAttack with enough stamina", function () {
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("powerAttack");
+        player.combat.stamina = Decimal(1000);
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary:"powerAttack",
+                enhancements: []
+            });
     });
     it("is none if not enough stamina", function () {
         player.combat.stamina = Decimal(0);
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("none");
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "none",
+                enhancements: []
+            });
     });
 });
 
@@ -58,13 +65,20 @@ describe("action with 'attrit' tactics", function () {
         }, 1);
     });
     it("is a small attack with enough stamina", function () {
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("simpleAttack");
+        player.combat.stamina = Decimal(1000);
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary:"basicAttack",
+                enhancements: []
+            });
     });
     it("is none small attack without enough stamina", function () {
         player.combat.stamina = Decimal(0);
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("none");
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "none",
+                enhancements: []
+            });
     });
 });
 
@@ -90,12 +104,18 @@ describe("action with 'counter' tactics", function () {
         }, 1);
     });
     it("is no attack when enemy can dodge", function () {
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("none");
+        expect(determineCharacterCombatAction(player, Decimal(100), enemy))
+            .toEqual({
+                primary: "none",
+                enhancements: []
+            });
     });
     it("is a power attack when enemy cannot dodge", function () {
-        player.combat.stamina = Decimal(0);
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual("powerAttack");
+        player.combat.stamina = Decimal(1000);
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
     });
 });

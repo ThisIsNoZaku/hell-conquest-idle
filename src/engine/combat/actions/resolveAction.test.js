@@ -33,9 +33,15 @@ describe("resolve action", function () {
                 source: {
                     character: 0
                 },
-                action: "powerAttack",
-                actionEnergyCost: Decimal(25 * .9 * 1.5).floor(),
-                reaction: "none",
+                action: {
+                    primary:"powerAttack",
+                    enhancements:[]
+                },
+                actionEnergyCost: Decimal(25 * .9 * 2).floor(),
+                reaction: {
+                    primary:"none",
+                    enhancements:[]
+                },
                 reactionEnergyCost: Decimal(0).floor(),
                 target: 1,
                 uuid: expect.any(String),

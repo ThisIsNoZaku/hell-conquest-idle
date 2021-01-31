@@ -19,10 +19,10 @@ describe("generate round action log", function () {
                     character: 0
                 },
                 children: ["1"],
-                action: "simpleAttack",
+                action: "basicAttack",
                 actionEnergyCost: Decimal(25),
-                reaction: "dodge",
-                reactionEnergyCost: Decimal(25),
+                reaction: "none",
+                reactionEnergyCost: Decimal(0),
                 target: 1,
                 damage: Decimal(1),
                 uuid: "0"
@@ -38,7 +38,7 @@ describe("generate round action log", function () {
                     target: 1,
                 }]
         })
-        expect(messages[0]).toEqual("You scored a Solid hit! Enemy takes 10 damage.");
+        expect(messages[0]).toEqual("You used 25 Energy for a Basic Attack and scored a Solid hit! Enemy takes 10 damage.");
     });
     it("prints kill message", function () {
         const messages = generateRoundActionLogItems({
@@ -80,7 +80,7 @@ describe("generate round action log", function () {
                 uuid: "0"
             }]
         })
-        expect(messages[0]).toEqual("You lose 1 health from exhaustion.");
+        expect(messages[0]).toEqual("You lose 1 health from Energy Burn.");
     });
     it("prints fatigue damage events for enemy", function () {
         const messages = generateRoundActionLogItems({
@@ -95,6 +95,6 @@ describe("generate round action log", function () {
                 uuid: "0"
             }]
         })
-        expect(messages[0]).toEqual("Enemy loses 1 health from exhaustion.");
+        expect(messages[0]).toEqual("Enemy loses 1 health from Energy Burn.");
     });
 });

@@ -4,15 +4,15 @@ import * as _ from "lodash";
 import reincarnateAs from "./reincarnateAs";
 import {Character} from "../../character";
 
-jest.mock("../");
+jest.mock("../index");
 
 describe("reincarnateAt", function () {
     let globalState;
     let player;
     beforeEach(() => {
+        getGlobalState.mockClear();
         player = new Character({
             id: 0,
-            tactics: "defensive",
             highestLevelReached: Decimal(1),
             latentPower: Decimal(0),
             powerLevel: Decimal(1),
@@ -21,6 +21,7 @@ describe("reincarnateAt", function () {
             characters: {
                 0: player
             },
+            unlockedTraits: {},
             unlockedMonsters: {},
             highestLevelEnemyDefeated: Decimal(0)
         }
@@ -51,13 +52,15 @@ describe("reincarnateAt", function () {
             baseMadness: 1,
             baseDeceit: 1
         });
-        expect(getGlobalState().characters[0].reincarnate)
+        expect(globalState.characters[0].reincarnate)
             .toHaveBeenCalledWith(expect.any(String), {});
-        expect(getGlobalState().characters[0].reincarnate)
+        expect(globalState.characters[0].reincarnate)
             .not.toHaveBeenCalledWith("random", {});
     });
     it("recalculates latent power cap on reincarnations after first", function () {
-        getGlobalState().reincarnationCount = 1;
+        globalState.reincarnationCount = 1;
+        globalState.unlockedTraits = {};
+        const gs = getGlobalState();
         player.highestLevelEnemyDefeated = Decimal(1);
         reincarnateAs("random", {
             baseBrutality: 1,
