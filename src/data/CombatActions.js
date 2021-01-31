@@ -37,7 +37,7 @@ export const DefenseActions = {
     },
     dodge: {
         name: "Dodge",
-        energyCostMultiplier: 2,
+        energyCostMultiplier: 3,
         hitLevelModifier: -99
     }
 }
