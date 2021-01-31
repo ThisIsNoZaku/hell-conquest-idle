@@ -112,8 +112,8 @@ export const Actions = {
                         target: player,
                         roundEvents: events
                     });
-                    player.combat.stamina = player.energyGeneration;
-                    enemy.combat.stamina = enemy.energyGeneration;
+                    player.combat.stamina = player.energyGeneration.times(100).floor();
+                    enemy.combat.stamina = enemy.energyGeneration.times(100).floor();
                     generateRoundActionLogItems({
                         events
                     }).forEach(event => {
@@ -134,8 +134,8 @@ export const Actions = {
 
                 if (nextRound.end) {
                     player.combat.stamina = Decimal(0);
-                    player.combat.temporaryTraits = {};
-                    enemy.combat.temporaryTraits = {};
+                    player.temporaryTraits = {};
+                    enemy.temporaryTraits = {};
                     if (player.isAlive) {
                         return "recovering";
                     } else {
