@@ -36,14 +36,15 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
             }
         });
         // Gain end-of-round Energy
-        const endOfRoundStaminaGain = combatant.energyGeneration.times(tick - combatant.lastActedTick).minus(combatant.combat.fatigue.times(10));
+        const endOfRoundStaminaGain = Decimal.min(combatant.energyGeneration.times(tick - combatant.lastActedTick).minus(combatant.combat.fatigue.times(10)).floor(), combatant.combat.maximumStamina.minus(combatant.combat.stamina));
+        combatant.totalStaminaGainedThisCombat = Decimal(combatant.totalStaminaGainedThisCombat).plus(endOfRoundStaminaGain);
         combatant.combat.stamina = Decimal.min(combatant.combat.stamina.plus(Decimal.max(endOfRoundStaminaGain, 50)), combatant.combat.maximumStamina);
-        const burnDamage = Decimal.max(0, Decimal(10).minus(endOfRoundStaminaGain));
+        const burnDamage = Decimal.max(0, combatant.totalStaminaGainedThisCombat.minus(combatant.combat.maximumStamina));
         if(burnDamage.gt(0)) {
             roundEvents.push(generateFatigueDamageEvent(combatant, combatant, burnDamage));
             combatant.hp = Decimal.max(0, combatant.hp.minus(burnDamage));
         }
-        combatant.combat.fatigue = combatant.combat.fatigue.plus(1);
+        // combatant.combat.fatigue = combatant.combat.fatigue.plus(1);
         combatant.lastActedTick = tick;
     })
 }
