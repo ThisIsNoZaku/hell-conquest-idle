@@ -8,6 +8,7 @@ import {Statuses} from "../../data/Statuses";
 import {generateDamageEvent} from "../events/generate";
 import {Decimal} from "decimal.js";
 import {getCharacter} from "../index";
+import * as _ from "lodash";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
@@ -50,6 +51,17 @@ export default function triggerEvent(event) {
             }
         })
     })
+    _.get(event.source, ["attack", "enhancements"], []).forEach(enhancement => {
+        const eventDefinition = enhancement[event.type];
+        if (eventDefinition) {
+            const traitTriggered = doesTraitTrigger(eventDefinition, event);
+            debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
+            const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
+            if (effectsToApply) {
+                applyTraitEffects(effectsToApply, event, enhancement.id);
+            }
+        }
+    });
 }
 
 const eventMatcher = JOI.object({

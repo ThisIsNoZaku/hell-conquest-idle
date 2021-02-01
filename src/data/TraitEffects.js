@@ -50,7 +50,7 @@ export const TraitEffects = {
             }
         }
     },
-    crushing: {
+    crushing: { // TODO: Turn to attack enhancement
         on_solid_hit: {
             trigger_effects: {
                 add_statuses: {
@@ -92,7 +92,7 @@ export const TraitEffects = {
             trigger_effects: {
                 evasion_modifier: {
                     target: "self",
-                    value: .4
+                    value: .5
                 }
             }
         }
@@ -213,23 +213,13 @@ export const TraitEffects = {
         }
     },
     venomous: {
-        on_solid_hit: {
-            trigger_effects: {
+        attack_enhancement: {
+            additional_energy_cost_modifier: .25,
+            on_hit: {
                 add_statuses: {
                     poisoned: {
                         target: "enemy",
-                        stacks_per_level: 1,
-                        duration: 5
-                    }
-                }
-            }
-        },
-        on_devastating_hit: {
-            trigger_effects: {
-                add_statuses: {
-                    poisoned: {
-                        target: "enemy",
-                        stacks_per_level: 1,
+                        stacks_per_level: 2,
                         duration: 5
                     }
                 }
