@@ -85,4 +85,4 @@ export function CharacterSidebar(props) {
     </Paper>
 }
 
-export const MemoizedCharacterSidebar = React.memo(CharacterSidebar);
+export const MemoizedCharacterSidebar = React.memo(CharacterSidebar, () => false);
