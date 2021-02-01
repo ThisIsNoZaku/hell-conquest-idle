@@ -34,7 +34,7 @@ export function CharacterSidebar(props) {
     ]);
     const blockCost = calculateReactionCost(enemy, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
     const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance)=>{
-        return total + enhance.additional_block_damage_reduction;
+        return total + (enhance.additional_block_damage_reduction || 0);
     }, 0)).times(100).toFixed();
     const dodgeCost = calculateReactionCost(enemy, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
 
