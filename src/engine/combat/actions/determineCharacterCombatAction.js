@@ -13,6 +13,7 @@ export default function determineCharacterCombatAction(actingCharacter, actorSta
     }
     // TODO: Over energy ceiling, use most powerful attack
     const energyPercentage = actorStartingEnergy.div(actingCharacter.combat.maximumStamina);
+    debugMessage(`${actingCharacter.id} has an energy percentage of ${energyPercentage}`);
     const primaryAction = Tactics.offensive[actingCharacter.tactics.offensive].actions.reduce((chosen, next)=>{
         if(chosen) {
             return chosen;
@@ -32,6 +33,7 @@ export default function determineCharacterCombatAction(actingCharacter, actorSta
                 return next;
             }
         }
+        debugMessage(`Above energy floor? ${energyPercentAboveFloor}. Can afford action? ${canAffordAction}.`);
         return chosen;
     }, null) || "none";
     return {
