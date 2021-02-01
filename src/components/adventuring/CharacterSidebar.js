@@ -81,6 +81,9 @@ export function CharacterSidebar(props) {
             basicAttackDamage={basicAttackDamage}
             powerAttackCost={powerAttackCost}
             powerAttackDamage={powerAttackDamage}
+
+            enemyPower={_.get(enemy, "combat.power", Decimal(0)).toFixed()}
+            enemyResilience={_.get(enemy, "combat.resilience", Decimal(0)).toFixed()}
             />}
     </Paper>
 }
