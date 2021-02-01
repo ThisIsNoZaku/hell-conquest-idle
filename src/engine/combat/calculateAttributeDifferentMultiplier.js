@@ -1,8 +1,13 @@
 import Decimal from "decimal.js";
 import {getConfigurationValue} from "../../config";
+import * as lerp from "lerp";
 
 export default function calculateAttributeDifferentMultiplier(a, b) {
-    Decimal.set({rounding: Decimal.ROUND_DOWN});
-    const normalized = Decimal(a).minus(b).round();
-    return getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[normalized];
+    const multipliers = getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers");
+    const base = Decimal(a).minus(b);
+    const roundedDown = base.floor();
+    const roundedUp = base.ceil();
+    const remainder = Math.abs(multipliers[roundedDown.toNumber()] - multipliers[roundedUp.toNumber()]);
+    const multiplier = lerp(multipliers[roundedDown.toNumber()], multipliers[roundedUp.toNumber()], remainder);
+    return Decimal(multiplier).toSignificantDigits(2);
 }
