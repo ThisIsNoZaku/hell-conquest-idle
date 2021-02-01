@@ -216,11 +216,13 @@ export const TraitEffects = {
         attack_enhancement: {
             additional_energy_cost_modifier: .25,
             on_hit: {
-                add_statuses: {
-                    poisoned: {
-                        target: "enemy",
-                        stacks_per_level: 2,
-                        duration: 5
+                trigger_effects: {
+                    add_statuses: {
+                        poisoned: {
+                            target: "enemy",
+                            stacks_per_level: 2,
+                            duration: 5
+                        }
                     }
                 }
             }
