@@ -7,28 +7,32 @@ import {Traits} from "../../data/Traits";
 import evaluateExpression from "../general/evaluateExpression";
 import {Tactics} from "../../data/Tactics";
 
-export default function calculateDamageBy(attacker) {
+export default function calculateDamageBy(attacker, debugOutput) {
     return {
         using: function (attack) {
             return {
-                against: function (target, debugOutput) {
+                against: function (target) {
                     return {
                         using: function (reaction) {
                             const attackerPower = Decimal(_.get(attacker, ["combat", "power"], 0));
                             debugMessage(`Attacker ${_.get(attacker, "id")} has power ${attackerPower}.`);
                             const defenderResilience = Decimal(_.get(target, ["combat", "resilience"], attackerPower));
 
-                            if (target) {
-                                debugMessage(`Defender ${target.id} has resilience ${defenderResilience}.`);
-                            } else {
-                                debugMessage(`No target means an effective resilience of ${defenderResilience}`)
+                            if(debugOutput) {
+                                if (target) {
+                                    debugMessage(`Defender ${target.id} has resilience ${defenderResilience}.`);
+                                } else {
+                                    debugMessage(`No target means an effective resilience of ${defenderResilience}`)
+                                }
                             }
                             Decimal.set({rounding: Decimal.ROUND_DOWN});
                             const attributeDifference = Decimal.min(10, Decimal.max(-10, attackerPower.minus(defenderResilience))).round().toFixed();
                             const enemyReceivedDamageMultiplier = _.get(target, "combat.receivedDamageMultiplier", Decimal(1)).minus(1);
                             const attributeDamageMultiplier = Decimal(getConfigurationValue("mechanics.combat.attributeDifferenceMultipliers")[attributeDifference])
                                 .plus(enemyReceivedDamageMultiplier);
-                            debugMessage(`Final damage multiplier = ${attributeDamageMultiplier}.`);
+                            if(debugOutput) {
+                                debugMessage(`Final damage multiplier = ${attributeDamageMultiplier}.`);
+                            }
                             const attackerPowerLevel = Decimal(_.get(attacker, "powerLevel", 0));
                             return Object.keys(HitTypes).reduce((damage, nextType) => {
                                 const perLevelDamage = getConfigurationValue("damage_per_level");
