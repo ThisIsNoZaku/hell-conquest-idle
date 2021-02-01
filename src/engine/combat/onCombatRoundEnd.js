@@ -1,12 +1,15 @@
 import triggerEvent from "../general/triggerEvent";
 import {FOR_COMBAT, PERMANENT} from "../../data/Statuses";
-import {generateFatigueDamageEvent, generateRemoveStatusEvent} from "../events/generate";
+import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../events/generate";
 import {getCharacter} from "../index";
 import {Decimal} from "decimal.js";
 import {getConfigurationValue} from "../../config";
 
 export default function onCombatRoundEnd(combatants, roundEvents, tick) {
     Object.values(combatants).forEach(combatant => {
+        if(!combatant.isAlive) {
+            return;
+        }
         triggerEvent(
             {
                 type: "on_round_end",
@@ -27,7 +30,9 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
                     return false;
                 })
                     .map(instance => {
-                        instance.duration--;
+                        if(instance.duration > 0) {
+                            instance.duration--;
+                        }
                         return instance;
                     })
             }
@@ -43,7 +48,10 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
         if(burnDamage.gt(0)) {
             roundEvents.push(generateFatigueDamageEvent(combatant, combatant, burnDamage));
             combatant.hp = Decimal.max(0, combatant.hp.minus(burnDamage));
+            if(!combatant.isAlive) {
+                roundEvents.push(generateKillEvent(combatant, combatant));
+            }
         }
         combatant.lastActedTick = tick;
-    })
+    });
 }
