@@ -1,4 +1,4 @@
-import CharacterSidebar from "../adventuring/CharacterSidebar";
+import {MemoizedCharacterSidebar as CharacterSidebar} from "../adventuring/CharacterSidebar";
 import TopSection from "../adventuring/TopSection";
 import {
     getCharacter,
