@@ -21,7 +21,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         hitLevel = HitTypes.min;
     }
 
-    const reactionEnergyCost = calculateReactionCost(targetedCharacter, reaction, actingCharacter);
+    const reactionEnergyCost = calculateReactionCost(actingCharacter, reaction, targetedCharacter);
     if(reactionEnergyCost.lte(targetedCharacter.combat.stamina)) {
         targetedCharacter.combat.stamina = targetedCharacter.combat.stamina.minus(reactionEnergyCost);
         hitLevel = Math.max(HitTypes.min, hitLevel + DefenseActions[reaction.primary].hitLevelModifier);
