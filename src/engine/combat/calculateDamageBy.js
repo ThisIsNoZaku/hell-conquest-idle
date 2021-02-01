@@ -4,8 +4,6 @@ import {getConfigurationValue} from "../../config";
 import {debugMessage} from "../../debugging";
 import {HitTypes} from "../../data/HitTypes";
 import {Traits} from "../../data/Traits";
-import evaluateExpression from "../general/evaluateExpression";
-import {Tactics} from "../../data/Tactics";
 
 export default function calculateDamageBy(attacker, debugOutput) {
     return {
@@ -15,7 +13,9 @@ export default function calculateDamageBy(attacker, debugOutput) {
                     return {
                         using: function (reaction) {
                             const attackerPower = Decimal(_.get(attacker, ["combat", "power"], 0));
-                            debugMessage(`Attacker ${_.get(attacker, "id")} has power ${attackerPower}.`);
+                            if(debugOutput) {
+                                debugMessage(`Attacker ${_.get(attacker, "id")} has power ${attackerPower}.`);
+                            }
                             const defenderResilience = Decimal(_.get(target, ["combat", "resilience"], attackerPower));
 
                             if(debugOutput) {
