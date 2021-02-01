@@ -14,14 +14,13 @@ import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {useMediaQuery, useTheme} from "@material-ui/core";
-import calculateReactionCost from "../../../engine/combat/actions/calculateReactionCost";
 
 export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
         props.characterPower,
         props.enemyResilience
     ]);
-    const resilienceTooltip = useMemo(() => `Your Resilience vs the enemy's Power modifies damage against you by x${calculateAttributeDifferentMultiplier(props.enemyPower, props.enemyResilience)}.`, [
+    const resilienceTooltip = useMemo(() => `Your Resilience vs the enemy's Power modifies damage against you by x${calculateAttributeDifferentMultiplier(props.enemyPower, props.characterResilience)}.`, [
         props.characterResilience,
         props.enemyPower
     ]);
