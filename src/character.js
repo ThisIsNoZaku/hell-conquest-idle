@@ -408,8 +408,10 @@ const characterPropsSchema = JOI.object({
     isRival: JOI.boolean(),
     damageResistances: JOI.object({
         acid: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
-    }).default({
-        acid: Decimal(0)
+        physical: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        fire: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        ice: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        psychic: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     })
 });
 
