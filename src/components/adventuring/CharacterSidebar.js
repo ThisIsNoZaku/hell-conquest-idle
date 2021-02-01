@@ -24,7 +24,7 @@ const styles = {
     }
 }
 
-export default function CharacterSidebar(props) {
+export function CharacterSidebar(props) {
     const character = _.get(props, "player", {});
     const enemy = _.get(props, "enemy", {});
     const powerNeededForNextLevel = getPowerNeededForLevel(Decimal(_.get(character, "powerLevel", 0)).plus(1));
@@ -32,11 +32,11 @@ export default function CharacterSidebar(props) {
     const latentPowerModifier = useMemo(() => Decimal(_.get(character, "latentPowerModifier", 0)).times(100).toFixed(), [
         _.get(character, "latentPower")
     ]);
-    const blockCost = calculateReactionCost(character, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed();
+    const blockCost = calculateReactionCost(enemy, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
     const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance)=>{
         return total + enhance.additional_block_damage_reduction;
     }, 0)).times(100).toFixed();
-    const dodgeCost = calculateReactionCost(character, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed();
+    const dodgeCost = calculateReactionCost(enemy, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
 
     const basicAttackCost = calculateActionCost(character, {primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed();
     const basicAttackDamage = calculateDamageBy(character).using({primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])})
@@ -84,3 +84,5 @@ export default function CharacterSidebar(props) {
             />}
     </Paper>
 }
+
+export const MemoizedCharacterSidebar = React.memo(CharacterSidebar);
