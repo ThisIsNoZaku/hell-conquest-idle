@@ -17,9 +17,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
                     const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(event.source.character.traits[traitId]) :
                         Decimal(effectDefinition[status].stacks_per_level).times(event.source.character.traits[traitId]).times(event.source.character.powerLevel);
-                    const max = evaluateExpression(effectDefinition[status].max, {
-                        tier: Decimal(event.source.character.traits[traitId])
-                    });
+                    const max = effectDefinition[status].max || 999;
                     const duration = effectDefinition[status].duration || 1;
                     targets.forEach(target => {
                         const statusUuid = v4();
