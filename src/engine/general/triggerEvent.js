@@ -9,6 +9,7 @@ import {generateDamageEvent} from "../events/generate";
 import {Decimal} from "decimal.js";
 import {getCharacter} from "../index";
 import * as _ from "lodash";
+import {ActionEnhancements} from "../../data/ActionEnhancements";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
@@ -52,13 +53,14 @@ export default function triggerEvent(event) {
         })
     })
     _.get(event.source, ["attack", "enhancements"], []).forEach(enhancement => {
-        const eventDefinition = enhancement[event.type];
+        const enhancementDef = ActionEnhancements[enhancement];
+        const eventDefinition = enhancementDef[event.type];
         if (eventDefinition) {
             const traitTriggered = doesTraitTrigger(eventDefinition, event);
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyTraitEffects(effectsToApply, event, "enhancement", enhancement.id, event.source.character.powerLevel);
+                applyTraitEffects(effectsToApply, event, "enhancement", enhancement, event.source.character.powerLevel);
             }
         }
     });
