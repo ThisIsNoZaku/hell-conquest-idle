@@ -49,7 +49,7 @@ export const Traits = {
     }, ["killer", "venomous"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-795.png",
         enabled: true,
         description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}%.")
     }, ["mindless", "unstoppable"])),
