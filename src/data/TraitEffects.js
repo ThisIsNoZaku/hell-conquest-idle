@@ -41,10 +41,9 @@ export const TraitEffects = {
                 add_statuses: {
                     engorged: {
                         target: "self",
-                        stacks: 1,
+                        stacks: 2,
                         duration: PERMANENT,
-                        cumulative: true,
-                        max: 10
+                        cumulative: true
                     }
                 }
             }
@@ -92,7 +91,7 @@ export const TraitEffects = {
             trigger_effects: {
                 evasion_modifier: {
                     target: "self",
-                    value: .5
+                    value: .25
                 }
             }
         }
