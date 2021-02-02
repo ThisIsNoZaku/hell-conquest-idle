@@ -6,7 +6,7 @@ import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
 import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
 
-export default function applyTraitEffects(effectsToApply, event, traitId) {
+export default function applyTraitEffects(effectsToApply, event, sourceType, sourceId, effectLevel) {
     for (const effect of Object.keys(effectsToApply)) {
         debugMessage(`Applying trait effect ${effect}`);
         const effectDefinition = effectsToApply[effect];
@@ -15,8 +15,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 // TODO: Refactor into method.
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
-                    const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(event.source.character.traits[traitId]) :
-                        Decimal(effectDefinition[status].stacks_per_level).times(event.source.character.traits[traitId]).times(event.source.character.powerLevel);
+                    const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(effectLevel) :
+                        Decimal(effectDefinition[status].stacks_per_level).times(effectLevel).times(event.source.character.powerLevel);
                     const max = effectDefinition[status].max || 999;
                     const duration = effectDefinition[status].duration || 1;
                     targets.forEach(target => {
@@ -24,7 +24,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => {
                                 return s.source.character === event.source.character.id &&
-                                    s.source.trait === traitId;
+                                    s.source[sourceType] === sourceId;
                             });
                         if (existingStatus) {
                             existingStatus.duration = duration;
@@ -38,7 +38,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                                 status,
                                 source: {
                                     character: event.source.character.id,
-                                    trait: traitId
+                                    [sourceType]: sourceId
                                 },
                                 duration,
                                 stacks
@@ -49,7 +49,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                             event: "add-status",
                             source: {
                                 character: event.source.character.id,
-                                trait: traitId
+                                [sourceType]: sourceId
                             },
                             target: target.id,
                             duration,
@@ -64,13 +64,13 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.combatants);
                     const stacks = evaluateExpression(effectDefinition[status].stacks, {
-                        tier: event.source.character.traits[traitId]
+                        tier: effectLevel
                     });
                     targets.forEach(target => {
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => {
                                 return s.source.character === event.source.character.id &&
-                                    s.source.trait === traitId
+                                    s.source[sourceType] === sourceId
                             });
                         if (existingStatus) {
                             target.statuses[status] = target.statuses[status].filter(s => s != existingStatus);
@@ -92,7 +92,7 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 targets.forEach(target => {
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
-                    const damageToDeal = Decimal(effectDefinition.value).times(dealtDamage).times(event.source.character.traits[traitId]).floor();
+                    const damageToDeal = Decimal(effectDefinition.value).times(dealtDamage).times(effectLevel).floor();
                     target.hp = target.hp.minus(damageToDeal);
                     const newDamageEffectUuid = v4();
                     damageEffect.children = [
@@ -103,7 +103,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         target,
                         damageToDeal,
                         effectDefinition.type,
-                        traitId
+                        sourceType,
+                        sourceId
                     ));
                 });
                 break;
@@ -121,7 +122,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         target,
                         staminaChange,
                         _.get(event.source, ["attack", "uuid"]),
-                        traitId,
+                        sourceType,
+                        sourceId,
                         newEffectUuid,
                     ));
                 });
@@ -131,8 +133,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                 const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
                 targets.forEach(target => {
                     const healthChange = effectDefinition.percentage_of_maximum_health ?
-                        event.source.character.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(event.source.character.traits[traitId]).floor() :
-                        Decimal(effectDefinition.value).times(event.source.character.traits[traitId]).floor();
+                        event.source.character.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(effectLevel).floor() :
+                        Decimal(effectDefinition.value).times(effectLevel).floor();
                     target.hp = target.hp.plus(healthChange);
                     const newEffectUuid = v4();
                     if (event.source.attack) {
@@ -144,7 +146,8 @@ export default function applyTraitEffects(effectsToApply, event, traitId) {
                         healthChange,
                         _.get(event.source, ["attack", "uuid"]),
                         newEffectUuid,
-                        traitId
+                        sourceType,
+                        sourceId
                     ));
                 });
             }

@@ -57,21 +57,21 @@ export function generateFatigueDamageEvent(source, target, damage) {
     }
 }
 
-export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, damageType, traitId) {
+export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, damageType, sourceType, sourceId) {
     return {
         event: "damage",
         uuid: v4(),
         target: targetCharacter.id,
         source: {
             character: sourceCharacter.id,
-            trait: traitId
+            [sourceType]: sourceId
         },
         value: Decimal(damageDone),
         type: damageType
     }
 }
 
-export function generateStaminaChangeEvent(source, target, value, parent, sourceTrait, uuid) {
+export function generateStaminaChangeEvent(source, target, value, parent, sourceType, sourceId, uuid) {
     uuid = uuid || v4();
     return {
         event: "stamina-change",
@@ -79,7 +79,7 @@ export function generateStaminaChangeEvent(source, target, value, parent, source
         target: target.id,
         source: {
             character: source.id,
-            trait: sourceTrait
+            [sourceType]: sourceId
         },
         value,
         parent
@@ -112,7 +112,7 @@ export function generateActionSkipEvent(character, tick, reason) {
     }
 }
 
-export function generateHealthChangeEvent(source, target, value, parent, uuid, sourceTraitId) {
+export function generateHealthChangeEvent(source, target, value, parent, uuid, sourceType, sourceId) {
     uuid = uuid || v4();
     return {
         event: "health-change",
@@ -120,7 +120,7 @@ export function generateHealthChangeEvent(source, target, value, parent, uuid, s
         target: target.id,
         source: {
             character: source.id,
-            trait: sourceTraitId
+            [sourceType]: sourceId
         },
         value,
         parent

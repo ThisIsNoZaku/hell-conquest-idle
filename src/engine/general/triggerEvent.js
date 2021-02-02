@@ -25,7 +25,7 @@ export default function triggerEvent(event) {
             debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyTraitEffects(effectsToApply, event, traitId);
+                applyTraitEffects(effectsToApply, event, "trait", traitId, event.source.character.traits[traitId]);
             }
         }
     });
@@ -45,7 +45,7 @@ export default function triggerEvent(event) {
                             .times(getCharacter(activeStatus.source.character).powerLevel)
                             .floor();
                         target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
-                        event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal));
+                        event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, "status", statusId));
                     })
                     break;
             }
@@ -58,7 +58,7 @@ export default function triggerEvent(event) {
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyTraitEffects(effectsToApply, event, enhancement.id);
+                applyTraitEffects(effectsToApply, event, "enhancement", enhancement.id, event.source.character.powerLevel);
             }
         }
     });
