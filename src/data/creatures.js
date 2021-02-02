@@ -21,7 +21,7 @@ export const Creatures  = {
         enabled: true,
         appearance: "crushingSnake",
         texture: "06_snake_01.png",
-        description: "A monstrous reptile which",
+        description: "A monstrous reptile which wraps around its prey, crushing the like out of them.",
     },
     deadlyHornet: {
         name: "Deadly Hornet",
@@ -45,7 +45,7 @@ export const Creatures  = {
         enabled: true,
         appearance: "searingFangViper",
         texture: "07_snake_02.png",
-        description: "A venomous snake, whose venom inflicts horrific agony to its victims."
+        description: "A striking snake, whose venom inflicts horrific agony to its victims."
     },
     skitteringHorror: {
         name: "Skittering Horror",
@@ -76,6 +76,7 @@ export const Creatures  = {
         traits: ["swiftEvasion"],
         enabled: true,
         appearance: "bloodyBat",
+        description: "This hunter stalks the night, swooping down upon it's prey.",
         texture: "13_bat.png"
     },
     myrmidonWarrior: {
@@ -83,6 +84,7 @@ export const Creatures  = {
         traits: ["relentless"],
         enabled: true,
         appearance: "myrmidonWarrior",
+        description: "A warrior of an ant-like people, seeing all around them as enemies of it's ancient hive.",
         texture: "14_ant.png"
     },
     scorpion: {
@@ -90,6 +92,7 @@ export const Creatures  = {
         traits: ["killingBlow"],
         enabled: true,
         appearance: "scorpion",
+        description: "A deadly scorpion which injects burning venom via its massive stinger.",
         texture: "16_scorpion.png"
     },
     carrionBeetle: {
@@ -97,6 +100,7 @@ export const Creatures  = {
         traits: ["carrion_feeder"],
         enabled: true,
         appearance: "carrionBeetle",
+        description: "A swarming beetle that feasts on corpses",
         texture: "17_scarab.png"
     },
     fleshlessSoldier: {
@@ -104,6 +108,7 @@ export const Creatures  = {
         traits: ["immortalWarrior"],
         enabled: true,
         appearance: "fleshlessSoldier",
+        description: "Even the dead have not seen the end of war.",
         texture: "18_skeleton.png"
     }
 }
