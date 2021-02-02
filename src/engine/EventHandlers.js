@@ -30,7 +30,7 @@ export const EventHandlers = {
     "kill": function (event, sourceCharacter, targetCharacter, pushLogItem) {
         const actingCharacter = getCharacter(event.source.character);
         const deadCharacter = getCharacter(event.target);
-        if (actingCharacter.id === 0 && actingCharacter.id !== deadCharacter.id && actingCharacter.isAlive) {
+        if (deadCharacter.id !== 0 && getCharacter(0).isAlive) {
             enableTutorial("leveling-up");
             debugMessage("Player killed an enemy and gained power.");
             const player = getCharacter(0);
