@@ -88,7 +88,7 @@ export const Traits = {
         icon: "./icons/icons-595.png",
         enabled: true,
         description: _.template("Your agility and size increases your Evasion by ${tier.times(60)}%, Precision by ${tier.times(20)}% and reduces Power by ${tier.times(10)}%.")
-    }, ["evasive", "small"])),
+    }, ["small", "precise"])),
     terrifyingSkitter: validatedTrait(generateTrait({
         name: "Sinister Hunter",
         icon: "./icons/icons-2260.png",
