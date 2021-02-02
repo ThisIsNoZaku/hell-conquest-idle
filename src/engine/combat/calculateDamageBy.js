@@ -4,6 +4,7 @@ import {getConfigurationValue} from "../../config";
 import {debugMessage} from "../../debugging";
 import {HitTypes} from "../../data/HitTypes";
 import {Traits} from "../../data/Traits";
+import {ActionEnhancements} from "../../data/ActionEnhancements";
 
 export default function calculateDamageBy(attacker, debugOutput) {
     return {
@@ -50,8 +51,8 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                     return previousValue.plus(traitApplies ? Decimal(traitEffectDefinition.value).times(target.traits[currentValue]) : 0);
                                 }, Decimal(0));
 
-                                const reactionEnhancementModifier = reaction.enhancements.reduce((previousValue, currentValue) => {
-                                    return previousValue + (currentValue[`additional_${reaction.primary}_damage_reduction`] || 0);
+                                const reactionEnhancementModifier = reaction.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue) => {
+                                    return previousValue - (currentValue[`additional_${reaction.primary}_damage_reduction`] || 0);
                                 }, 0);
 
                                 const totalMultiplier = Decimal(attributeDamageMultiplier)
