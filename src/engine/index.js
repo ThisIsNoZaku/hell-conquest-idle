@@ -121,21 +121,11 @@ export function generateCreature(id, powerLevel, rng) {
     const offensiveTactics = Object.keys(Tactics.offensive)[Math.floor(rng.double() * 3)];
     const defensiveTactics = Object.keys(Tactics.defensive)[Math.floor(rng.double() * 3)];
     const nextId = nextMonsterId++;
-    // Bonus traits
-    const numberOfBonusTraits = powerLevel.div(20).floor();
+    // Starting traits
     const startingTraits = Creatures[id].traits.reduce((traits, next) => {
         traits[next] = powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
         return traits;
     }, {});
-    const alreadySelected = [id];
-    for (let i = 0; i < numberOfBonusTraits; i++) {
-        const options = Object.keys(Creatures).filter(x => !alreadySelected.includes(x));
-        const index = Math.floor(rng.double() * options.length);
-        const selectedCreature = Creatures[options[index]];
-        selectedCreature.traits.forEach(trait => {
-            startingTraits[trait] = powerLevel.div(10).minus(1).ceil();
-        })
-    }
     // Adjectives
     const options = Object.keys(titles);
     const index = Math.floor(options.length * rng.double());
@@ -143,7 +133,7 @@ export function generateCreature(id, powerLevel, rng) {
     const bonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
         highestLevelReached: Decimal(powerLevel)
     })
-    const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective]);
+    const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective], startingTraits);
     globalState.characters[nextId] = new Character({
         id: nextId,
         ...Creatures[id],
@@ -153,7 +143,7 @@ export function generateCreature(id, powerLevel, rng) {
             defensive: defensiveTactics
         },
         adjectives: [adjective],
-        traits: startingTraits,
+        traits: {...startingTraits, ...bonuses.traits},
         powerLevel: powerLevel,
         party: 1,
         highestLevelEnemyDefeated: Decimal(powerLevel),

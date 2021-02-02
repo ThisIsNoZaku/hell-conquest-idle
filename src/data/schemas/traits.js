@@ -76,6 +76,7 @@ const onCombatStartValidator = onRoundEndValidator;
 const traitValidator = JOI.object({
     name: JOI.string().required(),
     icon: JOI.string().required(),
+    enabled: JOI.boolean(),
     attack_enhancement: JOI.object({
         additional_energy_cost_modifier: JOI.number(),
         change_damage_type: JOI.string(),

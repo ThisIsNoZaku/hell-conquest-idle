@@ -2,8 +2,22 @@ import {knuthShuffle} from "knuth-shuffle";
 import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import {inverseTriangleNumber} from "../index";
+import evaluateExpression from "./evaluateExpression";
+import {getConfigurationValue} from "../../config";
+import {Traits} from "../../data/Traits";
 
-export default function calculateNPCBonuses(points, adjectives) {
+export default function calculateNPCBonuses(points, adjectives, startingTraits) {
+    const bonusTraitPicks = Math.floor(points / 11);
+    const bonusTraits = {};
+    for(let i = 0; i < bonusTraitPicks; i++) {
+        const options = Object.keys(Traits).filter(traitId => !startingTraits[traitId] && Traits[traitId].enabled);
+        const roll = Math.floor(Math.random()* options.length);
+        bonusTraits[options[roll]] = Decimal(bonusTraitPicks - i);
+        points -= evaluateExpression(getConfigurationValue("trait_point_cost"), {
+            traitsOwned: Decimal(i)
+        })
+    }
+
     const attributeWeights = {
         brutality: _.sum(adjectives.map(a => a.attributeMultipliers.brutality)),
         cunning: _.sum(adjectives.map(a => a.attributeMultipliers.cunning)),
@@ -35,7 +49,8 @@ export default function calculateNPCBonuses(points, adjectives) {
             cunning: Decimal( inverseTriangleNumber(pointsAssigned.cunning)  + 1).floor(),
             deceit: Decimal( inverseTriangleNumber(pointsAssigned.deceit)  + 1).floor(),
             madness:Decimal( inverseTriangleNumber(pointsAssigned.madness)  + 1).floor(),
-        }
+        },
+        traits: bonusTraits
     }
     return out;
 }
