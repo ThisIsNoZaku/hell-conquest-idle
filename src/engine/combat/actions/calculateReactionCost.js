@@ -3,6 +3,7 @@ import { DefenseActions} from "../../../data/CombatActions";
 import {Decimal} from "decimal.js";
 import {Traits} from "../../../data/Traits";
 import * as _ from "lodash";
+import {ActionEnhancements} from "../../../data/ActionEnhancements";
 
 export default function calculateReactionCost(actor, reaction, target) {
     const base = Decimal(_.get(actor, "powerLevel", 1)).times(getConfigurationValue("attack_upgrade_cost_per_enemy_level"));
@@ -13,7 +14,7 @@ export default function calculateReactionCost(actor, reaction, target) {
         const applies = _.get(modifier, "target") === "any" || _.get(modifier, "target") === "enemy";
         return previousValue.plus(applies ? Decimal(modifier.value).times(actor.traits[currentValue]) : 0);
     }, Decimal(0));
-    const enhancementModifier = reaction.enhancements.reduce((previousValue, currentValue, currentIndex) => {
+    const enhancementModifier = reaction.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue) => {
         return previousValue + (currentValue.additional_energy_cost_modifier || 0);
     }, 0);
     return base.times(actionCostMultiplier)
