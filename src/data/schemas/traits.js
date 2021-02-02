@@ -79,19 +79,7 @@ const traitValidator = JOI.object({
     attack_enhancement: JOI.object({
         additional_energy_cost_modifier: JOI.number(),
         change_damage_type: JOI.string(),
-        on_hit: JOI.object({
-            add_statuses: JOI.object().keys(statusNames.reduce((schemas, nextStatus) => {
-                schemas[nextStatus] = JOI.object({
-                    target: effectTarget,
-                    stacks: [JOI.string(), JOI.number().min(1)],
-                    stacks_per_level: JOI.number().min(1),
-                    duration: JOI.number().min(-1).default(1),
-                    max: [JOI.number().min(1), JOI.string()],
-                    cumulative: JOI.boolean()
-                });
-                return schemas;
-            }, {}))
-        })
+        on_hit: onAttackHitValidator
     }),
     defense_enhancement: JOI.object({
         additional_energy_cost_modifier: JOI.number(),
