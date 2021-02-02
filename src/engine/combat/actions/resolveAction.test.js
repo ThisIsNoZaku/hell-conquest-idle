@@ -37,7 +37,7 @@ describe("resolve action", function () {
                     primary:"powerAttack",
                     enhancements:[]
                 },
-                actionEnergyCost: Decimal(25 * .9 * 1.5).floor(),
+                actionEnergyCost: Decimal(25 * .9 * 2).floor(),
                 reaction: {
                     primary:"none",
                     enhancements:[]
@@ -54,7 +54,7 @@ describe("resolve action", function () {
                 target: 1,
                 source: {
                     character: 0,
-                    trait: undefined
+                    "undefined": undefined
                 },
                 uuid: expect.any(String),
                 parent: expect.any(String)

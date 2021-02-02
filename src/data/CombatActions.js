@@ -1,7 +1,7 @@
 export const AttackActions = {
     powerAttack: {
         name: "Power Attack",
-        energyCostMultiplier: 1.5,
+        energyCostMultiplier: 2,
         hitLevel: 1,
         performsAction: true,
         attack: true,
