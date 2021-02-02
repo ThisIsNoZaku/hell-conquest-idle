@@ -22,7 +22,7 @@ export const Statuses = {
     }),
     crushed: validatedStatus({
         name: "Crushed",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-155.png",
         description: _.template("This Demon is being crushed, taking ${inflict_damage_at_start_of_round} at the beginning of each round."),
         effects: {
             inflict_damage_at_start_of_round: {
