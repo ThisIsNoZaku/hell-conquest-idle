@@ -79,11 +79,5 @@ export const EventHandlers = {
             }
             getCharacter(0).hp = Decimal(0);
         }
-    },
-    "damage": function (event, sourceCharacter, targetCharacter) {
-        targetCharacter.hp = Decimal.max(targetCharacter.hp.minus(event.value), 0);
-    },
-    "fatigue-damage": function (event, sourceCharacter, targetCharacter) {
-        targetCharacter.hp = Decimal.max(targetCharacter.hp.minus(event.value), 0);
     }
 }
