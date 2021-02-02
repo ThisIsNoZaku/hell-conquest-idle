@@ -29,11 +29,7 @@ export default function ReincarnationSelectionPage(props) {
         }, {}));
     const [playerTactics, setPlayerTactics] = useState(getCharacter(0).tactics);
     const [startingTraits, setStartingTraits] = useState(getGlobalState().startingTraits);
-    const newLatentPower = getCharacter(0).latentPower
-        // .plus(
-        // evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
-        //     player
-        // }));
+    const newLatentPower = getCharacter(0).latentPower.plus(getCharacter(0).powerLevel);
     const spendableBonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
         highestLevelEnemyDefeated: Decimal(player.highestLevelEnemyDefeated || 0),
         highestLevelReached: Decimal(player.highestLevelReached)
@@ -88,8 +84,7 @@ export default function ReincarnationSelectionPage(props) {
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a bonus
-            of <strong>+{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).toFixed()}</strong> to
-            every Attribute and an extra <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> absorbed power due to your Latent Power acquired from previous reincarnations.
+            of <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> to your Maximum Energy and per-turn Energy regen, Damage and Health.
             <br/>
         </Grid>}
         <Grid container>
