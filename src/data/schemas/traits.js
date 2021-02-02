@@ -77,15 +77,8 @@ const traitValidator = JOI.object({
     name: JOI.string().required(),
     icon: JOI.string().required(),
     enabled: JOI.boolean(),
-    attack_enhancement: JOI.object({
-        additional_energy_cost_modifier: JOI.number(),
-        change_damage_type: JOI.string(),
-        on_hit: onAttackHitValidator
-    }),
-    defense_enhancement: JOI.object({
-        additional_energy_cost_modifier: JOI.number(),
-        additional_block_damage_reduction: JOI.number(),
-    }),
+    attack_enhancement: JOI.string(),
+    defense_enhancement: JOI.string(),
     description: JOI.function(),
     on_round_end: onRoundEndValidator,
     on_hit: onAttackHitValidator,

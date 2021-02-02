@@ -2,10 +2,7 @@ import {PERMANENT} from "./Statuses";
 
 export const TraitEffects = {
     acidic: {
-        attack_enhancement: {
-            additional_energy_cost_modifier: .25,
-            change_damage_type: "acid"
-        },
+        attack_enhancement: "acid",
         continuous: {
             trigger_effects: {
                 damage_resistance: {
@@ -17,10 +14,7 @@ export const TraitEffects = {
         }
     },
     arcane: {
-        defense_enhancement: {
-            additional_energy_cost_modifier: .25,
-            additional_block_damage_reduction: -.15
-        }
+        defense_enhancement: "arcane"
     },
     bloodthirsty: {
         on_hit: {
@@ -97,10 +91,7 @@ export const TraitEffects = {
         }
     },
     fiery: {
-        attack_enhancement: {
-            additional_energy_cost_modifier: .5,
-            change_damage_type: "fire"
-        },
+        attack_enhancement: "flame",
         continuous: {
             trigger_effects: {
                 damage_resistance: {
@@ -212,20 +203,7 @@ export const TraitEffects = {
         }
     },
     venomous: {
-        attack_enhancement: {
-            additional_energy_cost_modifier: .25,
-            on_hit: {
-                trigger_effects: {
-                    add_statuses: {
-                        poisoned: {
-                            target: "enemy",
-                            stacks_per_level: 2,
-                            duration: 5
-                        }
-                    }
-                }
-            }
-        }
+        attack_enhancement: "venom"
     },
     powerful: {
         continuous: {

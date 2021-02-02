@@ -35,10 +35,7 @@ describe("acidic effect", function () {
         delete Traits.test;
     });
     it("gives an 'acid' attack enhancement ", function () {
-        expect(player.attackEnhancements).toContainEqual({
-            change_damage_type: "acid",
-            additional_energy_cost_modifier: .25
-        });
+        expect(player.attackEnhancements).toContainEqual("acid");
     });
     it("gives acid damage resistance", function () {
         expect(player.damageResistances.acid).toEqual(Decimal(20));
@@ -64,17 +61,14 @@ describe("arcane effect", function () {
         delete Traits.test;
     });
     it("gives arcane shield defense enhancement", function () {
-        expect(player.defenseEnhancements).toContainEqual({
-            additional_block_damage_reduction: -.15,
-            additional_energy_cost_modifier: .25
-        });
+        expect(player.defenseEnhancements).toContainEqual("arcane");
     });
     it("performing block with Arcane shield costs additional stamina and reduces damage further", function () {
         const roundEvents = [];
         player.combat.stamina = Decimal(100);
         enemy.combat.stamina = Decimal(100);
         resolveAction(enemy, {0: player, 1: enemy}, roundEvents, 100);
-        expect(player.combat.stamina).toEqual(Decimal(100).minus(Decimal(25).times(1.15).floor()));
+        expect(player.combat.stamina).toEqual(Decimal(100).minus(Decimal(25).times(1.15).times(.75).floor()));
         expect(player.hp).toEqual(player.maximumHp.minus(15 * (HitTypes[-1].damageMultiplier - .15)));
     });
 })
@@ -163,7 +157,7 @@ describe("cannibal effect", function () {
             event: "add-status",
             status: "engorged",
             duration: -1,
-            stacks: Decimal(1),
+            stacks: Decimal(2),
             uuid: expect.any(String),
             source: {
                 character: 0,
@@ -178,7 +172,7 @@ describe("cannibal effect", function () {
                         character: 0,
                         trait: "test"
                     },
-                    stacks: Decimal(1)
+                    stacks: Decimal(2)
                 }
             ]
         });
@@ -357,7 +351,7 @@ describe("evasive effect", function () {
         delete Traits.test;
     });
     it("increases character evasion", function () {
-        expect(player.combat.evasion).toEqual(Decimal(1.4));
+        expect(player.combat.evasion).toEqual(Decimal(1.25));
     })
 });
 
@@ -376,10 +370,7 @@ describe("fiery effect", function () {
         delete Traits.test;
     });
     it("gives the fire attack enhancement", function () {
-        expect(player.attackEnhancements).toContainEqual({
-            additional_energy_cost_modifier: .5,
-            change_damage_type: "fire"
-        });
+        expect(player.attackEnhancements).toContainEqual("flame");
     });
     it("gives fire resistance", function () {
         expect(player.damageResistances).toMatchObject({
@@ -706,9 +697,7 @@ describe("venomous effect", function () {
             source: {
                 character: player,
                 attack: {
-                    enhancements: [
-                        Traits.test.attack_enhancement
-                    ],
+                    enhancements: ["venom"],
                 }
             },
             target: enemy,
@@ -725,10 +714,10 @@ describe("venomous effect", function () {
                     uuid: expect.any(String),
                     source: {
                         character: 0,
-                        trait: "test"
+                        enhancement: "venom"
                     },
                     duration: 5,
-                    stacks: Decimal(1)
+                    stacks: Decimal(2)
                 }
             ]
         })
@@ -832,7 +821,7 @@ describe("relentless effect", function () {
         expect(player.combat.maximumStamina).toEqual(Decimal(250));
     })
     it("increases energy generation", function () {
-        expect(player.energyGeneration).toEqual(Decimal(.5 * 1.25));
+        expect(player.energyGeneration).toEqual(Decimal(.1 * 1.25));
     })
 });
 
