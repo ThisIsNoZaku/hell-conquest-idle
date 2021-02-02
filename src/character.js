@@ -100,7 +100,7 @@ export class Character {
         const traitModifier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             return previousValue.plus(_.get(Traits[currentValue], ["continuous", "trigger_effects", "energy_generation_modifier", "value"], 0));
         }, Decimal(0))
-        return this.latentPowerModifier.plus(traitModifier).plus(1).times(getConfigurationValue("base_power_generated_per_level_per_tick"));
+        return this.latentPowerModifier.plus(traitModifier).plus(1).times(this.powerLevel.times(getConfigurationValue("base_power_generated_per_level_per_tick")));
     }
 
     getStatusStacks(status) {
