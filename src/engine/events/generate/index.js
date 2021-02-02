@@ -40,7 +40,9 @@ export function generateHitEvents(hitType, attacker, target, damageToDeal, damag
 }
 
 export function generateKillEvent(source, target) {
+    const uuid = v4();
     return {
+        uuid,
         event: "kill",
         source: {character: source.id},
         target: target.id
