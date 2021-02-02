@@ -36,7 +36,8 @@ function describeEvent(event) {
             const reaction = event.reaction.primary !== "none" ? `${event.reactionEnergyCost} Energy was used to ${DefenseActions[event.reaction.primary].name} the attack.` : null;
             return [base, reaction].filter(e => e !== null).join(" ");
         case "damage":
-            return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} damage.`;
+            const damageType = event.type !== undefined && event.type !== "physcial" ? `${event.type} ` : "";
+            return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} ${damageType}damage.`;
         case "fatigue-damage":
             enableTutorial("energy-burn");
             const damage = Decimal(event.value);

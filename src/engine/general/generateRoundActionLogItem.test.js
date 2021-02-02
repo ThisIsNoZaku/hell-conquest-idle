@@ -101,4 +101,19 @@ describe("generate round action log", function () {
         })
         expect(messages[0]).toEqual("Enemy loses 1 health from Energy Burn.");
     });
+    it("prints damage if not physical", function () {
+        const messages = generateRoundActionLogItems({
+            events: [{
+                event: "damage",
+                target: 1,
+                source: {
+                    character: 1
+                },
+                value: 1,
+                uuid: "0",
+                type: "psychic"
+            }]
+        })
+        expect(messages[0]).toEqual("Enemy takes 1 psychic damage.");
+    })
 });
