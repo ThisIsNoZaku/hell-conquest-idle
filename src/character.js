@@ -117,6 +117,13 @@ export class Character {
         return Decimal(this.hp).gt(0);
     }
 
+    dealDamage(amount, type) {
+        const resistanceMultiplier = this.damageResistances[type] || 1;
+        const damageToInflict = Decimal.min(this.hp, Decimal(amount).times(resistanceMultiplier));
+        this.hp = Decimal.max(0, this.hp.minus(damageToInflict));
+        return damageToInflict;
+    }
+
     get latentPowerCap() {
         return evaluateExpression(getConfigurationValue("latent_power_cap"), {
             highestLevelEnemyDefeated: Decimal(this.highestLevelEnemyDefeated)

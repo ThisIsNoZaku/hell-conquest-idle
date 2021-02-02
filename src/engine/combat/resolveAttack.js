@@ -36,6 +36,6 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     const baseDamage = calculateDamageBy(actingCharacter).using(action)
         .against(targetedCharacter).using(reaction)[hitLevel];
     const damageDone = baseDamage;
-    targetedCharacter.hp = Decimal.max(0, targetedCharacter.hp.minus(damageDone));
+    targetedCharacter.dealDamage(damageDone);
     return generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
 }

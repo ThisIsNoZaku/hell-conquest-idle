@@ -44,7 +44,7 @@ export default function triggerEvent(event) {
                             .times(target.getStatusStacks(statusId))
                             .times(getCharacter(activeStatus.source.character).powerLevel)
                             .floor();
-                        target.hp = Decimal.max(0, target.hp.minus(damageToDeal));
+                        target.dealDamage(damageToDeal);
                         event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, "status", statusId));
                     })
                     break;

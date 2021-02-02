@@ -93,7 +93,7 @@ export default function applyTraitEffects(effectsToApply, event, sourceType, sou
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
                     const damageToDeal = Decimal(effectDefinition.value).times(dealtDamage).times(effectLevel).floor();
-                    target.hp = target.hp.minus(damageToDeal);
+                    target.dealDamage(damageToDeal);
                     const newDamageEffectUuid = v4();
                     damageEffect.children = [
                         newDamageEffectUuid
