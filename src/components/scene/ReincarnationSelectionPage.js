@@ -84,7 +84,7 @@ export default function ReincarnationSelectionPage(props) {
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a bonus
-            of <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> to your Maximum Energy and per-turn Energy regen, Damage and Health.
+            of <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> to your Maximum Energy and per-turn Energy generation, Damage and Health.
             <br/>
         </Grid>}
         <Grid container>
