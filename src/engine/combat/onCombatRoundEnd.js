@@ -47,7 +47,7 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
         const burnDamage = Decimal.max(0, combatant.combat.fatigue.minus(combatant.combat.maximumStamina)).div(10).floor();
         if(burnDamage.gt(0)) {
             roundEvents.push(generateFatigueDamageEvent(combatant, combatant, burnDamage));
-            combatant.hp = Decimal.max(0, combatant.hp.minus(burnDamage));
+            combatant.dealDamage(burnDamage, "burn");
             if(!combatant.isAlive) {
                 roundEvents.push(generateKillEvent(combatant, combatant));
             }
