@@ -7,12 +7,12 @@ export const Traits = {
     bloodrage: validatedTrait(generateTrait({
         name: "Blood Rage",
         icon: "./icons/icons-139.png",
-        description: _.template("A brutal and savage warrior, this Demon gains a  gains a ${tier.times(10)}% bonus to <strong>Resilience</strong> and ${tier} stacks of <strong>Beserk</strong> when hitting with an attack.")
+        description: _.template("A brutal and savage warrior, this Demon gains a  gains a ${tier.times(25)}% bonus to <strong>Resilience</strong> and ${tier} stacks of <strong>Berserk</strong> when hitting with an attack.")
     }, ["bloodthirsty", "tough"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
-        icon: "./icons/icons-1.png",
-        description: _.template("Consuming not just the energy but the flesh of the vanquished, this Demon has a ${tier.times(10)}% penalty to Power and a ${tier.times(20)}% bonus to Evasion and Precision and gains ${tier} stack(s) of <strong>Engorged</strong> on kill, to a max of ${tier.times(10)}.")
+        icon: "./icons/icons-523.png",
+        description: _.template("Consuming not just the energy but the flesh of the vanquished, this Demon has a ${tier.times(10)}% penalty to Power and Resilience and a ${tier.times(20)}% bonus to Evasion and Precision due to its size and gains ${tier} stack(s) of <strong>Engorged</strong> on kill.")
     }, ["cannibal", "small"])),
     cupidity: validatedTrait({
         name: "Cupidity",
@@ -34,37 +34,37 @@ export const Traits = {
     inescapableGrasp: validatedTrait(generateTrait({
         name: "Inescapable Grasp",
         icon: "./icons/icons-2221.png",
-        description: _.template("This primary strategy of this Demon is to restrain and crush it's foes, inflicting a stack of <strong>Restrained</strong> for ${tier} rounds and also ${tier} stacks of <strong>Crushed</strong> on hit."),
+        description: _.template("This primary strategy of this Demon is to restrain and crush it's foes, inflicting ${tier} stacks of <strong>Restrained</strong> and <strong>Crushed</strong> on hit."),
     }, ["grappler", "crushing"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
-        description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> and inflicting ${tier.times(50)}% more damage on Devastating hits."),
-        icon: "./icons/icons-1.png"
+        description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting inflicting ${tier.times(50)}% more damage on Devastating hits and ${tier} stacks of <strong>Poisoned</strong>."),
+        icon: "./icons/icons-2278.png"
     }, ["killer", "venomous"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-1.png",
-        description: _.template("This Demon's undead stamina increases the cost to downgrade its attackEnhancements by ${tier.times(10)}%.")
+        description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}%.")
     }, ["mindless", "unstoppable"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
         icon: "./icons/icons-113.png",
-        description: _.template("This Demon dances around foes while it's fierce attackEnhancements can punch right through even armor, increasing both Precision and Evasion by ${tier.times(20)}%. ")
+        description: _.template("This Demon dances around foes while it's fierce attacks can punch right through even armor, increasing both Precision and Evasion by ${tier.times(25)}%. ")
     }, ["precise", "evasive"])),
     relentless: validatedTrait(generateTrait({
         name: "Tireless",
-        description: _.template("The indomitability of this Demon increases Energy by ${tier.times(10)}% and increases resilience by ${tier.times(40)}%."),
+        description: _.template("The indomitability of this Demon increases maximum and generated Energy by ${tier.times(25)}% and increases resilience by ${tier.times(25)}%."),
         icon: "./icons/icons-110.png"
     }, ["relentless", "tough"])),
     sadisticJoy: validatedTrait(generateTrait({
         name: "Sadistic Joy",
         icon: "./icons/icons-852.png",
-        description: _.template("The Demon gains vile pleasure from the pain it inflicts, regaining Energy equal to ${tier.times(5)}% and gaining ${tier} stacks of <strong>Berserk</strong>."),
+        description: _.template("The Demon gains vile pleasure from the pain it inflicts, regaining Energy equal to ${tier.times(5)}% and gaining ${tier} stacks of <strong>Berserk</strong> on hitting with an attack."),
     }, ["bloodthirsty", "sadistic"])),
     searingVenom: validatedTrait(generateTrait({
         name: "Poisonous Hunter",
         icon: "./icons/icons-4.png",
-        description: _.template("Sudden strikes and deadly venom are what this Demon uses to kill, inflicting ${tier} stacks of <strong>Agonizing Venom</strong> with Devastating hits.")
+        description: _.template("Sudden strikes and deadly venom are what this Demon uses to kill, inflicting ${tier} stacks of <strong>Poisoned</strong> on hit.")
     }, ["venomous", "swift"])),
     sharedPain: validatedTrait(generateTrait({
         name: "Shared Pain",
@@ -79,7 +79,7 @@ export const Traits = {
     terrifyingSkitter: validatedTrait(generateTrait({
         name: "Sinister Hunter",
         icon: "./icons/icons-2260.png",
-        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, making the enemy <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>${tier.div(10).round(0, 0).plus(1).toFixed()}</span> round(s), stunning them.")
+        description: _.template("The sickening sound of your feet on the ground unnerves even other demons, inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s).")
     }, ["frightening", "grappler"]))
 }
 

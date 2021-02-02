@@ -700,11 +700,16 @@ describe("venomous effect", function () {
     afterEach(() => {
         delete Traits.test;
     });
-    it("adds stacks of Poisoned on devastating hit", function () {
+    it("adds stacks of Poisoned on hit", function () {
         triggerEvent({
-            type: "on_devastating_hit",
+            type: "on_hit",
             source: {
-                character: player
+                character: player,
+                attack: {
+                    enhancements: [
+                        Traits.test.attack_enhancement
+                    ],
+                }
             },
             target: enemy,
             combatants: {
@@ -1027,6 +1032,6 @@ describe("unstoppable effect", function () {
     });
     it("increases energy cost to block your attacks", function () {
         const blockCost = calculateReactionCost(player, {primary:"block", enhancements: []}, player);
-        expect(blockCost).toEqual(Decimal(25 * 1.15).floor());
+        expect(blockCost).toEqual(Decimal(25 * .85).floor());
     });
 });
