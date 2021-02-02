@@ -70,16 +70,12 @@ export const Statuses = {
     }),
     restrained: validatedStatus({
         name: "Restrained",
-        description: _.template("Your limbs are bound, multiplying attack upgrade cost by ${attack_upgrade_cost_multiplier.times(100)}% and attack downgrade cost by ${attack_downgrade_cost_multiplier.times(100)}."),
+        description: _.template("Your limbs are bound, reducing Evasion by ${evasion_modifier.times(100)}%."),
         icon: "icons/icons-116.png",
         effects: {
-            attack_downgrade_cost_multiplier: {
+            evasion_modifier: {
                 target: "self",
-                value: .1
-            },
-            attack_upgrade_cost_multiplier: {
-                target: "self",
-                value: .1
+                value: -.2
             }
         }
     }),
