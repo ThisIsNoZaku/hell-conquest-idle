@@ -22,26 +22,12 @@ describe("the combat round resolution", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(triggerEvent).toHaveBeenCalledWith({
             type: "on_round_begin",
-            source: {
-                character: player
-            },
             combatants: {
                 0: player,
                 1: enemy
             },
             roundEvents: expect.any(Array)
         });
-        expect(triggerEvent).toHaveBeenCalledWith({
-            type: "on_round_begin",
-            source: {
-                character: enemy
-            },
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            roundEvents: expect.any(Array)
-        })
     });
     it("calls resolveAction for each combatant", function() {
         resolveCombatRound(100, {0: player, 1: enemy});
