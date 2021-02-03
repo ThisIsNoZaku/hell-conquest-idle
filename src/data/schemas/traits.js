@@ -12,7 +12,13 @@ const eventConditions = JOI.object({
         target: conditionTriggerTarget,
         below: [JOI.number().min(0).max(100), JOI.string()]
     }),
-    chance: [JOI.number().min(0).max(100), JOI.string()]
+    chance: [JOI.number().min(0).max(100), JOI.string()],
+    source_character_is: JOI.object({
+        target: effectTarget
+    }),
+    target_character_is: JOI.object({
+        target: effectTarget
+    })
 });
 
 // Effects
@@ -36,6 +42,10 @@ const eventEffects = modifierEffects.keys({
         });
         return schemas;
     }, {})),
+    reflect_statuses: JOI.object({
+        target: effectTarget,
+        value: JOI.number(),
+    }),
     change_stamina: JOI.object({
         target: effectTarget,
         percentage_of_maximum_stamina: [JOI.string(), JOI.number()]
@@ -52,13 +62,13 @@ const eventEffects = modifierEffects.keys({
 });
 
 // Validators
-const onRoundEndValidator = JOI.object({
+const onEventValidator = JOI.object({
     conditions: eventConditions,
     trigger_effects: eventEffects,
     not_trigger_effects: eventEffects
 });
 
-const onIntimidateValidator = onRoundEndValidator;
+const onIntimidateValidator = onEventValidator;
 
 const onAttackHitValidator = onIntimidateValidator
 
@@ -71,7 +81,7 @@ const continuousValidator = JOI.object({
 
 const onTakingDamageValidator = onAttackHitValidator;
 
-const onCombatStartValidator = onRoundEndValidator;
+const onCombatStartValidator = onEventValidator;
 
 const traitValidator = JOI.object({
     name: JOI.string().required(),
@@ -80,7 +90,7 @@ const traitValidator = JOI.object({
     attack_enhancement: JOI.string(),
     defense_enhancement: JOI.string(),
     description: JOI.function(),
-    on_round_end: onRoundEndValidator,
+    on_round_end: onEventValidator,
     on_hit: onAttackHitValidator,
     on_intimidate: onIntimidateValidator,
     on_solid_hit: onAttackHitValidator,
@@ -92,7 +102,8 @@ const traitValidator = JOI.object({
     on_kill: onKillValidator,
     continuous: continuousValidator,
     on_taking_damage: onTakingDamageValidator,
-    on_combat_start: onCombatStartValidator
+    on_combat_start: onCombatStartValidator,
+    on_status_applied: onEventValidator
 }).unknown(false);
 
 export function validatedTrait(object) {

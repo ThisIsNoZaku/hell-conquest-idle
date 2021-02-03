@@ -6,6 +6,12 @@ export default function doesTraitTrigger(eventDefinition, event, thisCharacter) 
         const conditionDefinition = eventDefinition.conditions[nextCondition]
         const targets = selectConditionTargets(conditionDefinition.target, thisCharacter, null, event.combatants);
         switch (nextCondition) {
+            case "source_character_is":
+                nextConditionMet = targets.includes(event.source.character);
+                break;
+            case "target_character_is":
+                nextConditionMet = targets.includes(event.target);
+                break;
             case "health_percentage":
                 switch (conditionDefinition.target) {
                     case "any_enemy":

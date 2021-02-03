@@ -5,6 +5,8 @@ import {v4} from "node-uuid";
 import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
 import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
+import {getConfigurationValue} from "../../../config";
+import {Traits} from "../../../data/Traits";
 
 export default function applyTraitEffects(effectsToApply, contextCharacter, event, sourceType, sourceId, effectLevel) {
     for (const effect of Object.keys(effectsToApply)) {
@@ -159,8 +161,33 @@ export default function applyTraitEffects(effectsToApply, contextCharacter, even
                     actor.temporaryTraits = {...target.traits};
                 })
                 break;
+            case "reflect_statuses": {
+                const {target} = event;
+                const originallyAppliedStacks = event.stacks;
+                const duration = event.duration;
+                const base = sourceType === "trait" ? Decimal(Traits[sourceId][event.type]["trigger_effects"][effect].value) : Decimal(1);
+                const stacksToApply = originallyAppliedStacks.times(effectLevel)
+                    .times(base)
+                    .floor();
+                event.roundEvents.push({
+                    uuid: v4(),
+                    event: "add-status",
+                    source: {
+                        character: contextCharacter.id,
+                        [sourceType]: sourceId
+                    },
+                    target: event.source.character.id,
+                    duration,
+                    status: event.status,
+                    stacks: stacksToApply
+                });
+                break;
+            }
             default:
                 debugMessage(`Did not process effect ${effect}`);
+                if(getConfigurationValue("debug_enabled")) {
+                    throw new Error(effect);
+                }
         }
     }
 }

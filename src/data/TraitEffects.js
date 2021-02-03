@@ -253,6 +253,24 @@ export const TraitEffects = {
             }
         }
     },
+    reversal: {
+        on_status_applied: {
+            conditions: {
+                target_character_is: {
+                    target: "self"
+                },
+                source_character_is: {
+                    target: "enemy"
+                }
+            },
+            trigger_effects: {
+                reflect_statuses: {
+                    target: "enemy",
+                    value: .25
+                }
+            }
+        }
+    },
     robust: {
         continuous: {
             trigger_effects: {
