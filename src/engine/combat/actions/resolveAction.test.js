@@ -1,6 +1,7 @@
 import resolveAction from "./resolveAction";
 import {Character} from "../../../character";
 import {Decimal} from "decimal.js";
+import {HitTypes} from "../../../data/HitTypes";
 
 describe("resolve action", function () {
     let player;
@@ -50,7 +51,7 @@ describe("resolve action", function () {
             {
                 event: "damage",
                 type: "physical",
-                value: Decimal(22),
+                value: Decimal(15 * HitTypes[1].damageMultiplier),
                 target: 1,
                 source: {
                     character: 0,

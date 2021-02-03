@@ -73,7 +73,7 @@ describe("action with 'attrit' tactics", function () {
         }, 1);
     });
     it("is a basic attack with enough stamina", function () {
-        player.combat.stamina = Decimal(1000);
+        player.combat.stamina = player.combat.maximumStamina.minus(1);
         expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
             .toEqual({
                 primary:"basicAttack",

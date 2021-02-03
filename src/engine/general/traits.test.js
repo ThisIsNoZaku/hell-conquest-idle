@@ -552,8 +552,8 @@ describe("insubstantial effect", function () {
         const enemyStartingHp = enemy.hp;
         enemy.combat.stamina = enemy.combat.maximumStamina.minus(1);
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(player.hp).toEqual(Decimal(playerStartingHp.minus(11).floor()))
-        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(11).floor()))
+        expect(player.hp).toEqual(Decimal(playerStartingHp.minus(15 * HitTypes[0].damageMultiplier * .75).ceil()))
+        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(15 * HitTypes[1].damageMultiplier * .75).ceil()))
     });
 });
 
@@ -581,7 +581,7 @@ describe("killer effect", function () {
                 "-2": Decimal(0),
                 "-1": Decimal(.75 * 15).floor(),
                 0: Decimal(15),
-                1: Decimal(33).floor()
+                1: Decimal(15 * 2 * 1.5).floor()
             });
     });
 });
@@ -874,7 +874,7 @@ describe("sadistic effect", function () {
             target: 0,
             value: player.combat.maximumStamina.times(0.05)
         });
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(22).plus(player.combat.maximumStamina.times(0.05)));
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(Math.floor(25 * AttackActions.powerAttack.energyCostMultiplier * .9)).plus(player.combat.maximumStamina.times(0.05)));
     });
 });
 
