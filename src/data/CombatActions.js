@@ -32,7 +32,7 @@ export const DefenseActions = {
     },
     block: {
         name: "Block",
-        energyCostMultiplier: .75,
+        energyCostMultiplier: .5,
         hitLevelModifier: -1
     },
     dodge: {
