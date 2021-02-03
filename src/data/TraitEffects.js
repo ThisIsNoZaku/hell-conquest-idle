@@ -35,7 +35,7 @@ export const TraitEffects = {
                 add_statuses: {
                     engorged: {
                         target: "self",
-                        stacks: 2,
+                        stacks: 5,
                         duration: PERMANENT,
                         cumulative: true
                     }

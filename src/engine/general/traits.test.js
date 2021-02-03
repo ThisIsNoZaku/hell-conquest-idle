@@ -10,6 +10,7 @@ import calculateReactionCost from "../combat/actions/calculateReactionCost";
 import {HitTypes} from "../../data/HitTypes";
 import {getConfigurationValue} from "../../config";
 import resolveAttack from "../combat/resolveAttack";
+import {TraitEffects} from "../../data/TraitEffects";
 
 jest.mock("../index");
 
@@ -159,7 +160,7 @@ describe("cannibal effect", function () {
             event: "add-status",
             status: "engorged",
             duration: -1,
-            stacks: Decimal(2),
+            stacks: Decimal(TraitEffects.cannibal.on_kill.trigger_effects.add_statuses.engorged.stacks),
             uuid: expect.any(String),
             source: {
                 character: 0,
@@ -174,7 +175,7 @@ describe("cannibal effect", function () {
                         character: 0,
                         trait: "test"
                     },
-                    stacks: Decimal(2)
+                    stacks: Decimal(TraitEffects.cannibal.on_kill.trigger_effects.add_statuses.engorged.stacks)
                 }
             ]
         });
