@@ -18,7 +18,7 @@ export const HitTypes = {
     1: {
         type: "Devastating",
         summary: "devastating",
-        damageMultiplier: 1.5
+        damageMultiplier: 2
     }
 }
 
