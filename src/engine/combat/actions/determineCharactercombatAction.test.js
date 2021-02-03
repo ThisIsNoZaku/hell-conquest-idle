@@ -120,7 +120,7 @@ describe("action with 'counter' tactics", function () {
         }, 1);
     });
     it("is no attack when enemy can dodge", function () {
-        expect(determineCharacterCombatAction(player, Decimal(100), enemy))
+        expect(determineCharacterCombatAction(player, Decimal(99), enemy))
             .toEqual({
                 primary: "none",
                 enhancements: []

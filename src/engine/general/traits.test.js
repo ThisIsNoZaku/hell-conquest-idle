@@ -8,6 +8,8 @@ import triggerEvent from "./triggerEvent";
 import calculateDamageBy from "../combat/calculateDamageBy";
 import calculateReactionCost from "../combat/actions/calculateReactionCost";
 import {HitTypes} from "../../data/HitTypes";
+import {getConfigurationValue} from "../../config";
+import resolveAttack from "../combat/resolveAttack";
 
 jest.mock("../index");
 
@@ -65,10 +67,10 @@ describe("arcane effect", function () {
     });
     it("performing block with Arcane shield costs additional stamina and reduces damage further", function () {
         const roundEvents = [];
-        player.combat.stamina = Decimal(100);
-        enemy.combat.stamina = Decimal(100);
+        player.combat.stamina = player.combat.maximumStamina.minus(1);
+        enemy.combat.stamina = enemy.combat.maximumStamina.minus(1);
         resolveAction(enemy, {0: player, 1: enemy}, roundEvents, 100);
-        expect(player.combat.stamina).toEqual(Decimal(100).minus(Decimal(25).times(1.15).times(.75).floor()));
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(1).minus(Decimal(100).times(1.1).times(DefenseActions.block.energyCostMultiplier).floor()));
         expect(player.hp).toEqual(player.maximumHp.minus(15 * (HitTypes[-1].damageMultiplier - .15)));
     });
 })
@@ -93,7 +95,7 @@ describe("bloodthirsty effect", function () {
     });
     it("add stacks of Berserk on hit", function () {
         const roundEvents = [];
-        player.combat.stamina = Decimal(100);
+        player.combat.stamina = Decimal(200);
         resolveAction(player, {0: player, 1: enemy}, roundEvents, 100);
         expect(roundEvents).toContainEqual({
             event: "add-status",
@@ -546,14 +548,19 @@ describe("insubstantial effect", function () {
     afterEach(() => {
         delete Traits.test;
     });
-    it("reduces the physical damage you deal and take", function () {
+    it("reduces the physical damage you deal", function () {
         const playerStartingHp = player.hp;
-        player.combat.stamina = player.combat.maximumStamina;
+        player.combat.stamina = player.combat.maximumStamina.minus(1);
         const enemyStartingHp = enemy.hp;
         enemy.combat.stamina = enemy.combat.maximumStamina.minus(1);
-        resolveCombatRound(100, {0: player, 1: enemy});
-        expect(player.hp).toEqual(Decimal(playerStartingHp.minus(15 * HitTypes[0].damageMultiplier * .75).ceil()))
-        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(15 * HitTypes[1].damageMultiplier * .75).ceil()))
+        resolveAttack(player, {
+            primary: "basicAttack",
+            enhancements: []
+        }, enemy, {
+            primary: "none",
+            enhancements: []
+        }, 100);
+        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(15 * HitTypes[0].damageMultiplier * .75).ceil()))
     });
 });
 
@@ -798,7 +805,7 @@ describe("regenerative effect", function () {
             }
         });
         expect(player.hp).toEqual(Decimal(1).plus(player.maximumHp.times(0.05).floor()));
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(player.combat.maximumStamina.times(0.05).floor()));
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.plus(player.combat.maximumStamina.times(-0.05).floor()));
     });
 });
 
@@ -817,10 +824,10 @@ describe("relentless effect", function () {
         delete Traits.test;
     });
     it("increases maximum stamina", function () {
-        expect(player.combat.maximumStamina).toEqual(Decimal(250));
+        expect(player.combat.maximumStamina).toEqual(Decimal(250 * 1.25).floor());
     })
     it("increases energy generation", function () {
-        expect(player.energyGeneration).toEqual(Decimal(.1 * 1.25));
+        expect(player.energyGeneration).toEqual(Decimal(getConfigurationValue("base_power_generated_per_level_per_tick") * 1.25));
     })
 });
 
@@ -860,7 +867,7 @@ describe("sadistic effect", function () {
     });
     it("gives energy on hit", function () {
         const roundEvents = [];
-        player.combat.stamina = player.combat.maximumStamina;
+        player.combat.stamina = player.combat.maximumStamina.minus(1);
         resolveAction(player, {0: player, 1: enemy},  roundEvents, 100);
         expect(roundEvents).toContainEqual({
             event: "stamina-change",
@@ -871,9 +878,9 @@ describe("sadistic effect", function () {
             },
             uuid: expect.any(String),
             target: 0,
-            value: player.combat.maximumStamina.times(0.05)
+            value: player.combat.maximumStamina.times(0.05).floor()
         });
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(Math.floor(25 * AttackActions.powerAttack.energyCostMultiplier * .9)).plus(player.combat.maximumStamina.times(0.05)));
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(1 + Math.floor(100 * AttackActions.basicAttack.energyCostMultiplier * .85)).plus(player.combat.maximumStamina.times(0.05).floor()));
     });
 });
 
@@ -968,7 +975,7 @@ describe("thorns effect", function () {
     });
     it("reflects damage", function () {
         const roundEvents = [];
-        enemy.combat.stamina = Decimal(100);
+        enemy.combat.stamina = Decimal(200);
         resolveAction(enemy, {0: player, 1: enemy}, roundEvents, 100);
         expect(roundEvents).toContainEqual({
             event: "damage",
@@ -1019,7 +1026,7 @@ describe("unstoppable effect", function () {
     });
     it("increases energy cost to block your attacks", function () {
         const blockCost = calculateReactionCost(player, {primary:"block", enhancements: []}, player);
-        expect(blockCost).toEqual(Decimal(25 * .85).floor());
+        expect(blockCost).toEqual(Decimal(100 * 1.1 * .5).floor());
     });
 });
 

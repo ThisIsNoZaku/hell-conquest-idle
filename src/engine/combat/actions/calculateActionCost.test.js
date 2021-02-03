@@ -1,5 +1,6 @@
 import calculateActionCost from "./calculateActionCost";
 import {Decimal} from "decimal.js";
+import {getConfigurationValue} from "../../../config";
 
 describe("action cost energy calculation", function () {
     it("reduces based on precision attribute", function () {
@@ -13,7 +14,7 @@ describe("action cost energy calculation", function () {
                 enhancements: []
             },
                 {})
-            expect(cost).toEqual(Decimal(25 * Math.pow(.85, i)).floor());
+            expect(cost).toEqual(Decimal(getConfigurationValue("attack_upgrade_cost_per_enemy_level") * Math.pow(.85, i)).floor());
         }
-    })
-})
+    });
+});

@@ -2,6 +2,8 @@ import resolveAction from "./resolveAction";
 import {Character} from "../../../character";
 import {Decimal} from "decimal.js";
 import {HitTypes} from "../../../data/HitTypes";
+import {getConfigurationValue} from "../../../config";
+import {AttackActions} from "../../../data/CombatActions";
 
 describe("resolve action", function () {
     let player;
@@ -38,7 +40,7 @@ describe("resolve action", function () {
                     primary:"powerAttack",
                     enhancements:[]
                 },
-                actionEnergyCost: Decimal(25 * .85 * 2.5).floor(),
+                actionEnergyCost: Decimal(getConfigurationValue("attack_upgrade_cost_per_enemy_level") * .85 * AttackActions.powerAttack.energyCostMultiplier).floor(),
                 reaction: {
                     primary:"none",
                     enhancements:[]

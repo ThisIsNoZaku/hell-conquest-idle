@@ -19,7 +19,7 @@ describe("with 'none' tactics", function () {
         })
     });
     it("performs no reaction by default", function () {
-        expect(determineCharacterCombatReaction(player, "basicAttack", enemy, Decimal(100)))
+        expect(determineCharacterCombatReaction(player, "basicAttack", enemy, Decimal(99)))
             .toEqual({
                 primary: "none",
                 enhancements: []
