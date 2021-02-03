@@ -330,7 +330,7 @@ export const TraitEffects = {
                 reflect_damage: {
                     target: "enemy",
                     type: "psychic",
-                    value: .2
+                    value: .25
                 }
             }
         }
