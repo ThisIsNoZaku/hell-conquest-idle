@@ -109,6 +109,9 @@ export class Character {
 
     getActiveStatusInstance(status) {
         return _.get(this.statuses, status, []).reduce((instance, next) => {
+            if(instance === null) {
+                return next;
+            }
             return Decimal(_.get(instance, "ranks", 0)).gt(next.stacks) ? instance : next;
         }, null)
     }
