@@ -43,7 +43,7 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
         // Gain end-of-round Energy
         const endOfRoundStaminaGain = Decimal.min(combatant.energyGeneration.times(tick - combatant.lastActedTick).floor(), combatant.combat.maximumStamina.minus(combatant.combat.stamina));
         combatant.combat.fatigue = Decimal(combatant.combat.fatigue).plus(endOfRoundStaminaGain);
-        combatant.combat.stamina = Decimal.min(combatant.combat.stamina.plus(Decimal.max(endOfRoundStaminaGain, 50)), combatant.combat.maximumStamina);
+        combatant.combat.stamina = Decimal.min(combatant.combat.stamina.plus(Decimal.max(endOfRoundStaminaGain, 0)), combatant.combat.maximumStamina);
         const burnDamage = Decimal.max(0, combatant.combat.fatigue.minus(combatant.combat.maximumStamina)).div(10).floor();
         if(burnDamage.gt(0)) {
             roundEvents.push(generateFatigueDamageEvent(combatant, combatant, burnDamage));
