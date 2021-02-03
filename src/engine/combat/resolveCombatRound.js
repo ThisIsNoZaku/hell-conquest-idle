@@ -27,16 +27,13 @@ export default function resolveCombatRound(tick, combatants) {
     let roundEvents = [];
 
     // Trigger on_begin_round
-    Object.values(combatants).forEach(combatant => {
-        triggerEvent(
-            {
-                type: "on_round_begin",
-                source: {character: combatant},
-                combatants,
-                roundEvents
-            }
-        );
-    });
+    triggerEvent(
+        {
+            type: "on_round_begin",
+            combatants,
+            roundEvents
+        }
+    );
 
     initiativeOrder.forEach(actingCharacter => {
         if (!actingCharacter.isAlive) {
