@@ -40,6 +40,7 @@ export default function triggerEvent(event) {
                         if (event.type !== "on_round_begin") {
                             return;
                         }
+                        debugger;
                         const targets = selectConditionTargets(status.effects[effect].target, combatant, event.target, event.combatants);
                         targets.forEach(target => {
                             const activeStatus = target.getActiveStatusInstance(statusId);
@@ -48,7 +49,19 @@ export default function triggerEvent(event) {
                                 .times(getCharacter(activeStatus.source.character).powerLevel)
                                 .floor();
                             target.dealDamage(damageToDeal);
-                            event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, status.effects[effect].damageType, statusId));
+                            const damageEvent = generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, status.effects[effect].damageType, statusId);
+                            event.roundEvents.push(damageEvent);
+                            triggerEvent({
+                                type: "on_taking_damage",
+                                source: {
+                                    character: combatant,
+                                    status: statusId,
+                                    damage: damageEvent
+                                },
+                                target: combatant,
+                                combatants: event.combatants,
+                                roundEvents: event.roundEvents
+                            })
                         })
                         break;
                 }
