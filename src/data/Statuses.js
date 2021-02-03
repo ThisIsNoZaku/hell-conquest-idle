@@ -8,15 +8,15 @@ export const Statuses = {
     berserk: validatedStatus({
         name: "Berserk",
         icon: "./icons/icons-516.png",
-        description: _.template("Your rage grants you a ${power_modifier.times(100)}% bonus to Power but multiplies the cost to downgrade incoming attacks by ${attack_downgrade_cost_multiplier.plus(1).times(100)}%."),
+        description: _.template("Your rage grants you a ${power_modifier.times(100)}% bonus to Power but reduces Evasion by ${evasion_modifier.times(100)}%."),
         effects: {
             power_modifier: {
                 target: "self",
                 value: .25
             },
-            attack_downgrade_cost_multiplier: {
+            evasion_modifier: {
                 target: "self",
-                value: .25
+                value: -.25
             }
         }
     }),
