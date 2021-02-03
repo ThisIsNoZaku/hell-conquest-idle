@@ -1,10 +1,10 @@
 import selectConditionTargets from "./selectConditionTargets";
 
-export default function doesTraitTrigger(eventDefinition, event) {
+export default function doesTraitTrigger(eventDefinition, event, thisCharacter) {
     return Object.keys(eventDefinition.conditions || {}).reduce((previousConditionsMet, nextCondition) => {
         let nextConditionMet = false;
         const conditionDefinition = eventDefinition.conditions[nextCondition]
-        const targets = selectConditionTargets(conditionDefinition.target, event.source, event.target, event.combatants);
+        const targets = selectConditionTargets(conditionDefinition.target, thisCharacter, null, event.combatants);
         switch (nextCondition) {
             case "health_percentage":
                 switch (conditionDefinition.target) {

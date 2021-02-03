@@ -6,7 +6,7 @@ import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
 import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
 
-export default function applyTraitEffects(effectsToApply, event, sourceType, sourceId, effectLevel) {
+export default function applyTraitEffects(effectsToApply, contextCharacter, event, sourceType, sourceId, effectLevel) {
     for (const effect of Object.keys(effectsToApply)) {
         debugMessage(`Applying trait effect ${effect}`);
         const effectDefinition = effectsToApply[effect];
@@ -14,7 +14,7 @@ export default function applyTraitEffects(effectsToApply, event, sourceType, sou
             case "add_statuses":
                 // TODO: Refactor into method.
                 Object.keys(effectDefinition).forEach(status => {
-                    const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.target, event.combatants);
+                    const targets = selectConditionTargets(effectDefinition[status].target, contextCharacter, event.target, event.combatants);
                     const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(effectLevel) :
                         Decimal(effectDefinition[status].stacks_per_level).times(effectLevel).times(event.source.character.powerLevel);
                     const max = effectDefinition[status].max || 999;

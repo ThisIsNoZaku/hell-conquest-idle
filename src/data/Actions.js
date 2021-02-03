@@ -99,7 +99,6 @@ export const Actions = {
                             [enemy.id]: enemy
                         },
                         source: {character:player},
-                        target: enemy,
                         roundEvents: events
                     });
                     triggerEvent({
@@ -109,7 +108,6 @@ export const Actions = {
                             [enemy.id]: enemy
                         },
                         source: {character:enemy},
-                        target: player,
                         roundEvents: events
                     });
                     player.combat.stamina = player.energyGeneration.times(100).floor();
