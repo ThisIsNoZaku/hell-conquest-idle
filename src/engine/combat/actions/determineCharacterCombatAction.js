@@ -14,6 +14,12 @@ export default function determineCharacterCombatAction(actingCharacter, actorSta
     // TODO: Over energy ceiling, use most powerful attack
     const energyPercentage = actorStartingEnergy.div(actingCharacter.combat.maximumStamina);
     debugMessage(`${actingCharacter.id} has an energy percentage of ${energyPercentage}`);
+    if(energyPercentage.gte(1)) {
+        return {
+            primary: "powerAttack",
+            enhancements: actingCharacter.attackEnhancements
+        };
+    }
     const primaryAction = Tactics.offensive[actingCharacter.tactics.offensive].actions.reduce((chosen, next)=>{
         if(chosen) {
             return chosen;
