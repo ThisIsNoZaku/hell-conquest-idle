@@ -48,7 +48,7 @@ export default function triggerEvent(event) {
                                 .times(getCharacter(activeStatus.source.character).powerLevel)
                                 .floor();
                             target.dealDamage(damageToDeal);
-                            event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, "status", statusId));
+                            event.roundEvents.push(generateDamageEvent(getCharacter(activeStatus.source.character), target, damageToDeal, status.effects[effect].damageType, statusId));
                         })
                         break;
                 }
