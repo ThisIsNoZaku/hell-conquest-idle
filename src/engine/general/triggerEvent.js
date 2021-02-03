@@ -40,7 +40,7 @@ export default function triggerEvent(event) {
                         if (event.type !== "on_round_begin") {
                             return;
                         }
-                        const targets = selectConditionTargets(status.effects[effect].target, event.source.character, event.target, event.combatants);
+                        const targets = selectConditionTargets(status.effects[effect].target, combatant, event.target, event.combatants);
                         targets.forEach(target => {
                             const activeStatus = target.getActiveStatusInstance(statusId);
                             const damageToDeal = Decimal(status.effects[effect].value)
