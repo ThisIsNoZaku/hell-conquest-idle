@@ -41,6 +41,14 @@ describe('action with overwhelming tactics', function () {
                 enhancements: []
             });
     });
+    it("performs a power attack with max stamina", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            })
+    })
 });
 
 describe("action with 'attrit' tactics", function () {
@@ -64,7 +72,7 @@ describe("action with 'attrit' tactics", function () {
             }
         }, 1);
     });
-    it("is a small attack with enough stamina", function () {
+    it("is a basic attack with enough stamina", function () {
         player.combat.stamina = Decimal(1000);
         expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
             .toEqual({
@@ -72,7 +80,7 @@ describe("action with 'attrit' tactics", function () {
                 enhancements: []
             });
     });
-    it("is none small attack without enough stamina", function () {
+    it("is no attack without enough stamina", function () {
         player.combat.stamina = Decimal(0);
         expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
             .toEqual({
@@ -80,6 +88,14 @@ describe("action with 'attrit' tactics", function () {
                 enhancements: []
             });
     });
+    it("performs a power attack with max stamina", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            })
+    })
 });
 
 describe("action with 'counter' tactics", function () {
@@ -118,4 +134,12 @@ describe("action with 'counter' tactics", function () {
                 enhancements: []
             });
     });
+    it("performs a power attack with max stamina", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, player.combat.stamina, enemy))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            })
+    })
 });
