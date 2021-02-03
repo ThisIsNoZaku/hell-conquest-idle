@@ -35,6 +35,11 @@ export const Traits = {
         enabled: true,
         description: _.template("The Demon saps the strength from the victims limbs, reducing both Damage and Defense by <span>${tier.times(5)}%</span> for 1 round.")
     }),
+    fortressOfMadness: validatedTrait({
+        name: "Fortress of Madness",
+        icon: "./icons/icons-856.png",
+        description: _.template("Your madness twists your enemy's body as it twists your own mind, reflecting ${tier.times(20)}% of damage taken and statuses applied by the enemy to you.")
+    }, ["reversal", "thorns"]),
     inescapableGrasp: validatedTrait(generateTrait({
         name: "Inescapable Grasp",
         icon: "./icons/icons-2221.png",

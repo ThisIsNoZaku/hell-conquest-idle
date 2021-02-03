@@ -110,6 +110,14 @@ export const Creatures  = {
         appearance: "fleshlessSoldier",
         description: "Even the dead have not seen the end of war.",
         texture: "18_skeleton.png"
+    },
+    madOrc: {
+        name: "Mad Orc",
+        traits: ["fortressOfMadness"],
+        enabled: true,
+        appearance: "madOrc",
+        description: "An orc warrior driven mad by a thirst for blood.",
+        texture: "19_orc.png"
     }
 }
 
