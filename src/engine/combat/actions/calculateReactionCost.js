@@ -7,7 +7,7 @@ import {ActionEnhancements} from "../../../data/ActionEnhancements";
 
 export default function calculateReactionCost(actor, reaction, target) {
     const base = Decimal(_.get(actor, "powerLevel", 1)).times(getConfigurationValue("attack_upgrade_cost_per_enemy_level"));
-    const attributeMultiplier =Decimal(1).minus(getConfigurationValue("mechanics.combat.evasion.effectPerPoint")).pow(Decimal(_.get(actor, ["combat", "evasion"], 1)));
+    const attributeMultiplier =Decimal(1).minus(getConfigurationValue("mechanics.combat.evasion.effectPerPoint")).pow(Decimal(_.get(target, ["combat", "evasion"], 1)));
     const actionCostMultiplier = DefenseActions[reaction.primary].energyCostMultiplier;
     const attackerTraitModifier = Object.keys(_.get(actor, "traits", {})).reduce((previousValue, currentValue) => {
         const modifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", `${reaction.primary}_cost_modifier`], 0);
