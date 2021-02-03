@@ -33,6 +33,10 @@ export const modifierEffects = JOI.object({
         type: JOI.string(),
         percentage: [JOI.string(), JOI.number()]
     },
-    inflict_damage_at_start_of_round: effectModifier,
+    inflict_damage_at_start_of_round: {
+        target: effectTarget,
+        damageType: JOI.string(),
+        value: JOI.number()
+    },
     block_cost_modifier: effectModifier
 });
