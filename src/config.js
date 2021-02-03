@@ -78,11 +78,11 @@ const config = {
             },
             precision: {
                 baseAttribute: "deceit",
-                effectPerPoint: .1
+                effectPerPoint: .15
             },
             evasion: {
                 baseAttribute: "cunning",
-                effectPerPoint: .1
+                effectPerPoint: .15
             },
             power: {
                 baseAttribute: "brutality",

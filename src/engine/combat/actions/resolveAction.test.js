@@ -38,7 +38,7 @@ describe("resolve action", function () {
                     primary:"powerAttack",
                     enhancements:[]
                 },
-                actionEnergyCost: Decimal(25 * .9 * 2.5).floor(),
+                actionEnergyCost: Decimal(25 * .85 * 2.5).floor(),
                 reaction: {
                     primary:"none",
                     enhancements:[]
