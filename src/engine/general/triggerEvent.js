@@ -10,16 +10,21 @@ import {Decimal} from "decimal.js";
 import {getCharacter} from "../index";
 import * as _ from "lodash";
 import {ActionEnhancements} from "../../data/ActionEnhancements";
+import {Events} from "../../data/Events";
 
 export default function triggerEvent(event) {
     const eventValidation = eventMatcher.validate(event);
     if (eventValidation.error) {
         throw new Error(`Invalid event shape: ${eventValidation.error}`);
     }
+    const eventDef = Events[event.type];
     // Trigger traits for event
     debugMessage(`Triggering event ${event.type}`);
 
-    Object.values(event.combatants).forEach(combatant => {
+    const eventTargets = eventDef.receivers === "all" ? Object.values(event.combatants) :
+        (eventDef.receivers === "source" ? [event.source.character] : Object.values(event.combatants).filter(c => c !== event.source.character));
+
+    eventTargets.filter(x => x).forEach(combatant => {
         Object.keys(_.get(combatant, "traits", {})).forEach(traitId => {
             const trait = Traits[traitId];
             const eventDefinition = trait[event.type];
