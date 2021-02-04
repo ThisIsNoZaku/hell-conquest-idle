@@ -2,7 +2,6 @@ import {Character} from "../../character";
 import {AttackActions, DefenseActions} from "../../data/CombatActions";
 import {generateTrait, Traits} from "../../data/Traits";
 import {Decimal} from "decimal.js";
-import resolveCombatRound from "../combat/resolveCombatRound";
 import resolveAction from "../combat/actions/resolveAction";
 import triggerEvent from "./triggerEvent";
 import calculateDamageBy from "../combat/calculateDamageBy";
@@ -11,6 +10,7 @@ import {HitTypes} from "../../data/HitTypes";
 import {getConfigurationValue} from "../../config";
 import resolveAttack from "../combat/resolveAttack";
 import {TraitEffects} from "../../data/TraitEffects";
+import {getCharacter} from "../index";
 
 jest.mock("../index");
 
@@ -970,6 +970,13 @@ describe("thorns effect", function () {
         enemy = new Character({
             id: 1
         });
+        getCharacter.mockImplementation((id) => {
+            if(id === player.id) {
+                return player;
+            } else if(id === enemy.id) {
+                return enemy;
+            }
+        })
     });
     afterEach(() => {
         delete Traits.test;
