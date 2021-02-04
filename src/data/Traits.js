@@ -56,7 +56,7 @@ export const Traits = {
         name: "Immortal Warrior",
         icon: "./icons/icons-795.png",
         enabled: true,
-        description: _.template("This Demon's undead stamina increases the cost to downgrade its attacks by ${tier.times(10)}%.")
+        description: _.template("This Demon's mindless stamina increases the cost to downgrade its attacks by ${tier.times(10)}% and reduces Psychic damage by ${tier.times(20)}%.")
     }, ["mindless", "unstoppable"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
