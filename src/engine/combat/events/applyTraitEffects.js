@@ -7,6 +7,7 @@ import * as _ from "lodash";
 import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
 import {getConfigurationValue} from "../../../config";
 import {Traits} from "../../../data/Traits";
+import {getCharacter} from "../../index";
 
 export default function applyTraitEffects(effectsToApply, contextCharacter, event, sourceType, sourceId, effectLevel) {
     for (const effect of Object.keys(effectsToApply)) {
@@ -90,7 +91,7 @@ export default function applyTraitEffects(effectsToApply, contextCharacter, even
                 });
                 break;
             case "reflect_damage":
-                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                const targets = [getCharacter(event.source.attack.source.character)];
                 targets.forEach(target => {
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
@@ -101,7 +102,7 @@ export default function applyTraitEffects(effectsToApply, contextCharacter, even
                         newDamageEffectUuid
                     ];
                     event.roundEvents.push(generateDamageEvent(
-                        event.source.character,
+                        contextCharacter,
                         target,
                         damageToDeal,
                         effectDefinition.type,
