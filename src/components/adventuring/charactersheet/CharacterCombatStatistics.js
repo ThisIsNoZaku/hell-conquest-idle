@@ -93,17 +93,6 @@ export default function CharacterCombatStatistics(props) {
                                 <Help/>
                             </Tooltip>
                         </TableCell>
-                        {/*<TableCell>*/}
-                        {/*    Downgrade Cost*/}
-                        {/*</TableCell>*/}
-                        {/*<TableCell>*/}
-                        {/*    {props.evasionMultiplier.toFixed()}*/}
-                        {/*</TableCell>*/}
-                        {/*<TableCell>*/}
-                        {/*    <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">*/}
-                        {/*        <Help/>*/}
-                        {/*    </Tooltip>*/}
-                        {/*</TableCell>*/}
                     </TableRow>
                     <TableRow>
                         <TableCell>
@@ -117,17 +106,6 @@ export default function CharacterCombatStatistics(props) {
                                 <Help/>
                             </Tooltip>
                         </TableCell>
-                        {/*<TableCell>*/}
-                        {/*    Upgrade Cost*/}
-                        {/*</TableCell>*/}
-                        {/*<TableCell>*/}
-                        {/*    {props.precisionMultiplier.toFixed()}*/}
-                        {/*</TableCell>*/}
-                        {/*<TableCell>*/}
-                        {/*    <Tooltip title="How much energy is consumed to downgrade incoming attacks">*/}
-                        {/*        <Help/>*/}
-                        {/*    </Tooltip>*/}
-                        {/*</TableCell>*/}
                     </TableRow>
                 </TableBody>
             </Table>}
@@ -142,19 +120,6 @@ export default function CharacterCombatStatistics(props) {
                         </TableCell>
                         <TableCell>
                             <Tooltip title={powerTooltip}>
-                                <Help/>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            Energy
-                        </TableCell>
-                        <TableCell>
-                            {props.characterStamina}
-                        </TableCell>
-                        <TableCell>
-                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
@@ -211,19 +176,32 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                     </TableRow>
-                    {/*<TableRow>*/}
-                    {/*    <TableCell>*/}
-                    {/*        Upgrade Cost*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell>*/}
-                    {/*        {props.precisionMultiplier.toFixed()}*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell>*/}
-                    {/*        <Tooltip title="How much energy is consumed to downgrade incoming attacks">*/}
-                    {/*            <Help/>*/}
-                    {/*        </Tooltip>*/}
-                    {/*    </TableCell>*/}
-                    {/*</TableRow>*/}
+                    <TableRow>
+                        <TableCell>
+                            Energy
+                        </TableCell>
+                        <TableCell>
+                            {props.characterStamina}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell>
+                            Energy Regen
+                        </TableCell>
+                        <TableCell>
+                            {props.characterEnergyGeneration.times(100).floor().toFixed()}
+                        </TableCell>
+                        <TableCell>
+                            <Tooltip title="Gain this much energy every 100 ticks of combat.">
+                                <Help/>
+                            </Tooltip>
+                        </TableCell>
+                    </TableRow>
                 </TableBody>
             </Table>}
         </TableContainer>
