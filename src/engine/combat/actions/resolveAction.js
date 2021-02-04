@@ -52,7 +52,7 @@ export default function resolveAction(actingCharacter, combatants, roundEvents, 
                             attack: attackResult.attack,
                             damage: attackResult.damage
                         },
-                        target: actionTarget,
+                        target: actingCharacter,
                         combatants,
                         roundEvents
                     });
