@@ -11,6 +11,7 @@ import {getCharacter, getGlobalState, resetDebug, saveKey} from "../engine";
 import * as _ from "lodash";
 import {Regions} from "../data/Regions";
 import {getConfigurationValue} from "../config";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const styles = {
     root: {
@@ -25,22 +26,15 @@ const styles = {
 export default function DebugUi(props) {
     const [creatures, setCreatures] = useState(_.get(getGlobalState(), ["debug", "creatures"]));
     const [regions, setRegions] = useState(_.get(getGlobalState(), ["debug", "regions"]));
-    const [minLevel, setMinLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "minLevel"], getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")).lt(Decimal(1)) ?
-        Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale"))));
-    const [maxLevel, setMaxLevel] = useState(_.get(getGlobalState(), ["debug", "encounters", "maxLevel"], getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
-        Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2)));
-    const [manualSpeedMultiplier, setManualSpeedMultiplier] = useState(_.get(getGlobalState(), ["debug", "manualSpeedMultiplier"],
-        getGlobalState().manualSpeedMultiplier));
-    const [playerAbsorbedPower, setPlayerAbsorbedPower] = useState(getCharacter(0).absorbedPower);
+    const [playerLevel, setPlayerLevel] = useState(getCharacter(0).powerLevel);
+    const [latentPower, setLatentPower] = useState(getCharacter(0).latentPower);
+    const [levelUpDisabled, setLevelUpDisabled] = useState(_.get(getGlobalState(), ["debug", "levelUpDisabled"], false));
+    const [latentPowerGrowthDisabled, setLatentPowerGrowthDisabled] = useState(_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false));
 
     function reset() {
         resetDebug();
         setCreatures(_.get(getGlobalState(), ["debug", "creatures"]));
         setRegions(_.get(getGlobalState(), ["debug", "regions"]));
-        setMinLevel(getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")).lt(Decimal(1)) ?
-            Decimal(1) : getCharacter(0).powerLevel.minus(getConfigurationValue("lesser_level_scale")));
-        setMaxLevel(getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale")).gt(100) ?
-            Decimal(100) : getCharacter(0).powerLevel.plus(getConfigurationValue("encounters.greaterLevelScale") * 2));
     }
 
     function clearSave() {
@@ -52,6 +46,52 @@ export default function DebugUi(props) {
         <Grid container>
             <Grid item xs={12} style={{textAlign: "center"}}>
                 <h3>Debug Menu</h3>
+            </Grid>
+            <Grid item xs={12}>
+                Character Stats
+            </Grid>
+            <Grid item container xs={12}>
+                <Grid item>
+                    Power Level
+                </Grid>
+                <Grid item>
+                    <TextField type="number" value={playerLevel} min={0} onChange={e => {
+                        const val = Decimal.max(1, Decimal.min(100, e.target.value));
+                        getCharacter(0).powerLevel = val;
+                        setPlayerLevel(val.toNumber());
+                    }}></TextField>
+                </Grid>
+                <Grid item>
+                    Disable Level Up
+                </Grid>
+                <Grid item>
+                    <Checkbox checked={levelUpDisabled} onChange={e => {
+                        _.set(getGlobalState(), ["debug", "levelUpDisabled"], e.target.checked === true);
+                        setLevelUpDisabled(e.target.checked === true);
+                    }}></Checkbox>
+                </Grid>
+                <Grid item>
+                    Latent Power
+                </Grid>
+                <Grid item>
+                    <TextField type="number" value={latentPower} min={0} onChange={e => {
+                        const val = Decimal.max(0, Decimal.min(1000000, e.target.value));
+                        getCharacter(0).latentPower = val;
+                        setLatentPower(val.toNumber());
+                    }}></TextField>
+                </Grid>
+                <Grid item>
+                    Disable Latent Power Growth
+                </Grid>
+                <Grid item>
+                    <Checkbox checked={latentPowerGrowthDisabled} onChange={e => {
+                        _.set(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], e.target.checked === true);
+                        setLatentPowerGrowthDisabled(e.target.checked === true);
+                    }}></Checkbox>
+                </Grid>
+                <Grid item>
+                    <Button variant="contained" disabled={_.get(getGlobalState(), ["rival", "type"], null) !== null} onClick={() => getGlobalState().rival = {}}>Clear Rival</Button>
+                </Grid>
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs={6} style={{textAlign: "center"}}>
@@ -66,35 +106,12 @@ export default function DebugUi(props) {
                 </Grid>
             </Grid>
             <Grid item xs={12}>
-                <Grid item xs={3}>
-                    <TextField type="number" value={manualSpeedMultiplier} onChange={e => {
-                        const newValue = Number.parseInt(e.target.value);
-                        _.set(getGlobalState(), ["debug", "manualSpeedMultiplier"], newValue);
-                        setManualSpeedMultiplier(newValue);
-                    }} label="Manual speed multiplier"/>
-                </Grid>
-                <Grid item xs={3}>
-                    <TextField type="number" min="0" value={playerAbsorbedPower} onChange={e => {
-                        e.target.value = e.target.value === "" ? 0 : e.target.value;
-                        const newValue = Decimal(Number.parseInt(e.target.value));
-                        if(newValue.lt(0)) {
-                            getCharacter(0).absorbedPower = Decimal(0);
-                            setPlayerAbsorbedPower(Decimal(0));
-                        } else {
-                            getCharacter(0).absorbedPower = newValue;
-                            setPlayerAbsorbedPower(newValue);
-                        }
-
-                    }} label="Current player absorbed power"/>
-                </Grid>
-            </Grid>
-            <Grid item xs={12}>
                 <h3>Creatures</h3>
             </Grid>
             <Grid container item xs={12}>
                 {Object.keys(Creatures).map(id => {
                     const enabled = creatures[id] !== false && _.get(creatures, [id, "enabled"]) !== false;
-                    return <Grid item xs={3} style={{height: "100%"}}>
+                    return <Grid item xs={3}>
                         <Button variant="contained" color={enabled ? "default" : "secondary"}
                                 style={{width: "100%", height: "100%"}}
                                 onClick={() => {
@@ -107,6 +124,11 @@ export default function DebugUi(props) {
                         </Button>
                     </Grid>
                 })}
+            </Grid>
+            <Grid container item xs={12}>
+                <Grid item>
+
+                </Grid>
             </Grid>
             <Grid item style={{textAlign: "center"}}>
                 <h4>Regions</h4>
@@ -143,56 +165,6 @@ export default function DebugUi(props) {
             <Grid container>
                 <Grid item xs={12} style={{textAlign: "center"}}>
                     <h4>Encounter rules</h4>
-                </Grid>
-                <Grid container item xs={3}>
-                    <Grid item>
-                        <Button onClick={() => {
-                            setMinLevel(minLevel.plus(1));
-                            _.set(getGlobalState(), ["debug", "encounters", "minLevel"], minLevel.plus(1));
-                            if (minLevel.plus(1).gt(maxLevel)) {
-                                setMaxLevel(minLevel.plus(1));
-                                _.set(getGlobalState(), ["debug", "encounters", "maxLevel"], minLevel.plus(1));
-                            }
-                        }}>
-                            <AddCircleOutlineRoundedIcon/>
-                        </Button>
-                    </Grid>
-                    <Grid item>
-                        Minimum level {minLevel.toFixed()}
-                    </Grid>
-                    <Grid item>
-                        <Button onClick={() => {
-                            _.set(getGlobalState(), ["debug", "encounters", "minLevel"], minLevel.minus(1));
-                            setMinLevel(minLevel.minus(1));
-                        }}>
-                            <RemoveCircleOutlineRoundedIcon/>
-                        </Button>
-                    </Grid>
-                </Grid>
-                <Grid container item xs={3}>
-                    <Grid item>
-                        <Button onClick={() => {
-                            setMaxLevel(maxLevel.plus(1));
-                            _.set(getGlobalState(), ["debug", "encounters", "maxLevel"], maxLevel.plus(1));
-                        }}>
-                            <AddCircleOutlineRoundedIcon/>
-                        </Button>
-                    </Grid>
-                    <Grid item>
-                        Maximum level {maxLevel.toFixed()}
-                    </Grid>
-                    <Grid item>
-                        <Button onClick={() => {
-                            _.set(getGlobalState(), ["debug", "encounters", "maxLevel"], maxLevel.minus(1));
-                            setMaxLevel(maxLevel.minus(1));
-                            if (maxLevel.minus(1).lt(minLevel)) {
-                                setMinLevel(maxLevel.minus(1));
-                                _.set(getGlobalState(), ["debug", "encounters", "minLevel"], maxLevel.minus(1));
-                            }
-                        }}>
-                            <RemoveCircleOutlineRoundedIcon/>
-                        </Button>
-                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

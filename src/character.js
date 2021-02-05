@@ -64,11 +64,13 @@ export class Character {
     }
 
     levelUp() {
-        this.powerLevel = this.powerLevel.plus(1);
-        Creatures[this.appearance].traits.forEach(trait => {
-            const gs = getGlobalState();
-            gs.unlockedTraits[trait] = this.powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
-        });
+        if(!_.get(getGlobalState(), ["debug", "levelUpDisabled"], false)) {
+            this.powerLevel = this.powerLevel.plus(1);
+            Creatures[this.appearance].traits.forEach(trait => {
+                const gs = getGlobalState();
+                gs.unlockedTraits[trait] = this.powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
+            });
+        }
     }
 
     get attackEnhancements() {
@@ -180,10 +182,15 @@ export class Character {
         });
         this.statuses = {};
         this.absorbedPower = Decimal(0);
-        this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
-        this.powerLevel = Decimal(0);
+        if(!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
+            this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
+        }
+        this.powerLevel = Decimal(1);
         this.hp = this.maximumHp;
-        this.levelUp();
+        Creatures[this.appearance].traits.forEach(trait => {
+            const gs = getGlobalState();
+            gs.unlockedTraits[trait] = this.powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
+        });
         this.reset();
         this.combat.stamina = Decimal(0);
 
