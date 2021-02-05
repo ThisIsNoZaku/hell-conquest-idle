@@ -48,10 +48,10 @@ export const Traits = {
     }, ["grappler", "crushing"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
-        description: _.template("This Demon seeks to end fights with killer blows and deadly venom, inflicting inflicting ${tier.times(50)}% more damage on Devastating hits and ${tier} stacks of <strong>Poisoned</strong>."),
+        description: _.template("This Demon seeks to withstand attacks with a hard carapace and in fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and a ${tier.times(25)}% bonus to Resilience."),
         icon: "./icons/icons-2278.png",
         enabled: true,
-    }, ["killer", "venomous"])),
+    }, ["tough", "venomous"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-795.png",
