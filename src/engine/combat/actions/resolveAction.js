@@ -11,15 +11,15 @@ import {v4} from "node-uuid";
 import {Traits} from "../../../data/Traits";
 import * as _ from "lodash";
 
-export default function resolveAction(actingCharacter, combatants, roundEvents, tick) {
-    const actionChoices = determineCharacterCombatAction(actingCharacter, actingCharacter.combat.stamina, Object.values(combatants).find(x => x.id != actingCharacter.id));
+export default function resolveAction(actingCharacter, combatants, roundEvents, startingEnergy, tick) {
+    const actionChoices = determineCharacterCombatAction(actingCharacter, startingEnergy[actingCharacter.id], Object.values(combatants).find(x => x.id != actingCharacter.id));
     const actingCharacterAction = AttackActions[actionChoices.primary];
     if (actingCharacterAction.performsAction) {
         if (actingCharacterAction.attack) {
             // TODO: Move into new method
             const possibleTargets = Object.values(combatants).filter(c => c.id !== actingCharacter.id);
             const actionTarget = possibleTargets[0];
-            const targetedCharacterReaction = determineCharacterCombatReaction(actingCharacter, actingCharacterAction, actionTarget, actionTarget.combat.stamina);
+            const targetedCharacterReaction = determineCharacterCombatReaction(actingCharacter, actingCharacterAction, actionTarget, startingEnergy[actionTarget.id]);
             const attackResult = resolveAttack(actingCharacter, actionChoices, actionTarget, targetedCharacterReaction, tick);
             roundEvents.push(attackResult.attack);
             if (attackResult.attack.hit) {
