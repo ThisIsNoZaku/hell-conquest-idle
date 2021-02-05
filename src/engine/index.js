@@ -118,25 +118,25 @@ export function generateCreature(id, powerLevel, rng) {
     if (Number.isNaN(powerLevel)) {
         throw new Error("Level cannot be NaN");
     }
-    const offensiveTactics = Object.keys(Tactics.offensive)[Math.floor(rng.double() * 3)];
-    const defensiveTactics = Object.keys(Tactics.defensive)[Math.floor(rng.double() * 3)];
+    // Adjectives
+    const adjectiveOptions = Object.keys(titles);
+    const index = Math.floor(adjectiveOptions.length * rng.double());
+    const adjective = titles[adjectiveOptions[index]];
+    const {offensiveTactics, defensiveTactics} = determineCreatureTactics(id, adjectiveOptions[index]);
     const nextId = nextMonsterId++;
     // Starting traits
     const startingTraits = Creatures[id].traits.reduce((traits, next) => {
         traits[next] = powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
         return traits;
     }, {});
-    // Adjectives
-    const options = Object.keys(titles);
-    const index = Math.floor(options.length * rng.double());
-    const adjective = titles[options[index]];
+
     const bonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
         highestLevelReached: Decimal(powerLevel)
     })
     const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective], startingTraits);
     globalState.characters[nextId] = new Character({
         id: nextId,
-        ...Creatures[id],
+        ..._.omit(Creatures[id], ["npc"]),
         latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(50))), // FIXME: Make configurable value
         tactics: {
             offensive: offensiveTactics,
@@ -226,4 +226,14 @@ export function triangleNumber(number) {
 export function inverseTriangleNumber(number) {
     return Math.floor(Math.sqrt(number * 2));
 
+}
+
+export function determineCreatureTactics(id, adjective) {
+    const creature = Creatures[id];
+    const offensiveTactics = _.get(creature, ["npc", "tactics", adjective, "offensive"], creature.npc.tactics.default.offensive)
+    const defensiveTactics = _.get(creature, ["npc", "tactics", adjective, "defensive"], creature.npc.tactics.default.defensive)
+    return {
+        offensiveTactics,
+        defensiveTactics
+    }
 }
