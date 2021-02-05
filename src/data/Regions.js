@@ -5,7 +5,8 @@ import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
 
 class Region {
-    constructor(name, available, encounters, background) {
+    constructor(id, name, available, encounters, background) {
+        this.id = id;
         this.name = name;
         this.encounters = encounters;
         this.background = background;
@@ -62,7 +63,7 @@ class Region {
 }
 
 export const Regions = {
-    forest: new Region("The Prey's Lament", true, {
+    forest: new Region("forest","The Prey's Lament", true, {
             bloodthirstyKnight: {
                 description: "1 Bloodthirsty Knight",
                 type: "combat",
@@ -150,6 +151,17 @@ export const Regions = {
                     }
                 ]
             },
+            searingFangViper: {
+                description: "1 Searing Fang",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "searingFangViper",
+                        count: 1,
+                    }
+                ]
+            },
             myrmidonWarrior: {
                 description: "1 Myrmidon Warrior",
                 type: "combat",
@@ -157,6 +169,46 @@ export const Regions = {
                 enemies: [
                     {
                         name: "myrmidonWarrior",
+                        count: 1
+                    }
+                ]
+            },
+            scorpion: {
+                description: "1 Scorpion",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "scorpion",
+                        count: 1
+                    }
+                ]
+            },
+            carrionBeetle: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "carrionBeetle",
+                        count: 1
+                    }
+                ]
+            },
+            fleshlessSoldier: {
+                description: "1 Fleshless Soldier",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "fleshlessSoldier",
+                        count: 1
+                    }
+                ]
+            },
+            madOrc: {
+                description: "1 Mad Orc",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "madOrc",
                         count: 1
                     }
                 ]
@@ -181,7 +233,7 @@ function chooseRandomEncounter(region) {
         if (!encounterEnabled) {
             debugMessage(`Encounter '${encounterId}' disabled`);
         }
-        const debugNotDisabled = _.get(getGlobalState(), ["debug", "regions", region.id, "encounters", encounterId]) !== false;
+        const debugNotDisabled = _.get(getGlobalState(), ["debug", "regions", region.id, "encounters", encounterId, "enabled"]) !== false;
         if (!debugNotDisabled) {
             debugMessage(`Encounter '${encounterId}' disabled by debug.`);
         }
