@@ -34,12 +34,16 @@ export default function resolveCombatRound(tick, combatants) {
             roundEvents
         }
     );
+    const startingEnergy = Object.keys(combatants).reduce((mapped, next)=>{
+        mapped[next] = combatants[next].combat.stamina;
+        return mapped;
+    }, {})
 
     initiativeOrder.forEach(actingCharacter => {
         if (!actingCharacter.isAlive) {
             return;
         }
-        resolveAction(actingCharacter, combatants, roundEvents, tick);
+        resolveAction(actingCharacter, combatants, roundEvents, startingEnergy, tick);
 
         Object.values(combatants).forEach(combatant => {
             if (!combatant.isAlive && !roundEvents.find(re => re.type === "kill" && re.target !== combatant.id)) {
