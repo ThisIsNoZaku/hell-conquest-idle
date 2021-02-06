@@ -2,7 +2,7 @@ import {debugMessage} from "../../debugging";
 import {Traits} from "../../data/Traits";
 import * as JOI from "joi";
 import doesTraitTrigger from "../combat/events/doesTraitTrigger";
-import applyTraitEffects from "../combat/events/applyTraitEffects";
+import applyEffects from "../combat/events/applyEffects";
 import selectConditionTargets from "../combat/events/selectConditionTargets";
 import {Statuses} from "../../data/Statuses";
 import {generateDamageEvent} from "../events/generate";
@@ -33,7 +33,7 @@ export default function triggerEvent(event) {
                 debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not'} trigger.`);
                 const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
                 if (effectsToApply) {
-                    applyTraitEffects(effectsToApply, combatant, event, "trait", traitId, combatant.traits[traitId]);
+                    applyEffects(effectsToApply, combatant, event, "trait", traitId, combatant.traits[traitId]);
                 }
             }
         });
@@ -45,7 +45,6 @@ export default function triggerEvent(event) {
                         if (event.type !== "on_round_begin") {
                             return;
                         }
-                        debugger;
                         const targets = selectConditionTargets(status.effects[effect].target, combatant, event.target, event.combatants);
                         targets.forEach(target => {
                             const activeStatus = target.getActiveStatusInstance(statusId);
@@ -82,7 +81,7 @@ export default function triggerEvent(event) {
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyTraitEffects(effectsToApply, event.source.character, event, "enhancement", enhancement, event.source.character.powerLevel);
+                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement, event.source.character.powerLevel);
             }
         }
     });

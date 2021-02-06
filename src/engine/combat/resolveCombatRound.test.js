@@ -1,11 +1,15 @@
 import triggerEvent from "../general/triggerEvent";
 import {resolveCombatRound} from "./index";
 import {Character} from "../../character";
-import resolveAction from "./actions/resolveAction";
+import resolveAttack from "./resolveAttack";
+import determineCharacterCombatAction from "./actions/determineCharacterCombatAction";
+import onRoundBegin from "./events/onRoundBegin";
 
 jest.mock("../index");
 jest.mock("../general/triggerEvent");
-jest.mock("../combat/actions/resolveAction");
+jest.mock("../combat/resolveAttack");
+jest.mock("../combat/actions/determineCharacterCombatAction");
+jest.mock("../combat/events/onRoundBegin");
 
 describe("the combat round resolution", function () {
     let player;
@@ -17,8 +21,20 @@ describe("the combat round resolution", function () {
         enemy = new Character({
             id: 1
         });
-    })
-    it("calls onRoundBegin for each combatant", function() {
+        resolveAttack.mockClear();
+        determineCharacterCombatAction.mockClear();
+    });
+    it("determines action from highest to lowest initiative", function () {
+        enemy.initiative = 1;
+        determineCharacterCombatAction.mockReturnValue({
+            primary: "none",
+            enhancements: []
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(1, enemy, player);
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(2, player, enemy, expect.any(Object));
+    });
+    it("calls onRoundBegin once", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(triggerEvent).toHaveBeenCalledWith({
             type: "on_round_begin",
@@ -29,12 +45,55 @@ describe("the combat round resolution", function () {
             roundEvents: expect.any(Array)
         });
     });
-    it("calls resolveAction for each combatant", function() {
+    it("calls resolveAttack once if one character attacks and another defends", function () {
+        determineCharacterCombatAction.mockReturnValueOnce({
+            primary: "basicAttack",
+            enhancements: []
+        }).mockReturnValueOnce({
+            primary: "block",
+            enhancements: []
+        });
+        resolveAttack.mockReturnValue({
+            attack: {}
+        });
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(resolveAction).toHaveBeenCalledWith(player, {0: player, 1: enemy}, expect.any(Array), 100);
-        expect(resolveAction).toHaveBeenCalledWith(enemy, {0: player, 1: enemy}, expect.any(Array), 100);
+        expect(resolveAttack)
+            .toHaveBeenCalledWith(player, {primary: "basicAttack", enhancements: []}, enemy, {
+                primary: "block",
+                enhancements: []
+            }, 100);
     });
-    it("calls onRoundEnd for each combatant", function() {
+    it("calls resolveAttack twice if both characters attack", function () {
+        determineCharacterCombatAction.mockReturnValue({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        resolveAttack.mockReturnValue({
+            attack: {},
+            defense: {}
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(resolveAttack)
+            .toHaveBeenNthCalledWith(1, player, {primary: "basicAttack", enhancements: []}, enemy, {
+                primary: "none",
+                enhancements: []
+            }, 100);
+
+        expect(resolveAttack)
+            .toHaveBeenNthCalledWith(2, enemy, {primary: "basicAttack", enhancements: []}, player, {
+                primary: "none",
+                enhancements: []
+            }, 100);
+    });
+    it("does not call resolveAttack if both characters defend", function () {
+        determineCharacterCombatAction.mockReturnValue({
+            primary: "block",
+            enhancements: []
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(resolveAttack).not.toHaveBeenCalled();
+    });
+    it("calls onRoundEnd once", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(triggerEvent).toHaveBeenCalledWith({
             type: "on_round_end",
@@ -47,16 +106,5 @@ describe("the combat round resolution", function () {
             },
             roundEvents: expect.any(Array)
         });
-        expect(triggerEvent).toHaveBeenCalledWith({
-            type: "on_round_end",
-            source: {
-                character: enemy
-            },
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            roundEvents: expect.any(Array)
-        })
     });
 });

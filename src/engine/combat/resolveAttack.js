@@ -3,10 +3,11 @@ import {generateAttackEvent,  generateHitEvents} from "../events/generate";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
 import calculateActionCost from "./actions/calculateActionCost";
-import calculateReactionCost from "./actions/calculateReactionCost";
-import {AttackActions, DefenseActions} from "../../data/CombatActions";
+import {CombatActions} from "../../data/CombatActions";
+import triggerEvent from "../general/triggerEvent";
+import onTakingDamage from "./events/onTakingDamage";
 
-export default function resolveAttack(actingCharacter, action, targetedCharacter, reaction, tick) {
+export default function resolveAttack(actingCharacter, action, targetedCharacter, reaction, roundEvents, tick) {
     if (typeof tick !== "number") {
         throw new Error("Tick not a number");
     }
@@ -15,16 +16,16 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     const actionEnergyCost = calculateActionCost(actingCharacter, action, targetedCharacter);
     if(actionEnergyCost.lte(actingCharacter.combat.stamina)) {
         actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(actionEnergyCost);
-        hitLevel = AttackActions[action.primary].hitLevel;
+        hitLevel = CombatActions[action.primary].hitLevel;
     } else {
         action = {primary: "none", enhancements: []};
         hitLevel = HitTypes.min;
     }
 
-    const reactionEnergyCost = calculateReactionCost(actingCharacter, reaction, targetedCharacter);
+    const reactionEnergyCost = calculateActionCost(actingCharacter, reaction, targetedCharacter);
     if(reactionEnergyCost.lte(targetedCharacter.combat.stamina)) {
         targetedCharacter.combat.stamina = targetedCharacter.combat.stamina.minus(reactionEnergyCost);
-        hitLevel = Math.max(HitTypes.min, hitLevel + DefenseActions[reaction.primary].hitLevelModifier);
+        hitLevel = Math.max(HitTypes.min, hitLevel + CombatActions[reaction.primary].hitLevelModifier);
     } else {
         reaction = {primary: "none", enhancements: []};
     }
@@ -37,5 +38,35 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         .against(targetedCharacter).using(reaction)[hitLevel];
     const damageDone = baseDamage;
     targetedCharacter.dealDamage(damageDone);
-    return generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
+    const attackResult = generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
+    roundEvents.push(attackResult.damage);
+    triggerEvent({
+        type: "on_hit",
+        source: {
+            character: actingCharacter,
+            attack: attackResult.attack
+        },
+        target: targetedCharacter,
+        combatants: {
+            [actingCharacter.id]: actingCharacter,
+            [targetedCharacter.id]: targetedCharacter
+        },
+        roundEvents
+    });
+    triggerEvent({
+        type: `on_${HitTypes[attackResult.hitType].summary}_hit`,
+        source: {
+            character: actingCharacter,
+            attack: attackResult.attack
+        },
+        target: targetedCharacter,
+        combatants: {
+            [actingCharacter.id]: actingCharacter,
+            [targetedCharacter.id]: targetedCharacter
+        },
+        roundEvents
+    });
+    if (attackResult.damage) {
+        onTakingDamage(targetedCharacter, actingCharacter, attackResult.attack, attackResult.damage, roundEvents);
+    }
 }

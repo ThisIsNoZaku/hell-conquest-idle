@@ -55,15 +55,17 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                     return previousValue - (currentValue[`additional_${reaction.primary}_damage_reduction`] || 0);
                                 }, 0);
 
+
+                                const latentPowerModifier = Decimal(_.get(attacker, "latentPowerModifier", 0));
                                 const totalMultiplier = Decimal(attributeDamageMultiplier)
                                     .plus(attackerTraitDamageMultiplier)
                                     .plus(reactionEnhancementModifier)
-                                    .plus(defenderTraitDamageMultiplier);
-                                const latentPowerModifier = Decimal(_.get(attacker, "latentPowerModifier", 0)).plus(1);
+                                    .plus(defenderTraitDamageMultiplier)
+                                    .plus(latentPowerModifier);
+
                                 damage[nextType] = Decimal.max(0, attackerPowerLevel.times(perLevelDamage)
-                                    .times(hitTypeDamageMultiplier)
-                                    .times(latentPowerModifier)
                                     .times(totalMultiplier))
+                                    .times(hitTypeDamageMultiplier)
                                     .floor();
                                 return damage;
                             }, {})

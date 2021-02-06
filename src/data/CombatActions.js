@@ -1,11 +1,12 @@
-export const AttackActions = {
+export const CombatActions = {
     powerAttack: {
         name: "Power Attack",
-        energyCostMultiplier: 2.5,
+        energyCostMultiplier: 2,
         hitLevel: 1,
         performsAction: true,
         attack: true,
-        basic: true
+        basic: true,
+        initiative: 0
     },
     basicAttack: {
         name: "Basic Attack",
@@ -13,31 +14,30 @@ export const AttackActions = {
         energyCostMultiplier: 1,
         hitLevel: 0,
         basic: true,
-        performsAction: true
+        performsAction: true,
+        initiative: 0
     },
     none: {
         name: "None",
         energyCostMultiplier: 0,
         basic: true,
         hitLevel: -2,
-        performsAction: false
-    }
-}
-
-export const DefenseActions = {
-    none: {
-        name: "None",
-        energyCostMultiplier: 0,
-        hitLevelModifier: 0
+        hitLevelModifier: 0,
+        performsAction: false,
+        initiative: 0
     },
     block: {
         name: "Block",
         energyCostMultiplier: .5,
-        hitLevelModifier: -1
+        hitLevelModifier: -1,
+        defense: true,
+        initiative: 0
     },
     dodge: {
         name: "Dodge",
-        energyCostMultiplier: 2,
-        hitLevelModifier: -99
+        energyCostMultiplier: 1.5,
+        hitLevelModifier: -99,
+        defense: true,
+        initiative: 0
     }
 }

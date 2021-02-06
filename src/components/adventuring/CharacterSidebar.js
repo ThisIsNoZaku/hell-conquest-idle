@@ -2,12 +2,9 @@ import Paper from "@material-ui/core/Paper";
 import React, {useMemo} from "react";
 import {MemoizedCharacterSheet as CharacterSheet} from "./CharacterSheet";
 import calculateDamageBy from "../../engine/combat/calculateDamageBy";
-import calculateAttackDowngradeCost from "../../engine/combat/calculateAttackDowngradeCost";
-import calculateAttackUpgradeCost from "../../engine/combat/calculateAttackUpgradeCost";
 import getPowerNeededForLevel from "../../engine/general/getPowerNeededForLevel";
 import {Decimal} from "decimal.js";
 import * as _ from "lodash";
-import calculateReactionCost from "../../engine/combat/actions/calculateReactionCost";
 import {HitTypes} from "../../data/HitTypes";
 import calculateActionCost from "../../engine/combat/actions/calculateActionCost";
 
@@ -32,11 +29,11 @@ export function CharacterSidebar(props) {
     const latentPowerModifier = useMemo(() => Decimal(_.get(character, "latentPowerModifier", 0)).times(100).toFixed(), [
         _.get(character, "latentPower")
     ]);
-    const blockCost = calculateReactionCost(enemy, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
+    const blockCost = calculateActionCost(enemy, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
     const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance)=>{
         return total + (enhance.additional_block_damage_reduction || 0);
     }, 0)).times(100).toFixed();
-    const dodgeCost = calculateReactionCost(enemy, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
+    const dodgeCost = calculateActionCost(enemy, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, character).toFixed();
 
     const basicAttackCost = calculateActionCost(character, {primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed();
     const basicAttackDamage = calculateDamageBy(character).using({primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])})

@@ -1,4 +1,4 @@
-export const Creatures  = {
+export const Creatures = {
     bloodthirstyKnight: {
         name: "Bloodthirsty Knight",
         traits: ["bloodrage"],
@@ -6,6 +6,14 @@ export const Creatures  = {
         appearance: "bloodthirstyKnight",
         texture: "01_warrior.png",
         description: "A ruthless warrior who delighted in slaughtering whoever they encounter on the battlefield.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "none"
+                }
+            }
+        }
     },
     condemnedSlasher: {
         name: "Condemned Slasher",
@@ -14,6 +22,14 @@ export const Creatures  = {
         appearance: "condemnedSlasher",
         texture: "03_rogue.png",
         description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "none"
+                }
+            }
+        }
     },
     crushingSnake: {
         name: "Crushing Snake",
@@ -22,6 +38,14 @@ export const Creatures  = {
         appearance: "crushingSnake",
         texture: "06_snake_01.png",
         description: "A monstrous reptile which wraps around its prey, crushing the like out of them.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     deadlyHornet: {
         name: "Deadly Hornet",
@@ -29,7 +53,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "deadlyHornet",
         texture: "12_wasp.png",
-        description: "An insect whose stinger is able to pierce even metal protection."
+        description: "An insect whose stinger is able to pierce even metal protection.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "attrition",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",
@@ -38,6 +70,14 @@ export const Creatures  = {
         appearance: "rapaciousHighwayman",
         texture: "02_hunter.png",
         description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     searingFangViper: {
         name: "Searing-Fang Viper",
@@ -45,7 +85,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "searingFangViper",
         texture: "07_snake_02.png",
-        description: "A striking snake, whose venom inflicts horrific agony to its victims."
+        description: "A striking snake, whose venom inflicts horrific agony to its victims.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     skitteringHorror: {
         name: "Skittering Horror",
@@ -53,7 +101,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "skitteringHorror",
         texture: "10_spider.png",
-        description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs."
+        description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     tormentedDead: {
         name: "Tormented Dead",
@@ -61,7 +117,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "tormentedDead",
         texture: "29_zombie.png",
-        description: "A human denied eternal rest and in agony from its ruined flesh."
+        description: "A human denied eternal rest and in agony from its ruined flesh.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "attrition",
+                    defensive: "none"
+                }
+            }
+        }
     },
     wheezingApparition: {
         name: "Wheezing Apparition",
@@ -69,7 +133,15 @@ export const Creatures  = {
         enabled: false,
         appearance: "wheezingApparition",
         texture: "128_sorrowsworn.png",
-        description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate."
+        description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate.",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     bloodyBat: {
         name: "Bloody Bat",
@@ -77,7 +149,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "bloodyBat",
         description: "This hunter stalks the night, swooping down upon it's prey.",
-        texture: "13_bat.png"
+        texture: "13_bat.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "evasive"
+                }
+            }
+        }
     },
     myrmidonWarrior: {
         name: "Myrmidon",
@@ -85,7 +165,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "myrmidonWarrior",
         description: "A warrior of an ant-like people, seeing all around them as enemies of it's ancient hive.",
-        texture: "14_ant.png"
+        texture: "14_ant.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
+                }
+            }
+        }
     },
     scorpion: {
         name: "Scorpion",
@@ -93,7 +181,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "scorpion",
         description: "A deadly scorpion which injects burning venom via its massive stinger.",
-        texture: "16_scorpion.png"
+        texture: "16_scorpion.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "block"
+                }
+            }
+        }
     },
     carrionBeetle: {
         name: "Corpse Beetle",
@@ -101,7 +197,15 @@ export const Creatures  = {
         enabled: true,
         appearance: "carrionBeetle",
         description: "A swarming beetle that feasts on corpses",
-        texture: "17_scarab.png"
+        texture: "17_scarab.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "block"
+                }
+            }
+        }
     },
     fleshlessSoldier: {
         name: "Fleshless Soldier",
@@ -109,15 +213,31 @@ export const Creatures  = {
         enabled: true,
         appearance: "fleshlessSoldier",
         description: "Even the dead have not seen the end of war.",
-        texture: "18_skeleton.png"
+        texture: "18_skeleton.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "none"
+                }
+            }
+        }
     },
     madOrc: {
-        name: "Mad Orc",
+        name: "Insane Orc",
         traits: ["fortressOfMadness"],
         enabled: true,
         appearance: "madOrc",
         description: "An orc warrior driven mad by a thirst for blood.",
-        texture: "19_orc.png"
+        texture: "19_orc.png",
+        npc: {
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "none"
+                }
+            }
+        }
     }
 }
 
@@ -161,7 +281,7 @@ export const titles = {
 }
 
 export function assertCreatureExists(id) {
-    if(!Creatures[id]) {
+    if (!Creatures[id]) {
         throw new Error(`No creature with id ${id} is defined`);
     }
 }

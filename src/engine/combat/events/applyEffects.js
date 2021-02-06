@@ -9,7 +9,7 @@ import {getConfigurationValue} from "../../../config";
 import {Traits} from "../../../data/Traits";
 import {getCharacter} from "../../index";
 
-export default function applyTraitEffects(effectsToApply, contextCharacter, event, sourceType, sourceId, effectLevel) {
+export default function applyEffects(effectsToApply, contextCharacter, event, sourceType, sourceId, effectLevel) {
     for (const effect of Object.keys(effectsToApply)) {
         debugMessage(`Applying trait effect ${effect}`);
         const effectDefinition = effectsToApply[effect];
