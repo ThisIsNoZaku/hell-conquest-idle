@@ -106,4 +106,43 @@ describe("the combat round resolution", function () {
             roundEvents: expect.any(Array)
         });
     });
+    it("if first character and second character block, both do nothing", function () {
+        determineCharacterCombatAction.mockReturnValueOnce({
+            primary: "block",
+            enhancements: []
+        }).mockReturnValueOnce({
+            primary: "block",
+            enhancements: []
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(resolveAction).not.toHaveBeenCalled()
+    });
+    it("if second character blocks and the first dodges, the first still dodges", function () {
+        determineCharacterCombatAction.mockReturnValueOnce({
+            primary: "dodge",
+            enhancements: []
+        }).mockReturnValueOnce({
+            primary: "block",
+            enhancements: []
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(resolveAction).toHaveBeenNthCalledWith(1, player, {primary: "none", enhancements: []}, enemy, {
+            primary: "dodge", enhancements: []
+        }, expect.any(Array), 100);
+        expect(resolveAction).toHaveBeenCalledTimes(1);
+    });
+    it("if first character blocks and the second dodges, the second still dodges", function () {
+        determineCharacterCombatAction.mockReturnValueOnce({
+            primary: "block",
+            enhancements: []
+        }).mockReturnValueOnce({
+            primary: "dodge",
+            enhancements: []
+        });
+        resolveCombatRound(100, {0: player, 1: enemy});
+        expect(resolveAction).toHaveBeenNthCalledWith(1, enemy, {primary: "none", enhancements: []}, player, {
+            primary: "dodge", enhancements: []
+        }, expect.any(Array), 100);
+        expect(resolveAction).toHaveBeenCalledTimes(1);
+    });
 });

@@ -4,7 +4,7 @@ import triggerEvent from "../general/triggerEvent";
 import {Character} from "../../character";
 import onCombatRoundEnd from "./events/onCombatRoundEnd";
 import determineCharacterCombatAction from "./actions/determineCharacterCombatAction";
-import {CombatActions} from "../../data/CombatActions";
+import {CombatActions, DEFENSE_ACTIONS} from "../../data/CombatActions";
 import * as _ from "lodash";
 import resolveAction from "./actions/resolveAction";
 import {generateActionSkipEvent} from "../events/generate";
@@ -35,17 +35,30 @@ export default function resolveCombatRound(tick, combatants) {
 
     const firstCharacterAction = determineCharacterCombatAction(initiativeOrder[0], initiativeOrder[1]);
     const secondCharacterAction = determineCharacterCombatAction(initiativeOrder[1], initiativeOrder[0], firstCharacterAction);
-    if((CombatActions[firstCharacterAction.primary].attack && CombatActions[secondCharacterAction.primary].defense) ||
-        (CombatActions[firstCharacterAction.primary].defense && CombatActions[secondCharacterAction.primary].attack)) {
+    if(firstCharacterAction.primary === "block" && DEFENSE_ACTIONS.includes(secondCharacterAction.primary)) {
+        firstCharacterAction.primary = "none"
+    }
+    if(secondCharacterAction.primary === "block" && DEFENSE_ACTIONS.includes(firstCharacterAction.primary)) {
+        secondCharacterAction.primary = "none"
+    }
+    if (CombatActions[firstCharacterAction.primary].attack && CombatActions[secondCharacterAction.primary].attack) {
+        resolveAction(initiativeOrder[0], firstCharacterAction, initiativeOrder[1], {primary: "none", enhancements: []}, roundEvents, tick);
+        resolveAction(initiativeOrder[1], secondCharacterAction, initiativeOrder[0], {primary: "none", enhancements: []}, roundEvents, tick);
+    } else if(CombatActions[firstCharacterAction.primary].defense && CombatActions[secondCharacterAction.primary].defense) {
+        if(firstCharacterAction.primary === "dodge") {
+            resolveAction(initiativeOrder[1], {primary: "none", enhancements: []}, initiativeOrder[0], firstCharacterAction, roundEvents, tick);
+        }
+        if(secondCharacterAction.primary === "dodge") {
+            resolveAction(initiativeOrder[0], {primary: "none", enhancements: []}, initiativeOrder[1], secondCharacterAction, roundEvents, tick);
+        }
+    } else {
         const attacker = CombatActions[firstCharacterAction.primary].attack ? initiativeOrder[0] : initiativeOrder[1];
         const attack = CombatActions[firstCharacterAction.primary].attack ? firstCharacterAction : secondCharacterAction;
         const defender = CombatActions[firstCharacterAction.primary].defense ? initiativeOrder[0] : initiativeOrder[1];
         const defense = CombatActions[firstCharacterAction.primary].defense ? firstCharacterAction : secondCharacterAction;
         resolveAction(attacker, attack, defender, defense, roundEvents, tick);
-    } else if (CombatActions[firstCharacterAction.primary].attack && CombatActions[secondCharacterAction.primary].attack) {
-        resolveAction(initiativeOrder[0], firstCharacterAction, initiativeOrder[1], {primary: "none", enhancements: []}, roundEvents, tick);
-        resolveAction(initiativeOrder[1], secondCharacterAction, initiativeOrder[0], {primary: "none", enhancements: []}, roundEvents, tick);
     }
+
     if(firstCharacterAction.primary === "none") {
         roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, "to gain energy"));
     }
