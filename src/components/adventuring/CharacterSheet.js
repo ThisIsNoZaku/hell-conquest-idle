@@ -21,7 +21,7 @@ export function CharacterSheet(props) {
             <img src={spriteSrc} style={{height: "75px"}}/>
         </Grid>
         { <Grid item xs={12}>
-            {props.characterAdjectives.map(a => a.name).join(" ")} {props.characterName}
+            {props.characterName}
         </Grid>}
         <Grid item container>
             <Grid item xs>
