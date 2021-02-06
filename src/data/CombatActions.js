@@ -23,7 +23,7 @@ export const CombatActions = {
         basic: true,
         hitLevel: -2,
         hitLevelModifier: 0,
-        performsAction: false,
+        defense: true,
         initiative: 0
     },
     block: {
