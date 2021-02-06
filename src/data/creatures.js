@@ -7,10 +7,11 @@ export const Creatures = {
         texture: "01_warrior.png",
         description: "A ruthless warrior who delighted in slaughtering whoever they encounter on the battlefield.",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "overwhelm",
-                    defensive: "none"
+                    defensive: "block"
                 }
             }
         }
@@ -23,6 +24,7 @@ export const Creatures = {
         texture: "03_rogue.png",
         description: "A madman who gained exquisite pleasure from seeing how many cuts could be made in a victim's body before they died.",
         npc: {
+            adjective: "mad",
             tactics: {
                 default: {
                     offensive: "overwhelm",
@@ -39,6 +41,7 @@ export const Creatures = {
         texture: "06_snake_01.png",
         description: "A monstrous reptile which wraps around its prey, crushing the like out of them.",
         npc: {
+            adjective: "cunning",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -55,6 +58,7 @@ export const Creatures = {
         texture: "12_wasp.png",
         description: "An insect whose stinger is able to pierce even metal protection.",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "attrition",
@@ -71,6 +75,7 @@ export const Creatures = {
         texture: "02_hunter.png",
         description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants.",
         npc: {
+            adjective: "deceptive",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -87,6 +92,7 @@ export const Creatures = {
         texture: "07_snake_02.png",
         description: "A striking snake, whose venom inflicts horrific agony to its victims.",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -103,6 +109,7 @@ export const Creatures = {
         texture: "10_spider.png",
         description: "A massive spider that enjoys stalking its prey, frightening it by the sickening skittering of it's arachnid legs.",
         npc: {
+            adjective: "mad",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -119,6 +126,7 @@ export const Creatures = {
         texture: "29_zombie.png",
         description: "A human denied eternal rest and in agony from its ruined flesh.",
         npc: {
+            adjective: "mad",
             tactics: {
                 default: {
                     offensive: "attrition",
@@ -135,6 +143,7 @@ export const Creatures = {
         texture: "128_sorrowsworn.png",
         description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate.",
         npc: {
+            adjective: "deceitful",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -151,6 +160,7 @@ export const Creatures = {
         description: "This hunter stalks the night, swooping down upon it's prey.",
         texture: "13_bat.png",
         npc: {
+            adjective: "cunning",
             tactics: {
                 default: {
                     offensive: "attrit",
@@ -167,6 +177,7 @@ export const Creatures = {
         description: "A warrior of an ant-like people, seeing all around them as enemies of it's ancient hive.",
         texture: "14_ant.png",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "attrit",
@@ -183,6 +194,7 @@ export const Creatures = {
         description: "A deadly scorpion which injects burning venom via its massive stinger.",
         texture: "16_scorpion.png",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -199,6 +211,7 @@ export const Creatures = {
         description: "A swarming beetle that feasts on corpses",
         texture: "17_scarab.png",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "counter",
@@ -215,6 +228,7 @@ export const Creatures = {
         description: "Even the dead have not seen the end of war.",
         texture: "18_skeleton.png",
         npc: {
+            adjective: "savage",
             tactics: {
                 default: {
                     offensive: "attrit",
@@ -231,6 +245,7 @@ export const Creatures = {
         description: "An orc warrior driven mad by a thirst for blood.",
         texture: "19_orc.png",
         npc: {
+            adjective: "mad",
             tactics: {
                 default: {
                     offensive: "overwhelm",
@@ -252,7 +267,7 @@ export const titles = {
         }
     },
     savage: {
-        name: "Brutal",
+        name: "savage",
         attributeMultipliers: {
             brutality: 2,
             cunning: 1,
@@ -264,8 +279,8 @@ export const titles = {
         name: "Devious",
         attributeMultipliers: {
             brutality: 1,
-            cunning: 1,
-            deceit: 2,
+            cunning: 2,
+            deceit: 1,
             madness: 1
         }
     },
