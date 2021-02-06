@@ -39,6 +39,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     const damageDone = baseDamage;
     targetedCharacter.dealDamage(damageDone);
     const attackResult = generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
+    roundEvents.push(attackResult.attack);
     roundEvents.push(attackResult.damage);
     triggerEvent({
         type: "on_hit",
