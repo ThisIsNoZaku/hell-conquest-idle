@@ -12,11 +12,11 @@ export default function calculateActionCost(actor, action, enemy) {
     const enhancementModifier = action.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue, currentIndex) => {
         return previousValue + (currentValue.additional_energy_cost_modifier || 0);
     }, 0);
-    const actorTraitModifier = Object.keys(actor.traits).reduce((total, next) => {
+    const actorTraitModifier = Object.keys(_.get(actor, "traits",{})).reduce((total, next) => {
         const traitEffect = _.get(Traits[next], ["continuous", "trigger_effects", `${action.primary}_cost_modifier`], {});
         return total + (traitEffect.target === "self" ? traitEffect.value : 0);
     }, 0);
-    const enemyTraitModifier = Object.keys(enemy.traits).reduce((total, next) => {
+    const enemyTraitModifier = Object.keys(_.get(enemy, "traits",{})).reduce((total, next) => {
         const traitEffect = _.get(Traits[next], ["continuous", "trigger_effects", `${action.primary}_cost_modifier`], {});
         return total + (traitEffect.target === "enemy" ? traitEffect.value : 0);
     }, 0);
