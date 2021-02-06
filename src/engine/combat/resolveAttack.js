@@ -30,9 +30,8 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         reaction = {primary: "none", enhancements: []};
     }
     if(hitLevel === HitTypes.min) {
-        return {
-            attack: generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost)
-        };
+        roundEvents.push(generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost));
+        return;
     }
     const baseDamage = calculateDamageBy(actingCharacter).using(action)
         .against(targetedCharacter).using(reaction)[hitLevel];
