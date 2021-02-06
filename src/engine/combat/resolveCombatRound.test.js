@@ -11,7 +11,7 @@ jest.mock("../general/triggerEvent");
 jest.mock("../combat/resolveAttack");
 jest.mock("../combat/actions/resolveAction");
 jest.mock("../combat/actions/determineCharacterCombatAction");
-jest.mock("../combat/actions/onRoundBegin");
+jest.mock("../combat/events/onRoundBegin");
 
 describe("the combat round resolution", function () {
     let player;
@@ -23,8 +23,9 @@ describe("the combat round resolution", function () {
         enemy = new Character({
             id: 1
         });
-        resolveAttack.mockClear();
+        resolveAction.mockClear();
         determineCharacterCombatAction.mockClear();
+
     });
     it("determines action from highest to lowest initiative", function () {
         enemy.initiative = 1;
@@ -59,11 +60,11 @@ describe("the combat round resolution", function () {
             attack: {}
         });
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(resolveAttack)
+        expect(resolveAction)
             .toHaveBeenCalledWith(player, {primary: "basicAttack", enhancements: []}, enemy, {
                 primary: "block",
                 enhancements: []
-            }, 100);
+            }, [], 100);
     });
     it("calls resolveAttack twice if both characters attack", function () {
         determineCharacterCombatAction.mockReturnValue({
@@ -79,13 +80,13 @@ describe("the combat round resolution", function () {
             .toHaveBeenNthCalledWith(1, player, {primary: "basicAttack", enhancements: []}, enemy, {
                 primary: "none",
                 enhancements: []
-            }, 100);
+            }, [], 100);
 
-        expect(resolveAttack)
+        expect(resolveAction)
             .toHaveBeenNthCalledWith(2, enemy, {primary: "basicAttack", enhancements: []}, player, {
                 primary: "none",
                 enhancements: []
-            }, 100);
+            }, [], 100);
     });
     it("does not call resolveAttack if both characters defend", function () {
         determineCharacterCombatAction.mockReturnValue({
