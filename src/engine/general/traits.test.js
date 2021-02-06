@@ -836,7 +836,7 @@ describe("relentless effect", function () {
         delete Traits.test;
     });
     it("increases maximum stamina", function () {
-        expect(player.combat.maximumStamina).toEqual(Decimal(250 * 1.25).floor());
+        expect(player.combat.maximumStamina).toEqual(Decimal(getConfigurationValue("bonus_stamina_per_level") * 1.25).floor());
     })
     it("increases energy generation", function () {
         expect(player.energyGeneration).toEqual(Decimal(getConfigurationValue("base_power_generated_per_level_per_tick") * 1.25));
