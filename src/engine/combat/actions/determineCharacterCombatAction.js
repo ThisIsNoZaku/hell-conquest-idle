@@ -1,6 +1,7 @@
 import calculateActionCost from "./calculateActionCost";
 import {debugMessage} from "../../../debugging";
 import * as _ from "lodash";
+import {act} from "@testing-library/react";
 
 const doNothing = (actingCharacter) => {
     return {
@@ -13,7 +14,11 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
     debugMessage(`Determining action for '${actingCharacter.id}'. Enemy is performing '${_.get(enemyAction, "primary", "unknown")}'`);
     const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy, enemyAction);
     debugMessage(`Selected action ${_.get(action, "primary")}`);
-    if(action === undefined || calculateActionCost(actingCharacter, action, enemy).gt(actingCharacter.combat.stamina)) {
+    if(action === undefined) {
+        debugMessage("Action changed to 'none'");
+        return doNothing(actingCharacter);
+    } else if (calculateActionCost(actingCharacter, action, enemy).gt(actingCharacter.combat.stamina)) {
+        debugMessage("Cannot afford to act, changing to 'none'");
         return doNothing(actingCharacter);
     } else {
         return action;
@@ -23,6 +28,12 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
 const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinations of actual/possible combinations.
     overwhelm: {
         none: function (actingCharacter, enemy, enemyAction) {
+            if(actingCharacter.combat.stamina.eq(actingCharacter.combat.maximumStamina)) {
+                return {
+                    primary: "powerAttack",
+                    enhancements: actingCharacter.attackEnhancements
+                }
+            }
             const powerAttackEnergyCost = calculateActionCost(actingCharacter, {
                 primary: "powerAttack",
                 enhancements: actingCharacter.attackEnhancements
@@ -39,7 +50,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 enhancements: actingCharacter.attackEnhancements
             }, enemy);
             if (actingCharacter.combat.stamina.gte(basicAttackEnergyCost)) {
-                debugMessage(`Reason: Acting character can afford basic attack`);
+                debugMessage(`Reason: Acting character can afford basic attack but not power attack.`);
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -66,6 +77,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 primary: "powerAttack",
                 enhancements: actingCharacter.attackEnhancements
             };
+            const canPowerAttack = calculateActionCost(actingCharacter, powerAttackAction, enemy).lte(actingCharacter.combat.stamina);
             const enemyCanPowerAttack = calculateActionCost(enemy, {
                 primary: "powerAttack",
                 enhancements: enemy.attackEnhancements
@@ -74,9 +86,28 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             if (((enemyAction && enemyAction.primary === "powerAttack") || (!enemyAction && enemyCanPowerAttack)) && blockCost.lte(actingCharacter.combat.stamina)) {
                 debugMessage(`Reason: Enemy is power attacking and character can block`);
                 return blockAction;
+            } else if(canPowerAttack && actingCharacter.combat.stamina.eq(actingCharacter.combat.maximumStamina)) {
+                debugMessage(`Reason: At max stamina and enemy not power attacking.`);
+                return {
+                    primary: "powerAttack",
+                    enhancements: actingCharacter.attackEnhancements
+                }
             } else if (calculateActionCost(actingCharacter, powerAttackAction, enemy).lte(actingCharacter.combat.stamina)) {
                 debugMessage(`Reason: Acting character can power attack and enemy NOT power attacking`);
                 return powerAttackAction
+            } else if(["basicAttack", "powerAttack"].includes(_.get(enemyAction, "primary")) && !canPowerAttack) {
+                return {
+                    primary: "block",
+                    enhancements: actingCharacter.attackEnhancements
+                }
+            } else if(calculateActionCost(actingCharacter, {
+                primary: "block",
+                enhancements: actingCharacter.defenseEnhancements
+            }, enemy).lte(actingCharacter.combat.stamina)) {
+                return {
+                    primary: "block",
+                    enhancements: actingCharacter.defenseEnhancements
+                }
             }
         },
         dodge: function (actingCharacter, enemy, enemyAction) {
@@ -177,14 +208,6 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
     },
     counter: {
         none: function (actingCharacter, enemy, enemyAction) {
-            const enemyCanBasicAttack = calculateActionCost(enemy, {
-                primary: "basicAttack",
-                enhancements: enemy.defenseEnhancements
-            }).lte(enemy.combat.stamina);
-            const enemyCanPowerAttack = calculateActionCost(enemy, {
-                primary: "powerAttack",
-                enhancements: enemy.defenseEnhancements
-            }).lte(enemy.combat.stamina)
             if(["basicAttack", "powerAttack", "none"].includes(_.get(enemyAction, "primary"))) {
                 return {
                     primary: "powerAttack",
@@ -200,12 +223,14 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 enhancements: enemy.defenseEnhancements
             }).lte(enemy.combat.stamina);
             if(!enemyCanBlock && !enemyCanDodge) {
+                debugMessage("Reason: enemy cannot block or dodge");
                 return {
                     primary: "powerAttack",
                     enhancements: actingCharacter.attackEnhancements
                 }
             }
             if((enemyAction && enemyAction.primary === "block") || enemyCanBlock) {
+                debugMessage("Reason: enemy is blocking or can block");
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -213,21 +238,19 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             }
         },
         block: function (actingCharacter, enemy, enemyAction) {
-            const enemyCanBasicAttack = calculateActionCost(enemy, {
-                primary: "basicAttack",
-                enhancements: enemy.defenseEnhancements
-            }).lte(enemy.combat.stamina);
             const enemyCanPowerAttack = calculateActionCost(enemy, {
                 primary: "powerAttack",
                 enhancements: enemy.defenseEnhancements
             }).lte(enemy.combat.stamina)
             if(enemyCanPowerAttack || ["powerAttack"].includes(_.get(enemyAction, "primary"))) {
+                debugMessage("Reason: can power attack or is power attacking.");
                 return {
                     primary: "block",
                     enhancements: actingCharacter.defenseEnhancements
                 }
             }
             if(["dodge", "block"].includes(_.get(enemyAction, "primary"))) {
+                debugMessage("Reason: enemy is blocking or dodging");
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -242,12 +265,14 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 enhancements: enemy.defenseEnhancements
             }).lte(enemy.combat.stamina);
             if(!enemyCanBlock && !enemyCanDodge) {
+                debugMessage("Reason: enemy cannot block or dodge");
                 return {
                     primary: "powerAttack",
                     enhancements: actingCharacter.attackEnhancements
                 }
             }
             if(((enemyAction && enemyAction.primary === "block") || enemyCanBlock) && !enemyCanPowerAttack) {
+                debugMessage("Reason: enemy is blocking or can block and cannot power attack.");
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -264,6 +289,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 enhancements: enemy.defenseEnhancements
             }).lte(enemy.combat.stamina)
             if(enemyCanPowerAttack || enemyCanBasicAttack || ["basicAttack", "powerAttack"].includes(_.get(enemyAction, "primary"))) {
+                debugMessage("Reason: enemy is attacking or can attack");
                 return {
                     primary: "dodge",
                     enhancements: actingCharacter.defenseEnhancements
@@ -278,12 +304,14 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 enhancements: enemy.defenseEnhancements
             }).lte(enemy.combat.stamina);
             if(!enemyCanBlock && !enemyCanDodge) {
+                debugMessage("Reason: enemy cannot defend");
                 return {
                     primary: "powerAttack",
                     enhancements: actingCharacter.attackEnhancements
                 }
             }
             if((enemyAction && enemyAction.primary === "block") || enemyCanBlock) {
+                debugMessage("Reason: enemy is blocking or can block");
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements

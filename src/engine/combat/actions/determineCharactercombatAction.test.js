@@ -63,6 +63,28 @@ describe('Tactics overwhelm + none', function () {
             enhancements: []
         });
     });
+    it("perform a power attack at maximum stamina.", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
+    });
+    it("performs a power attack if enemy doing nothing", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
+    });
 });
 
 describe('Tactics overwhelm + block', function () {
@@ -90,6 +112,17 @@ describe('Tactics overwhelm + block', function () {
         player.combat.stamina = player.combat.maximumStamina;
         enemy.combat.stamina = Decimal(101);
         expect(determineCharacterCombatAction(player, enemy))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
+    });
+    it("performs a power attack if enemy doing nothing", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        }))
             .toEqual({
                 primary: "powerAttack",
                 enhancements: []
@@ -133,6 +166,25 @@ describe('Tactics overwhelm + block', function () {
                 enhancements: []
             });
     });
+    it("performs a block if enemy is attacking and character cannot power attack", function () {
+        player.combat.stamina = Decimal(100);
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "basicAttack",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "block",
+                enhancements: []
+            });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "powerAttack",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "block",
+                enhancements: []
+            });
+    });
     it("perform no action if enemy is going first and performing a dodge.", function () {
         player.combat.stamina = player.combat.maximumStamina;
         expect(determineCharacterCombatAction(player, enemy, {
@@ -141,6 +193,23 @@ describe('Tactics overwhelm + block', function () {
         }))
             .toEqual({
                 primary: "none",
+                enhancements: []
+            });
+    });
+    it("perform a power attack at maximum stamina when enemy is not dodging or cannot dodge.", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
+
+        expect(determineCharacterCombatAction(player, enemy))
+            .toEqual({
+                primary: "powerAttack",
                 enhancements: []
             });
     });
@@ -166,6 +235,17 @@ describe('Tactics overwhelm + dodge', function () {
                 defensive: "none"
             }
         }, 1);
+    });
+    it("performs a power attack if enemy doing nothing", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "powerAttack",
+                enhancements: []
+            });
     });
     it("performs no action if enemy is dodging", function () {
         player.combat.stamina = player.combat.maximumStamina;
