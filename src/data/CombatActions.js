@@ -41,3 +41,5 @@ export const CombatActions = {
         initiative: 0
     }
 }
+
+export const DEFENSE_ACTIONS = ["block", "dodge", "none"];
