@@ -10,6 +10,7 @@ import onRoundBegin from "./events/onRoundBegin";
 import onHit from "./events/onHit";
 import onTakingDamage from "./events/onTakingDamage";
 import resolveAction from "./actions/resolveAction";
+import {generateActionSkipEvent} from "../events/generate";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -47,6 +48,13 @@ export default function resolveCombatRound(tick, combatants) {
     } else if (CombatActions[firstCharacterAction.primary].attack && CombatActions[secondCharacterAction.primary].attack) {
         resolveAction(initiativeOrder[0], firstCharacterAction, initiativeOrder[1], {primary: "none", enhancements: []}, roundEvents, tick);
         resolveAction(initiativeOrder[1], secondCharacterAction, initiativeOrder[0], {primary: "none", enhancements: []}, roundEvents, tick);
+    }
+    if(firstCharacterAction.primary === "none") {
+        roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, "to gain energy"));
+    }
+
+    if(secondCharacterAction.primary === "none") {
+        roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, "to gain energy"));
     }
     onCombatRoundEnd(combatants, roundEvents, tick);
 
