@@ -6,9 +6,6 @@ import onCombatRoundEnd from "./events/onCombatRoundEnd";
 import determineCharacterCombatAction from "./actions/determineCharacterCombatAction";
 import {CombatActions} from "../../data/CombatActions";
 import * as _ from "lodash";
-import onRoundBegin from "./events/onRoundBegin";
-import onHit from "./events/onHit";
-import onTakingDamage from "./events/onTakingDamage";
 import resolveAction from "./actions/resolveAction";
 import {generateActionSkipEvent} from "../events/generate";
 
@@ -18,11 +15,11 @@ export default function resolveCombatRound(tick, combatants) {
         throw new Error(`Error resolving combat round: ${validation.error}`);
     }
     const initiativeOrder = Object.values(combatants).sort((a, b) => {
-        const initiative = _.get(b, "initiative", 0) - _.get(a, "initiative", 0);
+        const initiative = _.get(a, "initiative", 0) - _.get(b, "initiative", 0);
         if(initiative !== 0) {
             return initiative;
         }
-        return a.id - b.id;
+        return b.id - a.id;
     }); // FIXME: Determine initiative in own function.
 
     let roundEvents = [];

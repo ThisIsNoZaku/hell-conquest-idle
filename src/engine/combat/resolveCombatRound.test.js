@@ -27,15 +27,15 @@ describe("the combat round resolution", function () {
         determineCharacterCombatAction.mockClear();
 
     });
-    it("determines action from highest to lowest initiative", function () {
+    it("determines action from lowest to highest initiative", function () {
         enemy.initiative = 1;
         determineCharacterCombatAction.mockReturnValue({
             primary: "none",
             enhancements: []
         });
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(1, enemy, player);
-        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(2, player, enemy, expect.any(Object));
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(1, player, enemy);
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(2, enemy, player, expect.any(Object));
     });
     it("calls onRoundBegin once", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
@@ -61,7 +61,7 @@ describe("the combat round resolution", function () {
         });
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(resolveAction)
-            .toHaveBeenCalledWith(player, {primary: "basicAttack", enhancements: []}, enemy, {
+            .toHaveBeenCalledWith(enemy, {primary: "basicAttack", enhancements: []}, player, {
                 primary: "block",
                 enhancements: []
             }, [], 100);
@@ -77,16 +77,12 @@ describe("the combat round resolution", function () {
         });
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(resolveAction)
-            .toHaveBeenNthCalledWith(1, player, {primary: "basicAttack", enhancements: []}, enemy, {
-                primary: "none",
-                enhancements: []
-            }, [], 100);
+            .toHaveBeenNthCalledWith(1, enemy, expect.any(Object),
+                player, expect.any(Object),
+                [], 100);
 
         expect(resolveAction)
-            .toHaveBeenNthCalledWith(2, enemy, {primary: "basicAttack", enhancements: []}, player, {
-                primary: "none",
-                enhancements: []
-            }, [], 100);
+            .toHaveBeenNthCalledWith(2, player, expect.any(Object), enemy, expect.any(Object), [], 100);
     });
     it("does not call resolveAttack if both characters defend", function () {
         determineCharacterCombatAction.mockReturnValue({

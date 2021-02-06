@@ -42,6 +42,7 @@ export class Character {
         this.lastActedTick = props.lastActedTick || 0;
         this.temporaryTraits = props.temporaryTraits || {};
         this.totalStaminaGainedThisCombat = props.totalStaminaGainedThisCombat;
+        this.initiative = props.initiative;
 
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
@@ -239,6 +240,7 @@ export class Character {
         this.clearStatuses();
         this.combat.fatigue = Decimal(0);
         this.lastActedTick = 0;
+        this.initiative = 0;
     }
 }
 
@@ -429,7 +431,8 @@ const characterPropsSchema = JOI.object({
         fire: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         ice: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         psychic: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
-    })
+    }),
+    initiative: JOI.number().default(0)
 });
 
 const newTraitsSchema = JOI.object().pattern(JOI.string(), JOI.boolean());
