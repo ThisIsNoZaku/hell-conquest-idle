@@ -4,12 +4,14 @@ import {Character} from "../../character";
 import resolveAttack from "./resolveAttack";
 import determineCharacterCombatAction from "./actions/determineCharacterCombatAction";
 import onRoundBegin from "./events/onRoundBegin";
+import resolveAction from "./actions/resolveAction";
 
 jest.mock("../index");
 jest.mock("../general/triggerEvent");
 jest.mock("../combat/resolveAttack");
+jest.mock("../combat/actions/resolveAction");
 jest.mock("../combat/actions/determineCharacterCombatAction");
-jest.mock("../combat/events/onRoundBegin");
+jest.mock("../combat/actions/onRoundBegin");
 
 describe("the combat round resolution", function () {
     let player;
@@ -73,7 +75,7 @@ describe("the combat round resolution", function () {
             defense: {}
         });
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(resolveAttack)
+        expect(resolveAction)
             .toHaveBeenNthCalledWith(1, player, {primary: "basicAttack", enhancements: []}, enemy, {
                 primary: "none",
                 enhancements: []

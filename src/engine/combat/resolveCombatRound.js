@@ -9,6 +9,7 @@ import * as _ from "lodash";
 import onRoundBegin from "./events/onRoundBegin";
 import onHit from "./events/onHit";
 import onTakingDamage from "./events/onTakingDamage";
+import resolveAction from "./actions/resolveAction";
 
 export default function resolveCombatRound(tick, combatants) {
     const validation = combatantsSchema.validate(combatants);
@@ -42,28 +43,10 @@ export default function resolveCombatRound(tick, combatants) {
         const attack = CombatActions[firstCharacterAction.primary].attack ? firstCharacterAction : secondCharacterAction;
         const defender = CombatActions[firstCharacterAction.primary].defense ? initiativeOrder[0] : initiativeOrder[1];
         const defense = CombatActions[firstCharacterAction.primary].defense ? firstCharacterAction : secondCharacterAction;
-        const result = resolveAttack(attacker, attack, defender, defense, tick);
-        roundEvents.push(result.attack);
-        if(result.attack.hit) {
-            triggerEvent(
-                {
-                    type: "on_hit",
-                    combatants,
-                    roundEvents
-                }
-            );
-        }
-        if(result.damage) {
-            onTakingDamage();
-            roundEvents.push(result.damage);
-        }
+        resolveAction(attacker, attack, defender, defense, roundEvents, tick);
     } else if (CombatActions[firstCharacterAction.primary].attack && CombatActions[secondCharacterAction.primary].attack) {
-        const firstResult = resolveAttack(initiativeOrder[0], firstCharacterAction, initiativeOrder[1], {primary: "none", enhancements: []}, tick);
-        roundEvents.push(firstResult.attack);
-        roundEvents.push(firstResult.damage);
-        const secondResult = resolveAttack(initiativeOrder[1], secondCharacterAction, initiativeOrder[0], {primary: "none", enhancements: []}, tick);
-        roundEvents.push(secondResult.attack);
-        roundEvents.push(secondResult.damage);
+        resolveAction(initiativeOrder[0], firstCharacterAction, initiativeOrder[1], {primary: "none", enhancements: []}, roundEvents, tick);
+        resolveAction(initiativeOrder[1], secondCharacterAction, initiativeOrder[0], {primary: "none", enhancements: []}, roundEvents, tick);
     }
     onCombatRoundEnd(combatants, roundEvents, tick);
 
