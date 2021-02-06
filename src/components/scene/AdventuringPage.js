@@ -185,7 +185,7 @@ export default function AdventuringPage(props) {
         <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
             <TopSection highestLevelEnemyDefeated={player.current.highestLevelEnemyDefeated}
                         automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
-                        reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive}
+                        reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive || _.get(getGlobalState(), ["debug", "forceEnableReincarnate"], false)}
             />
             <BottomSection state={getGlobalState()} actionLog={actionLog}
                            player={player.current}

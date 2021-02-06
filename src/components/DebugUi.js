@@ -30,6 +30,7 @@ export default function DebugUi(props) {
     const [latentPower, setLatentPower] = useState(getCharacter(0).latentPower);
     const [levelUpDisabled, setLevelUpDisabled] = useState(_.get(getGlobalState(), ["debug", "levelUpDisabled"], false));
     const [latentPowerGrowthDisabled, setLatentPowerGrowthDisabled] = useState(_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false));
+    const [forceEnableReincarnate, setForceEnableReincarnate] = useState(_.get(getGlobalState(), ["debug", "forceEnableReincarnate"]));
 
     function reset() {
         resetDebug();
@@ -91,6 +92,13 @@ export default function DebugUi(props) {
                 </Grid>
                 <Grid item>
                     <Button variant="contained" disabled={_.get(getGlobalState(), ["rival", "type"], null) !== null} onClick={() => getGlobalState().rival = {}}>Clear Rival</Button>
+                </Grid>
+                <Grid item>
+                    Force Enable Reincarnate
+                    <Checkbox checked={forceEnableReincarnate} onChange={e => {
+                        _.set(getGlobalState(), ["debug", "forceEnableReincarnate"], e.target.checked === true);
+                        setForceEnableReincarnate(e.target.checked === true);
+                    }}></Checkbox>
                 </Grid>
             </Grid>
             <Grid item container xs={12}>
