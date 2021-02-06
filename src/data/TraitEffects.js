@@ -328,7 +328,6 @@ export const TraitEffects = {
         on_taking_damage: {
             trigger_effects: {
                 reflect_damage: {
-                    target: "enemy",
                     type: "psychic",
                     value: .25
                 }
