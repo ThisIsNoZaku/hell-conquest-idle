@@ -119,10 +119,11 @@ export function generateCreature(id, powerLevel, rng) {
         throw new Error("Level cannot be NaN");
     }
     // Adjectives
-    const adjectiveOptions = Object.keys(titles);
-    const index = Math.floor(adjectiveOptions.length * rng.double());
-    const adjective = titles[adjectiveOptions[index]];
-    const {offensiveTactics, defensiveTactics} = determineCreatureTactics(id, adjectiveOptions[index]);
+    if(!Object.keys(titles).includes(Creatures[id].npc.adjective)) {
+        throw new Error(Creatures[id].npc.adjective);
+    }
+    const adjective = titles[Creatures[id].npc.adjective];
+    const {offensiveTactics, defensiveTactics} = determineCreatureTactics(id, adjective);
     const nextId = nextMonsterId++;
     // Starting traits
     const startingTraits = Creatures[id].traits.reduce((traits, next) => {
