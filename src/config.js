@@ -26,7 +26,7 @@ const config = {
     recovery_action_healing_percentage: .5,
     recover_action_stamina_percentage: 1,
     minimum_stamina: 0,
-    bonus_stamina_per_level: 250,
+    bonus_stamina_per_level: 300,
     intimidation_cost_attribute: "cunning",
     trait_tier_up_levels: 25, // Traits upgrade when reaching a multiple of this level.
     minimum_attack_upgrade_cost: 10,
@@ -35,7 +35,7 @@ const config = {
     maximum_downgrade_times: 1,
     fatigue_penalty_per_point: 25,
     stamina_recovery_per_level: 50,
-    base_power_generated_per_level_per_tick: 1,
+    base_power_generated_per_level_per_tick: 1.5,
     power_generation_growth_scaling: .01,
     game_level_cap: 26,
     mechanics: {
