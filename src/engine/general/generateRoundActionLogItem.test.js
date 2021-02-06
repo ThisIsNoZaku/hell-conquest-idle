@@ -115,5 +115,53 @@ describe("generate round action log", function () {
             }]
         })
         expect(messages[0]).toEqual("Enemy takes 1 psychic damage.");
+    });
+    it("Attack event with no attack action", function () {
+        let messages = generateRoundActionLogItems({
+            events: [{
+                event: "attack",
+                hit: false,
+                hitType: -2,
+                source: {
+                    character: 0
+                },
+                children: [],
+                action: {
+                    primary: "none"
+                },
+                actionEnergyCost: Decimal(0),
+                reaction: {
+                    primary: "dodge"
+                },
+                reactionEnergyCost: Decimal(250),
+                target: 1,
+                damage: Decimal(1),
+                uuid: "0"
+            }]
+        })
+        expect(messages[0]).toEqual("Enemy used 250 Energy to Dodge but wasn't attacked.");
+        messages = generateRoundActionLogItems({
+            events: [{
+                event: "attack",
+                hit: false,
+                hitType: -2,
+                source: {
+                    character: 1
+                },
+                children: [],
+                action: {
+                    primary: "none"
+                },
+                actionEnergyCost: Decimal(0),
+                reaction: {
+                    primary: "dodge"
+                },
+                reactionEnergyCost: Decimal(250),
+                target: 0,
+                damage: Decimal(1),
+                uuid: "0"
+            }]
+        })
+        expect(messages[0]).toEqual("You used 250 Energy to Dodge but weren't attacked.");
     })
 });

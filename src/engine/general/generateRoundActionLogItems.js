@@ -32,9 +32,14 @@ function describeEvent(event) {
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
-            const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${CombatActions[event.action.primary].name} and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${CombatActions[event.action.primary].name} attack but missed!`;
-            const reaction = event.reaction.primary !== "none" ? `${event.reactionEnergyCost} Energy was used to ${CombatActions[event.reaction.primary].name} the attack.` : null;
-            return [base, reaction].filter(e => e !== null).join(" ");
+            if(event.action.primary === "none") {
+                const reaction = `${targetName} used ${event.reactionEnergyCost} Energy to ${CombatActions[event.reaction.primary].name} but ${event.target === 0 ? "weren't" : "wasn't"} attacked.`;
+                return reaction;
+            } else {
+                const base = event.hit ? `${sourceName} used ${event.actionEnergyCost} Energy for a ${CombatActions[event.action.primary].name} and scored a ${HitTypes[event.hitType].type} hit!` : `${sourceName} used ${event.actionEnergyCost} Energy for a ${CombatActions[event.action.primary].name} attack but missed!`;
+                const reaction = event.reaction.primary !== "none" ? `${event.reactionEnergyCost} Energy was used to ${CombatActions[event.reaction.primary].name} the attack.` : null;
+                return [base, reaction].filter(e => e !== null).join(" ");
+            }
         case "damage":
             const damageType = event.type !== undefined && event.type !== "physcial" ? `${event.type} ` : "";
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} ${damageType}damage.`;
