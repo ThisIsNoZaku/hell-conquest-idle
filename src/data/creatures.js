@@ -41,11 +41,11 @@ export const Creatures = {
         texture: "06_snake_01.png",
         description: "A monstrous reptile which wraps around its prey, crushing the like out of them.",
         npc: {
-            adjective: "cunning",
+            adjective: "devious",
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
@@ -61,8 +61,8 @@ export const Creatures = {
             adjective: "savage",
             tactics: {
                 default: {
-                    offensive: "attrition",
-                    defensive: "evasive"
+                    offensive: "attrit",
+                    defensive: "dodge"
                 }
             }
         }
@@ -79,7 +79,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
@@ -96,7 +96,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
@@ -113,7 +113,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
@@ -129,7 +129,7 @@ export const Creatures = {
             adjective: "mad",
             tactics: {
                 default: {
-                    offensive: "attrition",
+                    offensive: "attrit",
                     defensive: "none"
                 }
             }
@@ -143,11 +143,11 @@ export const Creatures = {
         texture: "128_sorrowsworn.png",
         description: "A soul of someone killed by strangulation, searching endlessly for victims upon which it can inflict the same fate.",
         npc: {
-            adjective: "deceitful",
+            adjective: "devious",
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
@@ -160,11 +160,11 @@ export const Creatures = {
         description: "This hunter stalks the night, swooping down upon it's prey.",
         texture: "13_bat.png",
         npc: {
-            adjective: "cunning",
+            adjective: "devious",
             tactics: {
                 default: {
                     offensive: "attrit",
-                    defensive: "evasive"
+                    defensive: "dodge"
                 }
             }
         }
