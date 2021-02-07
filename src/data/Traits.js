@@ -56,7 +56,7 @@ export const Traits = {
         name: "Immortal Warrior",
         icon: "./icons/icons-795.png",
         enabled: true,
-        description: _.template("This Demon's mindless stamina increases the cost to downgrade its attacks by ${tier.times(10)}% and reduces Psychic damage by ${tier.times(20)}%.")
+        description: _.template("This Demon's mindless stamina makes it ${tier.times(25)}% harder to block it's attacks and reduces Psychic damage by ${tier.times(20)}%.")
     }, ["mindless", "unstoppable"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
@@ -92,7 +92,7 @@ export const Traits = {
         name: "Night Hunter",
         icon: "./icons/icons-595.png",
         enabled: true,
-        description: _.template("Your agility and size increases your Evasion by ${tier.times(60)}%, Precision by ${tier.times(20)}% and reduces Power by ${tier.times(10)}%.")
+        description: _.template("Your size and unique senses increases your Evasion by ${tier.times(20)}%, Precision by ${tier.times(45)}% and reduces Power by ${tier.times(10)}%.")
     }, ["small", "precise"])),
     terrifyingSkitter: validatedTrait(generateTrait({
         name: "Sinister Hunter",
