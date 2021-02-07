@@ -442,6 +442,7 @@ describe('Tactics attrit + block', function () {
         });
     });
     it("enemy is performing basic attack, block", function () {
+        player.combat.stamina = Decimal(100);
         expect(determineCharacterCombatAction(player, enemy, {
             primary: "basicAttack"
         })).toEqual({
