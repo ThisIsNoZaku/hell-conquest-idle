@@ -176,7 +176,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 primary: "powerAttack",
                 enhancements: enemy.attackEnhancements
             }, actingCharacter));
-            if((!enemyAction && enemyCanPowerAttack) || _.get(enemyAction, "primary") === "powerAttack") {
+            if((!enemyAction && enemyCanPowerAttack) || _.get(enemyAction, "primary") === "powerAttack" || _.get(enemyAction, "primary") === "basicAttack") {
                 debugMessage(`Reason: Enemy can power attack or is power attacking.`);
                 return {
                     primary: "block",
@@ -332,7 +332,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                     enhancements: actingCharacter.defenseEnhancements
                 }
             }
-            if(!enemyCanBlock && !enemyCanDodge) {
+            if((!enemyAction && !enemyCanBlock && !enemyCanDodge) || _.get(enemyAction, "primary") === "none") {
                 debugMessage("Reason: enemy cannot defend");
                 return {
                     primary: "powerAttack",
