@@ -30,6 +30,7 @@ export const CombatActions = {
         name: "Block",
         energyCostMultiplier: .5,
         hitLevelModifier: -1,
+        hitLevel: -99,
         defense: true,
         initiative: 0
     },
@@ -37,6 +38,7 @@ export const CombatActions = {
         name: "Dodge",
         energyCostMultiplier: 1.5,
         hitLevelModifier: -99,
+        hitLevel: -99,
         defense: true,
         initiative: 0
     }
