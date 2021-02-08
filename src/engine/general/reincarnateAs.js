@@ -1,7 +1,5 @@
 import {Decimal} from "decimal.js";
 import {Creatures} from "../../data/creatures";
-import evaluateExpression from "./evaluateExpression";
-import {getConfigurationValue} from "../../config";
 import {getCharacter, getGlobalState, saveGlobalState} from "../index";
 import * as _ from "lodash";
 
