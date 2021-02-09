@@ -16,6 +16,40 @@ export const Creatures = {
             }
         }
     },
+    bloodyBat: {
+        name: "Bloody Bat",
+        traits: ["swiftEvasion"],
+        enabled: true,
+        appearance: "bloodyBat",
+        description: "This hunter stalks the night, swooping down upon it's prey.",
+        texture: "13_bat.png",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
+    carrionBeetle: {
+        name: "Corpse Beetle",
+        traits: ["carrion_feeder"],
+        enabled: true,
+        appearance: "carrionBeetle",
+        description: "A swarming beetle that feasts on corpses",
+        texture: "17_scarab.png",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     condemnedSlasher: {
         name: "Condemned Slasher",
         traits: ["sadisticJoy"],
@@ -67,6 +101,91 @@ export const Creatures = {
             }
         }
     },
+    demonLord: {
+        name: "Demon Lord",
+        traits: ["deeaboo"],
+        enabled: true,
+        appearance: "demonLord",
+        description: "The spirit of an intelligent being which reshaped itself to a mythological form.",
+        texture: "22_demon.png",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "block"
+                }
+            }
+        }
+    },
+    fleshlessSoldier: {
+        name: "Fleshless Soldier",
+        traits: ["immortalWarrior"],
+        enabled: true,
+        appearance: "fleshlessSoldier",
+        description: "Even the dead have not seen the end of war.",
+        texture: "18_skeleton.png",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "none"
+                }
+            }
+        }
+    },
+    goblinPariah: {
+        name: "Goblin Pariah",
+        traits: ["outcastStrength"],
+        enabled: true,
+        appearance: "goblinPariah",
+        description: "A goblin filled with hatred for the people that cast him out.",
+        texture: "21_goblin.png",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
+    madOrc: {
+        name: "Insane Orc",
+        traits: ["fortressOfMadness"],
+        enabled: true,
+        appearance: "madOrc",
+        description: "An orc warrior driven mad by a thirst for blood.",
+        texture: "19_orc.png",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "none"
+                }
+            }
+        }
+    },
+    myrmidonWarrior: {
+        name: "Myrmidon",
+        traits: ["relentless"],
+        enabled: true,
+        appearance: "myrmidonWarrior",
+        description: "A warrior of an ant-like people, seeing all around them as enemies of it's ancient hive.",
+        texture: "14_ant.png",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",
         traits: ["cupidity"],
@@ -75,11 +194,28 @@ export const Creatures = {
         texture: "02_hunter.png",
         description: "A thief who stole from whomever he could get away with, from wealthy merchants to starving vagrants.",
         npc: {
-            adjective: "deceptive",
+            adjective: "devious",
             tactics: {
                 default: {
                     offensive: "counter",
                     defensive: "dodge"
+                }
+            }
+        }
+    },
+    scorpion: {
+        name: "Scorpion",
+        traits: ["killingBlow"],
+        enabled: true,
+        appearance: "scorpion",
+        description: "A deadly scorpion which injects burning venom via its massive stinger.",
+        texture: "16_scorpion.png",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "block"
                 }
             }
         }
@@ -118,6 +254,22 @@ export const Creatures = {
             }
         }
     },
+    tempestSpirit: {
+        name: "Tempest Spirit",
+        traits: ["stormyPersonality"],
+        enabled: true,
+        appearance: "tempestSpirit",
+        texture: "24_air_elemental.png",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
     tormentedDead: {
         name: "Tormented Dead",
         traits: ["sharedPain"],
@@ -152,108 +304,6 @@ export const Creatures = {
             }
         }
     },
-    bloodyBat: {
-        name: "Bloody Bat",
-        traits: ["swiftEvasion"],
-        enabled: true,
-        appearance: "bloodyBat",
-        description: "This hunter stalks the night, swooping down upon it's prey.",
-        texture: "13_bat.png",
-        npc: {
-            adjective: "devious",
-            tactics: {
-                default: {
-                    offensive: "attrit",
-                    defensive: "dodge"
-                }
-            }
-        }
-    },
-    myrmidonWarrior: {
-        name: "Myrmidon",
-        traits: ["relentless"],
-        enabled: true,
-        appearance: "myrmidonWarrior",
-        description: "A warrior of an ant-like people, seeing all around them as enemies of it's ancient hive.",
-        texture: "14_ant.png",
-        npc: {
-            adjective: "savage",
-            tactics: {
-                default: {
-                    offensive: "attrit",
-                    defensive: "block"
-                }
-            }
-        }
-    },
-    scorpion: {
-        name: "Scorpion",
-        traits: ["killingBlow"],
-        enabled: true,
-        appearance: "scorpion",
-        description: "A deadly scorpion which injects burning venom via its massive stinger.",
-        texture: "16_scorpion.png",
-        npc: {
-            adjective: "savage",
-            tactics: {
-                default: {
-                    offensive: "counter",
-                    defensive: "block"
-                }
-            }
-        }
-    },
-    carrionBeetle: {
-        name: "Corpse Beetle",
-        traits: ["carrion_feeder"],
-        enabled: true,
-        appearance: "carrionBeetle",
-        description: "A swarming beetle that feasts on corpses",
-        texture: "17_scarab.png",
-        npc: {
-            adjective: "savage",
-            tactics: {
-                default: {
-                    offensive: "counter",
-                    defensive: "block"
-                }
-            }
-        }
-    },
-    fleshlessSoldier: {
-        name: "Fleshless Soldier",
-        traits: ["immortalWarrior"],
-        enabled: true,
-        appearance: "fleshlessSoldier",
-        description: "Even the dead have not seen the end of war.",
-        texture: "18_skeleton.png",
-        npc: {
-            adjective: "savage",
-            tactics: {
-                default: {
-                    offensive: "attrit",
-                    defensive: "none"
-                }
-            }
-        }
-    },
-    madOrc: {
-        name: "Insane Orc",
-        traits: ["fortressOfMadness"],
-        enabled: true,
-        appearance: "madOrc",
-        description: "An orc warrior driven mad by a thirst for blood.",
-        texture: "19_orc.png",
-        npc: {
-            adjective: "mad",
-            tactics: {
-                default: {
-                    offensive: "overwhelm",
-                    defensive: "none"
-                }
-            }
-        }
-    }
 }
 
 export const titles = {

@@ -94,6 +94,12 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon inflicts the damage it suffers back on attackers, reflecting <span style='color: orangered'>${tier.times(25).toFixed()}%</span> of the damage it takes.")
     }, ["thorns"])),
+    stormyPersonality: validatedTrait(generateTrait({
+        name: "Stormy Personality",
+        icon: "./icons/icons-1.png",
+        enabled: true,
+        description: _.template("This demon's insubstantial form makes it difficult to harm, reducing damage taken and received by ${tier.times(25)}% and increases Evasion by ${tier.times(25)}%.")
+    }, ["insubstantial", "evasive"])),
     swiftEvasion: validatedTrait(generateTrait({
         name: "Night Hunter",
         icon: "./icons/icons-595.png",
