@@ -1,4 +1,21 @@
 export const Creatures = {
+    avalancheSpirit: {
+        name: "Avalanche Spirit",
+        traits: ["heartlessMountain"],
+        enabled: true,
+        appearance: "avalancheSpirit",
+        texture: "25_earth_elemental.png",
+        description: "A spirit",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     bloodthirstyKnight: {
         name: "Bloodthirsty Knight",
         traits: ["bloodrage"],
@@ -152,6 +169,23 @@ export const Creatures = {
             }
         }
     },
+    hellfireSpirit: {
+        name: "Wildfire Spirit",
+        traits: ["consumingFlames"],
+        enabled: true,
+        appearance: "hellfireSpirit",
+        texture: "26_fire_elemental.png",
+        description: "A Demon representing the uncontrollable destruction of a wildfire.",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "none"
+                }
+            }
+        }
+    },
     madOrc: {
         name: "Insane Orc",
         traits: ["fortressOfMadness"],
@@ -165,6 +199,23 @@ export const Creatures = {
                 default: {
                     offensive: "overwhelm",
                     defensive: "none"
+                }
+            }
+        }
+    },
+    monstrousTroll: {
+        name: "Monstrous Troll",
+        traits: ["atavisticConsumption"],
+        enabled: true,
+        appearance: "monstrousTroll",
+        texture: "27_troll.png",
+        description: "A Demon filled with such an insatiable hunger that it won't let itself die in the face of food.",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "block"
                 }
             }
         }

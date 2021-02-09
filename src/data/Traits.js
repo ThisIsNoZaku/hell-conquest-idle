@@ -4,6 +4,11 @@ import {TraitEffects} from "./TraitEffects";
 
 // FIXME: Implement validation
 export const Traits = {
+    atavisticConsumption: validatedTrait(generateTrait({
+        name: "Atavistic Consumption",
+        icon: "./icons/icons-1.png",
+        description: _.template("This Demon hunger gives ${tier} stacks of Engorged on kill and recovers Health equal to ${tier.times(5)}% of maximum health by spending Energy equal to ${tier.times(5)}% of maximum stamina each round.")
+    }, ["regenerative", "cannibal"])),
     bloodrage: validatedTrait(generateTrait({
         name: "Blood Rage",
         icon: "./icons/icons-139.png",
@@ -16,6 +21,11 @@ export const Traits = {
         enabled: true,
         description: _.template("Consuming not just the energy but the flesh of the vanquished, this Demon has a ${tier.times(10)}% penalty to Power and Resilience and a ${tier.times(20)}% bonus to Evasion and Precision due to its size and gains ${tier} stack(s) of <strong>Engorged</strong> on kill.")
     }, ["cannibal", "small"])),
+    consumingFlames: validatedTrait(generateTrait({
+        name: "Consuming Flames",
+        icon: "./icons-icons-1.png",
+        description: _.template("This Demon is made of living flames, it's insubstantial nature reducing the damage it takes and receives by ${tier.times(25)}% and its touch add ${tier} stacks of Burning.")
+    }, ["insubstantial", "fiery"])),
     cupidity: validatedTrait({
         name: "Cupidity",
         icon: "./icons/icons-2503.png",
@@ -46,6 +56,13 @@ export const Traits = {
         icon: "./icons/icons-856.png",
         description: _.template("Your madness twists your enemy's body as it twists your own mind, reflecting ${tier.times(20)}% of damage taken and statuses applied by the enemy to you.")
     }, ["reversal", "thorns"]),
+    heartlessMountain: validatedTrait(generateTrait({
+        name: "Heartless Mountain",
+        icon: "./icons/icons-1.png",
+        description: _.template("This demon embodies the desolation of a wind-swept and the devastation of an avalance, gaining a ${tier.times(50)}% bonus to Power and Resilience with a ${tier.times(25)}% penalty to Evasion and Precision while it's attacks are ${tier.times(25)} more difficult to Block.")
+    }, [
+        "massive", "unstoppable"
+    ])),
     inescapableGrasp: validatedTrait(generateTrait({
         name: "Inescapable Grasp",
         icon: "./icons/icons-2221.png",
