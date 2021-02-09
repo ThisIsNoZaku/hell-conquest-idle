@@ -73,7 +73,7 @@ export default function triggerEvent(event) {
         })
     });
 
-    _.get(event.source, ["attack", "enhancements"], []).forEach(enhancement => {
+    _.get(event.source, ["attack", "action", "enhancements"], []).forEach(enhancement => {
         const enhancementDef = ActionEnhancements[enhancement];
         const eventDefinition = enhancementDef[event.type];
         if (eventDefinition) {

@@ -29,6 +29,8 @@ function describeEvent(event) {
     switch (event.event) {
         case "stamina-change":
             return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} energy`;
+        case "stamina-change":
+            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} fatigue`;
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":

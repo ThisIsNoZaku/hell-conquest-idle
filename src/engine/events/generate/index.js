@@ -128,3 +128,18 @@ export function generateHealthChangeEvent(source, target, value, parent, uuid, s
         parent
     }
 }
+
+export function generateFatigueChangeEvent(source, target, value, parent, uuid, sourceType, sourceId) {
+    uuid = uuid || v4();
+    return {
+        event: "fatigue-change",
+        uuid,
+        target: target.id,
+        source: {
+            character: source.id,
+            [sourceType]: sourceId
+        },
+        value,
+        parent
+    }
+}

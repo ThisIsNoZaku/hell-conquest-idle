@@ -29,6 +29,12 @@ export const Traits = {
             }
         }
     }),
+    deeaboo: validatedTrait({
+        name: "Demon Form",
+        icon: "./icons/icons-1.png",
+        enabled: true,
+        description: _.template("This Demon has reshaped itself to have a massive 'ultimate demon form', gaining ${tier.times(20)}% bonus to Power and Resilience and a ${tier.times(10)}% penalty to Precision and Evasion and it's blocks are ${tier.times(25)}% more difficult to block.")
+    }, ["large", "unstoppable"]),
     exhaustingTouch: validatedTrait({
         name: "Strangulation",
         icon: "./icons/icons-115.png",
@@ -99,7 +105,13 @@ export const Traits = {
         icon: "./icons/icons-2260.png",
         enabled: true,
         description: _.template("The sickening sound of your feet on the ground unnerves even other demons, inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s).")
-    }, ["frightening", "grappler"]))
+    }, ["frightening", "grappler"])),
+    outcastStrength: validatedTrait(generateTrait({
+        name: "Outcast's Strength",
+        icon: "./icons/icons-1.png",
+        enabled: true,
+        description: _.template("Your bloody-minded refusal to allow your enemies to defeat you gives a ${tier.times(50)}% bonus to Health and a ${tier.times(25)}% bonus to Resilience.")
+    }, ["robust", "tough"]))
 }
 
 export function getTrait(traitId) {
@@ -124,7 +136,7 @@ export function generateTrait(baseObject, traits) {
                     }
                     return {
                         target: srcValue.target,
-                        value: srcValue.value + _.get(objValue, "value", 0)
+                        value: _.get(srcValue, "value", 0) + _.get(objValue, "value", 0)
                     }
             }
         });

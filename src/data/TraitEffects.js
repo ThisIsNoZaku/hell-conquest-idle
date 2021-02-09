@@ -90,6 +90,9 @@ export const TraitEffects = {
             }
         }
     },
+    exhausting: {
+        attack_enhancement: "exhausting",
+    },
     fiery: {
         attack_enhancement: "flame",
         continuous: {

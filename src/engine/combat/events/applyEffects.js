@@ -4,7 +4,12 @@ import Decimal from "decimal.js";
 import {v4} from "node-uuid";
 import selectConditionTargets from "./selectConditionTargets";
 import * as _ from "lodash";
-import {generateDamageEvent, generateHealthChangeEvent, generateStaminaChangeEvent} from "../../events/generate";
+import {
+    generateDamageEvent,
+    generateFatigueChangeEvent,
+    generateHealthChangeEvent,
+    generateStaminaChangeEvent
+} from "../../events/generate";
 import {getConfigurationValue} from "../../../config";
 import {Traits} from "../../../data/Traits";
 import {getCharacter} from "../../index";
@@ -132,6 +137,29 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
             }
                 break;
+            case "change_fatigue":{
+                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                targets.forEach(target => {
+                    const fatigueChange = effectDefinition.percentage_of_maximum_stamina ?
+                        event.source.character.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).times(effectLevel).floor() :
+                        Decimal(effectDefinition.value).times(effectLevel).floor();
+                    target.combat.fatigue = target.combat.fatigue.plus(fatigueChange);
+                    const newEffectUuid = v4();
+                    if (event.source.attack) {
+                        event.source.attack.children.push(newEffectUuid);
+                    }
+                    event.roundEvents.push(generateFatigueChangeEvent(
+                        event.source.character,
+                        target,
+                        fatigueChange,
+                        _.get(event.source, ["attack", "uuid"]),
+                        null,
+                        sourceType,
+                        sourceId
+                    ));
+                });
+                break;
+            }
             case "change_health": {
                 const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
                 targets.forEach(target => {

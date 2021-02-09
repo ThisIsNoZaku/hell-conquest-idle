@@ -11,7 +11,6 @@ import {TraitEffects} from "../../data/TraitEffects";
 import {getCharacter} from "../index";
 import calculateActionCost from "../combat/actions/calculateActionCost";
 import resolveAction from "../combat/actions/resolveAction";
-import onStatusApplied from "../combat/events/onStatusApplied";
 
 jest.mock("../index");
 
@@ -843,6 +842,95 @@ describe("relentless effect", function () {
     })
 });
 
+describe("reversal effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["reversal"]);
+        player = new Character({
+            id: 0,
+            traits: {test: 1}
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
+    it("when the enemy applies a status to the character, the enemy gains a portion of the stacks applied", function () {
+        const roundEvents = [];
+        triggerEvent({
+            type: "on_status_applied",
+            status: "poisoned",
+            stacks: Decimal(10),
+            source: {
+                character: enemy,
+                trait: "test"
+            },
+            target: player,
+            roundEvents,
+            combatants: {
+                0: player,
+                1: enemy
+            },
+            duration: 5
+        });
+        expect(roundEvents).toEqual([{
+            event: "add-status",
+            uuid: expect.any(String),
+            source: {
+                character: 0,
+                trait: "test",
+            },
+            target: 1,
+            status: "poisoned",
+            stacks: Decimal(2),
+            duration: 5
+        }]);
+    });
+    it("when the player applies a status to the enemy, the trait does not trigger.", function () {
+        const roundEvents = [];
+        triggerEvent({ // TODO: Methods for generating events.
+            type: "on_status_applied",
+            status: "poisoned",
+            stacks: Decimal(10),
+            source: {
+                character: player,
+                trait: "test"
+            },
+            target: enemy,
+            roundEvents,
+            combatants: {
+                0: player,
+                1: enemy
+            },
+            duration: 5
+        });
+        expect(roundEvents).toEqual([]);
+    });
+    it("when the enemy applies a status to their self, the trait does not trigger.", function () {
+        const roundEvents = [];
+        triggerEvent({
+            type: "on_status_applied",
+            status: "poisoned",
+            stacks: Decimal(10),
+            source: {
+                character: enemy,
+                trait: "test"
+            },
+            target: enemy,
+            roundEvents,
+            combatants: {
+                0: player,
+                1: enemy
+            },
+            duration: 5
+        });
+        expect(roundEvents).toEqual([]);
+    });
+});
+
 describe("robust effect", function () {
     let player;
     beforeEach(() => {
@@ -970,6 +1058,33 @@ describe("small effect", function () {
     });
 });
 
+describe("suffocating effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["small"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
+    it("inflicts stacks of fatigue on hit", function () {
+        player.combat.stamina = Decimal(150);
+        resolveAction(player, {primary: "basicAttack", enhancements: ["exhausting"]}, enemy, {
+            primary: "none", enhancements: []
+        }, [], 100);
+        expect(enemy.combat.fatigue).toEqual(Decimal(3));
+    })
+});
+
 describe("thorns effect", function () {
     let player;
     let enemy;
@@ -1055,94 +1170,5 @@ describe("unstoppable effect", function () {
     it("increases energy cost to block your attacks", function () {
         const blockCost = calculateActionCost(enemy, {primary: "block", enhancements: []}, player);
         expect(blockCost).toEqual(Decimal(100 * 1.1 * .5).floor());
-    });
-});
-
-describe("reversal effect", function () {
-    let player;
-    let enemy;
-    beforeEach(() => {
-        Traits.test = generateTrait({...traitBase}, ["reversal"]);
-        player = new Character({
-            id: 0,
-            traits: {test: 1}
-        });
-        enemy = new Character({
-            id: 1
-        });
-    });
-    afterEach(() => {
-        delete Traits.test;
-    });
-    it("when the enemy applies a status to the character, the enemy gains a portion of the stacks applied", function () {
-        const roundEvents = [];
-        triggerEvent({
-            type: "on_status_applied",
-            status: "poisoned",
-            stacks: Decimal(10),
-            source: {
-                character: enemy,
-                trait: "test"
-            },
-            target: player,
-            roundEvents,
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            duration: 5
-        });
-        expect(roundEvents).toEqual([{
-            event: "add-status",
-            uuid: expect.any(String),
-            source: {
-                character: 0,
-                trait: "test",
-            },
-            target: 1,
-            status: "poisoned",
-            stacks: Decimal(2),
-            duration: 5
-        }]);
-    });
-    it("when the player applies a status to the enemy, the trait does not trigger.", function () {
-        const roundEvents = [];
-        triggerEvent({ // TODO: Methods for generating events.
-            type: "on_status_applied",
-            status: "poisoned",
-            stacks: Decimal(10),
-            source: {
-                character: player,
-                trait: "test"
-            },
-            target: enemy,
-            roundEvents,
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            duration: 5
-        });
-        expect(roundEvents).toEqual([]);
-    });
-    it("when the enemy applies a status to their self, the trait does not trigger.", function () {
-        const roundEvents = [];
-        triggerEvent({
-            type: "on_status_applied",
-            status: "poisoned",
-            stacks: Decimal(10),
-            source: {
-                character: enemy,
-                trait: "test"
-            },
-            target: enemy,
-            roundEvents,
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            duration: 5
-        });
-        expect(roundEvents).toEqual([]);
     });
 });
