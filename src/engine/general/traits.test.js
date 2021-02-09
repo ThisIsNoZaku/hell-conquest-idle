@@ -715,7 +715,9 @@ describe("venomous effect", function () {
             source: {
                 character: player,
                 attack: {
-                    enhancements: ["venom"],
+                    action: {
+                        enhancements: ["venom"],
+                    }
                 }
             },
             target: enemy,
