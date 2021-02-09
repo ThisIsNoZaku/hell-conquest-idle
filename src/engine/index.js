@@ -5,11 +5,12 @@ import {Decimal} from "decimal.js";
 import {Character} from "../character";
 import {getConfigurationValue} from "../config";
 import * as Package from "../../package.json";
-import {Tactics} from "../data/Tactics";
 import changelog from "../changelog.json";
 import pkg from "../../package.json";
 import evaluateExpression from "./general/evaluateExpression";
 import calculateNPCBonuses from "./general/calculateNpcBonuses";
+import {Traits} from "../data/Traits";
+import {ActionEnhancements} from "../data/ActionEnhancements";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
@@ -24,6 +25,7 @@ export function saveGlobalState() {
 }
 
 export function loadGlobalState() {
+    validate();
     let loaded = window.localStorage.getItem(saveKey);
     if (!loaded) {
         // try to load previous versions
@@ -237,4 +239,30 @@ export function determineCreatureTactics(id, adjective) {
         offensiveTactics,
         defensiveTactics
     }
+}
+
+function validate() {
+    Object.keys(Creatures).forEach(creature => {
+        try {
+            Creatures[creature].traits.forEach(t => {
+                if (!Traits[t]) {
+                    throw new Error(`Creature ${creature} has trait ${t} which is not defined.`);
+                }
+            });
+            const adjective = Creatures[creature].npc.adjective;
+            if (!titles[adjective]) {
+                throw new Error(`Creature ${creature} has adjective ${Creatures[creature].npc.adjective} which is not defined.`);
+            }
+        } catch (e) {
+            throw new Error(`An error occurred processing ${creature}: ${e.message}`);
+        }
+    });
+    Object.keys(Traits).forEach(trait => {
+        if(trait.attack_enhancement && !ActionEnhancements[trait.attack_enhancement]) {
+            throw new Error(`Trait ${trait} uses attack enhancement ${trait.attack_enhancement} which doesn't exist.`)
+        }
+        if(trait.defense_enhancement && !ActionEnhancements[trait.defense_enhancement]) {
+            throw new Error(`Trait ${trait} uses defense enhancement ${trait.defense_enhancement} which doesn't exist.`)
+        }
+    })
 }
