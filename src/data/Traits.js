@@ -9,12 +9,22 @@ export const Traits = {
         icon: "./icons/icons-1.png",
         description: _.template("This Demon hunger gives ${tier} stacks of Engorged on kill and recovers Health equal to ${tier.times(5)}% of maximum health by spending Energy equal to ${tier.times(5)}% of maximum stamina each round.")
     }, ["regenerative", "cannibal"])),
+    balefulGaze: validatedTrait(generateTrait({
+        name: "Baleful Gaze",
+        icon: "./icons/icons-1.png",
+        description: _.template("This demon's magical sight give it uncanny precision and weakens magic, increasing precision by ${tier.times(25)}% and making enemy attack and defense enhancements cost ${tier.times(10)}% per level.")
+    }, ["precise", "neutralizing"])),
     bloodrage: validatedTrait(generateTrait({
         name: "Blood Rage",
         icon: "./icons/icons-139.png",
         enabled: true,
         description: _.template("A brutal and savage warrior, this Demon gains a  gains a ${tier.times(25)}% bonus to <strong>Resilience</strong> and ${tier} stacks of <strong>Berserk</strong> when hitting with an attack.")
     }, ["bloodthirsty", "tough"])),
+    bloodHunger: validatedTrait(generateTrait({
+        name: "Blood Hunger",
+        icon: "./icons/icons-1.png",
+        description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s)")
+    }, ["precise", "neutralizing"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
         icon: "./icons/icons-523.png",

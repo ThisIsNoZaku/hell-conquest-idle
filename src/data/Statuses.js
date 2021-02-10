@@ -68,6 +68,17 @@ export const Statuses = {
             }
         }
     }),
+    neutralizing: validatedStatus({
+        name: "Neutralizing",
+        icon: "./icons/icons-1.png",
+        description: _.template("Increases the cost multiplier of the enemy's attack and defense enhancements by ${enhancement_cost_increase.times(100)}%"),
+        effects: {
+            enhancement_cost_increase: {
+                target: "enemy",
+                value: .25
+            }
+        }
+    }),
     restrained: validatedStatus({
         name: "Restrained",
         description: _.template("Your limbs are bound, reducing Evasion by ${evasion_modifier.times(100)}%."),

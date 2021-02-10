@@ -691,6 +691,64 @@ describe("mindless effect", function () {
     });
 });
 
+describe("neutralizing effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["neutralizing"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("it adds stacks of neutralizing to the demon", function () {
+        triggerEvent({
+            type: "on_combat_start",
+            source: {
+                character: player
+            },
+            combatants: {0: player, 1: enemy},
+            roundEvents: []
+        });
+        expect(player.statuses.neutralizing).toBeDefined();
+        expect(player.getStatusStacks("neutralizing")).toEqual(Decimal(3));
+    });
+    it("it removes stacks of neutralizing from the demon on taking a hit", function () {
+        const roundEvents = [];
+        player.statuses.neutralizing = [{
+            stacks: 1,
+            duration: 999,
+            source: {
+                character: 0,
+                trait: "test"
+            }
+        }];
+        triggerEvent({
+            type: "on_taking_damage",
+            source: {
+                character: player
+            },
+            combatants: {0: player, 1: enemy},
+            roundEvents
+        });
+        expect(roundEvents).toContainEqual({
+            event: "remove-status",
+            status: "neutralizing",
+            target: 0,
+            stacks: Decimal(1),
+            source: {
+                character: 0
+            }
+        });
+        expect(player.statuses.neutralizing).toBeUndefined();
+    });
+})
+
 describe("venomous effect", function () {
     let player;
     let enemy;

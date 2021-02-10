@@ -227,6 +227,29 @@ export const TraitEffects = {
             }
         }
     },
+    neutralizing: {
+        on_combat_start: {
+            trigger_effects: {
+                add_statuses: {
+                    neutralizing: {
+                        target: "self",
+                        stacks: 3,
+                        duration: DURATION_FOR_COMBAT
+                    }
+                }
+            }
+        },
+        on_taking_damage: {
+            trigger_effects: {
+                remove_statuses: {
+                    neutralizing: {
+                        target: "self",
+                        stacks: 1
+                    }
+                }
+            }
+        }
+    },
     venomous: {
         attack_enhancement: "venom"
     },

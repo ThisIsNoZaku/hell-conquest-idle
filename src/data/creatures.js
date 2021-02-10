@@ -135,6 +135,22 @@ export const Creatures = {
             }
         }
     },
+    eyeBeast: {
+        name: "Eye Beast",
+        traits: ["balefulGaze"],
+        enabled: true,
+        appearance: "eyeBeast",
+        description: "A grotesque demon, which first a variety of magical blasts from its myriad eyes.",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
     fleshlessSoldier: {
         name: "Fleshless Soldier",
         traits: ["immortalWarrior"],
@@ -267,6 +283,23 @@ export const Creatures = {
                 default: {
                     offensive: "counter",
                     defensive: "block"
+                }
+            }
+        }
+    },
+    sanguineLord: {
+        name: "Sinister Lord",
+        traits: ["bloodHunger"],
+        enabled: true,
+        appearance: "sanguineLord",
+        texture: "30_vampire.png",
+        description: "A damned nobleman who survived for centuries by consuming the blood of the innocent, until slain by a righteous hunter",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defense: "dodge"
                 }
             }
         }
