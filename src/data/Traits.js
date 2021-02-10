@@ -33,7 +33,7 @@ export const Traits = {
     }, ["cannibal", "small"])),
     consumingFlames: validatedTrait(generateTrait({
         name: "Consuming Flames",
-        icon: "./icons-icons-1.png",
+        icon: "./icons/icons-1.png",
         description: _.template("This Demon is made of living flames, it's insubstantial nature reducing the damage it takes and receives by ${tier.times(25)}% and its touch add ${tier} stacks of Burning.")
     }, ["insubstantial", "fiery"])),
     cupidity: validatedTrait({
