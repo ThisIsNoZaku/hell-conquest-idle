@@ -1,4 +1,4 @@
-import {PERMANENT} from "./Statuses";
+import {DURATION_FOR_COMBAT, DURATION_PERMANENT} from "./Statuses";
 
 export const TraitEffects = {
     acidic: {
@@ -36,7 +36,7 @@ export const TraitEffects = {
                     engorged: {
                         target: "self",
                         stacks: 5,
-                        duration: PERMANENT,
+                        duration: DURATION_PERMANENT,
                         cumulative: true
                     }
                 }

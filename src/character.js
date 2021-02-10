@@ -3,7 +3,7 @@ import {getGlobalState} from "./engine";
 import {Creatures} from "./data/creatures";
 import {Decimal} from "decimal.js";
 import {Tactics} from "./data/Tactics";
-import {PERMANENT, Statuses} from "./data/Statuses";
+import {DURATION_PERMANENT, Statuses} from "./data/Statuses";
 import * as _ from "lodash";
 import {Traits} from "./data/Traits";
 import getPowerNeededForLevel from "./engine/general/getPowerNeededForLevel";
@@ -92,7 +92,7 @@ export class Character {
 
     clearStatuses() {
         Object.keys(this.statuses).forEach(status => {
-            this.statuses[status] = this.statuses[status].filter(instance => instance.duration === PERMANENT);
+            this.statuses[status] = this.statuses[status].filter(instance => instance.duration === DURATION_PERMANENT);
             if (this.statuses[status].length === 0) {
                 delete this.statuses[status];
             }

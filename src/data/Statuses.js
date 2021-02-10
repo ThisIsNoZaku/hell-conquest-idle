@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 import validatedStatus from "./schemas/statuses";
 
-export const FOR_COMBAT = 999;
-export const PERMANENT = -1;
+export const DURATION_FOR_COMBAT = 999;
+export const DURATION_PERMANENT = -1;
 
 export const Statuses = {
     berserk: validatedStatus({

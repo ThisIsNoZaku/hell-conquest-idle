@@ -1,5 +1,5 @@
 import triggerEvent from "../../general/triggerEvent";
-import {FOR_COMBAT, PERMANENT} from "../../../data/Statuses";
+import {DURATION_FOR_COMBAT, DURATION_PERMANENT} from "../../../data/Statuses";
 import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../../events/generate";
 import {getCharacter} from "../../index";
 import {Decimal} from "decimal.js";
@@ -25,7 +25,7 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
             Object.keys(combatant.statuses).forEach(status => {
                 if (combatant.statuses[status]) {
                     combatant.statuses[status] = combatant.statuses[status].filter(instance => {
-                        if (instance.duration === PERMANENT || instance.duration === FOR_COMBAT || instance.duration) {
+                        if (instance.duration === DURATION_PERMANENT || instance.duration === DURATION_FOR_COMBAT || instance.duration) {
                             return true;
                         }
                         roundEvents.push(generateRemoveStatusEvent(getCharacter(instance.source.character), combatant, instance.uuid, status, 1));
