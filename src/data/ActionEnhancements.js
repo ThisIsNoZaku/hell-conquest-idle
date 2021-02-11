@@ -19,7 +19,7 @@ export const ActionEnhancements = {
         }
     },
     flame: {
-        additional_energy_cost_modifier: .5,
+        additional_energy_cost_modifier: .25,
         change_damage_type: "fire"
     },
     venom: {
