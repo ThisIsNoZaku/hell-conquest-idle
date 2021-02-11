@@ -28,6 +28,7 @@ export const modifierEffects = JOI.object({
     attack_upgrade_cost_multiplier: effectModifier,
     maximum_health_modifier: effectModifier,
     power_gain_modifier: effectModifier,
+    enhancement_cost_increase: effectModifier,
     damage_resistance: {
         target: effectTarget,
         type: JOI.string(),
