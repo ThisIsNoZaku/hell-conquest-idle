@@ -44,7 +44,7 @@ export const Statuses = {
     }),
     frightened: validatedStatus({
         name: "Terrified",
-        icon: "icons/icons-130.png",
+        icon: "./icons/icons-130.png",
         description: _.template("The fear in your heart inflicts a ${precision_modifier.times(100)}% penalty to Precision and a ${power_modifier.times(100)}% penalty to Power."),
         effects: {
             precision_modifier: {
@@ -59,7 +59,7 @@ export const Statuses = {
     }),
     infected: validatedStatus({
         name: "Infected",
-        icon: "icon/icons-1.png",
+        icon: "./icons/icons-1.png",
         description: _.template(""),
         effects: {
             maximum_health_modifier: {
@@ -82,7 +82,7 @@ export const Statuses = {
     restrained: validatedStatus({
         name: "Restrained",
         description: _.template("Your limbs are bound, reducing Evasion by ${evasion_modifier.times(100)}%."),
-        icon: "icons/icons-116.png",
+        icon: "./icons/icons-116.png",
         effects: {
             evasion_modifier: {
                 target: "self",
@@ -93,7 +93,7 @@ export const Statuses = {
     poisoned: validatedStatus({
         name: "Poisoned",
         description: _.template("Take ${inflict_damage_at_start_of_round} damage per round."),
-        icon: "icons/icons-129.png",
+        icon: "./icons/icons-129.png",
         effects: {
             inflict_damage_at_start_of_round: {
                 target: "self",
@@ -104,7 +104,7 @@ export const Statuses = {
     }),
     famished: validatedStatus({
         name: "Famished",
-        icon: "icons/icons-149.png",
+        icon: "./icons/icons-149.png",
         description: _.template("Reduce your maximum health by ${maximum_health_modifier}%"),
         effects: {
             maximum_health_modifier:{
