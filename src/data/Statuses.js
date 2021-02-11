@@ -75,7 +75,7 @@ export const Statuses = {
         effects: {
             enhancement_cost_increase: {
                 target: "enemy",
-                value: .25
+                value: .1
             }
         }
     }),
