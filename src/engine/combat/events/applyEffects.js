@@ -71,9 +71,9 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
             case "remove_statuses":
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.combatants);
-                    const stacks = evaluateExpression(effectDefinition[status].stacks, {
+                    const stacks = Decimal(evaluateExpression(effectDefinition[status].stacks, {
                         tier: effectLevel
-                    });
+                    }));
                     targets.forEach(target => {
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => {
@@ -82,11 +82,13 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                             });
                         if (existingStatus) {
                             target.statuses[status] = target.statuses[status].filter(s => s != existingStatus);
+                            if(target.statuses[status].length === 0) {
+                                delete target.statuses[status];
+                            }
                             event.roundEvents.push({
                                 event: "remove-status",
                                 source: {character: event.source.character.id},
                                 target: target.id,
-                                toRemove: existingStatus.uuid,
                                 status,
                                 stacks
                             });
