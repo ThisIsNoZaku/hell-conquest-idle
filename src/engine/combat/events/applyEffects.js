@@ -24,14 +24,14 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 Object.keys(effectDefinition).forEach(status => {
                     const targets = selectConditionTargets(effectDefinition[status].target, contextCharacter, event.target, event.combatants);
                     const stacks = effectDefinition[status].stacks ? Decimal(effectDefinition[status].stacks).times(effectLevel) :
-                        Decimal(effectDefinition[status].stacks_per_level).times(effectLevel).times(event.source.character.powerLevel);
+                        Decimal(effectDefinition[status].stacks_per_level).times(effectLevel).times(contextCharacter.powerLevel);
                     const max = effectDefinition[status].max || 999;
                     const duration = effectDefinition[status].duration || 1;
                     targets.forEach(target => {
                         const statusUuid = v4();
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => {
-                                return s.source.character === event.source.character.id &&
+                                return s.source.character === contextCharacter.id &&
                                     s.source[sourceType] === sourceId;
                             });
                         if (existingStatus) {
@@ -45,7 +45,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                                 uuid: statusUuid,
                                 status,
                                 source: {
-                                    character: event.source.character.id,
+                                    character: contextCharacter.id,
                                     [sourceType]: sourceId
                                 },
                                 duration,
@@ -56,7 +56,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                             uuid: statusUuid,
                             event: "add-status",
                             source: {
-                                character: event.source.character.id,
+                                character: contextCharacter.id,
                                 [sourceType]: sourceId
                             },
                             target: target.id,
@@ -70,14 +70,14 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 break;
             case "remove_statuses":
                 Object.keys(effectDefinition).forEach(status => {
-                    const targets = selectConditionTargets(effectDefinition[status].target, event.source.character, event.combatants);
+                    const targets = selectConditionTargets(effectDefinition[status].target, contextCharacter, event.combatants);
                     const stacks = Decimal(evaluateExpression(effectDefinition[status].stacks, {
                         tier: effectLevel
                     }));
                     targets.forEach(target => {
                         const existingStatus = (target.statuses[status] || [])
                             .find(s => {
-                                return s.source.character === event.source.character.id &&
+                                return s.source.character === contextCharacter.id &&
                                     s.source[sourceType] === sourceId
                             });
                         if (existingStatus) {
@@ -87,7 +87,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                             }
                             event.roundEvents.push({
                                 event: "remove-status",
-                                source: {character: event.source.character.id},
+                                source: {character: contextCharacter.id},
                                 target: target.id,
                                 status,
                                 stacks
@@ -119,16 +119,16 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
                 break;
             case "change_stamina": {
-                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
                 targets.forEach(target => {
-                    const staminaChange = event.source.character.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).floor();
+                    const staminaChange = contextCharacter.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).floor();
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);
                     const newEffectUuid = v4();
-                    if (event.source.attack) {
+                    if (_.get(event.source, "attack")) {
                         event.source.attack.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateStaminaChangeEvent(
-                        event.source.character,
+                        contextCharacter,
                         target,
                         staminaChange,
                         _.get(event.source, ["attack", "uuid"]),
@@ -140,10 +140,10 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
             }
                 break;
             case "change_fatigue":{
-                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
                 targets.forEach(target => {
                     const fatigueChange = effectDefinition.percentage_of_maximum_stamina ?
-                        event.source.character.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).times(effectLevel).floor() :
+                        contextCharacter.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).times(effectLevel).floor() :
                         Decimal(effectDefinition.value).times(effectLevel).floor();
                     target.combat.fatigue = target.combat.fatigue.plus(fatigueChange);
                     const newEffectUuid = v4();
@@ -151,7 +151,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                         event.source.attack.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateFatigueChangeEvent(
-                        event.source.character,
+                        contextCharacter,
                         target,
                         fatigueChange,
                         _.get(event.source, ["attack", "uuid"]),
@@ -163,18 +163,18 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 break;
             }
             case "change_health": {
-                const targets = selectConditionTargets(effectDefinition.target, event.source.character, event.target, event.combatants);
+                const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
                 targets.forEach(target => {
                     const healthChange = effectDefinition.percentage_of_maximum_health ?
-                        event.source.character.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(effectLevel).floor() :
+                        contextCharacter.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(effectLevel).floor() :
                         Decimal(effectDefinition.value).times(effectLevel).floor();
                     target.hp = target.hp.plus(healthChange);
                     const newEffectUuid = v4();
-                    if (event.source.attack) {
+                    if (_.get(event.source, "attack")) {
                         event.source.attack.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateHealthChangeEvent(
-                        event.source.character,
+                        contextCharacter,
                         target,
                         healthChange,
                         _.get(event.source, ["attack", "uuid"]),
@@ -188,7 +188,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
             case "trait_mirror":
                 const {target} = event;
                 Object.keys(target.traits).forEach(trait => {
-                    const actor = event.source.character;
+                    const actor = contextCharacter;
                     actor.temporaryTraits = {...target.traits};
                 })
                 break;
