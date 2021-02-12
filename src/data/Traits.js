@@ -103,6 +103,11 @@ export const Traits = {
         enabled: true,
         icon: "./icons/icons-110.png"
     }, ["relentless", "tough"])),
+    rotMouth: validatedTrait(generateTrait({
+        name: "Biting Lizard",
+        icon: "./icons/icons-1.png",
+        description: _.template("The fouless of")
+    }, ["coldBlooded", "venomous"])),
     sadisticJoy: validatedTrait(generateTrait({
         name: "Sadistic Joy",
         icon: "./icons/icons-852.png",

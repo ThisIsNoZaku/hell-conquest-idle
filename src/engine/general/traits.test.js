@@ -193,6 +193,41 @@ describe("cannibal effect", function () {
     });
 });
 
+describe("coldblooded effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["coldBlooded"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("reduces all own action costs", function () {
+        expect(calculateActionCost(player, {
+            primary: "basicAttack",
+            enhancements: []
+        })).toEqual(Decimal(100 * CombatActions.basicAttack.energyCostMultiplier * .75).floor())
+        expect(calculateActionCost(player, {
+            primary: "powerAttack",
+            enhancements: []
+        })).toEqual(Decimal(100 * CombatActions.powerAttack.energyCostMultiplier * .75).floor())
+        expect(calculateActionCost(player, {
+            primary: "block",
+            enhancements: []
+        })).toEqual(Decimal(100 * CombatActions.block.energyCostMultiplier * .75).floor())
+        expect(calculateActionCost(player, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual(Decimal(100 * CombatActions.dodge.energyCostMultiplier * .75).floor())
+    });
+});
+
 describe("crushing effect", function () {
     let player;
     let enemy;

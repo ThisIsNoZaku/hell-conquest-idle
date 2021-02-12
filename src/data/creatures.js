@@ -16,6 +16,21 @@ export const Creatures = {
             }
         }
     },
+    bitingLizard: {
+        name: "Biting Lizard",
+        appearance: "bitingLizard",
+        traits: ["rotMouth"],
+        texture: "34_salamander.png",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     bloodthirstyKnight: {
         name: "Bloodthirsty Knight",
         traits: ["bloodrage"],

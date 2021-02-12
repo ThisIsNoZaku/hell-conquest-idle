@@ -19,8 +19,11 @@ export default function calculateActionCost(actor, action, enemy) {
         return previousValue + (thisModifier + enemyStatusModifier);
     }, 0);
     const actorTraitModifier = Object.keys(_.get(actor, "traits",{})).reduce((total, next) => {
-        const traitEffect = _.get(Traits[next], ["continuous", "trigger_effects", `${action.primary}_cost_modifier`], {});
-        return total + (traitEffect.target === "self" ? traitEffect.value : 0);
+        const actionSpecificModifier = _.get(Traits[next], ["continuous", "trigger_effects", `${action.primary}_cost_modifier`], {});
+        const specificModifier = actionSpecificModifier.target === "self" ? actionSpecificModifier.value : 0;
+        const allActionModifier = _.get(Traits[next], ["continuous", "trigger_effects", `action_cost_modifier`], {});
+        const generalModifier = allActionModifier.target === "self" ? allActionModifier.value : 0;
+        return total + specificModifier + generalModifier;
     }, 0);
     const enemyTraitModifier = Object.keys(_.get(enemy, "traits",{})).reduce((total, next) => {
         const traitEffect = _.get(Traits[next], ["continuous", "trigger_effects", `${action.primary}_cost_modifier`], {});

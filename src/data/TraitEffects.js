@@ -43,6 +43,20 @@ export const TraitEffects = {
             }
         }
     },
+    coldBlooded: {
+        continuous: {
+            trigger_effects: {
+                action_cost_modifier: {
+                    target: "self",
+                    value: -.1
+                },
+                energy_generation_modifier: {
+                    target: "self",
+                    value: -.1
+                }
+            }
+        }
+    },
     crushing: { // TODO: Turn to attack enhancement
         on_solid_hit: {
             trigger_effects: {
