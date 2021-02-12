@@ -76,6 +76,11 @@ export const Traits = {
         enabled: true,
         description: _.template("The Demon saps the strength from the victims limbs, reducing both Damage and Defense by <span>${tier.times(5)}%</span> for 1 round.")
     }),
+    freakyFishGuy: validatedTrait({
+        name: "Thassalophilia",
+        enabled: true,
+        description: _.template("This Demon's strange ways makes it hard to predict its actions, increasing Precision and Evasion by ${tier.times(10)}% and the enemy cannot use this Demon's action when determining it's own.")
+    }, ["inscrutable", "frightening"]),
     fortressOfMadness: validatedTrait({
         name: "Fortress of Madness",
         icon: "./icons/icons-856.png",

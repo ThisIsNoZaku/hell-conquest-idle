@@ -229,6 +229,23 @@ export const Creatures = {
             }
         }
     },
+    freakyFishGuy: {
+        name: "Freaky Fish Guy",
+        traits: ["freakyFishGuy"],
+        enabled: true,
+        appearance: "freakyFishGuy",
+        description: "There isn't anything that one might consider 'water' in hell, so who knows where this ocean-dweller came from or how it got here.",
+        texture: "32_aquaticman.png",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
     goblinPariah: {
         name: "Goblin Pariah",
         traits: ["outcastStrength"],
