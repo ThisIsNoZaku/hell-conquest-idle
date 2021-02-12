@@ -11,6 +11,9 @@ export const modifierEffects = JOI.object({
     steal_item: JOI.object({
         target: effectTarget
     }),
+    hidden_action: {
+        target: effectTarget
+    },
     reflect_damage: {
         target: effectTarget,
         value: JOI.number(),

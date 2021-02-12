@@ -23,7 +23,8 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
     if(!enemy.canBeAttacked) {
         return attackPrevented(actingCharacter);
     }
-    const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy, enemyAction);
+    const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy,
+        enemy.isInscrutable ? null : enemyAction);
     debugMessage(`Selected action ${_.get(action, "primary")}`);
     if(action === undefined) {
         debugMessage("Action changed to 'none'");

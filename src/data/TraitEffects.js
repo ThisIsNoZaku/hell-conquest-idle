@@ -168,6 +168,23 @@ export const TraitEffects = {
             }
         }
     },
+    inscrutable: {
+        continuous : {
+            trigger_effects: {
+                precision_modifier: {
+                    target: "self",
+                    value: .1
+                },
+                evasion_modifier: {
+                    target: "self",
+                    value: .1
+                },
+                hidden_action: {
+                    target: "self"
+                }
+            }
+        }
+    },
     insubstantial: {
         continuous: {
             trigger_effects: {

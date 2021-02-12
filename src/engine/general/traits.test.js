@@ -11,6 +11,9 @@ import {TraitEffects} from "../../data/TraitEffects";
 import {getCharacter} from "../index";
 import calculateActionCost from "../combat/actions/calculateActionCost";
 import resolveAction from "../combat/actions/resolveAction";
+import {resolveCombatRound} from "../combat";
+import determineCharacterCombatAction from "../combat/actions/determineCharacterCombatAction";
+import {Tactics} from "../../data/Tactics";
 
 jest.mock("../index");
 
@@ -612,6 +615,40 @@ describe("grappler effect", function () {
                 stacks: Decimal(1)
             }]
         })
+    });
+});
+
+describe("inscrutable effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["inscrutable"])
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    })
+    it("increases precision", function () {
+        expect(player.combat.precision).toEqual(Decimal(1.1));
+        expect(player.combat.evasion).toEqual(Decimal(1.1));
+    });
+    it("hides the character's action", function () {
+        player.initiative = -50;
+        Object.keys(Tactics.offensive).forEach(offensiveTactic => {
+            Object.keys(Tactics.defensive).forEach(defensiveTactic => {
+                enemy.tactics.offensive = offensiveTactic;
+                enemy.tactics.defensive = defensiveTactic;
+                expect(determineCharacterCombatAction(enemy, player, {
+                    primary: "basicAttack",
+                    enhancements: []
+                })).toEqual(determineCharacterCombatAction(enemy, player));
+            });
+        });
     });
 });
 

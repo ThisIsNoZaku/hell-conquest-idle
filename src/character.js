@@ -249,6 +249,13 @@ export class Character {
             return canBeAttacked && statusDefTarget !== "self";
         }, true)
     }
+
+    get isInscrutable() {
+        return Object.keys(this.traits).reduce((isInscrutable, nextStatus) => {
+            const statusDefTarget = _.get(Traits[nextStatus], ["continuous", "trigger_effects", "inscrutable", "target"]);
+            return isInscrutable || statusDefTarget === "self";
+        }, false)
+    }
 }
 
 export class Attributes {
