@@ -88,14 +88,18 @@ export default function triggerEvent(event) {
 }
 
 const eventMatcher = JOI.object({
-    type: JOI.valid("on_status_applied", "on_kill", "on_taking_damage", "on_round_begin", "on_round_end", "on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_combat_start").required(),
+    type: JOI.valid("on_status_applied", "on_kill", "on_taking_damage", "on_round_begin", "on_round_end", "on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_combat_start", "on_dodge").required(),
     combatants: JOI.object().required(),
     roundEvents: JOI.array().required(),
-    source: JOI.object({
-        character: JOI.object().required(),
-        attack: JOI.object(),
-        damage: JOI.object(),
-        trait: JOI.string()
+    source: JOI.any().when("type", {
+        is: ["on_status_applied", "on_kill", "on_taking_damage","on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_combat_start", "on_dodge"],
+        then: JOI.object({
+            character: JOI.object().required(),
+            attack: JOI.object(),
+            damage: JOI.object(),
+            trait: JOI.string()
+        }).required(),
+        otherwise: JOI.any().forbidden()
     }).required(),
     target: JOI.any().when("type", {
         is: [

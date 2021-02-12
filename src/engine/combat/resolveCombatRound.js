@@ -60,11 +60,19 @@ export default function resolveCombatRound(tick, combatants) {
     }
 
     if(firstCharacterAction.primary === "none") {
-        roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, "to gain energy"));
+        if(firstCharacterAction.blocked) {
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, ", could not reach the enemy."));
+        } else {
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, "to gain energy"));
+        }
     }
 
     if(secondCharacterAction.primary === "none") {
-        roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, "to gain energy"));
+        if(secondCharacterAction.blocked) {
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, ", could not reach the enemy."));
+        } else {
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, "to gain energy"));
+        }
     }
     onCombatRoundEnd(combatants, roundEvents, tick);
 

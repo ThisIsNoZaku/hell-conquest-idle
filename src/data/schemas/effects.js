@@ -16,6 +16,9 @@ export const modifierEffects = JOI.object({
         value: JOI.number(),
         type: JOI.string()
     },
+    untargetable: {
+        target: effectTarget
+    },
     damage_modifier: effectModifier,
     devastating_hit_damage_multiplier: effectModifier,
     power_modifier: effectModifier,
@@ -39,5 +42,6 @@ export const modifierEffects = JOI.object({
         damageType: JOI.string(),
         value: JOI.number()
     },
-    block_cost_modifier: effectModifier
+    block_cost_modifier: effectModifier,
+    action_cost_modifier: effectModifier
 });

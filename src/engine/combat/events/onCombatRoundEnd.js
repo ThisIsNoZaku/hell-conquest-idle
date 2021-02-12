@@ -16,8 +16,7 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
                 {
                     type: "on_round_end",
                     combatants,
-                    roundEvents,
-                    source: {character: combatant}
+                    roundEvents
                 }
             );
 

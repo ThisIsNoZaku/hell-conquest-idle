@@ -426,7 +426,53 @@ describe("fiery effect", function () {
             fire: Decimal(.2)
         });
     })
-})
+});
+
+describe("flying effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["flying"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
+    it("adds a stack of 'untouchable' on dodge", function () {
+        const roundEvents = [];
+        player.combat.stamina = Decimal(200);
+        enemy.combat.stamina = Decimal(200);
+        resolveAction(enemy, {
+            primary: "basicAttack",
+            enhancements: []
+        }, player, {
+            primary: "dodge",
+            enhancements: []
+        }, roundEvents, 100)
+        expect(player.statuses).toEqual({
+            untouchable: [
+                {
+                    source: {
+                        character: 0,
+                        trait: "test"
+                    },
+                    status: "untouchable",
+                    uuid: expect.any(String),
+                    stacks: Decimal(1),
+                    duration: 1
+                }
+            ]
+        });
+    });
+});
 
 describe("frightening effect", function () {
     let player;
@@ -894,9 +940,6 @@ describe("regenerative effect", function () {
             combatants: {
                 0: player,
             },
-            source: {
-                character: player,
-            },
             roundEvents
         });
         expect(roundEvents).toContainEqual({
@@ -1107,9 +1150,6 @@ describe("swarming effect", function () {
             combatants: {
                 0: player,
                 1: enemy
-            },
-            source: {
-                character: player
             },
             roundEvents
         });

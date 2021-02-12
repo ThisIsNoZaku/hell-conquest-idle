@@ -103,7 +103,8 @@ const traitValidator = JOI.object({
     continuous: continuousValidator,
     on_taking_damage: onTakingDamageValidator,
     on_combat_start: onCombatStartValidator,
-    on_status_applied: onEventValidator
+    on_status_applied: onEventValidator,
+    on_dodge: onEventValidator
 }).unknown(false);
 
 export function validatedTrait(object) {

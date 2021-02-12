@@ -25,6 +25,11 @@ export const Traits = {
         icon: "./icons/icons-1.png",
         description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s)")
     }, ["precise", "neutralizing"])),
+    cannonBall: validatedTrait(generateTrait({
+        name: "Cannonball",
+        icon: "./icons/icons-1.png",
+        description: _.template("This Demon rockets through the air and slams into targets,")
+    }, ["flying", "unstoppable"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
         icon: "./icons/icons-523.png",
@@ -55,6 +60,11 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon has reshaped itself to have a massive 'ultimate demon form', gaining ${tier.times(20)}% bonus to Power and Resilience and a ${tier.times(10)}% penalty to Precision and Evasion and it's blocks are ${tier.times(25)}% more difficult to block.")
     }, ["large", "unstoppable"]),
+    eerieWatcher: validatedTrait({
+        name: "Eerie Watcher",
+        icon: "./icons/icons-1.png",
+        description: _.template("This strange Demon likes to... watch, giving it a ${tier.times(25)} bonus to Precision and is Psychic.")
+    }, ["precise", "psychic"]),
     exhaustingTouch: validatedTrait({
         name: "Strangulation",
         icon: "./icons/icons-115.png",
@@ -150,10 +160,6 @@ export const Traits = {
         enabled: true,
         description: _.template("Your bloody-minded refusal to allow your enemies to defeat you gives a ${tier.times(50)}% bonus to Health and a ${tier.times(25)}% bonus to Resilience.")
     }, ["robust", "tough"]))
-}
-
-export function getTrait(traitId) {
-    return Traits[traitId];
 }
 
 export function generateTrait(baseObject, traits) {

@@ -35,5 +35,8 @@ export const Events = {
     },
     on_combat_start: {
         receivers: "all"
+    },
+    on_dodge: {
+        receivers: "source"
     }
 }

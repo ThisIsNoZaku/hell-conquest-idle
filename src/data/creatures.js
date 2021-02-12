@@ -99,6 +99,22 @@ export const Creatures = {
             }
         }
     },
+    creeperPeeper: {
+        name: "Creeper Peeper",
+        enabled: false,
+        appearance: "creeperPeeper",
+        traits: ["eerieWatcher"],
+        texture: "33_floating_eye.png",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
     crushingSnake: {
         name: "Crushing Snake",
         traits: ["inescapableGrasp"],
@@ -403,6 +419,23 @@ export const Creatures = {
             }
         }
     },
+    wretchedSkull: {
+        name: "Wretched Skull",
+        traits: ["cannonBall"],
+        enabled: true,
+        appearance: "wretchedSkull",
+        texture: "32_flying_skull.png",
+        description: "Combines your two favorite things: skulls and flying.",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "dodge"
+                }
+            }
+        }
+    }
 }
 
 export const titles = {

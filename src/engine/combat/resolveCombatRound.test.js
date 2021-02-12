@@ -25,7 +25,7 @@ describe("the combat round resolution", function () {
         });
         resolveAction.mockClear();
         determineCharacterCombatAction.mockClear();
-
+        triggerEvent.mockClear();
     });
     it("determines action from lowest to highest initiative", function () {
         enemy.initiative = 1;
@@ -96,9 +96,6 @@ describe("the combat round resolution", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
         expect(triggerEvent).toHaveBeenCalledWith({
             type: "on_round_end",
-            source: {
-                character: player
-            },
             combatants: {
                 0: player,
                 1: enemy

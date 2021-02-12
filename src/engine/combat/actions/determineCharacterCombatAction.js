@@ -10,8 +10,19 @@ const doNothing = (actingCharacter) => {
     }
 }
 
+const attackPrevented = (actingCharacter) => {
+    return {
+        primary: "none",
+        enhancements: actingCharacter.defenseEnhancements,
+        blocked: true
+    }
+}
+
 export default function determineCharacterCombatAction(actingCharacter, enemy, enemyAction) {
     debugMessage(`Determining action for '${actingCharacter.id}' with tactics ${actingCharacter.tactics.offensive}-${actingCharacter.tactics.defensive}'. Enemy is performing '${_.get(enemyAction, "primary", "unknown")}'`);
+    if(!enemy.canBeAttacked) {
+        return attackPrevented(actingCharacter);
+    }
     const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy, enemyAction);
     debugMessage(`Selected action ${_.get(action, "primary")}`);
     if(action === undefined) {

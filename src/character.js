@@ -242,6 +242,13 @@ export class Character {
         this.lastActedTick = 0;
         this.initiative = 0;
     }
+
+    get canBeAttacked() {
+        return Object.keys(this.statuses).reduce((canBeAttacked, nextStatus) => {
+            const statusDefTarget = _.get(Statuses[nextStatus], ["effects", "untargetable", "target"]);
+            return canBeAttacked && statusDefTarget !== "self";
+        }, true)
+    }
 }
 
 export class Attributes {

@@ -30,7 +30,23 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         reaction = {primary: "none", enhancements: []};
     }
     if(hitLevel === HitTypes.min) {
-        roundEvents.push(generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost));
+        const attackEvent = generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost);
+        if(reaction.primary === "dodge") {
+            triggerEvent({
+                type: "on_dodge",
+                source: {
+                    character: targetedCharacter,
+                    attack: attackEvent
+                },
+                target: actingCharacter,
+                combatants: {
+                    [actingCharacter.id]: actingCharacter,
+                    [targetedCharacter.id]: targetedCharacter
+                },
+                roundEvents
+            });
+        }
+        roundEvents.push(attackEvent);
         return;
     }
     const baseDamage = calculateDamageBy(actingCharacter).using(action)

@@ -112,5 +112,15 @@ export const Statuses = {
                 value: -.01
             }
         }
+    }),
+    untouchable: validatedStatus({
+        name: "Untouchable",
+        icon: "./icons/icons-1.png",
+        description: _.template("You cannot be hit by most attacks"),
+        effects: {
+            untargetable: {
+                target: "self"
+            }
+        }
     })
 }
