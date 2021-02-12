@@ -749,6 +749,46 @@ describe("learned effect", function () {
     });
 });
 
+describe("masochistic effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["masochistic"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    afterEach(() => {
+        delete Traits.test;
+    });
+    it("gives energy on taking damage", function () {
+        const roundEvents = [];
+        enemy.combat.stamina = enemy.combat.maximumStamina.minus(1);
+        resolveAction(enemy, {
+            primary: "basicAttack",
+            enhancements: []
+        }, player, {primary: "none", enhancements: []}, roundEvents, 100);
+        expect(roundEvents).toContainEqual({
+            event: "stamina-change",
+            parent: expect.any(String),
+            source: {
+                character: 0,
+                trait: "test"
+            },
+            uuid: expect.any(String),
+            target: 0,
+            value: player.combat.maximumStamina.times(0.05).floor()
+        });
+        expect(player.combat.stamina).toEqual(Decimal(player.combat.maximumStamina.times(0.05).floor()));
+    });
+});
+
 describe("mindless effect", function () {
     let player;
     let enemy;

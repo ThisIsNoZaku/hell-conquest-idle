@@ -60,6 +60,11 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon has reshaped itself to have a massive 'ultimate demon form', gaining ${tier.times(20)}% bonus to Power and Resilience and a ${tier.times(10)}% penalty to Precision and Evasion and it's blocks are ${tier.times(25)}% more difficult to block.")
     }, ["large", "unstoppable"]),
+    demonMaster: validatedTrait({
+        name: "Demon Master",
+        enabled: true,
+        description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
+    }, ["learned", "arcane"]),
     eerieWatcher: validatedTrait({
         name: "Eerie Watcher",
         icon: "./icons/icons-1.png",
@@ -89,18 +94,22 @@ export const Traits = {
         enabled: true,
         description: _.template("This primary strategy of this Demon is to restrain and crush it's foes, inflicting ${tier} stacks of <strong>Restrained</strong> and <strong>Crushed</strong> on hit."),
     }, ["grappler", "crushing"])),
-    killingBlow: validatedTrait(generateTrait({
-        name: "Fatal Sting",
-        description: _.template("This Demon seeks to withstand attacks with a hard carapace and in fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and a ${tier.times(25)}% bonus to Resilience."),
-        icon: "./icons/icons-2278.png",
-        enabled: true,
-    }, ["tough", "venomous"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-795.png",
         enabled: true,
         description: _.template("This Demon's mindless stamina makes it ${tier.times(25)}% harder to block it's attacks and reduces Psychic damage by ${tier.times(20)}%.")
     }, ["mindless", "unstoppable"])),
+    killingBlow: validatedTrait(generateTrait({
+        name: "Fatal Sting",
+        description: _.template("This Demon seeks to withstand attacks with a hard carapace and in fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and a ${tier.times(25)}% bonus to Resilience."),
+        icon: "./icons/icons-2278.png",
+        enabled: true,
+    }, ["tough", "venomous"])),
+    lifetimeOfPain: validatedTrait(generateTrait({
+        name: "Lifetime Of Pain",
+        description: _.template("This Demon countless eons of suffering means it does not simply ignore pain, it embraces it, gaining energy to ${tier.times(10)}% of max on taking damage")
+    }, ["robust", "masochistic"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
         icon: "./icons/icons-113.png",
@@ -130,6 +139,11 @@ export const Traits = {
         enabled: true,
         description: _.template("Sudden strikes and deadly venom are what this Demon uses to kill, inflicting ${tier} stacks of <strong>Poisoned</strong> on hit.")
     }, ["venomous", "swift"])),
+    shadowHulk: validatedTrait(generateTrait({
+        name: "Shadow Hulk",
+        enabled: true,
+        description: _.template("This Demon, massive yet always shrouded in darkness, toys with it's prey before breaking their backs.")
+    }, ["evasive", "large"])),
     sharedPain: validatedTrait(generateTrait({
         name: "Shared Pain",
         icon: "./icons/icons-146.png",

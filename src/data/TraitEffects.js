@@ -220,6 +220,16 @@ export const TraitEffects = {
             }
         }
     },
+    masochistic: {
+        on_taking_damage: {
+            trigger_effects: {
+                change_stamina: {
+                    target: "self",
+                    percentage_of_maximum_stamina: .05
+                }
+            }
+        }
+    },
     massive: {
         continuous: {
             trigger_effects: {

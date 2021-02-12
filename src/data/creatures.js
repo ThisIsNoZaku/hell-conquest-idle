@@ -16,6 +16,20 @@ export const Creatures = {
             }
         }
     },
+    bandagedMan: {
+        name: "Bandaged Man",
+        traits: ["lifetimeOfPain"],
+        texture: "35_mummy.png",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     bitingLizard: {
         name: "Biting Lizard",
         appearance: "bitingLizard",
@@ -161,6 +175,22 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "overwhelm",
+                    defensive: "block"
+                }
+            }
+        }
+    },
+    demonSummoner: {
+        name: "Demon Summoner",
+        traits: ["demonMaster"],
+        enabled: true,
+        appearance: "demonSummoner",
+        texture: "36_evil_mage.png",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "counter",
                     defensive: "block"
                 }
             }
@@ -348,6 +378,23 @@ export const Creatures = {
                 default: {
                     offensive: "counter",
                     defensive: "dodge"
+                }
+            }
+        }
+    },
+    shadowHulk: {
+        name: "Shadow Hulk",
+        traits: ["shadowHulk"],
+        enabled: true,
+        appearance: "shadowHulk",
+        texture: "38_wolf.png",
+        description: "A massive <em>something</em> shrouded in darkness, which gives it a ${tier.times(25)}% bonus to Power and Resilience, a ${tier.times(15)}% bonus to Evasion and a ${tier.times(10)}% penalty to Precision.",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evade"
                 }
             }
         }

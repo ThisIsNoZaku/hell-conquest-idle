@@ -85,7 +85,7 @@ const onCombatStartValidator = onEventValidator;
 
 const traitValidator = JOI.object({
     name: JOI.string().required(),
-    icon: JOI.string().required(),
+    icon: JOI.string().default("./icons/icons-1.png"),
     enabled: JOI.boolean(),
     attack_enhancement: JOI.string(),
     defense_enhancement: JOI.string(),
