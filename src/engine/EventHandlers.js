@@ -45,6 +45,7 @@ export const EventHandlers = {
                 target: deadCharacter,
                 roundEvents
             });
+            getGlobalState().unlockedMonsters[deadCharacter.appearance] = true;
             const messages = generateRoundActionLogItems({
                 events: roundEvents
             });

@@ -71,6 +71,7 @@ export default function ReincarnationSelectionPage(props) {
 
     const tacticsEnabled = tutorialIsCompleted("reincarnation-attributes");
     const reincarnationEnabled = tutorialIsCompleted("tactics");
+    const firstDemonSelection = _.isEmpty(getGlobalState().unlockedMonsters);
 
     useEffect(() => {
         getGlobalState().paused = true;
@@ -326,7 +327,7 @@ export default function ReincarnationSelectionPage(props) {
                                                     props.reincarnate("random", attributes);
                                                     history.push("/adventuring");
                                                 }}
-                                                disabled={!reincarnationEnabled}
+                                                disabled={!reincarnationEnabled || !firstDemonSelection}
                                         >
                                             <Grid container>
                                                 <Grid item xs={12}>
