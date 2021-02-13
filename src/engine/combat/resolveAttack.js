@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import {generateAttackEvent,  generateHitEvents} from "../events/generate";
+import {generateAttackEvent, generateHitEvents, generateKillEvent} from "../events/generate";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
 import calculateActionCost from "./actions/calculateActionCost";
@@ -82,6 +82,9 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         },
         roundEvents
     });
+    if(!targetedCharacter.isAlive) {
+        roundEvents.push(generateKillEvent(actingCharacter, targetedCharacter));
+    }
     if (attackResult.damage) {
         onTakingDamage(targetedCharacter, actingCharacter, attackResult.attack, attackResult.damage, roundEvents);
     }
