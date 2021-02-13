@@ -98,16 +98,6 @@ export const Actions = {
                             0: player,
                             [enemy.id]: enemy
                         },
-                        source: {character:player},
-                        roundEvents: events
-                    });
-                    triggerEvent({
-                        type: "on_combat_start",
-                        combatants: {
-                            0: player,
-                            [enemy.id]: enemy
-                        },
-                        source: {character:enemy},
                         roundEvents: events
                     });
                     player.combat.stamina = player.energyGeneration.times(100).floor();

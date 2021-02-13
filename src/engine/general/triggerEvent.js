@@ -92,12 +92,13 @@ const eventMatcher = JOI.object({
     combatants: JOI.object().required(),
     roundEvents: JOI.array().required(),
     source: JOI.any().when("type", {
-        is: ["on_status_applied", "on_kill", "on_taking_damage","on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_combat_start", "on_dodge"],
+        is: ["on_status_applied", "on_kill", "on_taking_damage","on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_dodge"],
         then: JOI.object({
             character: JOI.object().required(),
             attack: JOI.object(),
             damage: JOI.object(),
-            trait: JOI.string()
+            trait: JOI.string(),
+            status: JOI.string()
         }).required(),
         otherwise: JOI.any().forbidden()
     }).required(),
