@@ -91,7 +91,7 @@ export default function DebugUi(props) {
                     }}></Checkbox>
                 </Grid>
                 <Grid item>
-                    <Button variant="contained" disabled={_.get(getGlobalState(), ["rival", "type"], null) !== null} onClick={() => getGlobalState().rival = {}}>Clear Rival</Button>
+                    <Button variant="contained" disabled={_.get(getGlobalState(), ["rival", "type"], null) !== null} onClick={() => getGlobalState().rivals = {}}>Clear Rival</Button>
                 </Grid>
                 <Grid item>
                     Force Enable Reincarnate

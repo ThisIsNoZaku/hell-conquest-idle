@@ -17,8 +17,7 @@ class Region {
 
         switch (getGlobalState().currentAction) {
             case "usurp": {
-                const encounterOffset = getConfigurationValue("greater_level_scale");
-                encounterLevel = getGlobalState().rival.level ? Decimal.min(encounterLevel.plus(encounterOffset), Decimal(getGlobalState().rival.level).minus(1)) : encounterLevel.plus(encounterOffset);
+                encounterLevel = encounterLevel.plus(1);
                 break;
             }
             case "hunting": {
@@ -31,14 +30,11 @@ class Region {
                 encounterLevel = Decimal.max(1, encounterLevel.plus(encounterOffset));
             }
         }
-        const encounterWithRival = getGlobalState().rival.powerLevel && Decimal(getGlobalState().rival.powerLevel || 0).lte(encounterLevel);
-        if (encounterWithRival) {
-            encounterLevel = Decimal(getGlobalState().rival.powerLevel);
-        }
+        const encounterWithRival = getGlobalState().rivals[encounterLevel.toNumber()] !== undefined;
         if (getConfigurationValue("debug")) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const rivalType = getGlobalState().rival.appearance;
+        const rivalType = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "appearance"]);
         const encounterDef = encounterWithRival ? this.encounters[rivalType] : chooseRandomEncounter(this);
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
@@ -52,8 +48,8 @@ class Region {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
                 generatedCreature.isRival = encounterWithRival;
                 if (generatedCreature.isRival) {
-                    generatedCreature.traits = getGlobalState().rival.traits;
-                    generatedCreature.tactics = getGlobalState().rival.tactics;
+                    generatedCreature.traits = getGlobalState().rivals[encounterLevel.toNumber()].traits;
+                    generatedCreature.tactics = getGlobalState().rivals[encounterLevel.toNumber()].tactics;
                 }
                 return generatedCreature;
             }))
