@@ -44,9 +44,9 @@ export const Creatures = {
         }
     },
     bigCrab: {
-        name: "Big Crab",
+        name: "Just A Big Crab",
         appearance: "bigCrab",
-        description: "Holy shit that's a big crab",
+        description: "Get the shampoo.",
         traits: ["thickSkin"],
         texture: "125_crab.png",
         npc: {
@@ -68,21 +68,6 @@ export const Creatures = {
                 default: {
                     offensive: "attrit",
                     defensive: "block"
-                }
-            }
-        }
-    },
-    fireHawk: {
-        name: "Fire Hawk",
-        appearance: "firehawk",
-        traits: ["fireBird"],
-        texture: "20_bird.png",
-        npc: {
-            adjective: "underhanded",
-            tactics: {
-                default: {
-                    offensive: "counter",
-                    defensive: "dodge"
                 }
             }
         }
@@ -265,6 +250,21 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "attrit",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
+    fireHawk: {
+        name: "Fire Hawk",
+        appearance: "firehawk",
+        traits: ["fireBird"],
+        texture: "20_bird.png",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
                     defensive: "dodge"
                 }
             }
