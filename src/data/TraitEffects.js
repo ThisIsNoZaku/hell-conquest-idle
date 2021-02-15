@@ -168,6 +168,10 @@ export const TraitEffects = {
             }
         }
     },
+    holy: {
+        attack_enhancement: "smite",
+        defense_enhancement: "blessed"
+    },
     inscrutable: {
         continuous : {
             trigger_effects: {
@@ -325,6 +329,9 @@ export const TraitEffects = {
                 }
             }
         }
+    },
+    psychic: {
+        attack_enhancement: "psychic"
     },
     regenerative: {
         on_round_end: {

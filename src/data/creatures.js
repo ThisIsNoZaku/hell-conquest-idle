@@ -30,6 +30,33 @@ export const Creatures = {
             }
         }
     },
+    bees: {
+        name: "BEEEEEES!",
+        appearance: "bees",
+        traits: ["deadlySwarm"],
+        texture: "127_bee.png",
+        npc: {
+            adjective: "underhanded",
+            default: {
+                offensive: "attrit",
+                defensive: "dodge"
+            }
+        }
+    },
+    bigCrab: {
+        name: "Big Crab",
+        appearance: "bigCrab",
+        description: "Holy shit that's a big crab",
+        traits: ["thickSkin"],
+        texture: "125_crab.png",
+        npc: {
+            adjective: "savage",
+            default: {
+                offensive: "overwhelm",
+                defensive: "block"
+            }
+        }
+    },
     bitingLizard: {
         name: "Biting Lizard",
         appearance: "bitingLizard",
@@ -41,6 +68,21 @@ export const Creatures = {
                 default: {
                     offensive: "attrit",
                     defensive: "block"
+                }
+            }
+        }
+    },
+    fireHawk: {
+        name: "Fire Hawk",
+        appearance: "firehawk",
+        traits: ["fireBird"],
+        texture: "20_bird.png",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "dodge"
                 }
             }
         }
@@ -196,6 +238,22 @@ export const Creatures = {
             }
         }
     },
+    eerieHierophant: {
+        name: "Eerie Hierophant",
+        traits: ["reptileMystic"],
+        enabled: true,
+        appearance: "eerieHierophant",
+        description: "A holy man",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
     eyeBeast: {
         name: "Eye Beast",
         traits: ["balefulGaze"],
@@ -246,6 +304,22 @@ export const Creatures = {
             }
         }
     },
+    glassSpider: {
+        name: "Glass Spider",
+        traits: ["teleportingHunter"],
+        enabled: true,
+        appearance: "glassSpider",
+        description: "A strange spider able to blink in and out of reality to pounce upon prey.",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "dodge"
+                }
+            }
+        }
+    },
     goblinPariah: {
         name: "Goblin Pariah",
         traits: ["outcastStrength"],
@@ -276,6 +350,23 @@ export const Creatures = {
                 default: {
                     offensive: "attrit",
                     defensive: "none"
+                }
+            }
+        }
+    },
+    inverseMan: {
+        name: "Inverse Man",
+        traits: ["inverted"],
+        enabled: true,
+        appearance: "inverseMan",
+        texture: "47_dwarf.png",
+        description: "A strange backwards man.",
+        npc: {
+            adjective: "savage",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
                 }
             }
         }
@@ -412,6 +503,40 @@ export const Creatures = {
                 default: {
                     offensive: "counter",
                     defensive: "evade"
+                }
+            }
+        }
+    },
+    skeletonHunter: {
+        name: "Skeleton Hunter",
+        traits: ["boneHunter"],
+        enabled: true,
+        appearance: "skeletonHunter",
+        texture: "123_skeleton_archer.png",
+        description: "A hunter who's body gave out before his will to catch his prey.",
+        npc: {
+            adjective: "devious",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
+    skeletonMage: {
+        name: "Skeleton Mage",
+        traits: ["boneMagic"],
+        enabled: true,
+        appearance: "skeletonMage",
+        texture: "124_burning_skeleton.png",
+        description: "A mage who has given up their flesh",
+        npc: {
+            adjective: "mad",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
                 }
             }
         }

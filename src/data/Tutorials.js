@@ -31,7 +31,7 @@ export const Tutorials = {
     "reincarnation-demon-select" : {
         title: "Reincarnate Now",
         body: "<p>Click on one of the ??? squares to reincarnate as a random demon.</p>" +
-            "<p> In the beginning, you won't have any demons unlocked so you'll have to start as a random one. You will unlock demons as you reincarnate.</p>",
+            "<p>In the beginning, you won't have any demons unlocked so you'll have to start as a random one. You will unlock demons as you encounter them during play.</p>",
     },
     "exploring" : {
         title: "Exploration",

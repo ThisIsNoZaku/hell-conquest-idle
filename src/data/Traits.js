@@ -25,6 +25,14 @@ export const Traits = {
         icon: "./icons/icons-1.png",
         description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s)")
     }, ["precise", "neutralizing"])),
+    boneHunter: validatedTrait(generateTrait({
+        name: "Bone Hunter",
+        description: _.template("This Demon's relentless drive to take down its prey makes it Mindless and increases its maximum and generated Energy by ${tier.times(25)}%.")
+    }, ["mindless", "relentless"])),
+    boneMagic: validatedTrait(generateTrait({
+        name: "Bone Magic",
+        description: _.template("This Demon's hunger for knowledge transcended even death, ")
+    }, ["mindless", "arcane"])),
     cannonBall: validatedTrait(generateTrait({
         name: "Cannonball",
         icon: "./icons/icons-1.png",
@@ -54,6 +62,11 @@ export const Traits = {
             }
         }
     }),
+    deadlySwarm: validatedTrait({
+        name: "Deadly Swarm",
+        enabled: true,
+        description: _.template("This demon takes the form of a swarm of tiny, stinging insects, gaining a ${tier.times(50)}% bonus to Evasion and Precision but a ${tier.times(25)}% penalty to Power and Resilience, and it's size means the damage inflicted and taken is ${tier.times(25)}% less.")
+    }, ["tiny", "insubstantial"]),
     deeaboo: validatedTrait({
         name: "Demon Form",
         icon: "./icons/icons-1.png",
@@ -76,6 +89,11 @@ export const Traits = {
         enabled: true,
         description: _.template("The Demon saps the strength from the victims limbs, reducing both Damage and Defense by <span>${tier.times(5)}%</span> for 1 round.")
     }),
+    fireBird: validatedTrait({
+        name: "Fire Bird",
+        enabled: true,
+        description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
+    }),
     freakyFishGuy: validatedTrait({
         name: "Thassalophilia",
         enabled: true,
@@ -93,18 +111,23 @@ export const Traits = {
     }, [
         "massive", "unstoppable"
     ])),
-    inescapableGrasp: validatedTrait(generateTrait({
-        name: "Inescapable Grasp",
-        icon: "./icons/icons-2221.png",
-        enabled: true,
-        description: _.template("This primary strategy of this Demon is to restrain and crush it's foes, inflicting ${tier} stacks of <strong>Restrained</strong> and <strong>Crushed</strong> on hit."),
-    }, ["grappler", "crushing"])),
     immortalWarrior: validatedTrait(generateTrait({
         name: "Immortal Warrior",
         icon: "./icons/icons-795.png",
         enabled: true,
         description: _.template("This Demon's mindless stamina makes it ${tier.times(25)}% harder to block it's attacks and reduces Psychic damage by ${tier.times(20)}%.")
     }, ["mindless", "unstoppable"])),
+    inescapableGrasp: validatedTrait(generateTrait({
+        name: "Inescapable Grasp",
+        icon: "./icons/icons-2221.png",
+        enabled: true,
+        description: _.template("This primary strategy of this Demon is to restrain and crush it's foes, inflicting ${tier} stacks of <strong>Restrained</strong> and <strong>Crushed</strong> on hit."),
+    }, ["grappler", "crushing"])),
+    inverted: validatedTrait(generateTrait({
+        name: "Inverted",
+        enabled: true,
+        description: _.template("This strange Demon returns both ${tier.times(25)}% of damage received")
+    }, ["thorns", "reversal"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
         description: _.template("This Demon seeks to withstand attacks with a hard carapace and in fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and a ${tier.times(25)}% bonus to Resilience."),
@@ -127,6 +150,10 @@ export const Traits = {
         enabled: true,
         icon: "./icons/icons-110.png"
     }, ["relentless", "tough"])),
+    reptileMystic: validatedTrait(generateTrait({
+        name: "Reptilian Mystic",
+        description: _.template("This Demon's knowledge of a reptilian people's esoteric theology, gives it a ${tier.times(10)}% bonus to Precision and Evasion, makes it Holy and prevents the enemy from knowing it's action when determining it's own action.")
+    }, ["holy", "inscrutable"])),
     rotMouth: validatedTrait(generateTrait({
         name: "Biting Lizard",
         icon: "./icons/icons-1.png",
@@ -167,12 +194,22 @@ export const Traits = {
         enabled: true,
         description: _.template("Your size and unique senses increases your Evasion by ${tier.times(20)}%, Precision by ${tier.times(45)}% and reduces Power by ${tier.times(10)}%.")
     }, ["small", "precise"])),
+    teleportingHunter: validatedTrait(generateTrait({
+        name: "Teleporting Hunter",
+        enabled: true,
+        description: _.template("")
+    })),
     terrifyingSkitter: validatedTrait(generateTrait({
         name: "Sinister Hunter",
         icon: "./icons/icons-2260.png",
         enabled: true,
         description: _.template("The sickening sound of your feet on the ground unnerves even other demons, inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s).")
     }, ["frightening", "grappler"])),
+    thickSkin: validatedTrait(generateTrait({
+        name: "Thick Skin",
+        enabled: true,
+        description: _.template("This Demon's hard shell and strong limbs give it a ${tier.times(25)}% bonus to Resilience and it's hardest hits inflict ${tier.times(50)}% more damage.")
+    }, ["tough", "killer"])),
     outcastStrength: validatedTrait(generateTrait({
         name: "Outcast's Strength",
         icon: "./icons/icons-1.png",
@@ -182,6 +219,7 @@ export const Traits = {
 }
 
 export function generateTrait(baseObject, traits) {
+    traits = traits || [];
     return validatedTrait(traits.reduce((previousValue, currentValue)=>{
         if(!TraitEffects[currentValue]) {
             throw new Error(currentValue);
