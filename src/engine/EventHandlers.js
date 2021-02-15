@@ -38,6 +38,7 @@ export const EventHandlers = {
                 enemy: deadCharacter
             });
             const roundEvents = [];
+            // FIXME: move into method
             triggerEvent({
                 type: "on_kill",
                 combatants: {0: player},
@@ -64,11 +65,10 @@ export const EventHandlers = {
             getCharacter(0).highestLevelReached = Decimal.max(getCharacter(0).highestLevelReached, getCharacter(0).powerLevel); // FIXME: Move into character levelup method.
 
             if (deadCharacter.isRival) {
-                getGlobalState().rival = {};
                 pushLogItem({
                     message: "You've defeated your rival!",
                     uuid: v4()
-                })
+                });
             }
         } else if (deadCharacter.id === 0) {
             if (deadCharacter.id !== actingCharacter.id && !getGlobalState().rivals[actingCharacter.powerLevel.toNumber()]) {
