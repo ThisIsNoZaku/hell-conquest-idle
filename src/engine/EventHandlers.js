@@ -71,12 +71,12 @@ export const EventHandlers = {
                 })
             }
         } else if (deadCharacter.id === 0) {
-            if (Decimal(deadCharacter.powerLevel).gt(getGlobalState().rival.level || 0) && deadCharacter.id !== actingCharacter.id) {
-                getGlobalState().rival = {...actingCharacter};
+            if (deadCharacter.id !== actingCharacter.id && !getGlobalState().rivals[actingCharacter.powerLevel.toNumber()]) {
+                getGlobalState().rivals[actingCharacter.powerLevel.toNumber()] = {...actingCharacter};
                 pushLogItem({
                     message: "<strong>You have a new rival!</strong>",
                     uuid: v4()
-                })
+                });
             }
             getCharacter(0).hp = Decimal(0);
         }

@@ -439,7 +439,7 @@ describe("A precombat action (challenging, hunting, usurp)", function () {
                 0: player,
                 1: enemy
             },
-            rival: {},
+            rivals: {},
             currentRegion: "forest",
             passivePowerIncome: Decimal(0)
         };
