@@ -1,14 +1,26 @@
+import * as JOI from "joi";
+import {onEventValidator} from "./schemas/events";
+
+const enhancementValidation = JOI.object({
+    energy_cost_modifier: JOI.number().required(),
+    change_damage_type: JOI.string().valid("acid", "fire", "psychic"),
+    block_damage_modifier: JOI.number(),
+    damage_modifier_against_damned: JOI.number(),
+    unblockable: JOI.boolean(),
+    on_hit: onEventValidator
+});
+
 export const ActionEnhancements = {
-    acid: {
-        additional_energy_cost_modifier: .25,
+    acid: validateEnhancement({
+        energy_cost_modifier: .25,
         change_damage_type: "acid"
-    },
-    arcane: {
-        additional_energy_cost_modifier: .25,
-        additional_block_damage_reduction: .15
-    },
-    exhausting: {
-        additional_energy_cost_modifier: .25,
+    }),
+    arcane: validateEnhancement({
+        energy_cost_modifier: .25,
+        block_damage_modifier: -.15
+    }),
+    exhausting: validateEnhancement({
+        energy_cost_modifier: .25,
         on_hit: {
             trigger_effects: {
                 change_fatigue: {
@@ -17,13 +29,21 @@ export const ActionEnhancements = {
                 }
             }
         }
-    },
-    flame: {
-        additional_energy_cost_modifier: .25,
+    }),
+    flame: validateEnhancement({
+        energy_cost_modifier: .25,
         change_damage_type: "fire"
-    },
-    venom: {
-        additional_energy_cost_modifier: .25,
+    }),
+    holy: validateEnhancement({
+        energy_cost_modifier: 1,
+        damage_modifier_against_damned: 1
+    }),
+    psychic: validateEnhancement({
+        energy_cost_modifier: 1,
+        unblockable: true
+    }),
+    venom: validateEnhancement({
+        energy_cost_modifier: .25,
         on_hit: {
             trigger_effects: {
                 add_statuses: {
@@ -35,5 +55,13 @@ export const ActionEnhancements = {
                 }
             }
         }
+    })
+}
+
+function validateEnhancement(enhancement) {
+    const validationResult = enhancementValidation.validate(enhancement);
+    if(validationResult.error) {
+        throw new Error(validationResult.error);
     }
+    return validationResult.value;
 }
