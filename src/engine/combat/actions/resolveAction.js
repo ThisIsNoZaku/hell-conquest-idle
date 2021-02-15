@@ -1,9 +1,4 @@
 import resolveAttack from "../resolveAttack";
-import triggerEvent from "../../general/triggerEvent";
-import {HitTypes} from "../../../data/HitTypes";
-import {generateActionSkipEvent} from "../../events/generate";
-import {CombatActions} from "../../../data/CombatActions";
-
 
 export default function resolveAction(actingCharacter, action, targetCharacter, reaction, roundEvents, tick) {
     if(action.primary !== "none" || reaction.primary !== "none") {
