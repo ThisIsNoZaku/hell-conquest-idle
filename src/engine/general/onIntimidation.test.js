@@ -29,7 +29,7 @@ describe("onIntimidation", function () {
         onIntimidation(player, {powerLevel: Decimal(1)}, pushLogItem);
         expect(player.latentPower).toEqual(Decimal(10));
     });
-    it("prints a message and clears the player rival if the enemy is a rival", function () {
+    it("prints a message if the enemy is a rival", function () {
         globalState.rival = {
             powerLevel: Decimal(1),
             isRival: true,
