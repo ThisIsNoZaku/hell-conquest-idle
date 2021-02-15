@@ -11,7 +11,7 @@ export default function calculateActionCost(actor, action, enemy) {
     const attributeMultiplier =Decimal(1).minus(getConfigurationValue("mechanics.combat.precision.effectPerPoint")).pow(Decimal(_.get(actor, ["combat", "precision"], 1)));
     const actionCostMultiplier = CombatActions[action.primary].energyCostMultiplier;
     const enhancementModifier = action.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue, currentIndex) => {
-        const thisModifier = (currentValue.additional_energy_cost_modifier || 0);
+        const thisModifier = (currentValue.energy_cost_modifier || 0);
         const enemyStatusModifier = Object.keys(_.get(enemy, "statuses", {})).reduce((total, next)=>{
             const statusEffect = _.get(Statuses[next], ["effects", "enhancement_cost_increase"]);
             return total + (_.get(statusEffect, "target") === "enemy" ? statusEffect.value : 0);
