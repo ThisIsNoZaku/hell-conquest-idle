@@ -383,13 +383,6 @@ export function calculateCombatStat(character, combatAttribute) {
     return attributeBase.times(tacticsModifier.plus(statusesModifier).plus(traitModifier).plus(1));
 }
 
-export function assertHasProperty(propertyName, object) {
-    if (object[propertyName] === undefined &&
-        object[`_${propertyName}`] === undefined) {
-        throw new Error(`Missing required property ${propertyName} or _${propertyName}`);
-    }
-}
-
 const characterPropsSchema = JOI.object({
     id: JOI.number().required(),
     lastActedTick: JOI.number(),
