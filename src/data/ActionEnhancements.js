@@ -19,6 +19,10 @@ export const ActionEnhancements = {
         energy_cost_modifier: .25,
         block_damage_modifier: -.15
     }),
+    blessed: validateEnhancement({
+        energy_cost_modifier: 1,
+        block_damage_modifier: -100
+    }),
     exhausting: validateEnhancement({
         energy_cost_modifier: .25,
         on_hit: {
@@ -34,7 +38,7 @@ export const ActionEnhancements = {
         energy_cost_modifier: .25,
         change_damage_type: "fire"
     }),
-    holy: validateEnhancement({
+    smite: validateEnhancement({
         energy_cost_modifier: 1,
         damage_modifier_against_damned: 1
     }),
