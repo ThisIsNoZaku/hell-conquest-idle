@@ -94,20 +94,20 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
     }),
-    freakyFishGuy: validatedTrait({
+    freakyFishGuy: validatedTrait(generateTrait({
         name: "Thassalophilia",
         enabled: true,
-        description: _.template("This Demon's strange ways makes it hard to predict its actions, increasing Precision and Evasion by ${tier.times(10)}% and the enemy cannot use this Demon's action when determining it's own.")
-    }, ["inscrutable", "frightening"]),
-    fortressOfMadness: validatedTrait({
+        description: _.template("This Demon's strange ways makes it hard to predict its actions, increasing Precision and Evasion by ${tier.times(10)}% and the enemy cannot use this Demon's action when determining it's own and at the beginning of combat enemies gain ${tier} stacks of Frightened for 10 rounds.")
+    }, ["inscrutable", "frightening"])),
+    fortressOfMadness: validatedTrait(generateTrait({
         name: "Fortress of Madness",
         icon: "./icons/icons-856.png",
         description: _.template("Your madness twists your enemy's body as it twists your own mind, reflecting ${tier.times(20)}% of damage taken and statuses applied by the enemy to you.")
-    }, ["reversal", "thorns"]),
+    }, ["reversal", "thorns"])),
     heartlessMountain: validatedTrait(generateTrait({
-        name: "Heartless Mountain",
+        name: "Heartlessness of the Mountain",
         icon: "./icons/icons-1.png",
-        description: _.template("This demon embodies the desolation of a wind-swept and the devastation of an avalance, gaining a ${tier.times(50)}% bonus to Power and Resilience with a ${tier.times(25)}% penalty to Evasion and Precision while it's attacks are ${tier.times(25)} more difficult to Block.")
+        description: _.template("This demon embodies the desolation of a wind-swept peak and the devastation of an avalance, gaining a ${tier.times(50)}% bonus to Power and Resilience with a ${tier.times(25)}% penalty to Evasion and Precision while it's attacks are ${tier.times(25)} more difficult to Block.")
     }, [
         "massive", "unstoppable"
     ])),
