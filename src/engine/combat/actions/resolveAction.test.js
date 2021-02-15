@@ -2,6 +2,7 @@ import resolveAction from "./resolveAction";
 import {Character} from "../../../character";
 
 jest.mock("../resolveAttack");
+jest.mock("../../index");
 
 describe("action resolution", function () {
     let enemy;
