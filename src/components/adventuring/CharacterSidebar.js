@@ -7,6 +7,7 @@ import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import {HitTypes} from "../../data/HitTypes";
 import calculateActionCost from "../../engine/combat/actions/calculateActionCost";
+import {getGlobalState} from "../../engine";
 
 const styles = {
     alive: {
@@ -81,6 +82,8 @@ export function CharacterSidebar(props) {
 
             enemyPower={_.get(enemy, "combat.power", Decimal(0)).toFixed()}
             enemyResilience={_.get(enemy, "combat.resilience", Decimal(0)).toFixed()}
+            isPc={_.get(character, "isPc")}
+            rivals={getGlobalState().rivals}
             />}
     </Paper>
 }

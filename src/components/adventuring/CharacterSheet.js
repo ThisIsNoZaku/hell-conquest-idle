@@ -1,7 +1,7 @@
 import Grid from "@material-ui/core/Grid";
 import React, {useMemo} from "react";
-import * as _ from "lodash";
 import {
+    getGlobalState,
     getSpriteForCreature
 } from "../../engine";
 import {getConfigurationValue} from "../../config";
@@ -12,6 +12,7 @@ import TacticsSection from "./charactersheet/TacticsSection";
 import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
 import {Help} from "@material-ui/icons";
+import {Traits} from "../../data/Traits";
 
 export function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.appearance), [props.appearance]);
@@ -20,7 +21,7 @@ export function CharacterSheet(props) {
         <Grid item xs={12}>
             <img src={spriteSrc} style={{height: "75px"}}/>
         </Grid>
-        { <Grid item xs={12}>
+        {<Grid item xs={12}>
             {props.characterName}
         </Grid>}
         <Grid item container>
@@ -33,14 +34,14 @@ export function CharacterSheet(props) {
             <Grid item xs>
                 Inherited Power Bonus
                 <Tooltip
-                    title="Inherited power increases damage, health and maximum energy. Inherited power increases when you intimidate enemy demons and reincarnate and is soft-capped by the level of the strongest enemy you've defeated.">
+                    title="Inherited power increases damage, health and energy. Inherited power increases when you intimidate enemy demons or reincarnate and is soft-capped by the level of the strongest enemy you've defeated.">
                     <Help/>
                 </Tooltip>
             </Grid>
-            <Grid item xs >
-                    <div style={{color: props.latentPower.gte(props.latentPowerCap) ? "orange" : "inherit"}}>
-                        {props.latentPowerModifier}%
-                    </div>
+            <Grid item xs>
+                <div style={{color: props.latentPower.gte(props.latentPowerCap) ? "orange" : "inherit"}}>
+                    {props.latentPowerModifier}%
+                </div>
             </Grid>
         </Grid>
         {props.characterAbsorbedPower !== undefined && <Grid item xs={12}>
@@ -103,6 +104,29 @@ export function CharacterSheet(props) {
             </Grid>
         </Grid>}
         <TacticsSection characterTactics={props.characterTactics}/>
+        {props.isPc && <Grid container>
+            <Grid item xs={12}>
+                <strong>Your Rivals!</strong>
+                <Tooltip title="These are the demons who have defeated you before and who you will encounter again at each level">
+                    <Help/>
+                </Tooltip>
+            </Grid>
+            {Object.keys(props.rivals).map(level => {
+                const rival = getGlobalState().rivals[level];
+                return <React.Fragment>
+                    <Grid item xs={6}>
+                        {level}
+                    </Grid>
+                    <Grid item xs={6}>
+                        {rival.name} {Object.keys(rival.traits).map(traitId => {
+                            return <Tooltip title={Traits[traitId].name + " - tier " + Decimal(rival.traits[traitId]).toFixed()}>
+                                <img src={Traits[traitId].icon}/>
+                            </Tooltip>
+                    })}
+                    </Grid>
+                </React.Fragment>
+            })}
+        </Grid>}
     </Grid>
 
 }
