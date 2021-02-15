@@ -3,7 +3,6 @@ import {DURATION_FOR_COMBAT, DURATION_PERMANENT} from "../../../data/Statuses";
 import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../../events/generate";
 import {getCharacter} from "../../index";
 import {Decimal} from "decimal.js";
-import {getConfigurationValue} from "../../../config";
 
 export default function onCombatRoundEnd(combatants, roundEvents, tick) {
     const everyoneAlive = Object.values(combatants).every(c => c.isAlive);
