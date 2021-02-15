@@ -186,7 +186,7 @@ export class Character {
         this.statuses = {};
         this.absorbedPower = Decimal(0);
         if(!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
-            this.latentPower = this.latentPower.plus(this.powerLevel.times(2));
+            this.latentPower = this.latentPower.plus(this.powerLevel.times(5));
         }
         this.powerLevel = Decimal(1);
         this.hp = this.maximumHp;
@@ -424,7 +424,7 @@ const characterPropsSchema = JOI.object({
         evasionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         fatigue: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     }).default({}),
-    adjectives: JOI.array().items(JOI.object()),
+    adjectives: JOI.array().items(JOI.string()),
     absorbedPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number())
         .default(Decimal(0)),
     hp: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
