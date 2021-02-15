@@ -170,7 +170,12 @@ export const TraitEffects = {
     },
     holy: {
         attack_enhancement: "smite",
-        defense_enhancement: "blessed"
+        defense_enhancement: "blessed",
+        continuous: {
+            trigger_effects: {
+                is_damned: false
+            }
+        }
     },
     inscrutable: {
         continuous : {

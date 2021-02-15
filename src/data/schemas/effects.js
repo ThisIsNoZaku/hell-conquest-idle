@@ -45,6 +45,7 @@ export const modifierEffects = JOI.object({
         damageType: JOI.string(),
         value: JOI.number()
     },
+    is_damned: JOI.boolean(),
     block_cost_modifier: effectModifier,
     action_cost_modifier: effectModifier
 });

@@ -86,8 +86,10 @@ export class Character {
             .filter(x => x);
     }
 
-    applyStatus(status, stacks, sourceCharacter, sourceTrait) {
-
+    get isDamned() {
+        return !Object.keys(this.traits).every(traitId => {
+            return _.get(Traits[traitId], ["continuous", "trigger_effects", "is_damned"]) === false;
+        })
     }
 
     clearStatuses() {

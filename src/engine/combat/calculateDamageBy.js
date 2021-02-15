@@ -13,6 +13,7 @@ export default function calculateDamageBy(attacker, debugOutput) {
                 against: function (target) {
                     return {
                         using: function (reaction) {
+                            // FIXME: What a nightmare!
                             const attackerPower = Decimal(_.get(attacker, ["combat", "power"], 0));
                             if(debugOutput) {
                                 debugMessage(`Attacker ${_.get(attacker, "id")} has power ${attackerPower}.`);
@@ -35,15 +36,18 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                 debugMessage(`Final damage multiplier = ${attributeDamageMultiplier}.`);
                             }
                             const attackerPowerLevel = Decimal(_.get(attacker, "powerLevel", 0));
+                            const holyDamageModifier = attack.enhancements.includes("holy") && target.isDamned ? 1 : 0;
                             return Object.keys(HitTypes).reduce((damage, nextType) => {
                                 const perLevelDamage = getConfigurationValue("damage_per_level");
                                 const hitTypeDamageMultiplier = HitTypes[nextType].damageMultiplier;
+
                                 const attackerTraitDamageMultiplier = Object.keys(_.get(attacker, "traits", {})).reduce((previousValue, currentValue) => {
                                     const traitEffectDefinition = _.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`],
                                         _.get(Traits[currentValue], ["continuous", 'trigger_effects', `damage_modifier`]));
                                     const traitApplies = _.get(traitEffectDefinition, ["target"]) === "all" || _.get(traitEffectDefinition, ["target"]) === "self";
                                     return previousValue.plus(traitApplies ? Decimal(traitEffectDefinition.value).times(attacker.traits[currentValue]) : 0);
                                 }, Decimal(0));
+
                                 const defenderTraitDamageMultiplier = Object.keys(_.get(target, "traits", {})).reduce((previousValue, currentValue) => {
                                     const traitEffectDefinition = _.get(Traits[currentValue], ["continuous", 'trigger_effects', `${HitTypes[nextType].summary}_hit_damage_multiplier`],
                                         _.get(Traits[currentValue], ["continuous", 'trigger_effects', `damage_modifier`]));
@@ -52,7 +56,7 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                 }, Decimal(0));
 
                                 const reactionEnhancementModifier = reaction.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue) => {
-                                    return previousValue - (currentValue[`additional_${reaction.primary}_damage_reduction`] || 0);
+                                    return previousValue + (currentValue[`${reaction.primary}_damage_modifier`] || 0);
                                 }, 0);
 
 
@@ -61,7 +65,7 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                     .plus(attackerTraitDamageMultiplier)
                                     .plus(reactionEnhancementModifier)
                                     .plus(defenderTraitDamageMultiplier)
-                                    .plus(latentPowerModifier);
+                                    .plus(latentPowerModifier).plus(holyDamageModifier);
 
                                 damage[nextType] = Decimal.max(0, attackerPowerLevel.times(perLevelDamage)
                                     .times(totalMultiplier))
