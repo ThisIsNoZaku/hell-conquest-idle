@@ -145,7 +145,7 @@ export function generateCreature(id, powerLevel, rng) {
             offensive: offensiveTactics,
             defensive: defensiveTactics
         },
-        adjectives: [adjective],
+        adjectives: [Creatures[id].npc.adjective],
         traits: {...startingTraits, ...bonuses.traits},
         powerLevel: powerLevel,
         party: 1,
@@ -264,5 +264,5 @@ function validate() {
         if(trait.defense_enhancement && !ActionEnhancements[trait.defense_enhancement]) {
             throw new Error(`Trait ${trait} uses defense enhancement ${trait.defense_enhancement} which doesn't exist.`)
         }
-    })
+    });
 }
