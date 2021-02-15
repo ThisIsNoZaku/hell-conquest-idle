@@ -499,9 +499,6 @@ describe("frightening effect", function () {
         const roundEvents = [];
         triggerEvent({
             type: "on_combat_start",
-            source: {
-                character: player
-            },
             target: enemy,
             combatants: {
                 0: player,
@@ -773,9 +770,6 @@ describe("learned effect", function () {
         triggerEvent({
             type: "on_combat_start",
             target: enemy,
-            source: {
-                character: player
-            },
             combatants: {
                 0: player,
                 1: enemy
@@ -867,9 +861,6 @@ describe("neutralizing effect", function () {
     it("it adds stacks of neutralizing to the demon", function () {
         triggerEvent({
             type: "on_combat_start",
-            source: {
-                character: player
-            },
             combatants: {0: player, 1: enemy},
             roundEvents: []
         });
@@ -905,7 +896,13 @@ describe("neutralizing effect", function () {
         });
         expect(player.statuses.neutralizing).toBeUndefined();
     });
-})
+});
+
+describe("psychic effect", function () {
+    it("makes attack unblockable", function () {
+
+    });
+});
 
 describe("venomous effect", function () {
     let player;

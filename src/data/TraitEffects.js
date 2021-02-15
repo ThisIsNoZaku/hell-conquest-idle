@@ -435,6 +435,28 @@ export const TraitEffects = {
             }
         }
     },
+    tiny: {
+        continuous: {
+            trigger_effects: {
+                power_modifier: {
+                    target: "self",
+                    value: -.25
+                },
+                resilience_modifier: {
+                    target: "self",
+                    value: -.25
+                },
+                evasion_modifier: {
+                    target: "self",
+                    value: .5
+                },
+                precision_modifier: {
+                    target: "self",
+                    value: .5
+                }
+            }
+        }
+    },
     tough: {
         continuous: {
             trigger_effects: {
