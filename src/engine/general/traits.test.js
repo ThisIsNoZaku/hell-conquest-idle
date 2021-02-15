@@ -615,6 +615,49 @@ describe("grappler effect", function () {
     });
 });
 
+describe("holy effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["holy"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("adds smite effect to attacks", function () {
+        expect(player.attackEnhancements)
+            .toContainEqual("smite");
+    });
+    it("adds blessed effect to defense", function () {
+        expect(player.defenseEnhancements)
+            .toContainEqual("blessed");
+    });
+    it("blessed defense enhancement", function () {
+        expect(calculateDamageBy(enemy)
+            .using({enhancements: []})
+            .against(player)
+            .using({
+                primary: "block",
+                enhancements: ["blessed"]
+            }))
+            .toEqual({
+                "-2": Decimal(0),
+                "-1": Decimal(0),
+                0: Decimal(0),
+                1: Decimal(0)
+            });
+    });
+    it("makes the character not damned", function () {
+        expect(player.isDamned).toBe(false);
+    });
+})
+
 describe("inscrutable effect", function () {
     let player;
     let enemy;
