@@ -293,7 +293,7 @@ export const Creatures = {
         enabled: true,
         appearance: "freakyFishGuy",
         description: "There isn't anything that one might consider 'water' in hell, so who knows where this ocean-dweller came from or how it got here.",
-        texture: "32_aquaticman.png",
+        texture: "46_aquaticman.png",
         npc: {
             adjective: "mad",
             tactics: {
@@ -638,7 +638,7 @@ export const titles = {
         }
     },
     savage: {
-        name: "savage",
+        name: "Savage",
         attributeMultipliers: {
             brutality: 2,
             cunning: 1,
