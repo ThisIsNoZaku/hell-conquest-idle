@@ -27,20 +27,6 @@ export default function reincarnateAs(monsterId, newAttributes) {
     Object.keys(player.attributes).forEach(attribute => {
         player.attributes[attribute] = Decimal(newAttributes[attribute]);
     })
-    if (globalState.reincarnationCount !== 0) { // FIXME: Removable
-        // Calculate your new latent power cap
-        // player.latentPowerCap = evaluateExpression(getConfigurationValue("latent_power_cap"), {
-        //     highestLevelReached: Decimal(getCharacter(0).highestLevelReached),
-        //     highestLevelEnemyDefeated: Decimal(globalState.highestLevelEnemyDefeated)
-        // })
-
-        // const latentPowerGain = evaluateExpression(getConfigurationValue("latent_power_gain_on_reincarnate"), {
-        //     player
-        // });
-        // globalState.characters[0].latentPower = Decimal.min(
-        //     globalState.latentPowerCap,
-        //     globalState.characters[0].latentPower.plus(latentPowerGain));
-    }
 
     globalState.characters[0].reincarnate(monsterId, {...globalState.startingTraits});
 
@@ -52,6 +38,10 @@ export default function reincarnateAs(monsterId, newAttributes) {
     globalState.reincarnationCount++;
     getGlobalState().currentAction = "exploring";
     getGlobalState().nextAction = "challenging";
+    if(getGlobalState().lastRegion !== getGlobalState().currentRegion) {
+        getGlobalState().rivals = {};
+        getGlobalState().lastRegion = getGlobalState().currentRegion;
+    }
 
     saveGlobalState();
 }

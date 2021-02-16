@@ -17,6 +17,7 @@ import {useHotkeys} from "react-hotkeys-hook";
 import generateRoundActionLogItems from "../../engine/general/generateRoundActionLogItems";
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
+import {Regions} from "../../data/Regions";
 
 const styles = {
     root: {
@@ -28,7 +29,7 @@ const styles = {
     },
     image: {
         position: "absolute",
-        height: "100%",
+        height: "75%",
         left: 0
     },
     background: {
@@ -75,6 +76,7 @@ export default function AdventuringPage(props) {
     const [displayedTime, setDisplayedTime] = useState(0);
     const player = useRef(getCharacter(0));
     const manualSpeedUpActive = useRef(false);
+    const currentRegion = Regions[getGlobalState().currentRegion];
 
     function togglePause() {
         getGlobalState().paused = !getGlobalState().paused;
@@ -176,10 +178,10 @@ export default function AdventuringPage(props) {
             height: "100vh",
             width: "100vw"
         }}>
-            <img style={styles.background} src={"./backgrounds/parallax-demon-woods-bg.png"}/>
-            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-far-trees.png"}/>
-            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-mid-trees.png"}/>
-            <img style={styles.image} src={"./backgrounds/parallax-demon-woods-close-trees.png"}/>
+            <img style={styles.background} src={currentRegion.background.background}/>
+            {currentRegion.background.far &&<img style={styles.image} src={currentRegion.background.far}/>}
+            {currentRegion.background.mid &&<img style={styles.image} src={currentRegion.background.mid}/>}
+            {currentRegion.background.close &&<img style={styles.image} src={currentRegion.background.close}/>}
         </div>
         <CharacterSidebar player={player.current} enemy={enemy}/>
         <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>

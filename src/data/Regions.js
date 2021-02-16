@@ -8,6 +8,7 @@ class Region {
     constructor(id, name, available, encounters, background) {
         this.id = id;
         this.name = name;
+        this.available = available;
         this.encounters = encounters;
         this.background = background;
     }
@@ -36,7 +37,7 @@ class Region {
         }
         const rivalType = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "character", "appearance"]);
         const encounterDef = encounterWithRival ? this.encounters[rivalType] : chooseRandomEncounter(this);
-        if(encounterWithRival) {
+        if (encounterWithRival) {
             const tactics = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "tactics"]);
             getCharacter(0).tactics = tactics;
         }
@@ -64,7 +65,19 @@ class Region {
 }
 
 export const Regions = {
-    forest: new Region("forest","The Prey's Lament", true, {
+    forest: new Region("forest", "The Prey's Lament",
+        true,
+        {
+            bees: {
+                description: "1 Bees",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "bees",
+                        count: 1
+                    }
+                ]
+            },
             bloodthirstyKnight: {
                 description: "1 Bloodthirsty Knight",
                 type: "combat",
@@ -108,17 +121,6 @@ export const Regions = {
                     }
                 ]
             },
-            skitteringHorror: {
-                description: "1 Skittering Horror",
-                type: "combat",
-                enabled: true,
-                enemies: [
-                    {
-                        name: "skitteringHorror",
-                        count: 1
-                    }
-                ]
-            },
             deadlyHornet: {
                 description: "1 Deadly Hornet",
                 type: "combat",
@@ -130,25 +132,14 @@ export const Regions = {
                     }
                 ]
             },
-            tormentedDead: {
-                description: "1 Tormented Dead",
+            monstrousTroll: {
+                description: "1 Myrmidon Warrior",
                 type: "combat",
                 enabled: true,
                 enemies: [
                     {
-                        name: "tormentedDead",
+                        name: "monstrousTroll",
                         count: 1
-                    }
-                ]
-            },
-            bloodyBat: {
-                description: "1 Bloody Bat",
-                type: "combat",
-                enabled: true,
-                enemies: [
-                    {
-                        name: "bloodyBat",
-                        count: 1,
                     }
                 ]
             },
@@ -163,17 +154,7 @@ export const Regions = {
                     }
                 ]
             },
-            myrmidonWarrior: {
-                description: "1 Myrmidon Warrior",
-                type: "combat",
-                enabled: true,
-                enemies: [
-                    {
-                        name: "myrmidonWarrior",
-                        count: 1
-                    }
-                ]
-            },
+
             scorpion: {
                 description: "1 Scorpion",
                 enabled: true,
@@ -184,12 +165,12 @@ export const Regions = {
                     }
                 ]
             },
-            carrionBeetle: {
-                description: "1 Carrion Beetle",
+            shadowHulk: {
+                description: "1 Scorpion",
                 enabled: true,
                 enemies: [
                     {
-                        name: "carrionBeetle",
+                        name: "shadowHulk",
                         count: 1
                     }
                 ]
@@ -213,18 +194,319 @@ export const Regions = {
                         count: 1
                     }
                 ]
-            }
+            },
+            skeletonHunter: {
+                description: "1 Scorpion",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "skeletonHunter",
+                        count: 1
+                    }
+                ]
+            },
         },
         {
-            background: "backgrounds/parallax-demon-woods-bg.png",
-            far: "backgrounds/parallax-demon-woods-far-trees.png",
-            mid: "backgrounds/parallax-demon-woods-mid-trees.png",
-            close: "backgrounds/parallax-demon-woods-close-trees.png"
+            background: "./backgrounds/Forest bg.png",
+            far: "./backgrounds/Forest trees far.png",
+            mid: "./backgrounds/Forest trees mid.png",
+            close: "./backgrounds/Forest trees close.png"
         }
     ),
-    caves: new Region("The Bottomless Caverns", false, {}, {}),
-    mountains: new Region("The Crags of Futility", false, {}, {}),
-    desert: new Region("The Desert of Isolation", false, {}, {})
+    caves: new Region("caves", "The Bottomless Caverns",
+        true,
+        {
+            bloodyBat: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "bloodyBat",
+                        count: 1
+                    }
+                ]
+            },
+            carrionBeetle: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "carrionBeetle",
+                        count: 1
+                    }
+                ]
+            },
+            creeperPeeper: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "creeperPeeper",
+                        count: 1
+                    }
+                ]
+            },
+            demonSummoner: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "demonSummoner",
+                        count: 1
+                    }
+                ]
+            },
+            glassSpider: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "glassSpider",
+                        count: 1
+                    }
+                ]
+            },
+            inverseMan: {
+                description: "1 Carrion Beetle",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "inverseMan",
+                        count: 1
+                    }
+                ]
+            },
+            myrmidonWarrior: {
+                description: "1 Myrmidon Warrior",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "myrmidonWarrior",
+                        count: 1
+                    }
+                ]
+            },
+            sanguineLord: {
+                description: "1 Skittering Horror",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "sanguineLord",
+                        count: 1
+                    }
+                ]
+            },
+            skitteringHorror: {
+                description: "1 Skittering Horror",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "skitteringHorror",
+                        count: 1
+                    }
+                ]
+            },
+            wheezingApparition: {
+                description: "1 Skittering Horror",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "wheezingApparition",
+                        count: 1
+                    }
+                ]
+            },
+        },
+        {
+            background: "./backgrounds/cave01_bg.png",
+            far: "./backgrounds/cave01_rocksFar.png",
+            mid: "./backgrounds/cave01_rocksMid.png",
+            close: "./backgrounds/cave01_rocksClose.png"
+        }),
+    mountains: new Region("mountains", "The Crags of Futility",
+        true,
+        {
+            demonLord: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "demonLord",
+                        count: 1,
+                    }
+                ]
+            },
+            eerieHierophant: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "eerieHierophant",
+                        count: 1,
+                    }
+                ]
+            },
+            eyeBeast: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "eyeBeast",
+                        count: 1,
+                    }
+                ]
+            },
+            fleshlessSoldier: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "fleshlessSoldier",
+                        count: 1,
+                    }
+                ]
+            },
+            freakyFishGuy: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "freakyFishGuy",
+                        count: 1,
+                    }
+                ]
+            },
+            goblinPariah: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "goblinPariah",
+                        count: 1,
+                    }
+                ]
+            },
+            tempestSpirit: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "tempestSpirit",
+                        count: 1,
+                    }
+                ]
+            },
+        },
+        {
+            background: "./backgrounds/mountains bg.png",
+            far: "./backgrounds/mountains far.png",
+            mid: "./backgrounds/mountains mid.png",
+            close: "./backgrounds/mountains close.png"
+        }),
+    desert: new Region("desert", "The Desert of Isolation",
+        true,
+        {
+            bandagedMan: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "bandagedMan",
+                        count: 1,
+                    }
+                ]
+            },
+            bigCrap: {
+                description: "1 Bloodthirsty Knight",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "bigCrab",
+                        count: 1
+                    }
+                ]
+            },
+            bitingLizard: {
+                description: "1 Bloodthirsty Knight",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "bitingLizard",
+                        count: 1
+                    }
+                ]
+            },
+            fireHawk: {
+                description: "1 Bloodthirsty Knight",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "fireHawk",
+                        count: 1
+                    }
+                ]
+            },
+            hellfireSpirit: {
+                description: "1 Bloodthirsty Knight",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "hellfireSpirit",
+                        count: 1
+                    }
+                ]
+            },
+            skeletonMage: {
+                description: "1 Bloodthirsty Knight",
+                type: "combat",
+                enemies: [
+                    {
+                        name: "skeletonMage",
+                        count: 1
+                    }
+                ]
+            },
+            tormentedDead: {
+                description: "1 Tormented Dead",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "tormentedDead",
+                        count: 1
+                    }
+                ]
+            },
+            wretchedSkull: {
+                description: "1 Tormented Dead",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "wretchedSkull",
+                        count: 1
+                    }
+                ]
+            },
+        },
+        {
+            background: "./backgrounds/desert bg.png",
+            far: "./backgrounds/dunes far.png",
+            mid: "./backgrounds/dunes mid.png",
+            close: "./backgrounds/dunes close.png"
+        })
 }
 
 function chooseRandomEncounter(region) {

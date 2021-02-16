@@ -18,6 +18,7 @@ import TacticsDescription from "../adventuring/charactersheet/TacticsDescription
 import evaluateExpression from "../../engine/general/evaluateExpression";
 import {enableTutorial, tutorialIsCompleted} from "../../engine/tutorials";
 import {Help} from "@material-ui/icons";
+import {Regions} from "../../data/Regions";
 
 export default function ReincarnationSelectionPage(props) {
     const history = useHistory();
@@ -69,6 +70,8 @@ export default function ReincarnationSelectionPage(props) {
         }),
     }
 
+    const [currentRegion, setCurrentRegion] = useState(getGlobalState().currentRegion);
+
     const tacticsEnabled = tutorialIsCompleted("reincarnation-attributes");
     const reincarnationEnabled = tutorialIsCompleted("tactics");
     const firstDemonSelection = _.isEmpty(getGlobalState().unlockedMonsters);
@@ -85,7 +88,8 @@ export default function ReincarnationSelectionPage(props) {
             Select a soul to reincarnate as.
             <br/>
             You will reincarnate with a bonus
-            of <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> to your Maximum Energy and per-turn Energy generation, Damage and Health.
+            of <strong>{Decimal.min(newLatentPower, latentPowerCap).times(getConfigurationValue("latent_power_effect_scale")).times(100).toFixed()}%</strong> to
+            your Maximum Energy and per-turn Energy generation, Damage and Health.
             <br/>
         </Grid>}
         <Grid container>
@@ -282,7 +286,8 @@ export default function ReincarnationSelectionPage(props) {
                 <Grid item container xs direction="column">
                     <Grid item xs style={{textAlign: "center"}}>
                         Energy
-                        <Tooltip title="Used to enhance your attacks and defend yourself, as well as used up during battle.">
+                        <Tooltip
+                            title="Used to enhance your attacks and defend yourself, as well as used up during battle.">
                             <Help/>
                         </Tooltip>
                     </Grid>
@@ -300,6 +305,25 @@ export default function ReincarnationSelectionPage(props) {
 
                 </Grid>
             </Grid>
+        </Grid>
+
+        <Grid container>
+            <Grid item xs={12} style={{textAlign: "center"}}>
+                <strong>Choose A Region to Reincarnate Into</strong>
+                <Tooltip title="Different regions contain different types of demons. Reincarnating into a different region will also clear your Rivals.">
+                    <Help/>
+                </Tooltip>
+            </Grid>
+            {Object.keys(Regions).filter(r => Regions[r].available)
+                .map(region => {
+                return <Grid item xs={3}>
+                    <Button variant="contained" color={currentRegion === region ? "primary" : "none"} onClick={() => {
+                        setCurrentRegion(getGlobalState().currentRegion = region);
+                    }}>
+                        {Regions[region].name}
+                    </Button>
+                </Grid>
+            })}
         </Grid>
 
         <Grid container item xs={12} alignItems="stretch" justify="flex-start">
