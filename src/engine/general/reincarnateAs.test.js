@@ -68,6 +68,6 @@ describe("reincarnateAt", function () {
             baseMadness: 1,
             baseDeceit: 1
         });
-        expect(player.latentPowerCap).toEqual(Decimal(50));
+        expect(player.latentPowerCap).toEqual(Decimal(100));
     });
 })
