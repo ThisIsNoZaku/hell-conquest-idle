@@ -13,21 +13,23 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
     }
     // Attacker spends energy to perform attack
     let hitLevel = 0;
-    const actionEnergyCost = calculateActionCost(actingCharacter, action, targetedCharacter);
+    let actionEnergyCost = calculateActionCost(actingCharacter, action, targetedCharacter);
     if(actionEnergyCost.lte(actingCharacter.combat.stamina)) {
         actingCharacter.combat.stamina = actingCharacter.combat.stamina.minus(actionEnergyCost);
         hitLevel = CombatActions[action.primary].hitLevel;
     } else {
         action = {primary: "none", enhancements: []};
         hitLevel = HitTypes.min;
+        actionEnergyCost = Decimal(0);
     }
 
-    const reactionEnergyCost = calculateActionCost(actingCharacter, reaction, targetedCharacter);
+    let reactionEnergyCost = calculateActionCost(actingCharacter, reaction, targetedCharacter);
     if(reactionEnergyCost.lte(targetedCharacter.combat.stamina)) {
         targetedCharacter.combat.stamina = targetedCharacter.combat.stamina.minus(reactionEnergyCost);
         hitLevel = Math.max(HitTypes.min, hitLevel + CombatActions[reaction.primary].hitLevelModifier);
     } else {
         reaction = {primary: "none", enhancements: []};
+        reactionEnergyCost = Decimal(0);
     }
     if(hitLevel === HitTypes.min) {
         const attackEvent = generateAttackEvent(hitLevel, actingCharacter, targetedCharacter, false, action, actionEnergyCost, reaction, reactionEnergyCost);
