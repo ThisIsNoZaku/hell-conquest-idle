@@ -78,17 +78,17 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
     }, ["learned", "arcane"]),
-    eerieWatcher: validatedTrait({
+    eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
         icon: "./icons/icons-1.png",
         description: _.template("This strange Demon likes to... watch, giving it a ${tier.times(25)} bonus to Precision and is Psychic.")
-    }, ["precise", "psychic"]),
-    exhaustingTouch: validatedTrait({
+    }, ["precise", "psychic"])),
+    exhaustingTouch: validatedTrait(generateTrait({
         name: "Strangulation",
         icon: "./icons/icons-115.png",
         enabled: true,
         description: _.template("The Demon saps the strength from the victims limbs, reducing both Damage and Defense by <span>${tier.times(5)}%</span> for 1 round.")
-    }),
+    }, ["insubstantial", "choking"])),
     fireBird: validatedTrait({
         name: "Fire Bird",
         enabled: true,

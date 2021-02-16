@@ -196,6 +196,46 @@ describe("cannibal effect", function () {
     });
 });
 
+describe("choking effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["choking"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("adds fatigue to the enemy", function () {
+        player.combat.stamina = Decimal(200);
+        const roundEvents = [];
+        resolveAttack(player, {
+            primary: "basicAttack",
+            enhancements: []
+        }, enemy, {
+            primary: "none",
+            enhancements: []
+        }, roundEvents, 100);
+        expect(roundEvents).toContainEqual({
+            event: "fatigue-change",
+            target: 1,
+            parent: expect.any(String),
+            source: {
+                character: 0,
+                trait: "test"
+            },
+            value: Decimal(.1).times(enemy.combat.maximumStamina),
+            uuid: expect.any(String)
+        });
+        expect(enemy.combat.fatigue).toEqual(Decimal(.1).times(enemy.combat.maximumStamina));
+    });
+})
+
 describe("coldblooded effect", function () {
     let player;
     let enemy;
