@@ -1,5 +1,5 @@
 import Grid from "@material-ui/core/Grid";
-import React, {useMemo} from "react";
+import React, {useCallback, useMemo} from "react";
 import {
     getGlobalState,
     getSpriteForCreature
@@ -13,6 +13,16 @@ import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
 import {Help} from "@material-ui/icons";
 import {Traits} from "../../data/Traits";
+import {Tactics} from "../../data/Tactics";
+import Button from "@material-ui/core/Button";
+
+function changeRivalTactics(event) {
+    const level = event.currentTarget.dataset.level;
+    const tacticType = event.currentTarget.dataset.tacticType;
+    const tactic = event.currentTarget.dataset.tactic;
+    debugger;
+    getGlobalState().rivals[level].tactics[tacticType] = tactic;
+}
 
 export function CharacterSheet(props) {
     const spriteSrc = useMemo(() => getSpriteForCreature(props.appearance), [props.appearance]);
@@ -107,12 +117,13 @@ export function CharacterSheet(props) {
         {props.isPc && <Grid container>
             <Grid item xs={12}>
                 <strong>Your Rivals!</strong>
-                <Tooltip title="These are the demons who have defeated you before and who you will encounter again at each level">
+                <Tooltip title="These are the demons who have defeated you before and who you will encounter again at each level. Click the button to change the tactics you use agains that rival!">
                     <Help/>
                 </Tooltip>
             </Grid>
             {Object.keys(props.rivals).map(level => {
-                const rival = getGlobalState().rivals[level];
+                const rivalTactics = getGlobalState().rivals[level].tactics;
+                const rival = getGlobalState().rivals[level].character;
                 return <React.Fragment>
                     <Grid item xs={6}>
                         {level}
@@ -123,6 +134,26 @@ export function CharacterSheet(props) {
                                 <img src={Traits[traitId].icon}/>
                             </Tooltip>
                     })}
+                    </Grid>
+                    <Grid item container xs={12}>
+                        {Object.keys(Tactics.offensive).map(tactic => {
+                            return <Grid item xs={12} xl={4}>
+                                <Button variant="contained" color={rivalTactics.offensive === tactic ? "primary" : "none"} style={{fontSize: "9px"}}
+                                    onClick={changeRivalTactics} data-tactic={tactic} data-level={level} data-tactic-type="offensive"
+                                >
+                                    {Tactics.offensive[tactic].title}
+                                </Button>
+                            </Grid>
+                        })}
+                        {Object.keys(Tactics.defensive).map(tactic => {
+                            return <Grid item xs={12} xl={4}>
+                                <Button variant="contained" color={rivalTactics.defensive === tactic ? "primary" : "none"} style={{fontSize: "9px"}}
+                                        onClick={changeRivalTactics} data-tactic={tactic} data-level={level} data-tactic-type="defensive"
+                                >
+                                    {Tactics.defensive[tactic].title}
+                                </Button>
+                            </Grid>
+                        })}
                     </Grid>
                 </React.Fragment>
             })}

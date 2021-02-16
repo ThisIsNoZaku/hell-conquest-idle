@@ -71,8 +71,15 @@ export const EventHandlers = {
                 });
             }
         } else if (deadCharacter.id === 0) {
-            if (deadCharacter.id !== actingCharacter.id && !getGlobalState().rivals[actingCharacter.powerLevel.toNumber()]) {
-                getGlobalState().rivals[actingCharacter.powerLevel.toNumber()] = {...actingCharacter};
+            if (!getGlobalState().rivals[actingCharacter.powerLevel.toNumber()]) {
+                const enemy = getGlobalState().currentEncounter.enemies[0];
+                getGlobalState().rivals[enemy.powerLevel.toNumber()] = {
+                    character: {...enemy},
+                    tactics: {
+                        offensive: deadCharacter.tactics.offensive,
+                        defensive: deadCharacter.tactics.defensive
+                    }
+                };
                 pushLogItem({
                     message: "<strong>You have a new rival!</strong>",
                     uuid: v4()

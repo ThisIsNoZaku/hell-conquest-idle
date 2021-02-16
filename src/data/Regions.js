@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {evaluateExpression, generateCreature, getGlobalState} from "../engine";
+import {evaluateExpression, generateCreature, getCharacter, getGlobalState} from "../engine";
 import {getConfigurationValue} from "../config";
 import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
@@ -34,8 +34,12 @@ class Region {
         if (getConfigurationValue("debug")) {
             debugMessage(`Generated encounter level is ${encounterLevel}`);
         }
-        const rivalType = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "appearance"]);
+        const rivalType = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "character", "appearance"]);
         const encounterDef = encounterWithRival ? this.encounters[rivalType] : chooseRandomEncounter(this);
+        if(encounterWithRival) {
+            const tactics = _.get(getGlobalState().rivals, [encounterLevel.toNumber(), "tactics"]);
+            getCharacter(0).tactics = tactics;
+        }
         if (encounterDef === undefined) {
             throw new Error("No encounter selected");
         }
@@ -48,8 +52,9 @@ class Region {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
                 generatedCreature.isRival = encounterWithRival;
                 if (generatedCreature.isRival) {
-                    generatedCreature.traits = getGlobalState().rivals[encounterLevel.toNumber()].traits;
-                    generatedCreature.tactics = getGlobalState().rivals[encounterLevel.toNumber()].tactics;
+                    debugger;
+                    generatedCreature.traits = getGlobalState().rivals[encounterLevel.toNumber()].character.traits;
+                    generatedCreature.tactics = getGlobalState().rivals[encounterLevel.toNumber()].character.tactics;
                 }
                 return generatedCreature;
             }))
