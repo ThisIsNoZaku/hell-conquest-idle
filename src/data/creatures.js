@@ -229,6 +229,7 @@ export const Creatures = {
         enabled: true,
         appearance: "eerieHierophant",
         description: "A holy man",
+        texture: "39_lizardman.png",
         npc: {
             adjective: "mad",
             tactics: {
@@ -245,6 +246,7 @@ export const Creatures = {
         enabled: true,
         appearance: "eyeBeast",
         description: "A grotesque demon, which first a variety of magical blasts from its myriad eyes.",
+        texture: "31_beholder.png",
         npc: {
             adjective: "devious",
             tactics: {
@@ -299,7 +301,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "attrit",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -360,7 +362,7 @@ export const Creatures = {
         enabled: true,
         appearance: "inverseMan",
         texture: "47_dwarf.png",
-        description: "A strange backwards man.",
+        description: "He dug too greedily, and too deep.",
         npc: {
             adjective: "savage",
             tactics: {
