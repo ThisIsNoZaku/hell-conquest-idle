@@ -78,6 +78,11 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
     }, ["learned", "arcane"]),
+    plagueHarbinger: validatedTrait({
+        name: "Plague Harbinger",
+        enabled: true,
+        description: _.template("")
+    }, ["small", "diseased"]),
     eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
         icon: "./icons/icons-1.png",
@@ -210,6 +215,11 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon's hard shell and strong limbs give it a ${tier.times(25)}% bonus to Resilience and it's hardest hits inflict ${tier.times(50)}% more damage.")
     }, ["tough", "killer"])),
+    undertow: validatedTrait(generateTrait({
+        name: "Undertow",
+        enabled: true,
+        description: _.template("This Demon's liquid form makes it difficult to harm and allows its attacks to flow around defenses, increasing Precision by ${tier.times(25)}% and inflicting Fatigue equal to ${tier.times(20)}% of maximum stamina on a hit.")
+    }, ["choking", "precise"])),
     outcastStrength: validatedTrait(generateTrait({
         name: "Outcast's Strength",
         icon: "./icons/icons-1.png",

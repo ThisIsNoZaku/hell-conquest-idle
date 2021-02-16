@@ -223,6 +223,23 @@ export const Creatures = {
             }
         }
     },
+    drowningSpirit: {
+        name: "Drowning Spirit",
+        traits: ["undertow"],
+        enabled: true,
+        appearance: "drowningSpirit",
+        texture: "23_water_elemental.png",
+        description: "A sinister spirit that saps the strength of its victims, driving them to exhaustion and death by overexertion.",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "block"
+                }
+            }
+        }
+    },
     eerieHierophant: {
         name: "Eerie Hierophant",
         traits: ["reptileMystic"],
@@ -423,6 +440,14 @@ export const Creatures = {
                 }
             }
         }
+    },
+    plagueRat: {
+        name: "Plague Rat",
+        traits: ["plagueHarbinger"],
+        enabled: true,
+        appearance: "plagueRat",
+        texture: "28_rat.png",
+        description: "An embodiment of pestilence"
     },
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",

@@ -396,6 +396,17 @@ export const Regions = {
                     }
                 ]
             },
+            plagueRat: {
+                description: "1 Bloody Bat",
+                type: "combat",
+                enabled: true,
+                enemies: [
+                    {
+                        name: "plagueRat",
+                        count: 1,
+                    }
+                ]
+            },
             tempestSpirit: {
                 description: "1 Bloody Bat",
                 type: "combat",
