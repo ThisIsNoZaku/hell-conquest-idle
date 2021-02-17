@@ -33,7 +33,7 @@ export default function triggerEvent(event) {
                 debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not'} trigger.`);
                 const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
                 if (effectsToApply) {
-                    applyEffects(effectsToApply, combatant, event, "trait", traitId, combatant.traits[traitId]);
+                    applyEffects(effectsToApply, combatant, event, "trait", traitId, combatant.madness.times(.1).plus(combatant.traits[traitId]).floor());
                 }
             }
         });
@@ -81,7 +81,8 @@ export default function triggerEvent(event) {
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, event.source.character.traits[enhancement.sourceTrait]);
+                const level = event.source.character.attributes.madness.div(10).plus(event.source.character.traits[enhancement.sourceTrait]).floor();
+                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, level);
             }
         }
     });
@@ -94,7 +95,8 @@ export default function triggerEvent(event) {
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, event.source.character.traits[enhancement.sourceTrait]);
+                const level = event.source.character.attributes.madness.div(10).plus(event.source.character.traits[enhancement.sourceTrait]).floor();
+                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, level);
             }
         }
     });

@@ -42,6 +42,21 @@ export const ActionEnhancements = {
             }
         }
     }),
+    crushing: {
+        name: "Crushing",
+        energy_cost_modifier: .25,
+        on_hit: {
+            trigger_effects: {
+                add_statuses: {
+                    crushed: {
+                        target: "enemy",
+                        stacks: 1,
+                        duration: 5
+                    }
+                }
+            }
+        }
+    },
     darknessSummoning: validateEnhancement({
         name: "Summon Darkness",
         dodge_energy_cost_modifier: .5,

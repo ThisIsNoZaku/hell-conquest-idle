@@ -8,7 +8,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "acid",
-                    percentage: 20
+                    percentage: .1
                 }
             }
         }
@@ -61,28 +61,7 @@ export const TraitEffects = {
         }
     },
     crushing: { // TODO: Turn to attack enhancement
-        on_solid_hit: {
-            trigger_effects: {
-                add_statuses: {
-                    crushed: {
-                        target: "enemy",
-                        stacks: 1,
-                        duration: 2
-                    }
-                }
-            }
-        },
-        on_devastating_hit: {
-            trigger_effects: {
-                add_statuses: {
-                    crushed: {
-                        target: "enemy",
-                        stacks: 1,
-                        duration: 5
-                    }
-                }
-            }
-        }
+        attack_enhancement: "crushing",
     },
     diseased: {
         on_taking_damage: {
@@ -117,7 +96,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "fire",
-                    percentage: .2
+                    percentage: .1
                 }
             }
         }
@@ -287,7 +266,7 @@ export const TraitEffects = {
                 damage_resistance: {
                     target: "self",
                     type: "psychic",
-                    percentage: 20,
+                    percentage: .1,
                 }
             }
         }

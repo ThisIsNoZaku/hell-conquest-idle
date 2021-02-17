@@ -294,6 +294,12 @@ describe("crushing effect", function () {
     afterEach(() => {
         delete Traits.test;
     });
+    it("adds crushing attack enhancement", function () {
+        expect(player.attackEnhancements).toContainEqual({
+            enhancement: "crushing",
+            sourceTrait: "test"
+        });
+    });
     it("adds stacks of Crushed on solid hit for 2 actions", function () {
         const roundEvents = [];
         triggerEvent({
