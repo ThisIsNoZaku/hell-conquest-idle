@@ -179,7 +179,24 @@ export const Creatures = {
         enabled: true,
         appearance: "darkElfHunter",
         texture: "43_dark_elf_hunter.png",
-        description: "A member of a spider-worshipping elven subrace used to living underground, with the ability to summon darkness",
+        description: "A member of a spider-worshipping elven subrace used to living underground, with the ability to summon darkness.",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
+    darkElfMage: {
+        name: "Dark Elf Made",
+        traits: ["spiderMage"],
+        enabled: true,
+        appearance: "darkElfMage",
+        texture: "44_dark_elf_mage.png",
+        description: "A member of a spider-worshipping elven subrace used to living underground, with the ability to summon darkness. Wields foul magic.",
         npc: {
             adjective: "underhanded",
             tactics: {

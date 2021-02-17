@@ -190,8 +190,13 @@ export const Traits = {
     spiderHunter: validatedTrait(generateTrait({
         name: "Spider Queen's Chosen",
         enabled: true,
-        description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness, inflicting ${tier} stacks of Blinded when Dodging and increases Evasion by ${tier.times(25)}%.")
+        description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness, gaining ${tier} stacks of Untouchable when Dodging and increases Evasion by ${tier.times(25)}%.")
     }, ["summonDarkness", "evasive"])),
+    spiderMage: validatedTrait(generateTrait({
+        name: "Spider Queen's Scholar",
+        enabled: true,
+        description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness and wield magic, gaining ${tier} stacks of Untouchable when Dodging and gaining the enemy's traits.")
+    }, ["summonDarkness", "learned"])),
     stormyPersonality: validatedTrait(generateTrait({
         name: "Stormy Personality",
         icon: "./icons/icons-1.png",
