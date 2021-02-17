@@ -135,7 +135,7 @@ export const Traits = {
     }, ["thorns", "reversal"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
-        description: _.template("This Demon seeks to withstand attacks with a hard carapace and in fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and a ${tier.times(25)}% bonus to Resilience."),
+        description: _.template("This Demon seeks to withstand attacks with a hard carapace and end fights by injecting deadly venom, inflicting ${tier} stacks of <strong>Poisoned</strong> for 5 rounds and gaining a ${tier.times(25)}% bonus to Resilience."),
         icon: "./icons/icons-2278.png",
         enabled: true,
     }, ["tough", "venomous"])),
