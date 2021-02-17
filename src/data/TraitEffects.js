@@ -44,14 +44,7 @@ export const TraitEffects = {
         }
     },
     choking: {
-        on_hit: {
-            trigger_effects: {
-                change_fatigue: {
-                    target: "enemy",
-                    percentage_of_maximum_stamina: .1
-                }
-            }
-        }
+        attack_enhancement: "choking"
     },
     coldBlooded: {
         continuous: {

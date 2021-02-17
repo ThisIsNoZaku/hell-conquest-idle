@@ -30,6 +30,18 @@ export const ActionEnhancements = {
         block_energy_cost_modifier: 1,
         block_damage_modifier: -100
     }),
+    choking: validateEnhancement({
+        name: "Choking",
+        energy_cost_modifier: .25,
+        on_hit: {
+            trigger_effects: {
+                change_fatigue: {
+                    target: "enemy",
+                    percentage_of_maximum_stamina: .1
+                }
+            }
+        }
+    }),
     darknessSummoning: validateEnhancement({
         name: "Summon Darkness",
         dodge_energy_cost_modifier: .5,

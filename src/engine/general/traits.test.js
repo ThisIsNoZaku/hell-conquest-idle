@@ -1,5 +1,5 @@
 import {Character} from "../../character";
-import {CombatActions, DefenseActions} from "../../data/CombatActions";
+import {CombatActions} from "../../data/CombatActions";
 import {generateTrait, Traits} from "../../data/Traits";
 import {Decimal} from "decimal.js";
 import triggerEvent from "./triggerEvent";
@@ -11,7 +11,6 @@ import {TraitEffects} from "../../data/TraitEffects";
 import {getCharacter} from "../index";
 import calculateActionCost from "../combat/actions/calculateActionCost";
 import resolveAction from "../combat/actions/resolveAction";
-import {resolveCombatRound} from "../combat";
 import determineCharacterCombatAction from "../combat/actions/determineCharacterCombatAction";
 import {Tactics} from "../../data/Tactics";
 
@@ -211,7 +210,13 @@ describe("choking effect", function () {
             id: 1
         });
     });
-    it("adds fatigue to the enemy", function () {
+    it("adds choking attack enhancement", function () {
+        expect(player.attackEnhancements).toContainEqual({
+            enhancement: "choking",
+            sourceTrait: "test"
+        });
+    });
+    it("choking attack enhancement adds fatigue on hit", function () {
         player.combat.stamina = Decimal(200);
         const roundEvents = [];
         resolveAttack(player, {
@@ -233,7 +238,7 @@ describe("choking effect", function () {
             uuid: expect.any(String)
         });
         expect(enemy.combat.fatigue).toEqual(Decimal(.1).times(enemy.combat.maximumStamina));
-    });
+    })
 })
 
 describe("coldblooded effect", function () {
