@@ -98,7 +98,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
                 break;
             case "reflect_damage":
-                const targets = [getCharacter(event.source.attack.source.character)];
+                const targets = [getCharacter(event.source.damage.source.character)];
                 targets.forEach(target => {
                     const damageEffect = event.source.damage;
                     const dealtDamage = damageEffect.value;
