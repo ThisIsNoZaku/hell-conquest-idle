@@ -5,9 +5,10 @@ import {debugMessage} from "../debugging";
 import {Decimal} from "decimal.js";
 
 class Region {
-    constructor(id, name, available, encounters, background) {
+    constructor(id, name, available, description, encounters, background) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.available = available;
         this.encounters = encounters;
         this.background = background;
@@ -67,6 +68,7 @@ class Region {
 export const Regions = {
     forest: new Region("forest", "The Prey's Lament",
         true,
+        "An unending thick tangled forest, teeming with vicious predators. Filled with the souls of torturers and other sadists, victims of this hell are repeatedly hunted down, ripped apart and eaten",
         {
             bees: {
                 description: "1 Bees",
@@ -215,6 +217,7 @@ export const Regions = {
     ),
     caves: new Region("caves", "The Bottomless Caverns",
         true,
+        "An endless series of winding caves and caverns, utterly without illumination. Souls here are doomed to stumble for eternity, catching their limbs in crevasses and stumbling upon hidden terrors.",
         {
             bloodyBat: {
                 description: "1 Carrion Beetle",
@@ -329,6 +332,7 @@ export const Regions = {
         }),
     mountains: new Region("mountains", "The Crags of Futility",
         true,
+        " Each mountain within the crags is a mountain hundred of thousands of miles high topped by portals which allow escape from hell and littered with barriers and impediments that seek to throw climbers back to the bottom of the mountain.",
         {
             demonLord: {
                 description: "1 Bloody Bat",
@@ -427,6 +431,7 @@ export const Regions = {
         }),
     desert: new Region("desert", "The Desert of Isolation",
         true,
+        "The desert extends to the horizon in every direction. From every point within the desert, an oasis can be seen. Anyone able to stumble for hours, their flesh scorched by the sun and their feet by the hot sand, to reach the oasis finds muddy, foul tasting water of such a small quantity that it seems to accentuate rather than slake their thirst.",
         {
             bandagedMan: {
                 description: "1 Bloody Bat",

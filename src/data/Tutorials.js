@@ -21,17 +21,19 @@ export const Tutorials = {
     },
     "tactics" : {
         title: "Tactics",
-        body: "<p>Choose Tactics to specialize how your character approaches fights:</p>" +
-            "<p><strong>Aggressive</strong> tactics overwhelm enemies with powerful attacks.</p>" +
-            "<p><strong>Defensive</strong> tactics outlast enemies with superior defenses and stamina.</p>" +
-            "<p><strong>Deceptive</strong> tactics turn the enemy's strength against them.</p>" +
-            "<p>Aggressive tactics overpower Defensive tactics; Defensive tactics outlast Deceptive tactics; Deceptive tactics trip up Aggressive tactics.</p>" +
-            "<p>Click the different buttons to see the details.</p>",
+        body: "<p>Choose Tactics to define how your character approaches fights:</p>" +
+            "<p><strong>Overwhelming</strong> tactics make powerful, energy intensive attacks whenever possible.</p>" +
+            "<p><strong>Attrition</strong> tactics make economical attacks to wear down the enemy, inflicting steady damage or exhausting the enemy's energy.</p>" +
+            "<p><strong>Counter</strong> tactics husband strength, waiting for opportunities for strong attacks.</p>" +
+            "<p><strong>No Defense</strong> tactics don't bother trying to avoid damage. All offense, all the time!</p>" +
+            "<p><strong>Block</strong> tactics use small amounts of energy to reduce the damage of incoming attacks, while keeping enough strength to attack.</p>" +
+            "<p><strong>Dodge</strong> tactics use up lots of energy, but completely negates attacks, good for fragile characters and against enemies that don't conserve their strength when attacking.</p>" +
+            "<p>The combination of these two options determines how your character determines when to attack, when to defend and how it does both.</p>",
     },
     "reincarnation-demon-select" : {
         title: "Reincarnate Now",
         body: "<p>Click on one of the ??? squares to reincarnate as a random demon.</p>" +
-            "<p>In the beginning, you won't have any demons unlocked so you'll have to start as a random one. You will unlock demons as you encounter them during play.</p>",
+            "<p>In the beginning, you won't have any demons unlocked so you'll have to start as a random one. You will be able to play as other kinds of demons after you defeat them in combat.</p>",
     },
     "exploring" : {
         title: "Exploration",
