@@ -71,5 +71,14 @@
       "Swapped the Resilience bonus of Brutality and the Health bonus of Madness"
     ],
     "compatiblePreviousVersions": ["0.3.0"]
+  },
+  "0.4.0" : {
+    "changes" : [
+      "As one of the goals of this game is to have a 'puzzle-like' feel, the game has been dramatically changed to achieve that end.",
+      "Combat is now fully deterministic. Now, victory requires picking the right combination of stats, traits and tactics, and a little patience for grinding.",
+      "The player no longer has a single rival, but one per level, and defeating a rival does not remove it. This means that the encounters the player must defeat become slowly fixed, allowing character tailoring to overcome them.",
+      "Many traits now provide enhancements which modify your attacks and defenses, generally making them more effective but costing additional energy."
+    ],
+    "compatiblePreviousVersions": []
   }
 }
