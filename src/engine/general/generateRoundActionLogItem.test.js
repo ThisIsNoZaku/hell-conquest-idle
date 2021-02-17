@@ -164,4 +164,79 @@ describe("generate round action log", function () {
         })
         expect(messages[0]).toEqual("You used 250 Energy to Dodge but weren't attacked.");
     })
+    it("prints health change events for player", function () {
+        const messages = generateRoundActionLogItems({
+            events: [{
+                event: "health-change",
+                target: 0,
+                source: {
+                    character: 0,
+                    trait: "test"
+                },
+                value: 5,
+                uuid: "0"
+            }]
+        })
+        expect(messages[0]).toEqual("You gain 5 health.");
+    });
+    it("prints health change events for player as attack rider", function () {
+        const messages = generateRoundActionLogItems({
+            events: [{
+                event: "attack",
+                hit: true,
+                hitType: 0,
+                source: {
+                    character: 0
+                },
+                children: ["1", "2"],
+                action: {
+                    primary: "basicAttack"
+                },
+                actionEnergyCost: Decimal(25),
+                reaction: {
+                    primary: "none"
+                },
+                reactionEnergyCost: Decimal(0),
+                target: 1,
+                damage: Decimal(1),
+                uuid: "0"
+            },
+                {
+                    uuid: "1",
+                    event: "damage",
+                    parent: "0",
+                    value: Decimal(10),
+                    source: {
+                        character: 0
+                    },
+                    target: 1,
+                },
+                {
+                    uuid: "2",
+                    event: "health-change",
+                    value: Decimal(5),
+                    parent: "0",
+                    source: {
+                        character: 0
+                    },
+                    target: 0
+                }]
+        })
+        expect(messages[0]).toEqual("You used 25 Energy for a Basic Attack and scored a Solid hit! Enemy takes 10 damage. You gain 5 health.");
+    });
+    it("prints health change events for enemy", function () {
+        const messages = generateRoundActionLogItems({
+            events: [{
+                event: "health-change",
+                target: 1,
+                source: {
+                    character: 0,
+                    trait: "test"
+                },
+                value: 5,
+                uuid: "0"
+            }]
+        })
+        expect(messages[0]).toEqual("Enemy gained 5 health.");
+    });
 });

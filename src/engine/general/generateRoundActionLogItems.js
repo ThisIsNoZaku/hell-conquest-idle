@@ -45,6 +45,8 @@ function describeEvent(event) {
         case "damage":
             const damageType = event.type !== undefined && event.type !== "physcial" ? `${event.type} ` : "";
             return `${targetName} ${event.target === 0 ? 'take' : 'takes'} ${event.value.toFixed()} ${damageType}damage.`;
+        case "health-change":
+            return `${targetName} ${event.target === 0 ? 'gain' : 'gained'} ${event.value.toFixed()} health.`;
         case "fatigue-damage":
             enableTutorial("energy-burn");
             const damage = Decimal(event.value);
