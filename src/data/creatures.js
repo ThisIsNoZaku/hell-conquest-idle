@@ -37,9 +37,11 @@ export const Creatures = {
         texture: "127_bee.png",
         npc: {
             adjective: "underhanded",
-            default: {
-                offensive: "attrit",
-                defensive: "dodge"
+            tactics: {
+                default: {
+                    offensive: "attrit",
+                    defensive: "dodge"
+                }
             }
         }
     },
@@ -185,7 +187,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -202,7 +204,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -385,7 +387,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "attrit",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -487,7 +489,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    dodge: "evade"
+                    dodge: "dodge"
                 }
             }
         }
@@ -572,7 +574,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -589,7 +591,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
@@ -639,7 +641,7 @@ export const Creatures = {
             tactics: {
                 default: {
                     offensive: "counter",
-                    defensive: "evade"
+                    defensive: "dodge"
                 }
             }
         }
