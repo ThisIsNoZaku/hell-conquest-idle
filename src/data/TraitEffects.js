@@ -505,9 +505,9 @@ export const TraitEffects = {
     vampiric: {
         on_hit: {
             trigger_effects: {
-                gain_health: {
+                change_health: {
                     target: "self",
-                    value: .1
+                    percentage_of_maximum_health: .1
                 }
             }
         }

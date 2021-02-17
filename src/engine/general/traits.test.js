@@ -1511,3 +1511,40 @@ describe("unstoppable effect", function () {
         expect(blockCost).toEqual(Decimal(100 * 1.1 * .5).floor());
     });
 });
+
+describe("vampiric effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["vampiric"]);
+        player = new Character({
+            id: 0,
+            traits: {test: 1}
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("gives the attacking character health on a hit", function () {
+        const roundEvents = [];
+        player.combat.stamina = Decimal(100);
+        resolveAttack(player, {
+            primary: "basicAttack",
+            enhancements: []
+        }, enemy, {
+            primary: "none",
+            enhancements: []
+        }, roundEvents, 100);
+        expect(roundEvents).toContainEqual({
+            event: "health-change",
+            value: Decimal(player.maximumHp).times(0.1).floor(),
+            source: {
+                character: 0,
+                trait: "test"
+            },
+            parent: expect.any(String),
+            target: 0,
+            uuid: expect.any(String)
+        });
+    });
+})
