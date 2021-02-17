@@ -84,6 +84,9 @@ export function CharacterSidebar(props) {
             enemyResilience={_.get(enemy, "combat.resilience", Decimal(0)).toFixed()}
             isPc={_.get(character, "isPc")}
             rivals={getGlobalState().rivals}
+
+            attackEnhancements={_.get(character, "attackEnhancements", [])}
+            defenseEnhancements={_.get(character, "defenseEnhancements", [])}
             />}
     </Paper>
 }

@@ -2,6 +2,7 @@ import * as JOI from "joi";
 import {onEventValidator} from "./schemas/events";
 
 const enhancementValidation = JOI.object({
+    name: JOI.string().required(),
     energy_cost_modifier: JOI.number(),
     block_energy_cost_modifier: JOI.number(),
     dodge_energy_cost_modifier: JOI.number(),
@@ -15,18 +16,22 @@ const enhancementValidation = JOI.object({
 
 export const ActionEnhancements = {
     acid: validateEnhancement({
+        name: "Acid",
         energy_cost_modifier: .25,
         change_damage_type: "acid"
     }),
     arcane: validateEnhancement({
+        name: "Arcane Shield",
         block_energy_cost_modifier: .25,
         block_damage_modifier: -.15
     }),
     blessed: validateEnhancement({
+        name: "Blessed",
         block_energy_cost_modifier: 1,
         block_damage_modifier: -100
     }),
     darknessSummoning: validateEnhancement({
+        name: "Summon Darkness",
         dodge_energy_cost_modifier: .5,
         on_dodge: {
             trigger_effects: {
@@ -40,6 +45,7 @@ export const ActionEnhancements = {
         }
     }),
     exhausting: validateEnhancement({
+        name: "Exhausting",
         energy_cost_modifier: .25,
         on_hit: {
             trigger_effects: {
@@ -51,18 +57,22 @@ export const ActionEnhancements = {
         }
     }),
     flame: validateEnhancement({
+        name: "Flame",
         energy_cost_modifier: .25,
         change_damage_type: "fire"
     }),
     smite: validateEnhancement({
+        name: "Smite",
         energy_cost_modifier: 1,
         damage_modifier_against_damned: 1
     }),
     psychic: validateEnhancement({
+        name: "Psychic",
         energy_cost_modifier: 1,
         unblockable: true
     }),
     venom: validateEnhancement({
+        name: "Venomous",
         energy_cost_modifier: .25,
         on_hit: {
             trigger_effects: {

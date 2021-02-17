@@ -85,6 +85,9 @@ export function CharacterSheet(props) {
 
             powerAttackCost={props.powerAttackCost}
             powerAttackDamage={props.powerAttackDamage}
+
+            attackEnhancements={props.attackEnhancements}
+            defenseEnhancements={props.defenseEnhancements}
         />
         <Grid container>
             <Grid item xs={12}>

@@ -14,6 +14,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {useMediaQuery, useTheme} from "@material-ui/core";
+import {ActionEnhancements} from "../../../data/ActionEnhancements";
 
 export default function CharacterCombatStatistics(props) {
     const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
@@ -221,6 +222,21 @@ export default function CharacterCombatStatistics(props) {
                 <Grid item xs>{props.powerAttackCost}</Grid>
                 <Grid item xs>{props.powerAttackDamage}</Grid>
             </Grid>
+            <Grid container>
+                <Grid item style={{textAlign: "center"}} xs={12}>
+                    Attack Enhancements
+                </Grid>
+                <Grid item container xs={12}>
+                    {props.attackEnhancements.map(enhancement => {
+                        return <Grid item>
+                            {ActionEnhancements[enhancement.enhancement].name}
+                        </Grid>
+                    })}
+                </Grid>
+                <Grid item xs={12}>
+                    {props.attackEnhancements.length == 0 && "None"}
+                </Grid>
+            </Grid>
         </Grid>
         <Grid container>
             <Grid item container xs={12}>
@@ -237,6 +253,21 @@ export default function CharacterCombatStatistics(props) {
                 <Grid item xs><strong>Dodge</strong></Grid>
                 <Grid item xs>{props.dodgeCost}</Grid>
                 <Grid item xs>Attack Misses</Grid>
+            </Grid>
+            <Grid container>
+                <Grid item style={{textAlign: "center"}} xs={12}>
+                    Defense Enhancements
+                </Grid>
+                <Grid item container xs={12}>
+                    {props.defenseEnhancements.map(enhancement => {
+                        return <Grid item>
+                            {ActionEnhancements[enhancement.enhancement].name}
+                        </Grid>
+                    })}
+                </Grid>
+                <Grid item xs={12}>
+                    {props.defenseEnhancements.length == 0 && "None"}
+                </Grid>
             </Grid>
         </Grid>
     </Grid>
