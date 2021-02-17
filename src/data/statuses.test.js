@@ -30,19 +30,22 @@ describe("neutralizing status", function () {
     it("increases enemy attack enhancement modifier cost", function () {
         expect(calculateActionCost(enemy, {
             primary: "basicAttack",
-            enhancements: ["flame", "venom"]
+            enhancements: [
+                {enhancement: "flame", sourceTrait: "1"},
+                {enhancement: "venom", sourceTrait: "2"}
+            ]
         }, player)).toEqual(Decimal((.85 + .7) * CombatActions.basicAttack.energyCostMultiplier * getConfigurationValue("attack_upgrade_cost_per_enemy_level")).ceil());
     });
     it("increases multiple enemy together", function () {
         expect(calculateActionCost(enemy, {
             primary: "basicAttack",
-            enhancements: ["flame"]
+            enhancements: [{enhancement: "flame", sourceTrait: "test"}]
         }, player)).toEqual(Decimal((.85 + .35) * CombatActions.basicAttack.energyCostMultiplier * getConfigurationValue("attack_upgrade_cost_per_enemy_level")).ceil());
     });
     it("increases enemy defense enhancement modifier cost", function () {
         expect(calculateActionCost(enemy, {
             primary: "block",
-            enhancements: ["arcane"]
+            enhancements: [{enhancement: "arcane", sourceTrait: "test"}]
         }, player)).toEqual(Decimal((.85 + .35) * CombatActions.block.energyCostMultiplier * getConfigurationValue("attack_downgrade_cost_per_enemy_level")).floor());
     });
 });

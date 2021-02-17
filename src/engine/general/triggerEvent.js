@@ -74,14 +74,27 @@ export default function triggerEvent(event) {
     });
 
     _.get(event.source, ["attack", "action", "enhancements"], []).forEach(enhancement => {
-        const enhancementDef = ActionEnhancements[enhancement];
+        const enhancementDef = ActionEnhancements[enhancement.enhancement];
         const eventDefinition = enhancementDef[event.type];
         if (eventDefinition) {
             const traitTriggered = doesTraitTrigger(eventDefinition, event);
             debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
             const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
             if (effectsToApply) {
-                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement, event.source.character.powerLevel);
+                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, event.source.character.traits[enhancement.sourceTrait]);
+            }
+        }
+    });
+
+    _.get(event.source, ["attack", "reaction", "enhancements"], []).forEach(enhancement => {
+        const enhancementDef = ActionEnhancements[enhancement.enhancement];
+        const eventDefinition = enhancementDef[event.type];
+        if (eventDefinition) {
+            const traitTriggered = doesTraitTrigger(eventDefinition, event);
+            debugMessage(`Enhancement ${enhancement.id} did ${traitTriggered ? '' : 'not'} trigger.`);
+            const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
+            if (effectsToApply) {
+                applyEffects(effectsToApply, event.source.character, event, "enhancement", enhancement.enhancement, event.source.character.traits[enhancement.sourceTrait]);
             }
         }
     });

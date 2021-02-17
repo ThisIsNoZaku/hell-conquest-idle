@@ -187,6 +187,11 @@ export const Traits = {
         enabled: true,
         description: _.template("This Demon inflicts the damage it suffers back on attackers, reflecting <span style='color: orangered'>${tier.times(25).toFixed()}%</span> of the damage it takes.")
     }, ["thorns"])),
+    spiderHunter: validatedTrait(generateTrait({
+        name: "Spider Queen's Chosen",
+        enabled: true,
+        description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness, inflicting ${tier} stacks of Blinded when Dodging and increases Evasion by ${tier.times(25)}%.")
+    }, ["summonDarkness", "evasive"])),
     stormyPersonality: validatedTrait(generateTrait({
         name: "Stormy Personality",
         icon: "./icons/icons-1.png",

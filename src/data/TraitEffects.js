@@ -414,6 +414,9 @@ export const TraitEffects = {
             }
         }
     },
+    summonDarkness: {
+        defense_enhancement: "darknessSummoning",
+    },
     swarming: {
         on_round_end: {
             trigger_effects: {

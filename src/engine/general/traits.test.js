@@ -41,7 +41,7 @@ describe("acidic effect", function () {
         delete Traits.test;
     });
     it("gives an 'acid' attack enhancement ", function () {
-        expect(player.attackEnhancements).toContainEqual("acid");
+        expect(player.attackEnhancements).toContainEqual({enhancement: "acid", sourceTrait: "acidEffect"});
     });
     it("gives acid damage resistance", function () {
         expect(player.damageResistances.acid).toEqual(Decimal(20));
@@ -67,12 +67,12 @@ describe("arcane effect", function () {
         delete Traits.test;
     });
     it("gives arcane shield defense enhancement", function () {
-        expect(player.defenseEnhancements).toContainEqual("arcane");
+        expect(player.defenseEnhancements).toContainEqual({enhancement: "arcane", sourceTrait: "test"});
     });
     it("blocking with Arcane costs additional stamina", function () {
         expect(calculateActionCost(player, {
             primary: "block",
-            enhancements: ["arcane"]
+            enhancements: [{enhancement: "arcane", sourceTrait: "test"}]
         }, enemy)).toEqual(Decimal(50 * 1.1).floor());
     });
     it("performing block with Arcane shield reduces damage further", function () {
@@ -462,7 +462,7 @@ describe("fiery effect", function () {
         delete Traits.test;
     });
     it("gives the fire attack enhancement", function () {
-        expect(player.attackEnhancements).toContainEqual("flame");
+        expect(player.attackEnhancements).toContainEqual({enhancement:"flame", sourceTrait: "test"});
     });
     it("gives fire resistance", function () {
         expect(player.damageResistances).toMatchObject({
@@ -672,11 +672,11 @@ describe("holy effect", function () {
     });
     it("adds smite effect to attacks", function () {
         expect(player.attackEnhancements)
-            .toContainEqual("smite");
+            .toContainEqual({enhancement:"smite", sourceTrait: "test"});
     });
     it("adds blessed effect to defense", function () {
         expect(player.defenseEnhancements)
-            .toContainEqual("blessed");
+            .toContainEqual({enhancement: "blessed", sourceTrait: "test"});
     });
     it("blessed defense enhancement", function () {
         expect(calculateDamageBy(enemy)
@@ -987,6 +987,50 @@ describe("psychic effect", function () {
     });
 });
 
+describe("summonDarkness effect", function () {
+    let player;
+    let enemy;
+    beforeEach(() => {
+        Traits.test = generateTrait({...traitBase}, ["summonDarkness"]);
+        player = new Character({
+            id: 0,
+            traits: {
+                test: 1
+            }
+        });
+        enemy = new Character({
+            id: 1
+        });
+    });
+    it("adds a dodge enhancement which adds stacks of Blinded to self", function () {
+        for (let i = 0; i < 4; i++) {
+            const roundEvents = [];
+            enemy.combat.stamina = Decimal(100);
+            player.combat.stamina = Decimal(300);
+            player.traits.test = i + 1;
+            resolveAttack(enemy, {
+                primary: "basicAttack",
+                enhancements: []
+            }, player, {
+                primary: "dodge",
+                enhancements: [{enhancement: "darknessSummoning", sourceTrait: "test"}]
+            }, roundEvents, 100);
+            expect(roundEvents).toContainEqual({
+                event: "add-status",
+                status: "untouchable",
+                source: {
+                    character: 0,
+                    enhancement: "darknessSummoning"
+                },
+                target: 0,
+                uuid: expect.any(String),
+                stacks: Decimal(i + 1),
+                duration: 1
+            });
+        }
+    });
+});
+
 describe("venomous effect", function () {
     let player;
     let enemy;
@@ -1012,7 +1056,7 @@ describe("venomous effect", function () {
                 character: player,
                 attack: {
                     action: {
-                        enhancements: ["venom"],
+                        enhancements: [{enhancement: "venom", sourceTrait: "test"}],
                     }
                 }
             },
@@ -1370,7 +1414,10 @@ describe("suffocating effect", function () {
     });
     it("inflicts stacks of fatigue on hit", function () {
         player.combat.stamina = Decimal(150);
-        resolveAction(player, {primary: "basicAttack", enhancements: ["exhausting"]}, enemy, {
+        resolveAction(player, {
+            primary: "basicAttack",
+            enhancements: [{enhancement: "exhausting", sourceTrait: "test"}]
+        }, enemy, {
             primary: "none", enhancements: []
         }, [], 100);
         expect(enemy.combat.fatigue).toEqual(Decimal(3));

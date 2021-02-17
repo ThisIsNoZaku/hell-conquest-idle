@@ -76,13 +76,23 @@ export class Character {
 
     get attackEnhancements() {
         return Object.keys(this.traits)
-            .map((trait) => _.get(Traits[trait], ["attack_enhancement"]))
+            .map((trait) => {
+                return _.get(Traits[trait], ["attack_enhancement"]) ? {
+                    enhancement: _.get(Traits[trait], ["attack_enhancement"]),
+                    sourceTrait: trait
+                } : null;
+            })
             .filter(x => x);
     }
 
     get defenseEnhancements() {
         return Object.keys(this.traits)
-            .map((trait) => _.get(Traits[trait], ["defense_enhancement"]))
+            .map((trait) => {
+                return _.get(Traits[trait], ["defense_enhancement"]) ? {
+                    enhancement: _.get(Traits[trait], ["defense_enhancement"]),
+                    sourceTrait: trait
+                } : null;
+            })
             .filter(x => x);
     }
 

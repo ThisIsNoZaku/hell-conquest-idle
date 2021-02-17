@@ -173,6 +173,23 @@ export const Creatures = {
             }
         }
     },
+    darkElfHunter: {
+        name: "Dark Elf Hunter",
+        traits: ["spiderHunter"],
+        enabled: true,
+        appearance: "darkElfHunter",
+        texture: "43_dark_elf_hunter.png",
+        description: "A member of a spider-worshipping elven subrace used to living underground, with the ability to summon darkness",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    defensive: "evade"
+                }
+            }
+        }
+    },
     deadlyHornet: {
         name: "Deadly Hornet",
         traits: ["piercingStrike"],
@@ -447,7 +464,16 @@ export const Creatures = {
         enabled: true,
         appearance: "plagueRat",
         texture: "28_rat.png",
-        description: "An embodiment of pestilence"
+        description: "An embodiment of pestilence",
+        npc: {
+            adjective: "underhanded",
+            tactics: {
+                default: {
+                    offensive: "counter",
+                    dodge: "evade"
+                }
+            }
+        }
     },
     rapaciousHighwayman: {
         name: "Rapacious Highwayman",
