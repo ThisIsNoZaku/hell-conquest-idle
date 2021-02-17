@@ -26,7 +26,7 @@ const config = {
     recovery_action_healing_percentage: .5,
     recover_action_stamina_percentage: 1,
     minimum_stamina: 0,
-    bonus_stamina_per_level: 300,
+    bonus_stamina_per_level: 500,
     intimidation_cost_attribute: "cunning",
     trait_tier_up_levels: 25, // Traits upgrade when reaching a multiple of this level.
     minimum_attack_upgrade_cost: 10,
