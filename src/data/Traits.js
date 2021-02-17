@@ -23,8 +23,8 @@ export const Traits = {
     bloodHunger: validatedTrait(generateTrait({
         name: "Blood Hunger",
         icon: "./icons/icons-1.png",
-        description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Terrified</span> for <span style='color: lightblue'>10</span> round(s)")
-    }, ["precise", "neutralizing"])),
+        description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Frightened</span> for <span style='color: lightblue'>10</span> round(s)")
+    }, ["frightening", "vampiric"])),
     boneHunter: validatedTrait(generateTrait({
         name: "Bone Hunter",
         description: _.template("This Demon's relentless drive to take down its prey makes it Mindless and increases its maximum and generated Energy by ${tier.times(25)}%.")
