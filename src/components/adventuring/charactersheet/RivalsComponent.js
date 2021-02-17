@@ -14,7 +14,6 @@ function changeRivalTactics(event) {
     const level = event.currentTarget.dataset.level;
     const tacticType = event.currentTarget.dataset.tacticType;
     const tactic = event.currentTarget.dataset.tactic;
-    debugger;
     getGlobalState().rivals[level].tactics[tacticType] = tactic;
 }
 

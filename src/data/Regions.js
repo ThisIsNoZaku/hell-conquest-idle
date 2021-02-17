@@ -54,7 +54,6 @@ class Region {
                 const generatedCreature = generateCreature(enemyDef.name, encounterLevel, rng);
                 generatedCreature.isRival = encounterWithRival;
                 if (generatedCreature.isRival) {
-                    debugger;
                     generatedCreature.traits = getGlobalState().rivals[encounterLevel.toNumber()].character.traits;
                     generatedCreature.tactics = getGlobalState().rivals[encounterLevel.toNumber()].character.tactics;
                 }
