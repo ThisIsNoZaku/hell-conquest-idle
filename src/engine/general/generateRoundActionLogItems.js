@@ -28,9 +28,9 @@ function describeEvent(event) {
     const targetName = event.target !== undefined ? getCharacter(event.target).name : null;
     switch (event.event) {
         case "stamina-change":
-            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} energy`;
+            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${Decimal(event.value).abs().toFixed()} energy`;
         case "stamina-change":
-            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${event.value} fatigue`;
+            return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${Decimal(event.value).abs().toFixed()} fatigue`;
         case "kill":
             return `<strong>${targetName} died!</strong>`
         case "attack":
