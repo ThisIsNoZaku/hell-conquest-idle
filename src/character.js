@@ -197,7 +197,7 @@ export class Character {
         this.statuses = {};
         this.absorbedPower = Decimal(0);
         if(!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
-            this.latentPower = this.latentPower.plus(this.powerLevel.times(5));
+            this.latentPower = this.latentPower.plus(this.powerLevel.times(getConfigurationValue("latent_power_per_level")));
         }
         this.powerLevel = Decimal(1);
         this.hp = this.maximumHp;

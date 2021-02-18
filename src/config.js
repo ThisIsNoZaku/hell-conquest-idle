@@ -11,6 +11,7 @@ const config = {
     bonus_points_for_highest_level : "highestLevelReached.plus(highestLevelReached.div(10).floor())", // How many bonus points the player gets, based on their highest level reached.
     latent_power_cap: "highestLevelEnemyDefeated.plus(1).times(10)", // The maximum the player's latent power cap can be.
     lesser_demon_instant_kill_level: "highestLevelReached.minus(10)",
+    latent_power_per_level: 1,
     latent_power_effect_scale: .01,
     trait_point_cost: "Decimal.max(1, traitsOwned.times(2))",
     minimum_attribute_score: 1,
