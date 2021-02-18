@@ -314,7 +314,7 @@ export const Regions = {
             wheezingApparition: {
                 description: "1 Skittering Horror",
                 type: "combat",
-                enabled: true,
+                enabled: false,
                 enemies: [
                     {
                         name: "wheezingApparition",
