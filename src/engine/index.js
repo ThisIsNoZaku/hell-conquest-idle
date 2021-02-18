@@ -111,54 +111,58 @@ let nextMonsterId = 1;
 
 export function generateCreature(id, powerLevel, rng) {
     assertCreatureExists(id);
-    if (getConfigurationValue("debug")) {
-        debugMessage(`Generating creature with id ${id} and level ${powerLevel}`);
-    }
-    if (powerLevel === undefined) {
-        throw new Error("No powerLevel");
-    }
-    if (Number.isNaN(powerLevel)) {
-        throw new Error("Level cannot be NaN");
-    }
-    // Adjectives
-    if(!Object.keys(titles).includes(Creatures[id].npc.adjective)) {
-        throw new Error(Creatures[id].npc.adjective);
-    }
-    const adjective = titles[Creatures[id].npc.adjective];
-    const {offensiveTactics, defensiveTactics} = determineCreatureTactics(id, adjective);
-    const nextId = nextMonsterId++;
-    // Starting traits
-    const startingTraits = Creatures[id].traits.reduce((traits, next) => {
-        traits[next] = powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
-        return traits;
-    }, {});
-
-    const bonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
-        highestLevelReached: Decimal(powerLevel)
-    })
-    const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective], startingTraits);
-    globalState.characters[nextId] = new Character({
-        id: nextId,
-        ..._.omit(Creatures[id], ["npc"]),
-        latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(50))), // FIXME: Make configurable value
-        tactics: {
-            offensive: offensiveTactics,
-            defensive: defensiveTactics
-        },
-        adjectives: [Creatures[id].npc.adjective],
-        traits: {...startingTraits, ...bonuses.traits},
-        powerLevel: powerLevel,
-        party: 1,
-        highestLevelEnemyDefeated: Decimal(powerLevel),
-        attributes: {
-            baseBrutality: bonuses.attributes.brutality,
-            baseCunning: bonuses.attributes.cunning,
-            baseDeceit: bonuses.attributes.deceit,
-            baseMadness: bonuses.attributes.madness
+    try {
+        if (getConfigurationValue("debug")) {
+            debugMessage(`Generating creature with id ${id} and level ${powerLevel}`);
         }
-    }, 1);
-    saveGlobalState();
-    return globalState.characters[nextId];
+        if (powerLevel === undefined) {
+            throw new Error("No powerLevel");
+        }
+        if (Number.isNaN(powerLevel)) {
+            throw new Error("Level cannot be NaN");
+        }
+        // Adjectives
+        if (!Object.keys(titles).includes(Creatures[id].npc.adjective)) {
+            throw new Error(Creatures[id].npc.adjective);
+        }
+        const adjective = titles[Creatures[id].npc.adjective];
+        const {offensiveTactics, defensiveTactics} = determineCreatureTactics(id, adjective);
+        const nextId = nextMonsterId++;
+        // Starting traits
+        const startingTraits = Creatures[id].traits.reduce((traits, next) => {
+            traits[next] = powerLevel.div(getConfigurationValue("trait_tier_up_levels")).ceil();
+            return traits;
+        }, {});
+
+        const bonusPoints = evaluateExpression(getConfigurationValue("bonus_points_for_highest_level"), {
+            highestLevelReached: Decimal(powerLevel)
+        })
+        const bonuses = calculateNPCBonuses(bonusPoints.toNumber(), [adjective], startingTraits);
+        globalState.characters[nextId] = new Character({
+            id: nextId,
+            ..._.omit(Creatures[id], ["npc"]),
+            latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(50))), // FIXME: Make configurable value
+            tactics: {
+                offensive: offensiveTactics,
+                defensive: defensiveTactics
+            },
+            adjectives: [Creatures[id].npc.adjective],
+            traits: {...startingTraits, ...bonuses.traits},
+            powerLevel: powerLevel,
+            party: 1,
+            highestLevelEnemyDefeated: Decimal(powerLevel),
+            attributes: {
+                baseBrutality: bonuses.attributes.brutality,
+                baseCunning: bonuses.attributes.cunning,
+                baseDeceit: bonuses.attributes.deceit,
+                baseMadness: bonuses.attributes.madness
+            }
+        }, 1);
+        saveGlobalState();
+        return globalState.characters[nextId];
+    } catch (e) {
+        throw new Error(`Error generating creature ${id}: ${e.error}`);
+    }
 }
 
 
