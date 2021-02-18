@@ -19,7 +19,7 @@ export default function (powerLevel, fatigue, latentPowerModifier, traits) {
     const fatigueModifier = 0;
     return Decimal.max(0, baseStamina.plus(Decimal(powerLevel).times(getConfigurationValue("bonus_stamina_per_level")))
         .times(traitMultiplier)
-        .times(latentPowerModifier.plus(1))
+        .times(latentPowerModifier.times(2).plus(1))
         .minus(fatigueModifier)
         .floor());
 };
