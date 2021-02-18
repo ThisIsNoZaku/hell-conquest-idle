@@ -312,7 +312,7 @@ export const Creatures = {
     },
     fireHawk: {
         name: "Fire Hawk",
-        appearance: "firehawk",
+        appearance: "fireHawk",
         traits: ["fireBird"],
         texture: "20_bird.png",
         npc: {
@@ -665,6 +665,7 @@ export const Creatures = {
     },
     wheezingApparition: {
         name: "Wheezing Apparition",
+        enabled: false,
         traits: ["exhaustingTouch"],
         appearance: "wheezingApparition",
         texture: "128_sorrowsworn.png",
