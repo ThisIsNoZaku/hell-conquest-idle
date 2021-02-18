@@ -33,7 +33,7 @@ export default function triggerEvent(event) {
                 debugMessage(`Trait ${traitId} did ${traitTriggered ? '' : 'not'} trigger.`);
                 const effectsToApply = eventDefinition[traitTriggered ? "trigger_effects" : "not_trigger_effects"];
                 if (effectsToApply) {
-                    applyEffects(effectsToApply, combatant, event, "trait", traitId, combatant.madness.times(.1).plus(combatant.traits[traitId]).floor());
+                    applyEffects(effectsToApply, combatant, event, "trait", traitId, combatant.attributes.madness.times(.1).plus(combatant.traits[traitId]).floor());
                 }
             }
         });
