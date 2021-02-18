@@ -43,7 +43,7 @@ describe("acidic effect", function () {
         expect(player.attackEnhancements).toContainEqual({enhancement: "acid", sourceTrait: "acidEffect"});
     });
     it("gives acid damage resistance", function () {
-        expect(player.damageResistances.acid).toEqual(Decimal(20));
+        expect(player.damageResistances.acid).toEqual(Decimal(.1));
     })
 });
 
@@ -221,7 +221,10 @@ describe("choking effect", function () {
         const roundEvents = [];
         resolveAttack(player, {
             primary: "basicAttack",
-            enhancements: []
+            enhancements: [{
+                enhancement: "choking",
+                sourceTrait: "test"
+            }]
         }, enemy, {
             primary: "none",
             enhancements: []
@@ -232,7 +235,7 @@ describe("choking effect", function () {
             parent: expect.any(String),
             source: {
                 character: 0,
-                trait: "test"
+                enhancement: "choking"
             },
             value: Decimal(.1).times(enemy.combat.maximumStamina),
             uuid: expect.any(String)
@@ -300,51 +303,22 @@ describe("crushing effect", function () {
             sourceTrait: "test"
         });
     });
-    it("adds stacks of Crushed on solid hit for 2 actions", function () {
+    it("adds stacks of Crushed on hit for 5 actions", function () {
         const roundEvents = [];
         triggerEvent({
-            type: "on_solid_hit",
+            type: "on_hit",
             source: {
-                character: player
-            },
-            target: enemy,
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            roundEvents
-        });
-        expect(roundEvents).toContainEqual({
-            event: "add-status",
-            status: "crushed",
-            duration: 2,
-            stacks: Decimal(1),
-            uuid: expect.any(String),
-            source: {
-                character: 0,
-                trait: "test"
-            },
-            target: 1
-        });
-        expect(enemy.statuses).toMatchObject({
-            crushed: [
-                {
-                    source: {
-                        character: 0,
-                        trait: "test"
-                    },
-                    stacks: Decimal(1),
-                    duration: 2
+                character: player,
+                attack: {
+                    action: {
+                        enhancements: [
+                            {
+                                enhancement: "crushing",
+                                sourceTrait: "test"
+                            }
+                        ]
+                    }
                 }
-            ]
-        });
-    });
-    it("adds stacks of Crushed on devastating hit for 5 actions", function () {
-        const roundEvents = [];
-        triggerEvent({
-            type: "on_devastating_hit",
-            source: {
-                character: player
             },
             target: enemy,
             combatants: {
@@ -361,7 +335,7 @@ describe("crushing effect", function () {
             uuid: expect.any(String),
             source: {
                 character: 0,
-                trait: "test"
+                enhancement: "crushing"
             },
             target: 1
         });
@@ -369,8 +343,7 @@ describe("crushing effect", function () {
             crushed: [
                 {
                     source: {
-                        character: 0,
-                        trait: "test"
+                        character: 0
                     },
                     stacks: Decimal(1),
                     duration: 5
@@ -460,6 +433,7 @@ describe("evasive effect", function () {
 
 describe("fiery effect", function () {
     let player;
+    let enemy;
     beforeEach(() => {
         Traits.test = generateTrait({...traitBase}, ["fiery"]);
         player = new Character({
@@ -467,19 +441,44 @@ describe("fiery effect", function () {
             traits: {
                 test: 1
             }
+        });
+        enemy = new Character({
+            id: 1
         })
     });
     afterEach(() => {
         delete Traits.test;
     });
     it("gives the fire attack enhancement", function () {
-        expect(player.attackEnhancements).toContainEqual({enhancement:"flame", sourceTrait: "test"});
+        expect(player.attackEnhancements).toContainEqual({enhancement: "flame", sourceTrait: "test"});
     });
     it("gives fire resistance", function () {
         expect(player.damageResistances).toMatchObject({
-            fire: Decimal(.2)
+            fire: Decimal(.1)
         });
-    })
+    });
+    it("changes the damage type of attacks", function () {
+        const roundEvents = [];
+        player.combat.stamina = Decimal(150);
+        resolveAttack(player, {
+            primary: "basicAttack",
+            enhancements: [{enhancement: "flame", sourceTrait: "test"}]
+        }, enemy, {
+            primary: "none",
+            enhancements: []
+        }, roundEvents, 100);
+        expect(roundEvents).toContainEqual({
+            event: "damage",
+            type: "fire",
+            value: Decimal(15),
+            source: {
+                character: 0
+            },
+            target: 1,
+            uuid: expect.any(String),
+            parent: expect.any(String)
+        });
+    });
 });
 
 describe("flying effect", function () {
@@ -683,7 +682,7 @@ describe("holy effect", function () {
     });
     it("adds smite effect to attacks", function () {
         expect(player.attackEnhancements)
-            .toContainEqual({enhancement:"smite", sourceTrait: "test"});
+            .toContainEqual({enhancement: "smite", sourceTrait: "test"});
     });
     it("adds blessed effect to defense", function () {
         expect(player.defenseEnhancements)
@@ -933,7 +932,7 @@ describe("mindless effect", function () {
         delete Traits.test;
     });
     it("gives psychic damage resistance", function () {
-        expect(player.damageResistances.psychic).toEqual(Decimal(20));
+        expect(player.damageResistances.psychic).toEqual(Decimal(.1));
     });
 });
 
@@ -1431,7 +1430,7 @@ describe("suffocating effect", function () {
         }, enemy, {
             primary: "none", enhancements: []
         }, [], 100);
-        expect(enemy.combat.fatigue).toEqual(Decimal(3));
+        expect(enemy.combat.fatigue).toEqual(Decimal(5));
     })
 });
 
