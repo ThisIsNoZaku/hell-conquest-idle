@@ -314,6 +314,7 @@ export const Creatures = {
         name: "Fire Hawk",
         appearance: "fireHawk",
         traits: ["fireBird"],
+        description: "A large bird able to remain aloft for days via the power of hell, occasionally swooping down to snatch prey.",
         texture: "20_bird.png",
         npc: {
             adjective: "underhanded",
