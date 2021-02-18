@@ -1,9 +1,8 @@
 import {Character} from "../character";
 import {Decimal} from "decimal.js";
-import calculateActionCost from "../engine/combat/actions/calculateActionCost";
+import {calculateActionCost} from "../engine/combat/actions/calculateActionCost";
 import {CombatActions} from "./CombatActions";
 import {getConfigurationValue} from "../config";
-import resolveAction from "../engine/combat/actions/resolveAction";
 import resolveCombatRound from "../engine/combat/resolveCombatRound";
 import {getCharacter} from "../engine";
 

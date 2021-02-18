@@ -1,4 +1,4 @@
-import calculateActionCost from "./calculateActionCost";
+import {calculateActionCost} from "./calculateActionCost";
 import {Decimal} from "decimal.js";
 import {getConfigurationValue} from "../../../config";
 

@@ -9,7 +9,7 @@ import {getConfigurationValue} from "../../config";
 import resolveAttack from "../combat/resolveAttack";
 import {TraitEffects} from "../../data/TraitEffects";
 import {getCharacter} from "../index";
-import calculateActionCost from "../combat/actions/calculateActionCost";
+import {calculateActionCost} from "../combat/actions/calculateActionCost";
 import resolveAction from "../combat/actions/resolveAction";
 import determineCharacterCombatAction from "../combat/actions/determineCharacterCombatAction";
 import {Tactics} from "../../data/Tactics";

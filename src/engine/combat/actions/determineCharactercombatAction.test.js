@@ -1,7 +1,7 @@
 import determineCharacterCombatAction from "./determineCharacterCombatAction";
 import {Character} from "../../../character";
 import {Decimal} from "decimal.js";
-import calculateActionCost from "./calculateActionCost";
+import {calculateActionCost} from "./calculateActionCost";
 
 jest.mock("../../index");
 

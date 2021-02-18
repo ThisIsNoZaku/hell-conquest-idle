@@ -6,7 +6,7 @@ import getPowerNeededForLevel from "../../engine/general/getPowerNeededForLevel"
 import {Decimal} from "decimal.js";
 import * as _ from "lodash";
 import {HitTypes} from "../../data/HitTypes";
-import calculateActionCost from "../../engine/combat/actions/calculateActionCost";
+import {calculateActionCost} from "../../engine/combat/actions/calculateActionCost";
 import {getGlobalState} from "../../engine";
 
 const styles = {

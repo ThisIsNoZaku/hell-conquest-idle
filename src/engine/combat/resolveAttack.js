@@ -2,7 +2,7 @@ import Decimal from "decimal.js";
 import {generateAttackEvent, generateHitEvents, generateKillEvent} from "../events/generate";
 import {HitTypes} from "../../data/HitTypes";
 import calculateDamageBy from "./calculateDamageBy";
-import calculateActionCost from "./actions/calculateActionCost";
+import {calculateActionCost} from "./actions/calculateActionCost";
 import {CombatActions} from "../../data/CombatActions";
 import triggerEvent from "../general/triggerEvent";
 import onTakingDamage from "./events/onTakingDamage";

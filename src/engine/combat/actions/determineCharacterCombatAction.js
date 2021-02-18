@@ -1,4 +1,4 @@
-import calculateActionCost from "./calculateActionCost";
+import {calculateActionCost} from "./calculateActionCost";
 import {debugMessage} from "../../../debugging";
 import * as _ from "lodash";
 import {CombatActions} from "../../../data/CombatActions";
