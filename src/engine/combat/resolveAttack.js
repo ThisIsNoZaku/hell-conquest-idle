@@ -6,6 +6,8 @@ import calculateActionCost from "./actions/calculateActionCost";
 import {CombatActions} from "../../data/CombatActions";
 import triggerEvent from "../general/triggerEvent";
 import onTakingDamage from "./events/onTakingDamage";
+import {ActionEnhancements} from "../../data/ActionEnhancements";
+import * as _ from "lodash";
 
 export default function resolveAttack(actingCharacter, action, targetedCharacter, reaction, roundEvents, tick) {
     if (typeof tick !== "number") {
@@ -55,7 +57,10 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         .against(targetedCharacter).using(reaction)[hitLevel];
     const damageDone = baseDamage;
     targetedCharacter.dealDamage(damageDone);
-    const attackResult = generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, "physical", action, actionEnergyCost, reaction, reactionEnergyCost);
+    const damageType = action.enhancements.reduce((type, nextEnhancement) => {
+        return _.get(ActionEnhancements, [nextEnhancement.enhancement, "change_damage_type"], type)
+    }, "physical");
+    const attackResult = generateHitEvents(hitLevel, actingCharacter, targetedCharacter, damageDone, damageType, action, actionEnergyCost, reaction, reactionEnergyCost);
     roundEvents.push(attackResult.attack);
     roundEvents.push(attackResult.damage);
     triggerEvent({
