@@ -7,9 +7,9 @@ const config = {
     lesser_level_scale: 1, // A demon is "lesser" than another when its level is this much lower.
     greater_level_scale: 1, // A demon is "greater" than another when its level is this much higher.
     intimidateable_demon_level: 10, // A demon can be intimidated when its level is this much lower than the player
-    enemy_latent_power: "Decimal.max(0, encounterLevel.minus(1).times(30))", // The amount of latent power enemy demons start with
+    enemy_latent_power: "Decimal.max(0, encounterLevel.minus(1).times(5))", // The amount of latent power enemy demons start with
     bonus_points_for_highest_level : "highestLevelReached.plus(highestLevelReached.div(10).floor())", // How many bonus points the player gets, based on their highest level reached.
-    latent_power_cap: "highestLevelEnemyDefeated.plus(1).times(50)", // The maximum the player's latent power cap can be.
+    latent_power_cap: "highestLevelEnemyDefeated.plus(1).times(10)", // The maximum the player's latent power cap can be.
     lesser_demon_instant_kill_level: "highestLevelReached.minus(10)",
     latent_power_effect_scale: .01,
     trait_point_cost: "Decimal.max(1, traitsOwned.times(2))",
