@@ -98,7 +98,7 @@ export const Traits = {
         name: "Fire Bird",
         enabled: true,
         description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
-    }),
+    }, ["flying", "fire"]),
     freakyFishGuy: validatedTrait(generateTrait({
         name: "Thassalophilia",
         enabled: true,
