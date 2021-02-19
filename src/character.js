@@ -12,6 +12,7 @@ import {HitTypes} from "./data/HitTypes";
 import * as JOI from "joi";
 import calculateCharacterStamina from "./engine/general/calculateCharacterStamina";
 import {DamageTypes} from "./data/DamageTypes";
+import {enableTutorial} from "./engine/tutorials";
 
 export class Character {
     constructor(props, party) {
@@ -198,6 +199,9 @@ export class Character {
         this.absorbedPower = Decimal(0);
         if(!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
             this.latentPower = this.latentPower.plus(this.powerLevel.times(getConfigurationValue("latent_power_per_level")));
+            if(this.latentPower.gt(this.latentPowerCap)) {
+                enableTutorial("latent-power-cap");
+            }
         }
         this.powerLevel = Decimal(1);
         this.hp = this.maximumHp;
@@ -268,6 +272,10 @@ export class Character {
             const statusDefTarget = _.get(Traits[nextStatus], ["continuous", "trigger_effects", "inscrutable", "target"]);
             return isInscrutable || statusDefTarget === "self";
         }, false)
+    }
+
+    get canNegotiate() {
+        return this.powerLevel.gte(26);
     }
 }
 
