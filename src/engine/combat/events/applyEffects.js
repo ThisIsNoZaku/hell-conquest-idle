@@ -121,7 +121,10 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
             case "change_stamina": {
                 const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
                 targets.forEach(target => {
-                    const staminaChange = contextCharacter.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).floor();
+                    const staminaChange = effectDefinition.percentage_of_maximum_stamina ?
+                        contextCharacter.combat.maximumStamina.times(effectDefinition.percentage_of_maximum_stamina).floor() :
+                        contextCharacter.combat.stamina.times(effectDefinition.percentage_of_current_stamina).floor()
+                    ;
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);
                     const newEffectUuid = v4();
                     if (_.get(event.source, "attack")) {
@@ -167,8 +170,9 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 targets.forEach(target => {
                     const healthChange = effectDefinition.percentage_of_maximum_health ?
                         contextCharacter.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(effectLevel).floor() :
-                        Decimal(effectDefinition.value).times(effectLevel).floor();
-                    target.hp = target.hp.plus(healthChange);
+                        (effectDefinition.percentage_of_current_stamina ? contextCharacter.combat.stamina.times(effectDefinition.percentage_of_current_stamina).times(effectLevel).floor() :
+                        Decimal(effectDefinition.value).times(effectLevel).floor());
+                    target.setHp(target.hp.plus(healthChange))
                     const newEffectUuid = v4();
                     if (_.get(event.source, "attack")) {
                         event.source.attack.children.push(newEffectUuid);

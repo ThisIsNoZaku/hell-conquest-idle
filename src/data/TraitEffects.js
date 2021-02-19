@@ -325,11 +325,11 @@ export const TraitEffects = {
             trigger_effects: {
                 change_health: {
                     target: "self",
-                    percentage_of_maximum_health: .05
+                    percentage_of_current_stamina: .01
                 },
                 change_stamina: {
                     target: "self",
-                    percentage_of_maximum_stamina: -.05
+                    percentage_of_current_stamina: -.1
                 }
             }
         }

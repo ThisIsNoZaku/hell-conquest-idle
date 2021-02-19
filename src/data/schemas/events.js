@@ -48,16 +48,19 @@ const eventEffects = modifierEffects.keys({
     }),
     change_stamina: JOI.object({
         target: effectTarget,
-        percentage_of_maximum_stamina: [JOI.string(), JOI.number()]
+        percentage_of_maximum_stamina: [JOI.string(), JOI.number()],
+        percentage_of_current_stamina: JOI.number()
     }),
     change_health: JOI.object({
         target: effectTarget,
         percentage_of_maximum_health: [JOI.string(), JOI.number()],
-        value: [JOI.string(), JOI.number()]
+        value: [JOI.string(), JOI.number()],
+        percentage_of_current_stamina: JOI.number()
     }),
     change_fatigue: JOI.object({
         target: effectTarget,
         percentage_of_maximum_stamina: [JOI.string(), JOI.number()],
+        percentage_of_current_stamina: JOI.number(),
         value: [JOI.string(), JOI.number()]
     }),
     trait_mirror: JOI.object({

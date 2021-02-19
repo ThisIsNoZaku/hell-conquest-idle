@@ -589,47 +589,10 @@ describe("grappler effect", function () {
     afterEach(() => {
         delete Traits.test;
     });
-    it("add stacks of restrained on solid hit", function () {
+    it("add stacks of restrained on hit", function () {
         const roundEvents = [];
         triggerEvent({
-            type: "on_solid_hit",
-            source: {
-                character: player
-            },
-            target: enemy,
-            combatants: {
-                0: player,
-                1: enemy
-            },
-            roundEvents
-        });
-        expect(roundEvents).toContainEqual({
-            event: "add-status",
-            target: 1,
-            source: {
-                character: 0,
-                trait: "test"
-            },
-            duration: 2,
-            status: "restrained",
-            stacks: Decimal(1),
-            uuid: expect.any(String)
-        });
-        expect(enemy.statuses).toMatchObject({
-            restrained: [{
-                source: {
-                    character: 0,
-                    trait: "test"
-                },
-                duration: 2,
-                stacks: Decimal(1)
-            }]
-        })
-    });
-    it("add stacks of restrained on devastating hit", function () {
-        const roundEvents = [];
-        triggerEvent({
-            type: "on_devastating_hit",
+            type: "on_hit",
             source: {
                 character: player
             },
@@ -1156,7 +1119,7 @@ describe("regenerative effect", function () {
         expect(roundEvents).toContainEqual({
             event: "health-change",
             parent: undefined,
-            value: player.maximumHp.times(0.05).floor(),
+            value: player.combat.maximumStamina.times(0.05).floor(),
             target: 0,
             uuid: expect.any(String),
             source: {
@@ -1164,8 +1127,20 @@ describe("regenerative effect", function () {
                 trait: "test"
             }
         });
-        expect(player.hp).toEqual(Decimal(1).plus(player.maximumHp.times(0.05).floor()));
+        expect(player.hp).toEqual(Decimal(1).plus(player.combat.maximumStamina.times(0.05).floor()));
         expect(player.combat.stamina).toEqual(player.combat.maximumStamina.plus(player.combat.maximumStamina.times(-0.05).floor()));
+    });
+    it("does not over heal", function () {
+        const roundEvents = [];
+        player.combat.stamina = player.combat.maximumStamina;
+        triggerEvent({
+            type: "on_round_end",
+            combatants: {
+                0: player,
+            },
+            roundEvents
+        });
+        expect(player.hp).toEqual(player.maximumHp);
     });
 });
 
