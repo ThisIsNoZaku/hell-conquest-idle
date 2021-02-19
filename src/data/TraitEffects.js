@@ -60,7 +60,7 @@ export const TraitEffects = {
             }
         }
     },
-    crushing: { // TODO: Turn to attack enhancement
+    crushing: {
         attack_enhancement: "crushing",
     },
     diseased: {
