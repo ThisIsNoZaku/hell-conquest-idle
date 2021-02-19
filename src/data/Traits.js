@@ -62,27 +62,27 @@ export const Traits = {
             }
         }
     }),
-    deadlySwarm: validatedTrait({
+    deadlySwarm: validatedTrait(generateTrait({
         name: "Deadly Swarm",
         enabled: true,
         description: _.template("This demon takes the form of a swarm of tiny, stinging insects, gaining a ${tier.times(50)}% bonus to Evasion and Precision but a ${tier.times(25)}% penalty to Power and Resilience, and it's size means the damage inflicted and taken is ${tier.times(25)}% less.")
-    }, ["tiny", "insubstantial"]),
-    deeaboo: validatedTrait({
+    }, ["tiny", "insubstantial"])),
+    deeaboo: validatedTrait(generateTrait({
         name: "Demon Form",
         icon: "./icons/icons-1.png",
         enabled: true,
         description: _.template("This Demon has reshaped itself to have a massive 'ultimate demon form', gaining ${tier.times(20)}% bonus to Power and Resilience and a ${tier.times(10)}% penalty to Precision and Evasion and it's blocks are ${tier.times(25)}% more difficult to block.")
-    }, ["large", "unstoppable"]),
-    demonMaster: validatedTrait({
+    }, ["large", "unstoppable"])),
+    demonMaster: validatedTrait(generateTrait({
         name: "Demon Master",
         enabled: true,
         description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
-    }, ["learned", "arcane"]),
-    plagueHarbinger: validatedTrait({
+    }, ["learned", "arcane"])),
+    plagueHarbinger: validatedTrait(generateTrait({
         name: "Plague Harbinger",
         enabled: true,
         description: _.template("")
-    }, ["small", "diseased"]),
+    }, ["small", "diseased"])),
     eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
         icon: "./icons/icons-1.png",
@@ -94,11 +94,11 @@ export const Traits = {
         enabled: true,
         description: _.template("The Demon saps the strength from the victims limbs, reducing both Damage and Defense by <span>${tier.times(5)}%</span> for 1 round.")
     }, ["insubstantial", "choking"])),
-    fireBird: validatedTrait({
+    fireBird: validatedTrait(generateTrait({
         name: "Fire Bird",
         enabled: true,
         description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
-    }, ["flying", "fire"]),
+    }, ["flying", "fiery"])),
     freakyFishGuy: validatedTrait(generateTrait({
         name: "Thassalophilia",
         enabled: true,
