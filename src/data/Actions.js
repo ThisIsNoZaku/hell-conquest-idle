@@ -100,8 +100,8 @@ export const Actions = {
                         },
                         roundEvents: events
                     });
-                    player.combat.stamina = player.energyGeneration.times(100).floor();
-                    enemy.combat.stamina = enemy.energyGeneration.times(100).floor();
+                    player.combat.stamina = player.combat.maximumStamina;
+                    enemy.combat.stamina = enemy.combat.maximumStamina;
                     generateRoundActionLogItems({
                         events
                     }).forEach(event => {
