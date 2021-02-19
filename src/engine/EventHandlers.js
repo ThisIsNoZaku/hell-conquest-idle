@@ -11,22 +11,6 @@ import triggerEvent from "./general/triggerEvent";
 import generateRoundActionLogItems from "./general/generateRoundActionLogItems";
 
 export const EventHandlers = {
-    "add-status": function (event, sourceCharacter, targetCharacter) {
-        targetCharacter.statuses[event.status].push({
-            source: event.source,
-            stacks: event.stacks,
-            duration: event.duration
-        });
-    },
-    "remove-status": function (event, sourceCharacter, targetCharacter) {
-        const statusToRemove = targetCharacter.statuses[event.status].find(s => s.uuid === event.toRemove);
-        if (Decimal(statusToRemove.stacks).lte(event.stacks)) {
-            targetCharacter.statuses[event.status] = targetCharacter.statuses[event.status]
-                .filter(s => s.uuid !== event.toRemove);
-        } else {
-            statusToRemove.stacks = Decimal(statusToRemove.stacks).minus(event.stacks);
-        }
-    },
     "kill": function (event, sourceCharacter, targetCharacter, pushLogItem) {
         const actingCharacter = getCharacter(event.source.character);
         const deadCharacter = getCharacter(event.target);
