@@ -5,7 +5,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import Button from "@material-ui/core/Button";
 
 export default function TutorialDialog(props) {
-    return <Dialog open={props.open} onClose={props.onClise}>
+    return <Dialog open={props.open} onClose={props.onClose}>
         <DialogTitle>{props.tutorial && props.tutorial.title}</DialogTitle>
         <DialogContent dangerouslySetInnerHTML={{
             __html: props.tutorial && props.tutorial.body
