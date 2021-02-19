@@ -7,18 +7,17 @@ import {Decimal} from "decimal.js";
 export default function onCombatRoundEnd(combatants, roundEvents, tick) {
     const everyoneAlive = Object.values(combatants).every(c => c.isAlive);
     if(everyoneAlive) {
+        triggerEvent(
+            {
+                type: "on_round_end",
+                combatants,
+                roundEvents
+            }
+        );
         Object.values(combatants).forEach(combatant => {
             if (!combatant.isAlive) {
                 return;
             }
-            triggerEvent(
-                {
-                    type: "on_round_end",
-                    combatants,
-                    roundEvents
-                }
-            );
-
 
             Object.keys(combatant.statuses).forEach(status => {
                 if (combatant.statuses[status]) {
