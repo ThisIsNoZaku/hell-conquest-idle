@@ -406,9 +406,17 @@ describe('Tactics attrit + block', function () {
                 primary: "basicAttack",
                 enhancements: []
             });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "basicAttack",
+                enhancements: []
+            });
     });
     it("if the enemy is dodging or blocking, perform a basic attack", function () {
-        player.combat.stamina = player.combat.maximumStamina;
+        player.combat.stamina = Decimal(100);
         expect(determineCharacterCombatAction(player, enemy, {
             primary: "dodge",
             enhancements: []
@@ -460,7 +468,7 @@ describe('Tactics attrit + block', function () {
     })
 });
 
-describe('Tactics attrit + evade', function () {
+describe('Tactics attrit + dodge', function () {
     let player;
     let enemy;
     beforeEach(() => {
@@ -510,17 +518,12 @@ describe('Tactics attrit + evade', function () {
                 enhancements: []
             });
     });
-    it("if the enemy is or can power attack, perform a dodge", function () {
-        player.combat.stamina = player.combat.maximumStamina;
-        enemy.combat.stamina = enemy.combat.maximumStamina;
+    it("if the enemy does nothing, perform a basic attack", function () {
+        player.combat.stamina = Decimal(150);
         expect(determineCharacterCombatAction(player, enemy, {
-            primary: "powerAttack"
+            primary: "none"
         })).toEqual({
-            primary: "dodge",
-            enhancements: []
-        });
-        expect(determineCharacterCombatAction(player, enemy)).toEqual({
-            primary: "dodge",
+            primary: "basicAttack",
             enhancements: []
         });
     });

@@ -2,6 +2,7 @@ import {calculateActionCost} from "./calculateActionCost";
 import {debugMessage} from "../../../debugging";
 import * as _ from "lodash";
 import {CombatActions} from "../../../data/CombatActions";
+import {act} from "@testing-library/react";
 
 const doNothing = (actingCharacter) => {
     return {
@@ -67,10 +68,6 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
                 }
-            }
-            return {
-                primary: "none",
-                enhancements: actingCharacter.attackEnhancements
             }
         },
         block: function (actingCharacter, enemy, enemyAction) {
@@ -199,9 +196,13 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                 primary: "basicAttack",
                 enhancements: actingCharacter.attackEnhancements
             }, enemy).lte(actingCharacter.combat.stamina);
-            const enemyNotAttacking = ["dodge", "block", "none"].includes(_.get(enemyAction, "primary"));
-            if(enemyNotAttacking && canAttack) {
-                debugMessage(`Reason: Enemy not attacking and player can attack.`);
+            const enemyCanAttack = calculateActionCost(enemy, {
+                primary: "basicAttack",
+                enhancements: actingCharacter.attackEnhancements
+            }, actingCharacter).lte(enemy.combat.stamina)
+            const enemyNotAttacking = defenseActions.includes(_.get(enemyAction, "primary"));
+            if((enemyNotAttacking || !enemyCanAttack) && canAttack) {
+                debugMessage(`Reason: Enemy can't attack and player can.`);
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -220,7 +221,8 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
                     enhancements: actingCharacter.defenseEnhancements
                 }
             }
-            if(actingCharacter.combat.stamina.eq(actingCharacter.combat.maximumStamina)) {
+            if(actingCharacter.combat.stamina.eq(actingCharacter.combat.maximumStamina) ||
+                defenseActions.includes(_.get(enemyAction, "primary"))) {
                 return {
                     primary: "basicAttack",
                     enhancements: actingCharacter.attackEnhancements
@@ -367,3 +369,5 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
         }
     },
 }
+
+const defenseActions = ["block", "dodge", "none"];
