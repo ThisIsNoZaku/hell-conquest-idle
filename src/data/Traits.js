@@ -6,12 +6,12 @@ import {TraitEffects} from "./TraitEffects";
 export const Traits = {
     atavisticConsumption: validatedTrait(generateTrait({
         name: "Atavistic Consumption",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-863.png",
         description: _.template("This Demon hunger gives ${tier} stacks of Engorged on kill and recovers Health equal to ${tier.times(5)}% of maximum health by spending Energy equal to ${tier.times(5)}% of maximum stamina each round.")
     }, ["regenerative", "cannibal"])),
     balefulGaze: validatedTrait(generateTrait({
         name: "Baleful Gaze",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-878.png",
         description: _.template("This demon's magical sight give it uncanny precision and weakens magic, increasing precision by ${tier.times(25)}% and making enemy attack and defense enhancements cost ${tier.times(10)}% per level.")
     }, ["precise", "neutralizing"])),
     bloodrage: validatedTrait(generateTrait({
@@ -22,21 +22,23 @@ export const Traits = {
     }, ["bloodthirsty", "tough"])),
     bloodHunger: validatedTrait(generateTrait({
         name: "Blood Hunger",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-852.png",
         description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Frightened</span> for <span style='color: lightblue'>10</span> round(s)")
     }, ["frightening", "vampiric"])),
     boneHunter: validatedTrait(generateTrait({
         name: "Bone Hunter",
+        icon: "./icons/icons-795.png",
         description: _.template("This Demon's relentless drive to take down its prey makes it Mindless and increases its maximum and generated Energy by ${tier.times(25)}%.")
     }, ["mindless", "relentless"])),
     boneMagic: validatedTrait(generateTrait({
         name: "Bone Magic",
-        description: _.template("This Demon's hunger for knowledge transcended even death, ")
+        description: _.template("This Demon's hunger for knowledge transcended even death, "),
+        icon: "./icons/icons-848.png"
     }, ["mindless", "arcane"])),
     cannonBall: validatedTrait(generateTrait({
         name: "Cannonball",
-        icon: "./icons/icons-1.png",
-        description: _.template("This Demon rockets through the air and slams into targets,")
+        icon: "./icons/icons-803.png",
+        description: _.template("This Demon rockets through the air and slams into targets, making it Untouchable after dodging and increasing the cost to Block its attacks by ${tier.times(25)}%.")
     }, ["flying", "unstoppable"])),
     carrion_feeder: validatedTrait(generateTrait({
         name: "Carrion Feeder",
@@ -46,7 +48,7 @@ export const Traits = {
     }, ["cannibal", "small"])),
     consumingFlames: validatedTrait(generateTrait({
         name: "Consuming Flames",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-694.png",
         description: _.template("This Demon is made of living flames, it's insubstantial nature reducing the damage it takes and receives by ${tier.times(25)}% and its touch add ${tier} stacks of Burning.")
     }, ["insubstantial", "fiery"])),
     cupidity: validatedTrait({
@@ -65,27 +67,30 @@ export const Traits = {
     deadlySwarm: validatedTrait(generateTrait({
         name: "Deadly Swarm",
         enabled: true,
-        description: _.template("This demon takes the form of a swarm of tiny, stinging insects, gaining a ${tier.times(50)}% bonus to Evasion and Precision but a ${tier.times(25)}% penalty to Power and Resilience, and it's size means the damage inflicted and taken is ${tier.times(25)}% less.")
+        description: _.template("This demon takes the form of a swarm of tiny, stinging insects, gaining a ${tier.times(50)}% bonus to Evasion and Precision but a ${tier.times(25)}% penalty to Power and Resilience, and it's size means the damage inflicted and taken is ${tier.times(25)}% less."),
+        icon: "./icons/icons-2273.png",
     }, ["tiny", "insubstantial"])),
     deeaboo: validatedTrait(generateTrait({
         name: "Demon Form",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-2313.png",
         enabled: true,
         description: _.template("This Demon has reshaped itself to have a massive 'ultimate demon form', gaining ${tier.times(20)}% bonus to Power and Resilience and a ${tier.times(10)}% penalty to Precision and Evasion and it's blocks are ${tier.times(25)}% more difficult to block.")
     }, ["large", "unstoppable"])),
     demonMaster: validatedTrait(generateTrait({
         name: "Demon Master",
         enabled: true,
+        icon: "./icons/icons-253.png",
         description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
     }, ["learned", "arcane"])),
     plagueHarbinger: validatedTrait(generateTrait({
         name: "Plague Harbinger",
         enabled: true,
+        icon: "./icons/icons-6.png",
         description: _.template("")
     }, ["small", "diseased"])),
     eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-2381.png",
         description: _.template("This strange Demon likes to... watch, giving it a ${tier.times(25)} bonus to Precision and is Psychic.")
     }, ["precise", "psychic"])),
     exhaustingTouch: validatedTrait(generateTrait({
@@ -97,11 +102,13 @@ export const Traits = {
     fireBird: validatedTrait(generateTrait({
         name: "Fire Bird",
         enabled: true,
+        icon: "./icons/icons-2305.png",
         description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
     }, ["flying", "fiery"])),
     freakyFishGuy: validatedTrait(generateTrait({
         name: "Thassalophilia",
         enabled: true,
+        icon: "./icons/icons-2233.png",
         description: _.template("This Demon's strange ways makes it hard to predict its actions, increasing Precision and Evasion by ${tier.times(10)}% and the enemy cannot use this Demon's action when determining it's own and at the beginning of combat enemies gain ${tier} stacks of Frightened for 10 rounds.")
     }, ["inscrutable", "frightening"])),
     fortressOfMadness: validatedTrait(generateTrait({
@@ -111,7 +118,7 @@ export const Traits = {
     }, ["reversal", "thorns"])),
     heartlessMountain: validatedTrait(generateTrait({
         name: "Heartlessness of the Mountain",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-254.png",
         description: _.template("This demon embodies the desolation of a wind-swept peak and the devastation of an avalance, gaining a ${tier.times(50)}% bonus to Power and Resilience with a ${tier.times(25)}% penalty to Evasion and Precision while it's attacks are ${tier.times(25)} more difficult to Block.")
     }, [
         "massive", "unstoppable"
@@ -130,6 +137,7 @@ export const Traits = {
     }, ["grappler", "crushing"])),
     inverted: validatedTrait(generateTrait({
         name: "Inverted",
+        icon: "./icons/icons-2486.png",
         enabled: true,
         description: _.template("This strange Demon returns both ${tier.times(25)}% of damage received")
     }, ["thorns", "reversal"])),
@@ -141,6 +149,7 @@ export const Traits = {
     }, ["tough", "venomous"])),
     lifetimeOfPain: validatedTrait(generateTrait({
         name: "Lifetime Of Pain",
+        icon: "./icons/icons-122.png",
         description: _.template("This Demon countless eons of suffering means it does not simply ignore pain, it embraces it, gaining energy to ${tier.times(10)}% of max on taking damage")
     }, ["robust", "masochistic"])),
     piercingStrike: validatedTrait(generateTrait({
@@ -157,11 +166,12 @@ export const Traits = {
     }, ["relentless", "tough"])),
     reptileMystic: validatedTrait(generateTrait({
         name: "Reptilian Mystic",
+        icon: "./icons/icons-2330.png",
         description: _.template("This Demon's knowledge of a reptilian people's esoteric theology, gives it a ${tier.times(10)}% bonus to Precision and Evasion, makes it Holy and prevents the enemy from knowing it's action when determining it's own action.")
     }, ["holy", "inscrutable"])),
     rotMouth: validatedTrait(generateTrait({
         name: "Biting Lizard",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-788.png",
         description: _.template("The fouless of")
     }, ["coldBlooded", "venomous"])),
     sadisticJoy: validatedTrait(generateTrait({
@@ -179,6 +189,7 @@ export const Traits = {
     shadowHulk: validatedTrait(generateTrait({
         name: "Shadow Hulk",
         enabled: true,
+        icon: "./icons/icons-81.png",
         description: _.template("This Demon, massive yet always shrouded in darkness, toys with it's prey before breaking their backs.")
     }, ["evasive", "large"])),
     sharedPain: validatedTrait(generateTrait({
@@ -190,16 +201,18 @@ export const Traits = {
     spiderHunter: validatedTrait(generateTrait({
         name: "Spider Queen's Chosen",
         enabled: true,
+        icon: "./icons/icons-2257.png",
         description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness, gaining ${tier} stacks of Untouchable when Dodging and increases Evasion by ${tier.times(25)}%.")
     }, ["summonDarkness", "evasive"])),
     spiderMage: validatedTrait(generateTrait({
         name: "Spider Queen's Scholar",
         enabled: true,
+        icon: "./icons/icons-2258.png",
         description: _.template("This Demon's evil patron has blessed it with the ability to summon darkness and wield magic, gaining ${tier} stacks of Untouchable when Dodging and gaining the enemy's traits.")
     }, ["summonDarkness", "learned"])),
     stormyPersonality: validatedTrait(generateTrait({
         name: "Stormy Personality",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-885.png",
         enabled: true,
         description: _.template("This demon's insubstantial form makes it difficult to harm, reducing damage taken and received by ${tier.times(25)}% and increases Evasion by ${tier.times(25)}%.")
     }, ["insubstantial", "evasive"])),
@@ -223,16 +236,18 @@ export const Traits = {
     thickSkin: validatedTrait(generateTrait({
         name: "Thick Skin",
         enabled: true,
+        icon: "./icons/icons-2206.png",
         description: _.template("This Demon's hard shell and strong limbs give it a ${tier.times(25)}% bonus to Resilience and it's hardest hits inflict ${tier.times(50)}% more damage.")
     }, ["tough", "killer"])),
     undertow: validatedTrait(generateTrait({
         name: "Undertow",
         enabled: true,
+        icon: "./icons/icons-2240.png",
         description: _.template("This Demon's liquid form makes it difficult to harm and allows its attacks to flow around defenses, increasing Precision by ${tier.times(25)}% and inflicting Fatigue equal to ${tier.times(20)}% of maximum stamina on a hit.")
     }, ["choking", "precise"])),
     outcastStrength: validatedTrait(generateTrait({
         name: "Outcast's Strength",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-88.png",
         enabled: true,
         description: _.template("Your bloody-minded refusal to allow your enemies to defeat you gives a ${tier.times(50)}% bonus to Health and a ${tier.times(25)}% bonus to Resilience.")
     }, ["robust", "tough"]))
