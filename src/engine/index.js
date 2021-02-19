@@ -141,7 +141,7 @@ export function generateCreature(id, powerLevel, rng) {
         globalState.characters[nextId] = new Character({
             id: nextId,
             ..._.omit(Creatures[id], ["npc"]),
-            latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(50))), // FIXME: Make configurable value
+            latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(10))), // FIXME: Make configurable value
             tactics: {
                 offensive: offensiveTactics,
                 defensive: defensiveTactics
