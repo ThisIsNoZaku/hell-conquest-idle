@@ -36,9 +36,9 @@ const config = {
     maximum_downgrade_times: 1,
     fatigue_penalty_per_point: 25,
     stamina_recovery_per_level: 50,
-    base_power_generated_per_level_per_tick: 1.5,
+    base_power_generated_per_level_per_tick: .25,
     power_generation_growth_scaling: .01,
-    game_level_cap: 26,
+    game_level_cap: 51,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
