@@ -45,14 +45,18 @@ export const Tutorials = {
     "leveling-up": {
         title: "Leveling Up and Reincarnation",
         body: "<p>As you kill other demons, your own power grows.</p>" +
-            "<p>When you absorb enough power from other demons your level increases; eventually however, you will find that your current physical form is simply not powerful enough to defeat your enemies.</p>" +
-            "<p>When this occurs, you should Reincarnate, selecting a new body, strengthened by the spiritual energy you've absorbed.</p>" +
-            "<p>When you reincarnate, you can spend some of your bonus points to also gain Traits from demon you had previously reincarnated as, in addition to the innate one of your new form..</p>"
+            "<p>However, you will eventually find that your current physical form is not enough to defeat your enemies.</p>" +
+            "<p>When this occurs, you should Reincarnate to choose new abilities.</p>"
     },
     "energy-burn" : {
         title: "Energy Burn",
         body: "<p>When a character generates too much energy during battle, they suffer a phenomenon called Energy Burn.</p>" +
             "<p>In the same way that mortal creatures will consume their own fat and muscle when starving, Demons will burn their physical forms back into energy to use in battle.</p>" +
             "<p>Don't</p>"
+    },
+    "latent-power-cap" : {
+        title: "Latent Power Cap",
+        body: "<p>Your latent power is soft capped; if your latent power modifier is yellow, that mean you've reached the cap.</p>" +
+            "<p>You do not lose any latent power gained while capped, simply a reduced effect until you increase your cap by defeating more powerful enemies.</p>"
     }
 }
