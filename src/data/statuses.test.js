@@ -95,7 +95,7 @@ describe("untouchable status", function () {
                 },
                 {
                     event: "action-skipped",
-                    reason: "to gain energy",
+                    reason: ", to conserve energy",
                     source: {
                         character: 0
                     },

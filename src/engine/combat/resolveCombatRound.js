@@ -63,7 +63,7 @@ export default function resolveCombatRound(tick, combatants) {
         if(firstCharacterAction.blocked) {
             roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, ", could not reach the enemy."));
         } else {
-            roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, "to conserve energy"));
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[0], tick, ", to conserve energy"));
         }
     }
 
@@ -71,7 +71,7 @@ export default function resolveCombatRound(tick, combatants) {
         if(secondCharacterAction.blocked) {
             roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, ", could not reach the enemy."));
         } else {
-            roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, "to conserve energy"));
+            roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, ", to conserve energy"));
         }
     }
     onCombatRoundEnd(combatants, roundEvents, tick);
