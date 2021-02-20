@@ -54,9 +54,11 @@ export const Creatures = {
         texture: "125_crab.png",
         npc: {
             adjective: "savage",
-            default: {
-                offensive: "overwhelm",
-                defensive: "block"
+            tactics: {
+                default: {
+                    offensive: "overwhelm",
+                    defensive: "block"
+                }
             }
         }
     },
