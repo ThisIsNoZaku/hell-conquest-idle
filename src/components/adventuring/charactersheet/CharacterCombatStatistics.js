@@ -205,10 +205,10 @@ export default function CharacterCombatStatistics(props) {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            Energy
+                            Max Energy
                         </TableCell>
                         <TableCell>
-                            {character.combat.stamina.toFixed()}
+                            {character.combat.maximumStamina.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Energy is used to perform various actions and trigger special effects">
