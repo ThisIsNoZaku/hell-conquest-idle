@@ -153,7 +153,6 @@ export default function AdventuringPage(props) {
 
                 }
                 const newTime = Math.min(getGlobalState().time + adjustedTime, actionDuration);
-                console.log(newTime);
                 setAccruedTime(getGlobalState().time = newTime);
             }
             if (lastTime === timestamp) {
