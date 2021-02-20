@@ -21,7 +21,7 @@ const attackPrevented = (actingCharacter) => {
 
 export default function determineCharacterCombatAction(actingCharacter, enemy, enemyAction) {
     debugMessage(`Determining action for '${actingCharacter.id}' with tactics ${actingCharacter.tactics.offensive}-${actingCharacter.tactics.defensive}'. Enemy is performing '${_.get(enemyAction, "primary", "unknown")}'`);
-    if(!enemy.canBeAttacked) {
+    if(!enemy.canBeAttacked || !actingCharacter.canBeAttacked) {
         return attackPrevented(actingCharacter);
     }
     const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy,
