@@ -88,6 +88,20 @@ export const ActionEnhancements = {
         energy_cost_modifier: .25,
         change_damage_type: "fire"
     }),
+    flying: validateEnhancement({
+        name: "Flying",
+        energy_cost_modifier: .5,
+        on_dodge: {
+            trigger_effects: {
+                add_statuses: {
+                    untouchable: {
+                        target: "self",
+                        stacks: 1
+                    }
+                }
+            }
+        }
+    }),
     smite: validateEnhancement({
         name: "Smite",
         energy_cost_modifier: 1,

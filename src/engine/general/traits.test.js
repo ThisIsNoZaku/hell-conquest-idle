@@ -499,6 +499,13 @@ describe("flying effect", function () {
     afterEach(() => {
         delete Traits.test;
     });
+    it("adds a flying defense enhancement", function () {
+        expect(player.defenseEnhancements)
+            .toContainEqual({
+                enhancement: "flying",
+                sourceTrait: "test"
+            });
+    });
     it("adds a stack of 'untouchable' on dodge", function () {
         const roundEvents = [];
         player.combat.stamina = Decimal(200);

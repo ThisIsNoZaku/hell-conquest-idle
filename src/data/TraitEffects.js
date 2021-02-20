@@ -102,16 +102,7 @@ export const TraitEffects = {
         }
     },
     flying: {
-        on_dodge: {
-            trigger_effects: {
-                add_statuses: {
-                    untouchable: {
-                        target: "self",
-                        stacks: 1
-                    }
-                }
-            }
-        }
+        defense_enhancement: "flying"
     },
     frightening: {
         on_combat_start: {
