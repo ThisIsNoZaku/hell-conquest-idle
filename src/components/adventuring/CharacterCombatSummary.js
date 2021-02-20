@@ -42,7 +42,7 @@ export default function CharacterCombatSummary(props) {
                         const modifier = Decimal(statusDef.effects[next].value).times(numStacks);
                         combined[next] = Decimal.abs(modifier);
                     } else {
-                        const value = Decimal(statusDef.effects[next].value).times(numStacks);
+                        const value = Decimal(statusDef.effects[next].value || 1).times(numStacks);
                         combined[next] = Decimal.abs(value);
                     }
                     return combined;
