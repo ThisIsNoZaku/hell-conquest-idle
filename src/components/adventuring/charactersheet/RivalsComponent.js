@@ -1,5 +1,5 @@
 import {getGlobalState} from "../../../engine";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../../data/Traits";
@@ -8,7 +8,6 @@ import {Tactics} from "../../../data/Tactics";
 import Button from "@material-ui/core/Button";
 import Collapse from "@material-ui/core/Collapse";
 import {Help} from "@material-ui/icons";
-import {PlayerContext} from "../../scene/AdventuringPage";
 
 
 function changeRivalTactics(event) {
