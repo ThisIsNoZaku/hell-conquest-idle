@@ -98,24 +98,25 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
                 break;
             case "reflect_damage":
-                const targets = [getCharacter(event.source.damage.source.character)];
+                const targets = [getCharacter(event.source.event.source.character)];
                 targets.forEach(target => {
-                    const damageEffect = event.source.damage;
+                    const damageEffect = event.source.event;
                     const dealtDamage = damageEffect.value;
                     const damageToDeal = Decimal(effectDefinition.value).times(dealtDamage).times(effectLevel).floor();
                     target.dealDamage(damageToDeal);
-                    const newDamageEffectUuid = v4();
-                    damageEffect.children = [
-                        newDamageEffectUuid
-                    ];
-                    event.roundEvents.push(generateDamageEvent(
+                    const newDamageEvent = generateDamageEvent(
                         contextCharacter,
                         target,
                         damageToDeal,
                         effectDefinition.type,
                         sourceType,
                         sourceId
-                    ));
+                    );
+                    damageEffect.children = [
+                        newDamageEvent.uuid
+                    ];
+                    newDamageEvent.parent = event.source.event.uuid;
+                    event.roundEvents.push(newDamageEvent);
                 });
                 break;
             case "change_stamina": {
@@ -127,14 +128,16 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                     ;
                     target.combat.stamina = target.combat.stamina.plus(staminaChange);
                     const newEffectUuid = v4();
-                    if (_.get(event.source, "attack")) {
-                        event.source.attack.children.push(newEffectUuid);
+                    if (_.get(event.source, "event")) {
+                        const children = event.source.event.children || [];
+                        event.source.event.children = children;
+                        event.source.event.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateStaminaChangeEvent(
                         contextCharacter,
                         target,
                         staminaChange,
-                        _.get(event.source, ["attack", "uuid"]),
+                        _.get(event.source, ["event", "uuid"]),
                         sourceType,
                         sourceId,
                         newEffectUuid,
@@ -150,15 +153,15 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                         Decimal(effectDefinition.value).times(effectLevel).floor();
                     target.combat.fatigue = target.combat.fatigue.plus(fatigueChange);
                     const newEffectUuid = v4();
-                    if (event.source.attack) {
-                        event.source.attack.children.push(newEffectUuid);
+                    if (event.source.event) {
+                        event.source.event.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateFatigueChangeEvent(
                         contextCharacter,
                         target,
                         fatigueChange,
-                        _.get(event.source, ["attack", "uuid"]),
-                        null,
+                        _.get(event.source, ["event", "uuid"]),
+                        newEffectUuid,
                         sourceType,
                         sourceId
                     ));
@@ -174,14 +177,14 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                         Decimal(effectDefinition.value).times(effectLevel).floor());
                     target.setHp(target.hp.plus(healthChange))
                     const newEffectUuid = v4();
-                    if (_.get(event.source, "attack")) {
-                        event.source.attack.children.push(newEffectUuid);
+                    if (_.get(event.source, "event")) {
+                        event.source.event.children.push(newEffectUuid);
                     }
                     event.roundEvents.push(generateHealthChangeEvent(
                         contextCharacter,
                         target,
                         healthChange,
-                        _.get(event.source, ["attack", "uuid"]),
+                        _.get(event.source, ["event", "uuid"]),
                         newEffectUuid,
                         sourceType,
                         sourceId

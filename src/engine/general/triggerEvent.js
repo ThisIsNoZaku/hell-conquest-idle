@@ -73,7 +73,7 @@ export default function triggerEvent(event) {
         })
     });
 
-    _.get(event.source, ["attack", "action", "enhancements"], []).forEach(enhancement => {
+    _.get(event.source, ["event", "action", "enhancements"], []).forEach(enhancement => {
         const enhancementDef = ActionEnhancements[enhancement.enhancement];
         const eventDefinition = enhancementDef[event.type];
         if (eventDefinition) {
@@ -87,7 +87,7 @@ export default function triggerEvent(event) {
         }
     });
 
-    _.get(event.source, ["attack", "reaction", "enhancements"], []).forEach(enhancement => {
+    _.get(event.source, ["event", "reaction", "enhancements"], []).forEach(enhancement => {
         const enhancementDef = ActionEnhancements[enhancement.enhancement];
         const eventDefinition = enhancementDef[event.type];
         if (eventDefinition) {
@@ -110,8 +110,7 @@ const eventMatcher = JOI.object({
         is: ["on_status_applied", "on_kill", "on_taking_damage","on_miss", "on_hit", "on_minor_hit", "on_glancing_hit", "on_solid_hit", "on_serious_hit", "on_devastating_hit", "on_dodge"],
         then: JOI.object({
             character: JOI.object().required(),
-            attack: JOI.object(),
-            damage: JOI.object(),
+            event: JOI.object(),
             trait: JOI.string(),
             status: JOI.string()
         }).required(),

@@ -40,7 +40,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
                 type: "on_dodge",
                 source: {
                     character: targetedCharacter,
-                    attack: attackEvent
+                    event: attackEvent
                 },
                 target: actingCharacter,
                 combatants: {
@@ -67,7 +67,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         type: "on_hit",
         source: {
             character: actingCharacter,
-            attack: attackResult.attack
+            event: attackResult.attack
         },
         target: targetedCharacter,
         combatants: {
@@ -80,7 +80,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         type: `on_${HitTypes[attackResult.hitType].summary}_hit`,
         source: {
             character: actingCharacter,
-            attack: attackResult.attack
+            event: attackResult.attack
         },
         target: targetedCharacter,
         combatants: {

@@ -309,7 +309,7 @@ describe("crushing effect", function () {
             type: "on_hit",
             source: {
                 character: player,
-                attack: {
+                event: {
                     action: {
                         enhancements: [
                             {
@@ -377,8 +377,7 @@ describe("diseased effect", function () {
             type: "on_taking_damage",
             source: {
                 character: player,
-                attack: {},
-                damage: {}
+                event: {}
             },
             target: enemy,
             combatants: {
@@ -508,21 +507,21 @@ describe("flying effect", function () {
     });
     it("adds a stack of 'untouchable' on dodge", function () {
         const roundEvents = [];
-        player.combat.stamina = Decimal(200);
+        player.combat.stamina = Decimal(2000);
         enemy.combat.stamina = Decimal(200);
         resolveAction(enemy, {
             primary: "basicAttack",
             enhancements: []
         }, player, {
             primary: "dodge",
-            enhancements: []
+            enhancements: [{enhancement: "flying", sourceTrait: "test"}]
         }, roundEvents, 100)
         expect(player.statuses).toEqual({
             untouchable: [
                 {
                     source: {
                         character: 0,
-                        trait: "test"
+                        enhancement: "flying"
                     },
                     status: "untouchable",
                     uuid: expect.any(String),
@@ -1034,7 +1033,7 @@ describe("venomous effect", function () {
             type: "on_hit",
             source: {
                 character: player,
-                attack: {
+                event: {
                     action: {
                         enhancements: [{enhancement: "venom", sourceTrait: "test"}],
                     }
@@ -1386,36 +1385,6 @@ describe("small effect", function () {
     });
 });
 
-describe("suffocating effect", function () {
-    let player;
-    let enemy;
-    beforeEach(() => {
-        Traits.test = generateTrait({...traitBase}, ["small"]);
-        player = new Character({
-            id: 0,
-            traits: {
-                test: 1
-            }
-        });
-        enemy = new Character({
-            id: 1
-        });
-    });
-    afterEach(() => {
-        delete Traits.test;
-    });
-    it("inflicts stacks of fatigue on hit", function () {
-        player.combat.stamina = Decimal(150);
-        resolveAction(player, {
-            primary: "basicAttack",
-            enhancements: [{enhancement: "exhausting", sourceTrait: "test"}]
-        }, enemy, {
-            primary: "none", enhancements: []
-        }, [], 100);
-        expect(enemy.combat.fatigue).toEqual(Decimal(5));
-    })
-});
-
 describe("thorns effect", function () {
     let player;
     let enemy;
@@ -1459,6 +1428,7 @@ describe("thorns effect", function () {
             },
             type: "psychic",
             target: 1,
+            parent: expect.any(String),
             uuid: expect.any(String),
             value: Decimal(3)
         })

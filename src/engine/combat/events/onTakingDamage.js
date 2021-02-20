@@ -5,8 +5,7 @@ export default function onTakingDamage(damagedCharacter, attackingCharacter, att
         type: `on_taking_damage`,
         source: {
             character: damagedCharacter,
-            attack,
-            damage
+            event: damage
         },
         target: attackingCharacter,
         combatants: {

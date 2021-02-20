@@ -74,6 +74,25 @@ export default function resolveCombatRound(tick, combatants) {
             roundEvents.push(generateActionSkipEvent(initiativeOrder[1], tick, ", to conserve energy"));
         }
     }
+    roundEvents.forEach(event => {
+        if(event.parent) {
+            const parentEvent = roundEvents.find(e => e.uuid === event.parent);
+            if(!parentEvent.children.includes(event.uuid)) {
+                parentEvent.children.push(event.uuid);
+            }
+        }
+        (event.children || []).forEach(child => {
+            const childEvent = roundEvents.find(e => e.uuid === child);
+            if(!childEvent) {
+                throw new Error("An event had a child that could not be found. " + JSON.stringify(event));
+            }
+            if(childEvent.parent && childEvent.parent !== event.uuid) {
+                throw new Error("An event had a child, but that child had a different parent!");
+            } else {
+                childEvent.parent = event.uuid;
+            }
+        });
+    })
     onCombatRoundEnd(combatants, roundEvents, tick);
 
     return {

@@ -14,7 +14,12 @@ export default function generateRoundActionLogItems(round) {
             processed[event.uuid] = true;
             messageElements.push(describeEvent(event));
             (event.children || []).forEach(child => {
-                messageElements.push(describeEvent(round.events.find(ev => ev.uuid === child)));
+                const childEvent =  round.events.find(ev => ev.uuid === child);
+                if(childEvent) {
+                    messageElements.push(describeEvent(childEvent));
+                } else {
+                    debugger;
+                }
                 processed[child] = true;
             })
             actionMessages.push(messageElements.join(" "));
