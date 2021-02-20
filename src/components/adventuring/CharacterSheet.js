@@ -4,12 +4,10 @@ import {
     getGlobalState,
     getSpriteForCreature
 } from "../../engine";
-import {getConfigurationValue} from "../../config";
 import {MemoizedCharacterAttributes as CharacterAttributes} from "./charactersheet/CharacterAttributes";
 import CharacterTraits from "./charactersheet/CharacterTraits";
 import Tooltip from "@material-ui/core/Tooltip";
 import TacticsSection from "./charactersheet/TacticsSection";
-import {Decimal} from "decimal.js";
 import CharacterCombatStatistics from "./charactersheet/CharacterCombatStatistics";
 import {Help} from "@material-ui/icons";
 import RivalsComponent from "./charactersheet/RivalsComponent";
@@ -58,7 +56,7 @@ export function CharacterSheet(props) {
                 </Grid>
                 <Grid item xs>
                     <div style={{color: character.latentPower.gte(character.latentPowerCap) ? "orange" : "inherit"}}>
-                        {props.latentPowerModifier}%
+                        {character.latentPowerModifier.times(100).toFixed()}%
                     </div>
                 </Grid>
             </Grid>
