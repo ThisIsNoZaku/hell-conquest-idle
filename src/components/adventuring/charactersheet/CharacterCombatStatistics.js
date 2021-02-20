@@ -221,7 +221,7 @@ export default function CharacterCombatStatistics(props) {
                             Energy Regen
                         </TableCell>
                         <TableCell>
-                            {character.energyGeneration.toFixed()}
+                            {character.energyGeneration.times(100).toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Gain this much energy every 100 ticks of combat.">
