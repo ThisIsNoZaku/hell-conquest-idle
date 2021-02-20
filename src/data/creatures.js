@@ -20,6 +20,7 @@ export const Creatures = {
         name: "Bandaged Man",
         traits: ["lifetimeOfPain"],
         texture: "35_mummy.png",
+        appearance: "bandagedMan",
         npc: {
             adjective: "mad",
             tactics: {
