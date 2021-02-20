@@ -76,7 +76,7 @@ describe("arcane effect", function () {
     });
     it("performing block with Arcane shield reduces damage further", function () {
         expect(calculateDamageBy(enemy).using({primary: "basicAttack", enhancements: []})
-            .against(player).using({primary: "block", enhancements: ["arcane"]})
+            .against(player).using({primary: "block", enhancements: [{enhancement:"arcane"}]})
         ).toEqual({
             "-1": Decimal(15 * (HitTypes[-1].damageMultiplier) * .85).floor(),
             0: Decimal(15 * (HitTypes[0].damageMultiplier) * .85).floor(),
@@ -657,7 +657,7 @@ describe("holy effect", function () {
             .against(player)
             .using({
                 primary: "block",
-                enhancements: ["blessed"]
+                enhancements: [{enhancement: "blessed"}]
             }))
             .toEqual({
                 "-2": Decimal(0),
