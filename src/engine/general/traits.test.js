@@ -248,11 +248,11 @@ describe("coldblooded effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({...traitBase}, ["coldBlooded"]);
+        Traits.coldBlooded = generateTrait({...traitBase}, ["coldBlooded"]);
         player = new Character({
             id: 0,
             traits: {
-                test: 1
+                coldBlooded: 1
             }
         });
         enemy = new Character({
@@ -1479,10 +1479,10 @@ describe("unstoppable effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
-        Traits.test = generateTrait({...traitBase}, ["unstoppable"]);
+        Traits.unstoppable = generateTrait({...traitBase}, ["unstoppable"]);
         player = new Character({
             id: 0,
-            traits: {test: 1}
+            traits: {unstoppable: 1}
         });
         enemy = new Character({
             id: 1
@@ -1532,4 +1532,4 @@ describe("vampiric effect", function () {
             uuid: expect.any(String)
         });
     });
-})
+});
