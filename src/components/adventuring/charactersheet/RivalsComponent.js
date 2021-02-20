@@ -70,7 +70,10 @@ export default function RivalsComponent(props) {
                                     <Button variant="contained"
                                             color={rivalTactics.defensive === tactic ? "primary" : "none"}
                                             style={{fontSize: "9px"}}
-                                            onClick={changeRivalTactics} data-tactic={tactic} data-level={level}
+                                            onClick={e => {
+                                                changeRivalTactics(e);
+                                                setRivals(getGlobalState().rivals);
+                                            }} data-tactic={tactic} data-level={level}
                                             data-tactic-type="defensive"
                                     >
                                         {Tactics.defensive[tactic].title}
