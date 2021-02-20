@@ -6,7 +6,7 @@ import {ActionEnhancements} from "../../../data/ActionEnhancements";
 import {Traits} from "../../../data/Traits";
 import {Statuses} from "../../../data/Statuses";
 
-export function internalCalculateActionCost(actor, action, enemy) {
+export function calculateActionCost(actor, action, enemy) {
     const base = Decimal(_.get(enemy, "powerLevel", 1)).times(getConfigurationValue("attack_upgrade_cost_per_enemy_level"));
     const attributeMultiplier = Decimal(1).minus(getConfigurationValue("mechanics.combat.precision.effectPerPoint"))
         .pow(CombatActions[action.primary].defense ? Decimal(_.get(actor, ["combat", "evasion"], 1)) :
@@ -37,7 +37,3 @@ export function internalCalculateActionCost(actor, action, enemy) {
         .times(actionCostMultiplier).floor();
 
 }
-
-export const calculateActionCost = _.memoize(internalCalculateActionCost, (actor, action, enemy) => {
-    return JSON.stringify(actor) + JSON.stringify(action) + JSON.stringify(enemy);
-})
