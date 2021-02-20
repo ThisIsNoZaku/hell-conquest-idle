@@ -1,5 +1,5 @@
 import {getGlobalState} from "../../../engine";
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../../data/Traits";
@@ -19,7 +19,8 @@ function changeRivalTactics(event) {
 
 export default function RivalsComponent(props) {
     const [expanded, setExpanded] = useState(false);
-    return <Grid container>
+    const [rivals, setRivals] = useState(getGlobalState().rivals);
+    return <Grid contacoiner>
         <Grid item xs={12} onClick={() => setExpanded(!expanded)}>
             <Button>
                 <strong>Your Rivals!</strong>
@@ -29,9 +30,9 @@ export default function RivalsComponent(props) {
                 </Tooltip>
             </Button>
         </Grid>
-        {Object.keys(props.rivals || {}).map(level => {
-            const rivalTactics = getGlobalState().rivals[level].tactics;
-            const rival = getGlobalState().rivals[level].character;
+        {Object.keys(rivals || {}).map(level => {
+            const rivalTactics = rivals[level].tactics;
+            const rival = rivals[level].character;
             return <Grid container>
                 <Grid item xs={6}>
                     {level}
@@ -52,7 +53,10 @@ export default function RivalsComponent(props) {
                                     <Button variant="contained"
                                             color={rivalTactics.offensive === tactic ? "primary" : "none"}
                                             style={{fontSize: "9px"}}
-                                            onClick={changeRivalTactics} data-tactic={tactic} data-level={level}
+                                            onClick={e => {
+                                                changeRivalTactics(e);
+                                                setRivals(getGlobalState().rivals);
+                                            }} data-tactic={tactic} data-level={level}
                                             data-tactic-type="offensive"
                                     >
                                         {Tactics.offensive[tactic].title}
