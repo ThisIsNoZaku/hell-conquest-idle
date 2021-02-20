@@ -55,10 +55,9 @@ export default function calculateDamageBy(attacker, debugOutput) {
                                     return previousValue.plus(traitApplies ? Decimal(traitEffectDefinition.value).times(target.traits[currentValue]) : 0);
                                 }, Decimal(0));
 
-                                const reactionEnhancementModifier = reaction.enhancements.map(e => ActionEnhancements[e]).reduce((previousValue, currentValue) => {
+                                const reactionEnhancementModifier = reaction.enhancements.map(e => ActionEnhancements[e.enhancement]).reduce((previousValue, currentValue) => {
                                     return previousValue + (currentValue[`${reaction.primary}_damage_modifier`] || 0);
                                 }, 0);
-
 
                                 const latentPowerModifier = Decimal(_.get(attacker, "latentPowerModifier", 0));
                                 const totalMultiplier = Decimal(attributeDamageMultiplier)
