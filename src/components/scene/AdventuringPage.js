@@ -1,4 +1,4 @@
-import {MemoizedCharacterSidebar as CharacterSidebar} from "../adventuring/CharacterSidebar";
+import {CharacterSidebar} from "../adventuring/CharacterSidebar";
 import TopSection from "../adventuring/TopSection";
 import {
     getCharacter,
@@ -18,6 +18,8 @@ import generateRoundActionLogItems from "../../engine/general/generateRoundActio
 import * as JOI from "joi";
 import {EventHandlers} from "../../engine/EventHandlers";
 import {Regions} from "../../data/Regions";
+import {Timer} from "@material-ui/icons";
+import {CharacterSheet} from "../adventuring/CharacterSheet";
 
 const styles = {
     root: {
@@ -50,14 +52,14 @@ const logItemSchema = JOI.object(
 );
 
 function pushLogItem(item) {
-    if(typeof item === "string") {
+    if (typeof item === "string") {
         item = {
             message: item,
             uuid: v4()
         }
     }
     const validationResult = logItemSchema.validate(item);
-    if(validationResult.error) {
+    if (validationResult.error) {
         throw new Error(`Log item invalid: ${validationResult.error}`);
     }
     if (getGlobalState().actionLog.length > (getConfigurationValue("action_log_max_size") || 10)) {
@@ -66,6 +68,10 @@ function pushLogItem(item) {
     getGlobalState().actionLog.unshift(item);
 }
 
+export const TimerContext = React.createContext(0);
+export const PlayerContext = React.createContext(getCharacter(0));
+export const EnemyContext = React.createContext();
+
 export default function AdventuringPage(props) {
     const accruedTime = useRef(0);
     const [enemy, setEnemy] = useState(_.get(getGlobalState(), ["currentEncounter", "enemies", 0]));
@@ -73,7 +79,6 @@ export default function AdventuringPage(props) {
     const [currentAction, setCurrentAction] = useState(Actions[getGlobalState().currentAction]);
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const [paused, setPaused] = useState(getGlobalState().paused);
-    const [displayedTime, setDisplayedTime] = useState(0);
     const player = useRef(getCharacter(0));
     const manualSpeedUpActive = useRef(false);
     const currentRegion = Regions[getGlobalState().currentRegion];
@@ -126,10 +131,10 @@ export default function AdventuringPage(props) {
                         nextAction
                     );
                     debugMessage(`Completed ${getGlobalState().currentAction}`);
-                    if(!candidateNextAction) {
+                    if (!candidateNextAction) {
                         throw new Error(`No next action after completing ${getGlobalState().currentAction}`);
                     }
-                    if(_.isArray(candidateNextAction)) {
+                    if (_.isArray(candidateNextAction)) {
                         const currentAction = getGlobalState().currentAction = candidateNextAction[0];
                         setCurrentAction(Actions[currentAction]);
                         setNextAction(getGlobalState().nextAction = candidateNextAction[1]);
@@ -139,7 +144,6 @@ export default function AdventuringPage(props) {
                     }
                     debugMessage(`Current Action now: ${getGlobalState().currentAction} Next: ${getGlobalState().nextAction}`);
                 }
-                setDisplayedTime(accruedTime.current);
                 const passedTime = timestamp - lastTime;
                 const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);
                 if (Math.min(accruedTime.current + adjustedTime, actionDuration) === 0) {
@@ -179,33 +183,42 @@ export default function AdventuringPage(props) {
             width: "100vw"
         }}>
             <img style={styles.background} src={currentRegion.background.background}/>
-            {currentRegion.background.far &&<img style={styles.image} src={currentRegion.background.far}/>}
-            {currentRegion.background.mid &&<img style={styles.image} src={currentRegion.background.mid}/>}
-            {currentRegion.background.close &&<img style={styles.image} src={currentRegion.background.close}/>}
+            {currentRegion.background.far && <img style={styles.image} src={currentRegion.background.far}/>}
+            {currentRegion.background.mid && <img style={styles.image} src={currentRegion.background.mid}/>}
+            {currentRegion.background.close && <img style={styles.image} src={currentRegion.background.close}/>}
         </div>
-        <CharacterSidebar player={player.current} enemy={enemy}/>
+        <PlayerContext.Provider value={player.current}>
+            <EnemyContext.Provider value={enemy}>
+                <CharacterSheet isPc={true}/>
+            </EnemyContext.Provider>
+        </PlayerContext.Provider>
         <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
             <TopSection highestLevelEnemyDefeated={player.current.highestLevelEnemyDefeated}
                         automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
                         reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive || _.get(getGlobalState(), ["debug", "forceEnableReincarnate"], false)}
             />
-            <BottomSection state={getGlobalState()} actionLog={actionLog}
-                           player={player.current}
-                           enemy={enemy}
-                           togglePause={togglePause}
-                           paused={paused}
-                           nextActionName={nextAction}
-                           currentAction={currentAction}
-                           setNextAction={(newAction) => {
-                               setNextAction(getGlobalState().nextAction = newAction);
-                           }}
-                           actionTime={displayedTime}
-                           startManualSpeedup={props.startManualSpeedup}
-                           stopManualSpeedup={props.stopManualSpeedup}
-                           togglePause={p => setPaused(p)}
-            />
+            <TimerContext.Provider value={accruedTime.current}>
+                <BottomSection state={getGlobalState()} actionLog={actionLog}
+                               player={player.current}
+                               enemy={enemy}
+                               togglePause={togglePause}
+                               paused={paused}
+                               nextActionName={nextAction}
+                               currentAction={currentAction}
+                               setNextAction={(newAction) => {
+                                   setNextAction(getGlobalState().nextAction = newAction);
+                               }}
+                               startManualSpeedup={props.startManualSpeedup}
+                               stopManualSpeedup={props.stopManualSpeedup}
+                               togglePause={p => setPaused(p)}
+                />
+            </TimerContext.Provider>
         </div>
-        <CharacterSidebar player={enemy} enemy={player.current}/>
+        <PlayerContext.Provider value={player.current}>
+            <EnemyContext.Provider value={enemy}>
+                <CharacterSheet isPlayer={false}/>
+            </EnemyContext.Provider>
+        </PlayerContext.Provider>
 
     </div>
 }

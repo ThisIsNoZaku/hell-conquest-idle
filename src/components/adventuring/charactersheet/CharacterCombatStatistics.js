@@ -1,7 +1,7 @@
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Help} from "@material-ui/icons";
-import React, {useMemo} from "react";
+import React, {useContext, useMemo} from "react";
 import {Decimal} from "decimal.js";
 import {config, getConfigurationValue} from "../../../config";
 import {HitTypes} from "../../../data/HitTypes";
@@ -15,18 +15,57 @@ import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
 import {useMediaQuery, useTheme} from "@material-ui/core";
 import {ActionEnhancements} from "../../../data/ActionEnhancements";
+import {EnemyContext, PlayerContext} from "../../scene/AdventuringPage";
+import {calculateActionCost} from "../../../engine/combat/actions/calculateActionCost";
+import * as _ from "lodash";
 
 export default function CharacterCombatStatistics(props) {
-    const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(props.characterPower, props.enemyResilience)}.`, [
-        props.characterPower,
-        props.enemyResilience
+    const character = useContext(props.isPc ? PlayerContext : EnemyContext);
+    const enemy = useContext(props.isPc ? EnemyContext : PlayerContext);
+
+    const defenseArgs = [
+        _.get(enemy, "powerLevel", Decimal(0)).toFixed(),
+        _.get(character, ["combat", "evasion"], Decimal(0)).toFixed(),
+        JSON.stringify(_.get(character, "defenseEnhancements")),
+        JSON.stringify(_.get(character, "traits")),
+        JSON.stringify(_.get(enemy, "traits"))
+    ];
+    const attackArgs = [
+        _.get(enemy, "powerLevel", Decimal(0)).toFixed(),
+        _.get(character, ["combat", "precision"], Decimal(0)).toFixed(),
+        JSON.stringify(_.get(character, "attackEnhancements")),
+        JSON.stringify(_.get(character, "traits")),
+        JSON.stringify(_.get(enemy, "traits"))
+    ];
+
+    const powerTooltip = useMemo(() => `Your Power vs the enemy's Resilience modifies your damage by x${calculateAttributeDifferentMultiplier(_.get(character, ["combat", "power"], Decimal(0)), _.get(enemy, ["combat", "resilience"], Decimal(0)))}.`, [
+        _.get(character, ["combat", "power"], Decimal(0)).toFixed(),
+        _.get(enemy, ["combat", "resilience"], Decimal(0)).toFixed()
     ]);
-    const resilienceTooltip = useMemo(() => `Your Resilience vs the enemy's Power modifies damage against you by x${calculateAttributeDifferentMultiplier(props.enemyPower, props.characterResilience)}.`, [
-        props.characterResilience,
-        props.enemyPower
+    const resilienceTooltip = useMemo(() => `Your Resilience vs the enemy's Power modifies damage against you by x${calculateAttributeDifferentMultiplier(_.get(enemy, ["combat", "power"], Decimal(0)), _.get(character, ["combat", "resilience"], Decimal(0)))}.`, [
+        _.get(character, ["combat", "resilience"], Decimal(0)).toFixed(),
+        _.get(enemy, ["combat", "power"], Decimal(0)).toFixed()
     ]);
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+
+    const blockCost = useMemo(() => calculateActionCost(character, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed(),
+        defenseArgs);
+    const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance)=>{
+        return total + (enhance.additional_block_damage_reduction || 0);
+    }, 0)).times(100).toFixed();
+    const dodgeCost = useMemo(() => calculateActionCost(character, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed(),
+        defenseArgs);
+
+    const basicAttackCost = useMemo(() => calculateActionCost(character, {primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed(),
+        attackArgs);
+    const basicAttackDamage = calculateDamageBy(character).using({primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])})
+        .against(enemy).using({primary: "none", enhancements: _.get(enemy, ["defenseEnhancements"], [])})[0].toFixed();
+
+    const powerAttackCost = useMemo(() => calculateActionCost(character, {primary: "powerAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed(),
+        attackArgs);
+    const powerAttackDamage = calculateDamageBy(character).using({primary: "powerAttack", enhancements: _.get(character, "attackEnhancements", [])})
+        .against(enemy).using({primary: "none", enhancements: _.get(enemy, ["defenseEnhancements"], [])})[1].toFixed();
     return <Grid container>
         <Grid item xs={12}>
             <strong>Combat Statistics</strong>
@@ -39,7 +78,7 @@ export default function CharacterCombatStatistics(props) {
                             Power
                         </TableCell>
                         <TableCell>
-                            {props.characterPower}
+                            {character.combat.power.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={powerTooltip}>
@@ -50,7 +89,7 @@ export default function CharacterCombatStatistics(props) {
                             Max Energy
                         </TableCell>
                         <TableCell>
-                            {props.characterStamina}
+                            {character.combat.maximumStamina.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="The maximum Energy you can have safely.">
@@ -63,7 +102,7 @@ export default function CharacterCombatStatistics(props) {
                             Resilience
                         </TableCell>
                         <TableCell>
-                            {props.characterResilience}
+                            {character.combat.resilience.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={resilienceTooltip}>
@@ -74,7 +113,7 @@ export default function CharacterCombatStatistics(props) {
                             Energy Regen
                         </TableCell>
                         <TableCell>
-                            {props.characterEnergyGeneration.times(100).floor().toFixed()}
+                            {character.energyGeneration.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Gain this much energy every 100 ticks of combat.">
@@ -87,7 +126,7 @@ export default function CharacterCombatStatistics(props) {
                             Evasion
                         </TableCell>
                         <TableCell>
-                            {props.characterEvasion}
+                            {character.combat.evasion.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={`This character's evasion reduces the energy cost to downgrade attacks.`}>
@@ -100,7 +139,7 @@ export default function CharacterCombatStatistics(props) {
                             Precision
                         </TableCell>
                         <TableCell>
-                            {props.characterPrecision}
+                            {character.combat.precision.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Precision reduces the energy cost to upgrade attacks.">
@@ -117,7 +156,7 @@ export default function CharacterCombatStatistics(props) {
                             Power
                         </TableCell>
                         <TableCell>
-                            {props.characterPower}
+                            {character.combat.power.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={powerTooltip}>
@@ -130,7 +169,7 @@ export default function CharacterCombatStatistics(props) {
                             Resilience
                         </TableCell>
                         <TableCell>
-                            {props.characterResilience}
+                            {character.combat.resilience.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={resilienceTooltip}>
@@ -143,7 +182,7 @@ export default function CharacterCombatStatistics(props) {
                             Evasion
                         </TableCell>
                         <TableCell>
-                            {props.characterEvasion}
+                            {character.combat.evasion.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title={`This character's evasion reduces the energy cost to downgrade attacks.`}>
@@ -151,25 +190,12 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                     </TableRow>
-                    {/*<TableRow>*/}
-                    {/*    <TableCell>*/}
-                    {/*        Downgrade Cost*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell>*/}
-                    {/*        {props.evasionMultiplier.toFixed()}*/}
-                    {/*    </TableCell>*/}
-                    {/*    <TableCell>*/}
-                    {/*        <Tooltip title="This is the amount of energy consumed to downgrade incoming attacks.">*/}
-                    {/*            <Help/>*/}
-                    {/*        </Tooltip>*/}
-                    {/*    </TableCell>*/}
-                    {/*</TableRow>*/}
                     <TableRow>
                         <TableCell>
                             Precision
                         </TableCell>
                         <TableCell>
-                            {props.characterPrecision}
+                            {character.combat.precision.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Precision reduces the energy cost to upgrade attacks.">
@@ -182,7 +208,7 @@ export default function CharacterCombatStatistics(props) {
                             Energy
                         </TableCell>
                         <TableCell>
-                            {props.characterStamina}
+                            {character.combat.stamina.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Energy is used to perform various actions and trigger special effects">
@@ -195,7 +221,7 @@ export default function CharacterCombatStatistics(props) {
                             Energy Regen
                         </TableCell>
                         <TableCell>
-                            {props.characterEnergyGeneration.times(100).floor().toFixed()}
+                            {character.energyGeneration.toFixed()}
                         </TableCell>
                         <TableCell>
                             <Tooltip title="Gain this much energy every 100 ticks of combat.">
@@ -214,27 +240,27 @@ export default function CharacterCombatStatistics(props) {
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs><strong>Basic Attack</strong></Grid>
-                <Grid item xs>{props.basicAttackCost}</Grid>
-                <Grid item xs>{props.basicAttackDamage}</Grid>
+                <Grid item xs>{basicAttackCost}</Grid>
+                <Grid item xs>{basicAttackDamage}</Grid>
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs><strong>Power Attack</strong></Grid>
-                <Grid item xs>{props.powerAttackCost}</Grid>
-                <Grid item xs>{props.powerAttackDamage}</Grid>
+                <Grid item xs>{powerAttackCost}</Grid>
+                <Grid item xs>{powerAttackDamage}</Grid>
             </Grid>
             <Grid container>
                 <Grid item style={{textAlign: "center"}} xs={12}>
                     Attack Enhancements
                 </Grid>
                 <Grid item container xs={12}>
-                    {props.attackEnhancements.map(enhancement => {
+                    {character.attackEnhancements.map(enhancement => {
                         return <Grid item>
                             {ActionEnhancements[enhancement.enhancement].name}
                         </Grid>
                     })}
                 </Grid>
                 <Grid item xs={12}>
-                    {props.attackEnhancements.length == 0 && "None"}
+                    {character.attackEnhancements.length == 0 && "None"}
                 </Grid>
             </Grid>
         </Grid>
@@ -246,12 +272,12 @@ export default function CharacterCombatStatistics(props) {
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs><strong>Block</strong></Grid>
-                <Grid item xs>{props.blockCost}</Grid>
-                <Grid item xs>{props.blockEffect}% Damage</Grid>
+                <Grid item xs>{blockCost}</Grid>
+                <Grid item xs>{blockEffect}% Damage</Grid>
             </Grid>
             <Grid item container xs={12}>
                 <Grid item xs><strong>Dodge</strong></Grid>
-                <Grid item xs>{props.dodgeCost}</Grid>
+                <Grid item xs>{dodgeCost}</Grid>
                 <Grid item xs>Attack Misses</Grid>
             </Grid>
             <Grid container>
@@ -259,14 +285,14 @@ export default function CharacterCombatStatistics(props) {
                     Defense Enhancements
                 </Grid>
                 <Grid item container xs={12}>
-                    {props.defenseEnhancements.map(enhancement => {
+                    {character.defenseEnhancements.map(enhancement => {
                         return <Grid item>
                             {ActionEnhancements[enhancement.enhancement].name}
                         </Grid>
                     })}
                 </Grid>
                 <Grid item xs={12}>
-                    {props.defenseEnhancements.length == 0 && "None"}
+                    {character.defenseEnhancements.length == 0 && "None"}
                 </Grid>
             </Grid>
         </Grid>

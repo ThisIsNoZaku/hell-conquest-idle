@@ -1,5 +1,5 @@
 import Paper from "@material-ui/core/Paper";
-import React from "react";
+import React, {useContext} from "react";
 import * as _ from "lodash";
 import Button from "@material-ui/core/Button";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -10,6 +10,8 @@ import CharacterCombatSummary from "./CharacterCombatSummary";
 import ActionLog from "./ActionLog";
 import ExplorationActionsSection from "./actions/ExplorationActionsSection";
 import ApproachingActionsSection from "./actions/ApproachingActionsSection";
+import {TimerContext} from "../scene/AdventuringPage";
+import {act} from "@testing-library/react";
 
 const styles = {
     root: {
@@ -50,6 +52,7 @@ export default function BottomSection(props) {
     if (!props.currentAction) {
         throw new Error("No current action");
     }
+    const actionTime = useContext(TimerContext);
 
     const maxActionTime = typeof props.currentAction.duration === "number" ?
         props.currentAction.duration :
@@ -90,9 +93,9 @@ export default function BottomSection(props) {
         </Paper>
         <Paper style={styles.action}>
             <strong>{props.currentAction.description}</strong>
-            <progress style={styles.actionProgress} value={props.actionTime}
+            <progress style={styles.actionProgress} value={actionTime}
                       max={maxActionTime}/>
-            {Math.floor(props.actionTime)} / {maxActionTime}
+            {Math.floor(actionTime)} / {maxActionTime}
         </Paper>
         <ActionLog actionLog={props.actionLog}/>
     </div>

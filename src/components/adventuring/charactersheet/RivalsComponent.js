@@ -1,5 +1,5 @@
 import {getGlobalState} from "../../../engine";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Grid from "@material-ui/core/Grid";
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../../data/Traits";
@@ -8,6 +8,7 @@ import {Tactics} from "../../../data/Tactics";
 import Button from "@material-ui/core/Button";
 import Collapse from "@material-ui/core/Collapse";
 import {Help} from "@material-ui/icons";
+import {PlayerContext} from "../../scene/AdventuringPage";
 
 
 function changeRivalTactics(event) {
@@ -29,7 +30,7 @@ export default function RivalsComponent(props) {
                 </Tooltip>
             </Button>
         </Grid>
-        {Object.keys(props.rivals).map(level => {
+        {Object.keys(props.rivals || {}).map(level => {
             const rivalTactics = getGlobalState().rivals[level].tactics;
             const rival = getGlobalState().rivals[level].character;
             return <Grid container>

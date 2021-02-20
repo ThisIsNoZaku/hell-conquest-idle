@@ -1,16 +1,19 @@
 import Tooltip from "@material-ui/core/Tooltip";
 import {Traits} from "../../../data/Traits";
-import React from "react";
+import React, {useContext, useReducer} from "react";
 import {Decimal} from "decimal.js";
+import {EnemyContext, PlayerContext} from "../../scene/AdventuringPage";
 
 export default function CharacterTraits(props) {
+    const character = useContext(props.isPc ? PlayerContext : EnemyContext);
+
     return <React.Fragment>
-        {Object.keys(props.characterTraits).map(trait => <Tooltip key={trait} title={
+        {Object.keys(character.traits).map(trait => <Tooltip key={trait} title={
             <React.Fragment>
-                <span>{Traits[trait].name} {Decimal(props.characterTraits[trait]).toFixed()}: </span>
+                <span>{Traits[trait].name} {Decimal(character.traits[trait]).toFixed()}: </span>
             <span dangerouslySetInnerHTML={{
                 __html: Traits[trait].description({
-                    tier: Decimal(props.characterTraits[trait])
+                    tier: Decimal(character.traits[trait])
                 })
             }}></span>
             </React.Fragment>}>
@@ -18,5 +21,4 @@ export default function CharacterTraits(props) {
         </Tooltip>)
         }
     </React.Fragment>
-
 }
