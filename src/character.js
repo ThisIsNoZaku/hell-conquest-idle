@@ -157,6 +157,10 @@ export class Character {
             .times(getConfigurationValue("latent_power_effect_scale")).toDP(2);
     }
 
+    setHp(newHp) {
+        this.hp = Decimal.min(this.maximumHp, newHp);
+    }
+
     get maximumHp() {
         const base = Decimal(getConfigurationValue("mechanics.combat.hp.baseHp"));
 
