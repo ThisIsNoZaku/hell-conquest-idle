@@ -73,14 +73,13 @@ export const PlayerContext = React.createContext(getCharacter(0));
 export const EnemyContext = React.createContext();
 
 export default function AdventuringPage(props) {
-    const accruedTime = useRef(0);
+    const [accruedTime, setAccruedTime] = useState(0);
     const [enemy, setEnemy] = useState(_.get(getGlobalState(), ["currentEncounter", "enemies", 0]));
     const [actionLog, setActionLog] = useState(getGlobalState().actionLog);
     const [currentAction, setCurrentAction] = useState(Actions[getGlobalState().currentAction]);
     const [nextAction, setNextAction] = useState(getGlobalState().nextAction);
     const [paused, setPaused] = useState(getGlobalState().paused);
     const player = useRef(getCharacter(0));
-    const manualSpeedUpActive = useRef(false);
     const currentRegion = Regions[getGlobalState().currentRegion];
 
     function togglePause() {
@@ -114,9 +113,9 @@ export default function AdventuringPage(props) {
                 lastTime = timestamp;
             } else if (!getGlobalState().paused) {
                 const actionDuration = Actions[getGlobalState().currentAction].duration;
-                if (accruedTime.current >= actionDuration) {
+                if (getGlobalState().time >= actionDuration) {
                     saveGlobalState();
-                    accruedTime.current = 0;
+                    setAccruedTime(getGlobalState().time = 0);
                     const nextAction = getGlobalState().nextAction;
                     getGlobalState().nextAction = undefined;
 
@@ -145,23 +144,24 @@ export default function AdventuringPage(props) {
                     debugMessage(`Current Action now: ${getGlobalState().currentAction} Next: ${getGlobalState().nextAction}`);
                 }
                 const passedTime = timestamp - lastTime;
-                const adjustedTime = passedTime * (manualSpeedUpActive.current ? getManualSpeedMultiplier() : 1);
-                if (Math.min(accruedTime.current + adjustedTime, actionDuration) === 0) {
-                    if (accruedTime.current + adjustedTime === 0) {
+                const adjustedTime = passedTime;
+                if (Math.min(accruedTime + adjustedTime, actionDuration) === 0) {
+                    if (accruedTime + adjustedTime === 0) {
                         debugMessage(`Timestamp ${timestamp}, last time ${lastTime}`);
                     } else {
                         debugMessage("Action duration was 0");
                     }
 
                 }
-                accruedTime.current = Math.min(accruedTime.current + adjustedTime, actionDuration);
+                const newTime = Math.min(getGlobalState().time + adjustedTime, actionDuration);
+                console.log(newTime);
+                setAccruedTime(getGlobalState().time = newTime);
             }
             if (lastTime === timestamp) {
                 debugMessage("New and previous timestamp were identical");
             }
             lastTime = timestamp;
             lastFrame = requestAnimationFrame(tick);
-            setActionLog([...getGlobalState().actionLog]);
         }
 
         console.log("Adventuring Page");
@@ -171,10 +171,7 @@ export default function AdventuringPage(props) {
             cancelAnimationFrame(lastFrame);
         }
     }, []);
-    return <div className="App" style={styles.root}
-                onMouseOver={() => manualSpeedUpActive.current = true}
-                onMouseLeave={() => manualSpeedUpActive.current = false}
-    >
+    return <div className="App" style={styles.root}>
         <div id="background" style={{
             position: "absolute",
             zIndex: "-10",
@@ -197,7 +194,7 @@ export default function AdventuringPage(props) {
                         automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
                         reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive || _.get(getGlobalState(), ["debug", "forceEnableReincarnate"], false)}
             />
-            <TimerContext.Provider value={accruedTime.current}>
+            <TimerContext.Provider value={accruedTime}>
                 <BottomSection state={getGlobalState()} actionLog={actionLog}
                                player={player.current}
                                enemy={enemy}

@@ -43,6 +43,7 @@ export function loadGlobalState() {
             creatures: {},
             regions: {}
         },
+        time: 0,
         rivals: {},
         intimidatedDemons: {},
         reincarnationCount: 0,
@@ -203,6 +204,8 @@ function stateReviver(key, value) {
                 return value;
             }
             return Decimal(value);
+        case "time":
+            return 0;
         default:
             return value;
     }
