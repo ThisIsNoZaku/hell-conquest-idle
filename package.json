@@ -22,6 +22,7 @@
     "lerp": "^1.0.3",
     "md5": "^2.3.0",
     "node-uuid": "^1.4.8",
+    "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-circular-progressbar": "^2.0.3",
     "react-dom": "^17.0.1",
@@ -38,7 +39,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CREACT_APP_ENABLE_MONITORING=true react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
