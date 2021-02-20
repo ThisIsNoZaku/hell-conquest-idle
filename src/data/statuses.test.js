@@ -95,7 +95,7 @@ describe("untouchable status", function () {
                 },
                 {
                     event: "action-skipped",
-                    reason: ", to conserve energy",
+                    reason: ", could not reach the enemy.",
                     source: {
                         character: 0
                     },
