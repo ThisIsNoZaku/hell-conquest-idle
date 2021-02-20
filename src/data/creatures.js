@@ -569,7 +569,7 @@ export const Creatures = {
         enabled: true,
         appearance: "shadowHulk",
         texture: "38_wolf.png",
-        description: "A massive <em>something</em> shrouded in darkness, which gives it a ${tier.times(25)}% bonus to Power and Resilience, a ${tier.times(15)}% bonus to Evasion and a ${tier.times(10)}% penalty to Precision.",
+        description: "A massive <em>something</em> shrouded in darkness.",
         npc: {
             adjective: "savage",
             tactics: {
