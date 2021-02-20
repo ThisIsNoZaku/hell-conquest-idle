@@ -1,4 +1,3 @@
-import {CharacterSidebar} from "../adventuring/CharacterSidebar";
 import TopSection from "../adventuring/TopSection";
 import {
     getCharacter,
