@@ -1119,7 +1119,7 @@ describe("regenerative effect", function () {
         expect(roundEvents).toContainEqual({
             event: "health-change",
             parent: undefined,
-            value: player.combat.maximumStamina.times(0.05).floor(),
+            value: player.combat.maximumStamina.times(0.01).floor(),
             target: 0,
             uuid: expect.any(String),
             source: {
@@ -1127,8 +1127,8 @@ describe("regenerative effect", function () {
                 trait: "test"
             }
         });
-        expect(player.hp).toEqual(Decimal(1).plus(player.combat.maximumStamina.times(0.05).floor()));
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.plus(player.combat.maximumStamina.times(-0.05).floor()));
+        expect(player.hp).toEqual(Decimal(1).plus(player.combat.maximumStamina.times(0.01).floor()));
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.plus(player.combat.maximumStamina.times(-0.1).floor()));
     });
     it("does not over heal", function () {
         const roundEvents = [];
