@@ -59,7 +59,7 @@ export const Statuses = {
     }),
     infected: validatedStatus({
         name: "Infected",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-365.png",
         description: _.template(""),
         effects: {
             maximum_health_modifier: {
@@ -70,7 +70,7 @@ export const Statuses = {
     }),
     neutralizing: validatedStatus({
         name: "Neutralizing",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-121.png",
         description: _.template("Increases the cost multiplier of the enemy's attack and defense enhancements by ${enhancement_cost_increase.times(100)}%"),
         effects: {
             enhancement_cost_increase: {
@@ -115,7 +115,7 @@ export const Statuses = {
     }),
     untouchable: validatedStatus({
         name: "Untouchable",
-        icon: "./icons/icons-1.png",
+        icon: "./icons/icons-602.png",
         description: _.template("You cannot be hit by most attacks"),
         effects: {
             untargetable: {
