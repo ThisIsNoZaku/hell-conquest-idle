@@ -555,7 +555,6 @@ describe("frightening effect", function () {
         const roundEvents = [];
         triggerEvent({
             type: "on_combat_start",
-            target: enemy,
             combatants: {
                 0: player,
                 1: enemy
@@ -831,7 +830,6 @@ describe("learned effect", function () {
     it("adds the enemy's traits to your own", function () {
         triggerEvent({
             type: "on_combat_start",
-            target: enemy,
             combatants: {
                 0: player,
                 1: enemy

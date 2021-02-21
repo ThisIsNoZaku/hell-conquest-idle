@@ -82,7 +82,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                             });
                         if (existingStatus) {
                             target.statuses[status] = target.statuses[status].filter(s => s != existingStatus);
-                            if(target.statuses[status].length === 0) {
+                            if (target.statuses[status].length === 0) {
                                 delete target.statuses[status];
                             }
                             event.roundEvents.push({
@@ -145,7 +145,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
             }
                 break;
-            case "change_fatigue":{
+            case "change_fatigue": {
                 const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
                 targets.forEach(target => {
                     const fatigueChange = effectDefinition.percentage_of_maximum_stamina ?
@@ -174,7 +174,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                     const healthChange = effectDefinition.percentage_of_maximum_health ?
                         contextCharacter.maximumHp.times(effectDefinition.percentage_of_maximum_health).times(effectLevel).floor() :
                         (effectDefinition.percentage_of_current_stamina ? contextCharacter.combat.stamina.times(effectDefinition.percentage_of_current_stamina).times(effectLevel).floor() :
-                        Decimal(effectDefinition.value).times(effectLevel).floor());
+                            Decimal(effectDefinition.value).times(effectLevel).floor());
                     target.setHp(target.hp.plus(healthChange))
                     const newEffectUuid = v4();
                     if (_.get(event.source, "event")) {
@@ -192,12 +192,15 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
                 });
             }
                 break;
-            case "trait_mirror":
-                const {target} = event;
-                Object.keys(target.traits).forEach(trait => {
-                    const actor = contextCharacter;
-                    actor.temporaryTraits = {...target.traits};
+            case "trait_mirror": {
+                const targets = selectConditionTargets(effectDefinition.target, contextCharacter, event.target, event.combatants);
+                targets.forEach(target => {
+                    Object.keys(target.traits).forEach(trait => {
+                        const actor = contextCharacter;
+                        actor.temporaryTraits = {...target.traits};
+                    })
                 })
+            }
                 break;
             case "reflect_statuses": {
                 const {target} = event;
@@ -223,7 +226,7 @@ export default function applyEffects(effectsToApply, contextCharacter, event, so
             }
             default:
                 debugMessage(`Did not process effect ${effect}`);
-                if(getConfigurationValue("debug_enabled")) {
+                if (getConfigurationValue("debug_enabled")) {
                     throw new Error(effect);
                 }
         }

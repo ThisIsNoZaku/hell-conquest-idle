@@ -202,7 +202,7 @@ export const TraitEffects = {
         on_combat_start: {
             trigger_effects: {
                 trait_mirror: {
-                    target: "self",
+                    target: "enemy",
                     value: 1
                 }
             }

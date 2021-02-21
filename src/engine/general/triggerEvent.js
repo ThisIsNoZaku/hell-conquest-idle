@@ -118,8 +118,7 @@ const eventMatcher = JOI.object({
     }).required(),
     target: JOI.any().when("type", {
         is: [
-            "on_status_applied_to_self",
-            "on_status_applied_to_enemy",
+            "on_status_applied",
             "on_kill",
             "on_taking_damage",
             "on_miss",
@@ -130,7 +129,7 @@ const eventMatcher = JOI.object({
             "on_serious_hit",
             "on_devastating_hit"],
         then: JOI.object(),
-        otherwise: JOI.any().strip()
+        otherwise: JOI.any().forbidden()
     }),
     status: JOI.any().when("type", {
         is: 'on_status_applied',

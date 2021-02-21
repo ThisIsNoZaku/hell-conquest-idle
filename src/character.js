@@ -59,11 +59,11 @@ export class Character {
             resistances[nextType] = Object.keys(this.allTraits)
                 .reduce((total, nextTrait)=>{
                     const damageResistance = _.get(Traits[nextTrait], ["continuous", "trigger_effects", "damage_resistance"], {});
-                    const level = Decimal.min(1, Decimal(this.traits[nextTrait]).plus(this.attributes.madness.div(10)));
+                    const level = Decimal.min(1, Decimal(this.allTraits[nextTrait]).plus(this.attributes.madness.div(10)));
                     return total.plus(damageResistance.type === nextType ? level.times(damageResistance.percentage) : 0);
                 }, Decimal(0));
             return resistances;
-        }, {})
+        }, {});
     }
 
     levelUp() {
