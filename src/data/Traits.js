@@ -22,7 +22,7 @@ export const Traits = {
     }, ["bloodthirsty", "tough"])),
     bloodHunger: validatedTrait(generateTrait({
         name: "Blood Hunger",
-        icon: "./icons/icons-852.png",
+        icon: "./icons/icons-864.png",
         description: _.template("This demon steals the life force from the enemy even before cracking open their mortal shell, recovering ${tier}% of maximum health on a hit, while its dread gaze inflicting ${tier} stacks of <span style='color: violet'>Frightened</span> for <span style='color: lightblue'>10</span> round(s)")
     }, ["frightening", "vampiric"])),
     boneHunter: validatedTrait(generateTrait({
@@ -224,7 +224,7 @@ export const Traits = {
     }, ["small", "precise"])),
     teleportingHunter: validatedTrait(generateTrait({
         name: "Teleporting Hunter",
-        enabled: true,
+        enabled: false,
         description: _.template("")
     })),
     terrifyingSkitter: validatedTrait(generateTrait({
