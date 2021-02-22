@@ -16,7 +16,7 @@ import {act} from "@testing-library/react";
 const styles = {
     root: {
         display: "flex",
-        flex: "1 0 auto",
+        flex: "1",
         justifyContent: "flex-end",
         flexDirection: "column",
     },
