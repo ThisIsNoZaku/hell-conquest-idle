@@ -42,7 +42,7 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
                     character: targetedCharacter,
                     event: attackEvent
                 },
-                target: actingCharacter,
+                // target: actingCharacter,
                 combatants: {
                     [actingCharacter.id]: actingCharacter,
                     [targetedCharacter.id]: targetedCharacter
