@@ -16,12 +16,12 @@ import Paper from "@material-ui/core/Paper";
 
 const styles = {
     alive: {
+        flexShrink: 0,
         overflowY: "scroll",
-        width: "25%",
         backgroundColor: "#eeeeee"
     },
     dead: {
-        width: "25%",
+        flexShrink: 0,
         backgroundColor: "#b3827f",
         overflowY: "scroll",
     }
@@ -80,7 +80,6 @@ export function CharacterSheet(props) {
                 <CharacterTraits isPc={props.isPc}/>
             </Grid>
             <TacticsSection isPc={props.isPc}/>
-            {props.isPc && <RivalsComponent rivals={getGlobalState().rivals}/>}
         </Grid>}
     </Paper>
 

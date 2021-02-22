@@ -59,8 +59,7 @@ export default function triggerEvent(event) {
                                 type: "on_taking_damage",
                                 source: {
                                     character: combatant,
-                                    status: statusId,
-                                    damage: damageEvent
+                                    event: damageEvent
                                 },
                                 target: combatant,
                                 combatants: event.combatants,
