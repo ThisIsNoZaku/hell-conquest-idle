@@ -19,6 +19,7 @@ import {EventHandlers} from "../../engine/EventHandlers";
 import {Regions} from "../../data/Regions";
 import {Timer} from "@material-ui/icons";
 import {CharacterSheet} from "../adventuring/CharacterSheet";
+import PlayerSidebar from "../adventuring/PlayerSidebar";
 
 const styles = {
     root: {
@@ -184,10 +185,10 @@ export default function AdventuringPage(props) {
         </div>
         <PlayerContext.Provider value={player.current}>
             <EnemyContext.Provider value={enemy}>
-                <CharacterSheet isPc={true}/>
+                <PlayerSidebar></PlayerSidebar>
             </EnemyContext.Provider>
         </PlayerContext.Provider>
-        <div style={{display: "flex", flex: "1 0 auto", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
+        <div style={{display: "flex", flex: "1", maxHeight: "100%", width: "60%", flexDirection: "column"}}>
             <TopSection highestLevelEnemyDefeated={player.current.highestLevelEnemyDefeated}
                         automaticReincarnateEnabled={getGlobalState().automaticReincarnate}
                         reincarnateEnabled={player.current.powerLevel.gt(1) || !player.current.isAlive || _.get(getGlobalState(), ["debug", "forceEnableReincarnate"], false)}
@@ -211,7 +212,9 @@ export default function AdventuringPage(props) {
         </div>
         <PlayerContext.Provider value={player.current}>
             <EnemyContext.Provider value={enemy}>
-                <CharacterSheet isPlayer={false}/>
+                <div style={{flexShrink: 0, width: "25%"}}>
+                    <CharacterSheet isPlayer={false}/>
+                </div>
             </EnemyContext.Provider>
         </PlayerContext.Provider>
 
