@@ -901,6 +901,9 @@ describe("mindless effect", function () {
     it("gives psychic damage resistance", function () {
         expect(player.damageResistances.psychic).toEqual(Decimal(.1));
     });
+    it("reduces character deception by 5", function () {
+        expect(player.deception).toEqual(Decimal(-4));
+    })
 });
 
 describe("neutralizing effect", function () {

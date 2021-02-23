@@ -11,6 +11,8 @@ export const modifierEffects = JOI.object({
     steal_item: JOI.object({
         target: effectTarget
     }),
+    self_deception_modifier: JOI.number(),
+    self_perception_modifier: JOI.number(),
     hidden_action: {
         target: effectTarget
     },

@@ -31,7 +31,7 @@ describe("character", function () {
             .toMatchObject({
                 isPc: false
             });
-    })
+    });
 });
 
 describe("reincarnate", function () {

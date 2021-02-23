@@ -150,9 +150,7 @@ export const TraitEffects = {
                     target: "self",
                     value: .1
                 },
-                hidden_action: {
-                    target: "self"
-                }
+                self_deception_modifier: 5
             }
         }
     },
@@ -247,7 +245,8 @@ export const TraitEffects = {
                     target: "self",
                     type: "psychic",
                     percentage: .1,
-                }
+                },
+                self_deception_modifier: -5
             }
         }
     },

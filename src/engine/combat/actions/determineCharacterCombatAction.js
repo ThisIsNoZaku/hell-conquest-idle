@@ -24,8 +24,10 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
     if(!enemy.canBeAttacked || !actingCharacter.canBeAttacked) {
         return attackPrevented(actingCharacter);
     }
+    // FIXME: Extract into function
+    const canKnowEnemyAction = actingCharacter.perception.gte(enemy.deception);
     const action = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy,
-        enemy.isInscrutable ? null : enemyAction);
+        enemyAction && canKnowEnemyAction ? enemyAction : null);
     debugMessage(`Selected action ${_.get(action, "primary")}`);
     if(action === undefined) {
         debugMessage("Action changed to 'none'");

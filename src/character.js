@@ -48,6 +48,22 @@ export class Character {
         this.hp = Decimal(props.hp !== undefined ? props.hp : this.maximumHp);
     }
 
+    get perception() {
+        const base = Decimal(this.attributes.cunning);
+        const traitModifier = Object.keys(this.allTraits).reduce((total, trait) => {
+            return total.plus(Decimal(_.get(Traits[trait], "continuous.trigger_effects.self_perception_modifier", 0)).times(this.allTraits[trait]));
+        }, Decimal(0));
+        return base.plus(traitModifier);
+    }
+
+    get deception() {
+        const base = Decimal(this.attributes.cunning);
+        const traitModifier = Object.keys(this.allTraits).reduce((total, trait) => {
+            return total.plus(_.get(Traits[trait], "continuous.trigger_effects.self_deception_modifier", 0));
+        }, Decimal(0));
+        return base.plus(traitModifier);
+    }
+
     get allTraits() {
         return _.mergeWith({}, this.traits, this.temporaryTraits, function (permanentTrait, temporaryTrait, traitId) {
             return Decimal.max(permanentTrait || 0, temporaryTrait || 0);
@@ -412,6 +428,7 @@ const characterPropsSchema = JOI.object({
     id: JOI.number().required(),
     lastActedTick: JOI.number(),
     temporaryTraits: JOI.object().default({}),
+    loyalty: JOI.string().default("none"),
     totalStaminaGainedThisCombat: JOI.alternatives().try(JOI.object().instance(Decimal), JOI.string(), JOI.number()).default(Decimal(0)),
     attributes: JOI.alternatives().try(
         JOI.object({
