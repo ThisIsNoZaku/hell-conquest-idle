@@ -46,6 +46,31 @@ describe('Tactics overwhelm + none', function () {
             enhancements: []
         });
     });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+    });
     it("if the character cannot perform a power attack, they perform a simple attack", function () {
         player.combat.stamina = calculateActionCost(player, {
             primary: "powerAttack",
@@ -107,6 +132,33 @@ describe('Tactics overwhelm + block', function () {
                 defensive: "none"
             }
         }, 1);
+    });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
     });
     it("performs a power attack if going first and enemy cannot power attack", function () {
         player.combat.stamina = player.combat.maximumStamina;
@@ -245,6 +297,33 @@ describe('Tactics overwhelm + dodge', function () {
             }
         }, 1);
     });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+    });
     it("performs a power attack if enemy doing nothing", function () {
         player.combat.stamina = player.combat.maximumStamina;
         expect(determineCharacterCombatAction(player, enemy, {
@@ -313,6 +392,31 @@ describe('Tactics attrit + none', function () {
                 defensive: "none"
             }
         }, 1);
+    });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
     });
     it("if the character has enough energy, they perform a basic attack", function () {
         player.combat.stamina = player.combat.maximumStamina;
@@ -465,7 +569,18 @@ describe('Tactics attrit + block', function () {
                 primary: "none",
                 enhancements: []
             })
-    })
+    });
+    it("with maximum stamina and enemy blocking, basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        }))
+            .toEqual({
+                primary: "basicAttack",
+                enhancements: []
+            })
+    });
 });
 
 describe('Tactics attrit + dodge', function () {
@@ -535,6 +650,31 @@ describe('Tactics attrit + dodge', function () {
                 enhancements: []
             });
     });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+    });
 });
 
 describe('Tactics counter + none', function () {
@@ -585,6 +725,31 @@ describe('Tactics counter + none', function () {
         });
         expect(determineCharacterCombatAction(player, enemy, {
             primary: "none"
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
+    });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
         })).toEqual({
             primary: "powerAttack",
             enhancements: []
@@ -665,7 +830,32 @@ describe('Tactics counter + block', function () {
                 primary: "none",
                 enhancements: []
             })
-    })
+    });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+    });
 });
 
 describe('Tactics counter + evade', function () {
@@ -759,5 +949,30 @@ describe('Tactics counter + evade', function () {
                 primary: "none",
                 enhancements: []
             });
+    });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "powerAttack",
+            enhancements: []
+        });
     });
 });
