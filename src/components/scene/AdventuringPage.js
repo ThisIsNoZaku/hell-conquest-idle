@@ -212,7 +212,7 @@ export default function AdventuringPage(props) {
         </div>
         <PlayerContext.Provider value={player.current}>
             <EnemyContext.Provider value={enemy}>
-                <div style={{flexShrink: 0, width: "25%"}}>
+                <div style={{flexShrink: 0, width: "25%", minHeight: "100%", overflowY: "auto"}}>
                     <CharacterSheet isPlayer={false}/>
                 </div>
             </EnemyContext.Provider>
