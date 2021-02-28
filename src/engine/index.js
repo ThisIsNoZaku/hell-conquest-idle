@@ -14,6 +14,77 @@ import {ActionEnhancements} from "../data/ActionEnhancements";
 
 export const saveKey = require("md5")(`hell-conquest-${Package.version}`);
 
+const defaultState = {
+    events: [],
+    debug: {
+        creatures: {},
+        regions: {}
+    },
+    time: 0,
+    rivals: {},
+    intimidatedDemons: {},
+    reincarnationCount: 0,
+    latentPowerCap: 0,
+    passivePowerIncome: Decimal(0),
+    unlockedMonsters: {},
+    unlockedTraits: {},
+    paused: true,
+    currentAction: null,
+    nextAction: "challenging",
+    id: 0,
+    highestLevelEnemyDefeated: 0,
+    startingTraits: {},
+    currentEncounter: null,
+    manualSpeedMultiplier: getConfigurationValue("manualSpeedup.enabled", false) ? getConfigurationValue("manualSpeedup.multiplier", 1) : 1,
+    currentRegion: "forest",
+    actionLog: [],
+    exploration: {
+        explorationTime: 2.5 * 1000,
+        approachTime: 5 * 1000,
+        combatTime: 5 * 1000,
+        lootingTime: 5 * 1000,
+        recoveryTime: 2 * 1000,
+        fleeingTime: 5 * 1000,
+        intimidateTime: 2.5 * 1000,
+        reincarnationTime: 30 * 1000
+    },
+    characters: {
+        0: new Character({
+            highestLevelReached: Decimal(1),
+            id: 0,
+            party: 0,
+            isPc: true,
+            name: "You",
+            powerLevel: Decimal(1),
+            appearance: "",
+            statuses: {},
+            traits: {},
+            tactics: {
+                offensive: "attrit",
+                defensive: "block"
+            },
+            attributes: {
+                baseBrutality: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                baseCunning: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                baseDeceit: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
+                baseMadness: getConfigurationValue("mechanics.combat.playerAttributeMinimum")
+            },
+            combat: {}
+        }, 0)
+    },
+    factions: {
+        alsharu: 0,
+        waru: 0,
+        kakoi: 0,
+        aterradora: 0
+    },
+    tutorials: {
+        reincarnation: {
+            enabled: true
+        }
+    }
+}
+
 let globalState = loadGlobalState()
 
 export function getGlobalState() {
@@ -37,70 +108,7 @@ export function loadGlobalState() {
             }, null);
         }
     }
-    return loaded ? JSON.parse(loaded, stateReviver) : {
-        events: [],
-        debug: {
-            creatures: {},
-            regions: {}
-        },
-        time: 0,
-        rivals: {},
-        intimidatedDemons: {},
-        reincarnationCount: 0,
-        latentPowerCap: 0,
-        passivePowerIncome: Decimal(0),
-        unlockedMonsters: {},
-        unlockedTraits: {},
-        paused: true,
-        currentAction: null,
-        nextAction: "challenging",
-        id: 0,
-        highestLevelEnemyDefeated: 0,
-        startingTraits: {},
-        currentEncounter: null,
-        manualSpeedMultiplier: getConfigurationValue("manualSpeedup.enabled", false) ? getConfigurationValue("manualSpeedup.multiplier", 1) : 1,
-        currentRegion: "forest",
-        actionLog: [],
-        exploration: {
-            explorationTime: 2.5 * 1000,
-            approachTime: 5 * 1000,
-            combatTime: 5 * 1000,
-            lootingTime: 5 * 1000,
-            recoveryTime: 2 * 1000,
-            fleeingTime: 5 * 1000,
-            intimidateTime: 2.5 * 1000,
-            reincarnationTime: 30 * 1000
-        },
-        characters: {
-            0: new Character({
-                highestLevelReached: Decimal(1),
-                id: 0,
-                party: 0,
-                isPc: true,
-                name: "You",
-                powerLevel: Decimal(1),
-                appearance: "",
-                statuses: {},
-                traits: {},
-                tactics: {
-                    offensive: "attrit",
-                    defensive: "block"
-                },
-                attributes: {
-                    baseBrutality: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                    baseCunning: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                    baseDeceit: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                    baseMadness: getConfigurationValue("mechanics.combat.playerAttributeMinimum")
-                },
-                combat: {}
-            }, 0)
-        },
-        tutorials: {
-            reincarnation: {
-                enabled: true
-            }
-        }
-    }
+    return loaded ? {...defaultState, ...JSON.parse(loaded, stateReviver)} : defaultState;
 }
 
 export function getCharacter(id) {
@@ -142,11 +150,12 @@ export function generateCreature(id, powerLevel, rng) {
         globalState.characters[nextId] = new Character({
             id: nextId,
             ..._.omit(Creatures[id], ["npc"]),
-            latentPower: Decimal.max(0, Decimal(powerLevel.minus(2).times(10))), // FIXME: Make configurable value
+            latentPower: Decimal.max(0, Decimal(powerLevel.minus(1).times(10))), // FIXME: Make configurable value
             tactics: {
                 offensive: offensiveTactics,
                 defensive: defensiveTactics
             },
+            loyalty: powerLevel.gte(26) ? Creatures[id].npc.loyalty : "none",
             adjectives: [Creatures[id].npc.adjective],
             traits: {...startingTraits, ...bonuses.traits},
             powerLevel: powerLevel,
@@ -162,7 +171,8 @@ export function generateCreature(id, powerLevel, rng) {
         saveGlobalState();
         return globalState.characters[nextId];
     } catch (e) {
-        throw new Error(`Error generating creature ${id}: ${e.error}`);
+        debugger;
+        throw new Error(`Error generating creature ${id}: ${e.message}`);
     }
 }
 
@@ -206,6 +216,13 @@ function stateReviver(key, value) {
             return Decimal(value);
         case "time":
             return 0;
+        case "factions":
+            return value || {
+                alsharu: 0,
+                kakoi: 0,
+                waru: 0,
+                aterradora: 0
+            };
         default:
             return value;
     }
