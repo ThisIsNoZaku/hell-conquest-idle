@@ -481,7 +481,8 @@ const characterPropsSchema = JOI.object({
         ice: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         psychic: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     }),
-    initiative: JOI.number().default(0)
+    initiative: JOI.number().default(0),
+    lastAction: JOI.string()
 });
 
 const newTraitsSchema = JOI.object().pattern(JOI.string(), JOI.boolean());
