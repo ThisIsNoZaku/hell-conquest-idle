@@ -86,7 +86,7 @@ export const Traits = {
         name: "Plague Harbinger",
         enabled: true,
         icon: "./icons/icons-6.png",
-        description: _.template("")
+        description: _.template("This Demon's small size increases Precision and Evasion by ${tier.times(20)}% and reduces Power and Resilience by ${tier.times(10)}% and on being hit, ${tier} stacks of Diseased are inflicted on the enemy.")
     }, ["small", "diseased"])),
     eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
@@ -139,7 +139,7 @@ export const Traits = {
         name: "Inverted",
         icon: "./icons/icons-2486.png",
         enabled: true,
-        description: _.template("This strange Demon returns both ${tier.times(25)}% of damage received")
+        description: _.template("This strange Demon returns both ${tier.times(25)}% of damage received and stacks of statuses inflicted.")
     }, ["thorns", "reversal"])),
     killingBlow: validatedTrait(generateTrait({
         name: "Fatal Sting",
