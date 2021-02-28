@@ -69,7 +69,7 @@ export const Actions = {
     },
     fighting: {
         id: "fighting",
-        duration: 1000,
+        duration: 750,
         description: "In Combat!",
         complete: function (rng, player, pushLogItem, setPaused, setEnemy, applyAction, setActionLog, nextAction) {
             const instantDeathLevel = calculateInstantDeathLevel(player);
