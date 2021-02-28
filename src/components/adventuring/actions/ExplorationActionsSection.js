@@ -25,13 +25,12 @@ const styles = {
     }
 }
 export default function ExplorationActionsSection(props) {
-    const canHunt = evaluateExpression(getConfigurationValue("huntable_level", 0), {
-        playerLevel: Decimal(props.player.powerLevel),
-    }).gt(0);
+    const canHunt = props.player.powerLevel.gt(25);
+    const canUsurp = props.player.powerLevel.gt(50);
     return <Paper style={styles.actions.container}>
         {actionButton("hunting", "Hunt Lesser Demons", "Hunt lesser demons to grow your inherited power.",
             {...props, disabled: !canHunt})}
         {actionButton("challenging", "Challenge Peer Demons", "Find a demon of equal strength to challenge in battle.", props)}
-        {actionButton("usurp", "Usurp Greater Demon", "Challenge a Greater Demon to duel!", props)}
+        {actionButton("usurp", "Usurp Greater Demon", "Challenge a Greater Demon to duel!", {...props, disabled: !canUsurp})}
     </Paper>
 }
