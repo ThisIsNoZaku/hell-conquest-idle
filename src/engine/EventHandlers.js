@@ -54,6 +54,15 @@ export const EventHandlers = {
                     uuid: v4()
                 });
             }
+            if(deadCharacter.loyalty !== "none") {
+                Object.keys(faction => {
+                    if(faction !== deadCharacter.loyalty) {
+                        getGlobalState().factions[faction] = Math.min(getGlobalState("good_reputation_cap"), getGlobalState().factions[faction] + 1);
+                    } else {
+                        getGlobalState().factions[faction] = Math.max(getGlobalState("bad_reputation_floor"), getGlobalState().factions[faction] - 1);
+                    }
+                })
+            }
         } else if (deadCharacter.id === 0) {
             if (!getGlobalState().rivals[actingCharacter.powerLevel.toNumber()]) {
                 const enemy = getGlobalState().currentEncounter.enemies[0];
