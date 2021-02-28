@@ -40,7 +40,6 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
         debugMessage("Cannot afford to act, changing to 'none'");
         action.primary = "none";
     }
-    actingCharacter.lastAction = action.primary;
     return action;
 }
 
@@ -165,6 +164,9 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             }
         },
         block: function (actingCharacter, enemy, enemyAction) {
+            if(actingCharacter.lastAction === "none") {
+                return "basicAttack";
+            }
             const enemyCanPowerAttack = enemy.combat.stamina.gte(calculateActionCost(enemy, {
                 primary: "powerAttack",
                 enhancements: enemy.attackEnhancements

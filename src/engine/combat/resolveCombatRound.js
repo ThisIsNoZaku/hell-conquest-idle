@@ -93,6 +93,8 @@ export default function resolveCombatRound(tick, combatants) {
             }
         });
     })
+    initiativeOrder[0].lastAction = firstCharacterAction.primary;
+    initiativeOrder[1].lastAction = secondCharacterAction.primary;
     onCombatRoundEnd(combatants, roundEvents, tick);
 
     return {

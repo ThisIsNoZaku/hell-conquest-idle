@@ -581,6 +581,35 @@ describe('Tactics attrit + block', function () {
                 enhancements: []
             })
     });
+    it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
+        player.combat.stamina = player.combat.maximumStamina;
+        player.lastAction = "none";
+        expect(determineCharacterCombatAction(player, enemy)).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "block",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "dodge",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+        expect(determineCharacterCombatAction(player, enemy, {
+            primary: "none",
+            enhancements: []
+        })).toEqual({
+            primary: "basicAttack",
+            enhancements: []
+        });
+    });
 });
 
 describe('Tactics attrit + dodge', function () {
