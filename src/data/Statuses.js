@@ -60,7 +60,7 @@ export const Statuses = {
     infected: validatedStatus({
         name: "Infected",
         icon: "./icons/icons-365.png",
-        description: _.template(""),
+        description: _.template("Disease reduces your maximum HP by ${maximum_health_modifier}%."),
         effects: {
             maximum_health_modifier: {
                 target: "self",
