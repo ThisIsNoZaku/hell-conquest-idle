@@ -36,9 +36,13 @@ const config = {
     maximum_downgrade_times: 1,
     fatigue_penalty_per_point: 25,
     stamina_recovery_per_level: 50,
-    base_power_generated_per_level_per_tick: .25,
+    base_power_generated_per_level_per_tick: 100,
     power_generation_growth_scaling: .01,
-    game_level_cap: 26,
+    game_level_cap: 51,
+    good_reputation_cap: 15,
+    good_reputation_threshold: 10,
+    bad_reputation_threshold: -10,
+    bad_reputation_floor: 15,
     mechanics: {
         reincarnation: {
             latentPowerModifier: "Decimal.min(latentPower, highestLevelReached).plus(latentPower.minus(Decimal.min(latentPower, highestLevelReached).sqrt())",
