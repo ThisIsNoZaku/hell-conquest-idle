@@ -7,33 +7,33 @@ import {useMediaQuery, useTheme} from "@material-ui/core";
 
 export default function CharacterCombatSummary(props) {
     const theme = useTheme();
-    const smallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+    const smallScreen = useMediaQuery(theme.breakpoints.down("md"));
     return <Grid item container xs>
         <Grid item xs={12} container direction={props.direction}>
-            <Grid item xs={4}>
+            <Grid item xs={12} lg={4}>
                 <div>
                     {props.isRival && <Tooltip title="Your Rival!"><img src="./icons/icons-793.png"/></Tooltip>}
                     {props.name}
                 </div>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} lg={4}>
                 <Tooltip title={`Health ${props.hp}/${props.maximumHp}`}>
                     <div style={{display: "flex", flexDirection: props.direction, alignItems: "center"}}>
                         <img src="./icons/icons-464.png"/>
                         {!smallScreen && <meter style={{width: "100%"}} low={33} high={66} optimum={100} min={0} max={100}
                                value={props.hp.div(props.maximumHp).times(100).floor().toNumber()}
                                max={100}></meter> }
-                        {smallScreen && <div>{props.hp.toFixed()}/{props.maximumHp.toFixed()}</div>}
+                        {smallScreen && <div>{props.hp.toExponential()}/{props.maximumHp.toExponential()}</div>}
                     </div>
                 </Tooltip>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} lg={4}>
                 <Tooltip title={`Energy ${props.stamina}/${props.maxStamina}`}>
                     <div style={{display: "flex", flexDirection: props.direction, alignItems: "center"}}>
                         <img src="./icons/icons-64.png"/>
                         {!smallScreen && <meter style={{width: "100%"}} min={0} optimum={1} high={props.maxStamina} value={props.stamina} max={props.maxStamina * 1.001}
                         />}
-                        {smallScreen && <div>{props.stamina.toFixed()}/{props.maxStamina.toFixed()}</div>}
+                        {smallScreen && <div>{props.stamina.toExponential()}/{props.maxStamina.toExponential()}</div>}
                     </div>
                 </Tooltip>
             </Grid>
