@@ -2,8 +2,6 @@ import triggerEvent from "../../general/triggerEvent";
 import {DURATION_FOR_COMBAT, DURATION_PERMANENT} from "../../../data/Statuses";
 import {generateFatigueDamageEvent, generateKillEvent, generateRemoveStatusEvent} from "../../events/generate";
 import {getCharacter} from "../../index";
-import {Decimal} from "decimal.js";
-import determineCharacterCombatAction from "../actions/determineCharacterCombatAction";
 
 export default function onCombatRoundEnd(combatants, roundEvents, tick) {
     const everyoneAlive = Object.values(combatants).every(c => c.isAlive);
@@ -42,7 +40,6 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
             });
             // Gain end-of-round Energy
             if(combatant.lastAction === "none") {
-                combatant.combat.fatigue = combatant.combat.fatigue.plus(1);
                 combatant.combat.stamina = combatant.combat.maximumStamina;
                 const burnDamage = combatant.maximumHp.div(10).times(combatant.combat.fatigue).floor();
                 if (burnDamage.gt(0)) {
@@ -50,9 +47,11 @@ export default function onCombatRoundEnd(combatants, roundEvents, tick) {
                     combatant.dealDamage(burnDamage, "burn");
                     if (!combatant.isAlive) {
                         roundEvents.push(generateKillEvent(combatant, combatant));
-                    }R
+                    }
                 }
                 combatant.lastActedTick = tick;
+            } else {
+                combatant.combat.fatigue = combatant.combat.fatigue.plus(1);
             }
         });
     }
