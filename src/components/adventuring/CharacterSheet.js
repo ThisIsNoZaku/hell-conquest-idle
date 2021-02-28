@@ -17,13 +17,15 @@ import Paper from "@material-ui/core/Paper";
 const styles = {
     alive: {
         flexShrink: 0,
-        overflowY: "scroll",
+        minHeight: "100%",
+        overflowY: "auto",
         backgroundColor: "#eeeeee"
     },
     dead: {
         flexShrink: 0,
+        minHeight: "100%",
         backgroundColor: "#b3827f",
-        overflowY: "scroll",
+        overflowY: "auto",
     }
 }
 
@@ -31,7 +33,7 @@ export function CharacterSheet(props) {
     const character = useContext(props.isPc ? PlayerContext : EnemyContext);
     const spriteSrc = useMemo(() => character ? getSpriteForCreature(character.appearance) : null, [character && character.appearance]);
 
-    return <Paper style={!character || character.isAlive ? styles.alive : styles.dead}>
+    return <Paper {...props} style={!character || character.isAlive ? styles.alive : styles.dead}>
         {character &&
         <Grid container>
             <Grid item xs={12}>
