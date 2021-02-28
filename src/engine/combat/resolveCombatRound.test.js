@@ -64,7 +64,7 @@ describe("the combat round resolution", function () {
             .toHaveBeenCalledWith(enemy, {primary: "basicAttack", enhancements: []}, player, {
                 primary: "block",
                 enhancements: []
-            }, [], 100);
+            }, expect.any(Array), 100);
     });
     it("calls resolveAttack twice if both characters attack", function () {
         determineCharacterCombatAction.mockReturnValue({
@@ -79,10 +79,10 @@ describe("the combat round resolution", function () {
         expect(resolveAction)
             .toHaveBeenNthCalledWith(1, enemy, expect.any(Object),
                 player, expect.any(Object),
-                [], 100);
+                expect.any(Array), 100);
 
         expect(resolveAction)
-            .toHaveBeenNthCalledWith(2, player, expect.any(Object), enemy, expect.any(Object), [], 100);
+            .toHaveBeenNthCalledWith(2, player, expect.any(Object), enemy, expect.any(Object), expect.any(Array), 100);
     });
     it("does not call resolveAttack if both characters defend", function () {
         determineCharacterCombatAction.mockReturnValue({
