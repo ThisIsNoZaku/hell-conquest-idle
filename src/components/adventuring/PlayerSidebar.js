@@ -1,5 +1,5 @@
 import Paper from "@material-ui/core/Paper";
-import React, {useCallback, useState} from "react";
+import React, {useState} from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import {CharacterSheet} from "./CharacterSheet";
@@ -9,25 +9,18 @@ import FactionsComponent from "./charactersheet/FactionsComponent";
 export default function PlayerSidebar(props) {
     const [activeTab, setActiveTab] = useState(0);
     const changeActive = (event, value) => setActiveTab(value)
-    return <Paper style={{width: "25%", flexShrink: 0}}>
+    return <Paper style={{width: "25%", flexShrink: 0, minHeight: "100%", overflowY: "auto"}}>
         <Tabs
             value={activeTab}
             onChange={changeActive}
             variant="scrollable"
-            // scrollButtons="on"
         >
             <Tab label="Character"/>
             <Tab label="Rivals"/>
             <Tab label="Factions"/>
         </Tabs>
-        <div hidden={activeTab !== 0} style={{width: "100%"}}>
-            <CharacterSheet isPc={true}/>
-        </div>
-        <div hidden={activeTab !== 1} style={{width: "100%"}}>
-            <RivalsComponent/>
-        </div>
-        <div hidden={activeTab !== 2} style={{width: "100%"}}>
-            <FactionsComponent/>
-        </div>
+        <CharacterSheet isPc={true} hidden={activeTab !== 0}/>
+        <RivalsComponent hidden={activeTab !== 1}/>
+        <FactionsComponent hidden={activeTab !== 2}/>
     </Paper>
 }
