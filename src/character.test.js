@@ -1,6 +1,8 @@
 import {Character} from "./character";
 import Decimal from "decimal.js";
 import {getGlobalState} from "./engine";
+import {HitTypes} from "./data/HitTypes";
+import {getConfigurationValue} from "./config";
 
 jest.mock("./engine");
 
@@ -31,6 +33,21 @@ describe("character", function () {
             .toMatchObject({
                 isPc: false
             });
+    });
+    it(`has health equal to level * ${getConfigurationValue("health_per_level")}`, function () {
+        for(let i = 1; i <= 100; i++) {
+            const character = new Character({id: 1, attributes: {}, traits: {}, powerLevel: Decimal(i)});
+            const expectedHealth = Decimal(getConfigurationValue("health_per_level") * i * (1 + getConfigurationValue("attribute_health_modifier_scale"))).floor();
+            expect(character.hp).toEqual(expectedHealth);
+        }
+    });
+    it("has base damage equal to level * 5", function () {
+        for(let i = 1; i <= 100; i++) {
+            const character = new Character({id: 1, attributes: {}, traits: {}, powerLevel: Decimal(i)});
+            expect(character.damage[-1]).toEqual(Decimal(5 * i * HitTypes[-1].damageMultiplier).ceil());
+            expect(character.damage[0]).toEqual(Decimal(5 * i * HitTypes[0].damageMultiplier));
+            expect(character.damage[1]).toEqual(Decimal(5 * i * HitTypes[1].damageMultiplier));
+        }
     });
 });
 

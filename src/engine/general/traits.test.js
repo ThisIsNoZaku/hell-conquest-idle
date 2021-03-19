@@ -21,7 +21,7 @@ const traitBase = {
     icon: "icon"
 }
 
-describe("acidic effect", function () {
+describe("acidic body effect", function () {
     let player;
     let enemy;
     beforeEach(() => {
@@ -44,7 +44,11 @@ describe("acidic effect", function () {
     });
     it("gives acid damage resistance", function () {
         expect(player.damageResistances.acid).toEqual(Decimal(.1));
-    })
+    });
+    it("gives stacks of 'corroding' on being hit", function () {
+        expect(Object.keys(player.statusesAppliedOnBeingHit)).toContain("corroding");
+        expect(player.statusesAppliedOnBeingHit["corroding"]).toEqual(1);
+    });
 });
 
 describe("arcane effect", function () {
@@ -72,15 +76,15 @@ describe("arcane effect", function () {
         expect(calculateActionCost(player, {
             primary: "block",
             enhancements: [{enhancement: "arcane", sourceTrait: "test"}]
-        }, enemy)).toEqual(Decimal(50 * 1.1).floor());
+        }, enemy)).toEqual(Decimal(50 * 1.2).floor());
     });
     it("performing block with Arcane shield reduces damage further", function () {
         expect(calculateDamageBy(enemy).using({primary: "basicAttack", enhancements: []})
             .against(player).using({primary: "block", enhancements: [{enhancement:"arcane"}]})
         ).toEqual({
-            "-1": Decimal(15 * (HitTypes[-1].damageMultiplier) * .85).floor(),
-            0: Decimal(15 * (HitTypes[0].damageMultiplier) * .85).floor(),
-            1: Decimal(15 * (HitTypes[1].damageMultiplier) * .85).floor(),
+            "-1": Decimal(5 * (HitTypes[-1].damageMultiplier) * .85).floor(),
+            0: Decimal(5 * (HitTypes[0].damageMultiplier) * .85).floor(),
+            1: Decimal(5 * (HitTypes[1].damageMultiplier) * .85).floor(),
             "-2": Decimal(0).floor()
         });
     });
@@ -260,22 +264,23 @@ describe("coldblooded effect", function () {
         });
     });
     it("reduces all own action costs", function () {
+        const baseCost = getConfigurationValue("energy_cost_per_enemy_level");
         expect(calculateActionCost(player, {
             primary: "basicAttack",
             enhancements: []
-        })).toEqual(Decimal(100 * CombatActions.basicAttack.energyCostMultiplier * .75).floor())
+        })).toEqual(Decimal(baseCost * .7 * CombatActions.basicAttack.energyCostMultiplier).floor())
         expect(calculateActionCost(player, {
             primary: "powerAttack",
             enhancements: []
-        })).toEqual(Decimal(100 * CombatActions.powerAttack.energyCostMultiplier * .75).floor())
+        })).toEqual(Decimal(baseCost * .7 * CombatActions.powerAttack.energyCostMultiplier).floor())
         expect(calculateActionCost(player, {
             primary: "block",
             enhancements: []
-        })).toEqual(Decimal(100 * CombatActions.block.energyCostMultiplier * .75).floor())
+        })).toEqual(Decimal(baseCost * .7 * CombatActions.block.energyCostMultiplier).floor())
         expect(calculateActionCost(player, {
             primary: "dodge",
             enhancements: []
-        })).toEqual(Decimal(100 * CombatActions.dodge.energyCostMultiplier * .75).floor())
+        })).toEqual(Decimal(baseCost * .7 * CombatActions.dodge.energyCostMultiplier).floor())
     });
 });
 
@@ -468,8 +473,8 @@ describe("fiery effect", function () {
         }, roundEvents, 100);
         expect(roundEvents).toContainEqual({
             event: "damage",
-            type: "fire",
-            value: Decimal(15),
+            types: ["fire"],
+            value: Decimal(5),
             source: {
                 character: 0
             },
@@ -704,7 +709,7 @@ describe("inscrutable effect", function () {
                 expect(determineCharacterCombatAction(enemy, player, {
                     primary: "basicAttack",
                     enhancements: []
-                })).toEqual(determineCharacterCombatAction(enemy, player));
+                }, [])).toEqual(determineCharacterCombatAction(enemy, player));
             });
         });
     });
@@ -747,7 +752,7 @@ describe("insubstantial effect", function () {
             primary: "none",
             enhancements: []
         }, [], 100);
-        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(15 * HitTypes[0].damageMultiplier * .75).ceil()))
+        expect(enemy.hp).toEqual(Decimal(enemyStartingHp.minus(5 * HitTypes[0].damageMultiplier * .75).ceil()))
     });
 });
 
@@ -773,9 +778,9 @@ describe("killer effect", function () {
         expect(damage)
             .toEqual({
                 "-2": Decimal(0),
-                "-1": Decimal(.75 * 15).floor(),
-                0: Decimal(15),
-                1: Decimal(15 * 2 * 1.5).floor()
+                "-1": Decimal(.75 * 5).floor(),
+                0: Decimal(5),
+                1: Decimal(5 * 2 * 1.5).floor()
             });
     });
 });
@@ -1274,7 +1279,7 @@ describe("robust effect", function () {
         });
     });
     it("increases maximum hp", function () {
-        expect(player.maximumHp).toEqual(Decimal(50 * 1.6).floor());
+        expect(player.maximumHp).toEqual(Decimal(25 * 2.1).floor());
     })
 });
 
@@ -1314,7 +1319,9 @@ describe("sadistic effect", function () {
             target: 0,
             value: player.combat.maximumStamina.times(0.05).floor()
         });
-        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(1 + Math.floor(100 * CombatActions.basicAttack.energyCostMultiplier * .85)).plus(player.combat.maximumStamina.times(0.05).floor()));
+        const energyCost = Math.floor(100 * CombatActions.basicAttack.energyCostMultiplier * (1 - getConfigurationValue("precision_effect_per_point"))) + 1;
+        const energyGain = player.combat.maximumStamina.times(0.05).floor();
+        expect(player.combat.stamina).toEqual(player.combat.maximumStamina.minus(energyCost).plus(energyGain));
     });
 });
 
@@ -1427,11 +1434,11 @@ describe("thorns effect", function () {
                 character: 0,
                 trait: "test"
             },
-            type: "psychic",
+            types: ["psychic"],
             target: 1,
             parent: expect.any(String),
             uuid: expect.any(String),
-            value: Decimal(3)
+            value: Decimal(1)
         })
     });
 });
@@ -1471,7 +1478,7 @@ describe("unstoppable effect", function () {
     });
     it("increases energy cost to block your attacks", function () {
         const blockCost = calculateActionCost(enemy, {primary: "block", enhancements: []}, player);
-        expect(blockCost).toEqual(Decimal(100 * 1.1 * .5).floor());
+        expect(blockCost).toEqual(Decimal(100 * 1.2 * .5).floor());
     });
 });
 

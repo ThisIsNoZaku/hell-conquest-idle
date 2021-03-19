@@ -34,8 +34,8 @@ describe("the combat round resolution", function () {
             enhancements: []
         });
         resolveCombatRound(100, {0: player, 1: enemy});
-        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(1, player, enemy);
-        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(2, enemy, player, expect.any(Object));
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(1, player, enemy, null, expect.any(Array));
+        expect(determineCharacterCombatAction).toHaveBeenNthCalledWith(2, enemy, player, expect.any(Object), expect.any(Array));
     });
     it("calls onRoundBegin once", function () {
         resolveCombatRound(100, {0: player, 1: enemy});
