@@ -7,10 +7,8 @@ import {Traits} from "../../../data/Traits";
 import {Statuses} from "../../../data/Statuses";
 
 export function calculateActionCost(actor, action, enemy) {
-    const base = Decimal(_.get(enemy, "powerLevel", 1)).times(getConfigurationValue("attack_upgrade_cost_per_enemy_level"));
-    const attributeMultiplier = Decimal(1).minus(getConfigurationValue("mechanics.combat.precision.effectPerPoint"))
-        .pow(CombatActions[action.primary].defense ? Decimal(_.get(actor, ["combat", "evasion"], 1)) :
-            Decimal(_.get(actor, ["combat", "precision"], 1)));
+    const base = Decimal(_.get(enemy, "powerLevel", 1)).times(getConfigurationValue("energy_cost_per_enemy_level"));
+    const attributeMultiplier = CombatActions[action.primary].defense ? actor.attackActionAttributeMultiplier : actor.defenseActionAttributeMultiplier;
     const actionCostMultiplier = CombatActions[action.primary].energyCostMultiplier;
     const enhancementModifier = action.enhancements.map(e => ActionEnhancements[e.enhancement]).reduce((previousValue, currentValue, currentIndex) => {
         const globalActionCostModifier = (currentValue.energy_cost_modifier || 0);
