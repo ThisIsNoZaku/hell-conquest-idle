@@ -89,10 +89,10 @@ export default function resolveAttack(actingCharacter, action, targetedCharacter
         },
         roundEvents
     });
-    if(!targetedCharacter.isAlive) {
-        roundEvents.push(generateKillEvent(actingCharacter, targetedCharacter));
-    }
     if (attackResult.damage) {
         onTakingDamage(targetedCharacter, actingCharacter, attackResult.attack, attackResult.damage, roundEvents);
+    }
+    if(!targetedCharacter.isAlive) {
+        roundEvents.push(generateKillEvent(actingCharacter, targetedCharacter));
     }
 }
