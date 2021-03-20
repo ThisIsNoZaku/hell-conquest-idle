@@ -2,14 +2,7 @@ import {calculateActionCost} from "./calculateActionCost";
 import {debugMessage} from "../../../debugging";
 import * as _ from "lodash";
 import {CombatActions} from "../../../data/CombatActions";
-import {act} from "@testing-library/react";
-
-const doNothing = (actingCharacter) => {
-    return {
-        primary: "none",
-        enhancements: actingCharacter.defenseEnhancements
-    }
-}
+import {v4} from "node-uuid";
 
 const attackPrevented = (actingCharacter) => {
     return {
@@ -19,7 +12,7 @@ const attackPrevented = (actingCharacter) => {
     }
 }
 
-export default function determineCharacterCombatAction(actingCharacter, enemy, enemyAction) {
+export default function determineCharacterCombatAction(actingCharacter, enemy, enemyAction, roundEvents) {
     debugMessage(`Determining action for '${actingCharacter.id}' with tactics ${actingCharacter.tactics.offensive}-${actingCharacter.tactics.defensive}'. Enemy is performing '${_.get(enemyAction, "primary", "unknown")}'`);
     if (!enemy.canBeAttacked || !actingCharacter.canBeAttacked) {
         return attackPrevented(actingCharacter);
@@ -29,6 +22,16 @@ export default function determineCharacterCombatAction(actingCharacter, enemy, e
     let primaryAction = actionDeterminers[actingCharacter.tactics.offensive][actingCharacter.tactics.defensive](actingCharacter, enemy,
         _.get(enemyAction, "primary") === "none" || (enemyAction && canKnowEnemyAction) ? enemyAction : null);
     debugMessage(`Selected action ${_.get(primaryAction, "primary")}`);
+    if (!canKnowEnemyAction && enemyAction) {
+        roundEvents.push({
+            event: "deceived",
+            uuid: v4(),
+            source: {
+                character: enemy.id
+            },
+            target: actingCharacter.id
+        })
+    }
     const action = {
         primary: primaryAction,
         enhancements: defenseActions.includes(primaryAction) ? actingCharacter.defenseEnhancements : actingCharacter.attackEnhancements
@@ -67,8 +70,8 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             }
         },
         block: function (actingCharacter, enemy, enemyAction) {
-            if(actingCharacter.lastAction === "none") {
-                if(_.get(enemyAction, "primary") === "block" || _.get(enemyAction, "primary") === "none") {
+            if (actingCharacter.lastAction === "none") {
+                if (_.get(enemyAction, "primary") === "block" || _.get(enemyAction, "primary") === "none") {
                     return "powerAttack"
                 }
                 return "basicAttack";
@@ -110,8 +113,8 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             }
         },
         dodge: function (actingCharacter, enemy, enemyAction) {
-            if(actingCharacter.lastAction === "none") {
-                if(_.get(enemyAction, "primary") === "block" || _.get(enemyAction, "primary") === "none") {
+            if (actingCharacter.lastAction === "none") {
+                if (_.get(enemyAction, "primary") === "block" || _.get(enemyAction, "primary") === "none") {
                     return "powerAttack"
                 }
                 return "basicAttack";
@@ -164,7 +167,7 @@ const actionDeterminers = { // TODO: Refactor? Maybe lookup table for combinatio
             }
         },
         block: function (actingCharacter, enemy, enemyAction) {
-            if(actingCharacter.lastAction === "none") {
+            if (actingCharacter.lastAction === "none") {
                 return "basicAttack";
             }
             const enemyCanPowerAttack = enemy.combat.stamina.gte(calculateActionCost(enemy, {
