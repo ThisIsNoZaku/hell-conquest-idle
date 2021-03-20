@@ -33,8 +33,8 @@ export default function resolveCombatRound(tick, combatants) {
         }
     );
 
-    const firstCharacterAction = determineCharacterCombatAction(initiativeOrder[0], initiativeOrder[1]);
-    const secondCharacterAction = determineCharacterCombatAction(initiativeOrder[1], initiativeOrder[0], firstCharacterAction);
+    const firstCharacterAction = determineCharacterCombatAction(initiativeOrder[0], initiativeOrder[1], null, roundEvents);
+    const secondCharacterAction = determineCharacterCombatAction(initiativeOrder[1], initiativeOrder[0], firstCharacterAction, roundEvents);
     if(firstCharacterAction.primary === "block" && DEFENSE_ACTIONS.includes(secondCharacterAction.primary)) {
         firstCharacterAction.primary = "none"
     }
