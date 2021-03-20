@@ -64,10 +64,10 @@ const defaultState = {
                 defensive: "block"
             },
             attributes: {
-                baseBrutality: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                baseCunning: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                baseDeceit: getConfigurationValue("mechanics.combat.playerAttributeMinimum"),
-                baseMadness: getConfigurationValue("mechanics.combat.playerAttributeMinimum")
+                baseBrutality: getConfigurationValue("attribute_score_minimum"),
+                baseCunning: getConfigurationValue("attribute_score_minimum"),
+                baseDeceit: getConfigurationValue("attribute_score_minimum"),
+                baseMadness: getConfigurationValue("attribute_score_minimum")
             },
             combat: {}
         }, 0)
