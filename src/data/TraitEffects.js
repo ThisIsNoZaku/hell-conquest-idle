@@ -10,6 +10,17 @@ export const TraitEffects = {
                     type: "acid",
                     percentage: .1
                 }
+            },
+        },
+        on_taking_damage: {
+            trigger_effects: {
+                add_statuses: {
+                    corroding: {
+                        target: "enemy",
+                        stacks: 1,
+                        duration: 3
+                    }
+                }
             }
         }
     },
@@ -51,11 +62,11 @@ export const TraitEffects = {
             trigger_effects: {
                 action_cost_modifier: {
                     target: "self",
-                    value: -.1
+                    value: -.25
                 },
                 energy_generation_modifier: {
                     target: "self",
-                    value: -.1
+                    value: -.25
                 }
             }
         }
@@ -140,7 +151,7 @@ export const TraitEffects = {
         }
     },
     inscrutable: {
-        continuous : {
+        continuous: {
             trigger_effects: {
                 precision_modifier: {
                     target: "self",
@@ -350,7 +361,7 @@ export const TraitEffects = {
             trigger_effects: {
                 maximum_health_modifier: {
                     target: "self",
-                    value: .5
+                    value: 1
                 }
             }
         }
