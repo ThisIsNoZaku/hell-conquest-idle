@@ -59,7 +59,7 @@ export function generateFatigueDamageEvent(source, target, damage) {
     }
 }
 
-export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, damageType, sourceType, sourceId) {
+export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone, damageTypes, sourceType, sourceId) {
     return {
         event: "damage",
         uuid: v4(),
@@ -69,7 +69,7 @@ export function generateDamageEvent(sourceCharacter, targetCharacter, damageDone
             [sourceType]: sourceId
         },
         value: Decimal(damageDone),
-        type: damageType
+        types: Array.isArray(damageTypes) ? damageTypes : [damageTypes]
     }
 }
 
