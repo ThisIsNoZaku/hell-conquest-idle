@@ -18,12 +18,15 @@ export function enableTutorial(id) {
 export function completeTutorial(id) {
     const enabled = _.get(getGlobalState(), ["tutorials", id, "enabled"]);
     if(enabled) {
+        const previouslyCompleted = _.get(getGlobalState(), ["tutorials", id, "completed"], false);
         _.set(getGlobalState(), ["tutorials", id, "completed"], true);
-        listeners.forEach(l => {
-            l("completed", id, Tutorials[id])
-        });
-        if(Tutorials[id].onCompletion) {
-            Tutorials[id].onCompletion();
+        if(!previouslyCompleted) {
+            listeners.forEach(l => {
+                l("completed", id, Tutorials[id])
+            });
+            if (Tutorials[id].onCompletion) {
+                Tutorials[id].onCompletion();
+            }
         }
         saveGlobalState();
     }
