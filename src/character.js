@@ -71,9 +71,9 @@ export class Character {
     }
 
     get damageResistances() {
-        return Object.keys(DamageTypes).reduce((resistances, nextType)=>{
+        return Object.keys(DamageTypes).reduce((resistances, nextType) => {
             resistances[nextType] = Object.keys(this.allTraits)
-                .reduce((total, nextTrait)=>{
+                .reduce((total, nextTrait) => {
                     const damageResistance = _.get(Traits[nextTrait], ["continuous", "trigger_effects", "damage_resistance"], {});
                     const level = Decimal.min(1, Decimal(this.allTraits[nextTrait]).plus(this.attributes.madness.div(10)));
                     return total.plus(damageResistance.type === nextType ? level.times(damageResistance.percentage) : 0);
@@ -83,7 +83,7 @@ export class Character {
     }
 
     levelUp() {
-        if(!_.get(getGlobalState(), ["debug", "levelUpDisabled"], false)) {
+        if (!_.get(getGlobalState(), ["debug", "levelUpDisabled"], false)) {
             this.powerLevel = this.powerLevel.plus(1);
             Creatures[this.appearance].traits.forEach(trait => {
                 const gs = getGlobalState();
@@ -133,7 +133,7 @@ export class Character {
         const traitModifier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             return previousValue.plus(_.get(Traits[currentValue], ["continuous", "trigger_effects", "energy_generation_modifier", "value"], 0));
         }, Decimal(0))
-        return this.latentPowerModifier.plus(traitModifier).plus(1).times(this.powerLevel.times(getConfigurationValue("base_power_generated_per_level_per_tick")));
+        return this.latentPowerModifier.plus(traitModifier).plus(1).times(this.powerLevel.times(getConfigurationValue("base_power_generated_per_level_per_tick"))).times(this.attributes.cunning);
     }
 
     getStatusStacks(status) {
@@ -142,7 +142,7 @@ export class Character {
 
     getActiveStatusInstance(status) {
         return _.get(this.statuses, status, []).reduce((instance, next) => {
-            if(instance === null) {
+            if (instance === null) {
                 return next;
             }
             return Decimal(_.get(instance, "ranks", 0)).gt(next.stacks) ? instance : next;
@@ -177,12 +177,35 @@ export class Character {
         this.hp = Decimal.min(this.maximumHp, newHp);
     }
 
-    get maximumHp() {
-        const base = Decimal(getConfigurationValue("mechanics.combat.hp.baseHp"));
+    get attackActionAttributeMultiplier() {
+        const attributeModifier = Decimal(getConfigurationValue("precision_effect_per_point"))
+            .pow(this.combat.precision);
+        return Decimal(1).minus(attributeModifier);
+    }
 
-        const fromLevel = this.powerLevel.times(getConfigurationValue("mechanics.combat.hp.pointsPerLevel"));
-        const attributeMultiplier = this.attributes[getConfigurationValue("mechanics.combat.hp.baseAttribute")]
-            .times(getConfigurationValue("mechanics.combat.hp.effectPerPoint"));
+    get defenseActionAttributeMultiplier() {
+        const attributeModifier = Decimal(getConfigurationValue("evasion_effect_per_point"))
+            .pow(this.combat.evasion);
+        return Decimal(1).minus(attributeModifier);
+    }
+
+    get statusesAppliedOnBeingHit() {
+        return Object.keys(this.traits).reduce((statuses, nextTrait) => {
+            const traitDef = _.get(Traits[nextTrait], ["on_taking_damage", "trigger_effects", "add_statuses"], []);
+            Object.keys(traitDef).filter(k => traitDef[k].target === "enemy")
+                .forEach(status => {
+                    statuses[status] = traitDef[status].stacks;
+                });
+            return statuses;
+        }, {})
+    }
+
+    get maximumHp() {
+        const base = Decimal(0);
+
+        const fromLevel = this.powerLevel.times(getConfigurationValue("health_per_level"));
+        const attributeMultiplier = this.attributes[getConfigurationValue("health_modifier_attribute")]
+            .times(getConfigurationValue("attribute_health_modifier_scale"));
         const traitMultiplier = Object.keys(this.traits).reduce((previousValue, currentValue) => {
             const traitModifier = _.get(Traits[currentValue], ["continuous", "trigger_effects", "maximum_health_modifier"]);
             return previousValue.plus(_.get(traitModifier, "target") === "self" ? traitModifier.value : 0);
@@ -217,9 +240,9 @@ export class Character {
         });
         this.statuses = {};
         this.absorbedPower = Decimal(0);
-        if(!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
+        if (!_.get(getGlobalState(), ["debug", "latentPowerGrowthDisabled"], false)) {
             this.latentPower = this.latentPower.plus(this.powerLevel.times(getConfigurationValue("latent_power_per_level")));
-            if(this.latentPower.gt(this.latentPowerCap)) {
+            if (this.latentPower.gt(this.latentPowerCap)) {
                 enableTutorial("latent-power-cap");
             }
         }
@@ -297,6 +320,10 @@ export class Character {
     get canNegotiate() {
         return this.powerLevel.gte(26);
     }
+
+    get damage() {
+        return this.combat.damage;
+    }
 }
 
 export class Attributes {
@@ -311,32 +338,29 @@ export class Attributes {
     }
 
     get brutality() {
-        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
-            baseAttribute: this.baseBrutality,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
-        }).floor();
+        return calculateEffectiveAttribute(this.baseBrutality, this.character.latentPowerModifier)
     }
 
     get cunning() {
-        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
-            baseAttribute: this.baseCunning,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
-        }).floor();
+        return calculateEffectiveAttribute(this.baseCunning, this.character.latentPowerModifier)
     }
 
     get deceit() {
-        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
-            baseAttribute: this.baseDeceit,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
-        }).floor();
+        return calculateEffectiveAttribute(this.baseDeceit, this.character.latentPowerModifier)
     }
 
     get madness() {
-        return evaluateExpression(getConfigurationValue("mechanics.combat.effectiveAttributeCalculation"), {
-            baseAttribute: this.baseMadness,
-            stolenPowerModifier: Decimal(this.character.latentPowerModifier).plus(1)
-        }).floor();
+        return calculateEffectiveAttribute(this.baseMadness, this.character.latentPowerModifier)
     }
+}
+
+export function calculateEffectiveAttribute(baseAttribute, characterLatentPower) {
+    const latentPowerModifier = characterLatentPower.plus(1);
+
+    return Decimal(baseAttribute)
+        //.times(latentPowerModifier)
+        ;
+
 }
 
 class CombatStats {
@@ -346,17 +370,18 @@ class CombatStats {
         });
         this.fatigue = Decimal(overrides.fatigue || 0);
         this.stamina = Decimal(overrides.stamina || 0);
+        this.reserve = Decimal(overrides.reserve || this.maximumStamina);
     }
 
     refresh() {
         this.fatigue = Decimal(0);
+        this.reserve = this.maximumStamina;
     }
 
     get damage() {
+        const baseDamage = this.character.powerLevel.times(getConfigurationValue("damage_per_level"));
         return Object.keys(HitTypes).reduce(((previousValue, currentValue) => {
-            const baseDamage = evaluateExpression(getConfigurationValue("mechanics.combat.baseDamage"), {
-                player: this.character
-            });
+
             const hitTypeMultiplier = HitTypes[currentValue].damageMultiplier;
             previousValue[currentValue] = Decimal(baseDamage)
                 .times(hitTypeMultiplier).ceil();
@@ -406,7 +431,7 @@ class CombatStats {
 }
 
 export function calculateCombatStat(character, combatAttribute) {
-    const attributeBase = character.attributes[getConfigurationValue(["mechanics", "combat", combatAttribute, "baseAttribute"])];
+    const attributeBase = character.attributes[getConfigurationValue(`${combatAttribute}_base_attribute`)];
     const tacticsModifier = Decimal(0);
     const statusesModifier = Object.keys(character.statuses).reduce((currentValue, nextStatus) => {
         const statusDefinition = Statuses[nextStatus];
@@ -463,6 +488,7 @@ const characterPropsSchema = JOI.object({
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         evasionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         fatigue: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
+        reserve: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
     }).default({}),
     adjectives: JOI.array().items(JOI.string()),
     absorbedPower: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number())
