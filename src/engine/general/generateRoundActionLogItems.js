@@ -32,6 +32,8 @@ function describeEvent(event) {
     const sourceName = getCharacter(event.source.character).name;
     const targetName = event.target !== undefined ? getCharacter(event.target).name : null;
     switch (event.event) {
+        case "deceived":
+            return `Due to ${event.source.character.id === 0 ? "Your" : "the enemy's"} Cunning vs ${event.source.character.id !== 0 ? "Your" : "the enemy's"} Deception, ${targetName} could not determine what ${event.source.character.id === 0 ? "Your" : "the enemy's"} action was.`;
         case "stamina-change":
             return `${targetName} ${event.value.lt(0) ? 'lost' : 'gained'} ${Decimal(event.value).abs().toFixed()} energy`;
         case "stamina-change":
