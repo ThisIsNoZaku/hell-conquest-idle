@@ -49,22 +49,40 @@ export default function CharacterCombatStatistics(props) {
     const theme = useTheme();
     const smallScreen = useMediaQuery(theme.breakpoints.down("lg"));
 
-    const blockCost = useMemo(() => calculateActionCost(character, {primary: "block", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed(),
+    const blockCost = useMemo(() => calculateActionCost(character, {
+            primary: "block",
+            enhancements: _.get(character, "defenseEnhancements", [])
+        }, enemy).toFixed(),
         defenseArgs);
-    const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance)=>{
+    const blockEffect = Decimal(HitTypes[-1].damageMultiplier).plus(_.get(character, "attackEnhancements", []).reduce((total, enhance) => {
         return total + (enhance.additional_block_damage_reduction || 0);
     }, 0)).times(100).toFixed();
-    const dodgeCost = useMemo(() => calculateActionCost(character, {primary: "dodge", enhancements: _.get(character, "defenseEnhancements", [])}, enemy).toFixed(),
+    const dodgeCost = useMemo(() => calculateActionCost(character, {
+            primary: "dodge",
+            enhancements: _.get(character, "defenseEnhancements", [])
+        }, enemy).toFixed(),
         defenseArgs);
 
-    const basicAttackCost = useMemo(() => calculateActionCost(character, {primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed(),
+    const basicAttackCost = useMemo(() => calculateActionCost(character, {
+            primary: "basicAttack",
+            enhancements: _.get(character, "attackEnhancements", [])
+        }, enemy).toFixed(),
         attackArgs);
-    const basicAttackDamage = calculateDamageBy(character).using({primary: "basicAttack", enhancements: _.get(character, "attackEnhancements", [])})
+    const basicAttackDamage = calculateDamageBy(character).using({
+        primary: "basicAttack",
+        enhancements: _.get(character, "attackEnhancements", [])
+    })
         .against(enemy).using({primary: "none", enhancements: _.get(enemy, ["defenseEnhancements"], [])})[0].toFixed();
 
-    const powerAttackCost = useMemo(() => calculateActionCost(character, {primary: "powerAttack", enhancements: _.get(character, "attackEnhancements", [])}, enemy).toFixed(),
+    const powerAttackCost = useMemo(() => calculateActionCost(character, {
+            primary: "powerAttack",
+            enhancements: _.get(character, "attackEnhancements", [])
+        }, enemy).toFixed(),
         attackArgs);
-    const powerAttackDamage = calculateDamageBy(character).using({primary: "powerAttack", enhancements: _.get(character, "attackEnhancements", [])})
+    const powerAttackDamage = calculateDamageBy(character).using({
+        primary: "powerAttack",
+        enhancements: _.get(character, "attackEnhancements", [])
+    })
         .against(enemy).using({primary: "none", enhancements: _.get(enemy, ["defenseEnhancements"], [])})[1].toFixed();
     return <Grid container>
         <Grid item xs={12}>
@@ -86,13 +104,14 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                         <TableCell>
-                            Max Energy
+                            Energy Reserve
                         </TableCell>
                         <TableCell>
-                            {character.combat.maximumStamina.toFixed()}
+                            {character.combat.reserve.toFixed()}/{character.combat.maximumStamina.toFixed()}
                         </TableCell>
                         <TableCell>
-                            <Tooltip title="The maximum Energy you can have safely.">
+                            <Tooltip
+                                title="The character's Energy Reserve is how much energy the character can can upon as combat continues.">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
@@ -110,13 +129,13 @@ export default function CharacterCombatStatistics(props) {
                             </Tooltip>
                         </TableCell>
                         <TableCell>
-                            Energy Regen
+                            Energy Generation
                         </TableCell>
                         <TableCell>
                             {character.energyGeneration.toFixed()}
                         </TableCell>
                         <TableCell>
-                            <Tooltip title="Gain this much energy every 100 ticks of combat.">
+                            <Tooltip title="The amount of energy gained each round.">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
@@ -205,26 +224,27 @@ export default function CharacterCombatStatistics(props) {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            Max Energy
+                            Energy Reserve
                         </TableCell>
                         <TableCell>
-                            {character.combat.maximumStamina.toFixed()}
+                            {character.combat.reserve.toFixed()}/{character.combat.maximumStamina.toFixed()}
                         </TableCell>
                         <TableCell>
-                            <Tooltip title="Energy is used to perform various actions and trigger special effects">
+                            <Tooltip
+                                title="The character's Energy Reserve is how much energy the character can can upon as combat continues.">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            Energy Regen
+                            Energy Generation
                         </TableCell>
                         <TableCell>
-                            {character.energyGeneration.times(100).toFixed()}
+                            {character.energyGeneration.toFixed()}
                         </TableCell>
                         <TableCell>
-                            <Tooltip title="Gain this much energy every 100 ticks of combat.">
+                            <Tooltip title="The amount of energy gained each round.">
                                 <Help/>
                             </Tooltip>
                         </TableCell>
