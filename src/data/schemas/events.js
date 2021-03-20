@@ -77,8 +77,8 @@ export const onEventValidator = JOI.object({
 });
 
 export const eventsValidator = JOI.object({
-    on_round_end: onEventValidator,
-    on_hit: onEventValidator,
+    on_round_end: onEventValidator, // When round ends
+    on_hit: onEventValidator, // When the character makes a hit
     on_intimidate: onEventValidator,
     on_solid_hit: onEventValidator,
     on_serious_hit: onEventValidator,
