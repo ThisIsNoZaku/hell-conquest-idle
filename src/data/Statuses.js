@@ -20,6 +20,17 @@ export const Statuses = {
             }
         }
     }),
+    corroding: validatedStatus({
+        name: "Corroding",
+        icon: "./icons/icons-353.png",
+        description: _.template("This demon's flesh is being destroyed by acid, taking ${inflict_damage_at_start_of_round} at the beginning of each round."),
+        effects: {
+            inflict_damage_at_start_of_round: {
+                target: "self",
+                value: 10
+            }
+        }
+    }),
     crushed: validatedStatus({
         name: "Crushed",
         icon: "./icons/icons-155.png",
