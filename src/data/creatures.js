@@ -147,7 +147,7 @@ export const Creatures = {
         traits: ["carrion_feeder"],
         enabled: true,
         appearance: "carrionBeetle",
-        description: "A swarming beetle that feasts on corpses",
+        description: "A beetle that swarms over victims and ravenously consumes them.",
         texture: "17_scarab.png",
         npc: {
             loyalty: "kakoi",
