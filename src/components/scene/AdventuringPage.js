@@ -142,6 +142,7 @@ export default function AdventuringPage(props) {
                         setCurrentAction(Actions[currentAction]);
                     }
                     debugMessage(`Current Action now: ${getGlobalState().currentAction} Next: ${getGlobalState().nextAction}`);
+                    saveGlobalState();
                 }
                 const passedTime = timestamp - lastTime;
                 const adjustedTime = passedTime;
