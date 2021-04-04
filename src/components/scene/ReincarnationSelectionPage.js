@@ -56,18 +56,10 @@ export default function ReincarnationSelectionPage(props) {
         traitsOwned: Decimal(Object.values(startingTraits).filter(x => x).length)
     });
     const nextAttributeCosts = {
-        baseBrutality: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.baseBrutality)
-        }),
-        baseCunning: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.baseCunning)
-        }),
-        baseDeceit: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.baseDeceit)
-        }),
-        baseMadness: evaluateExpression(getConfigurationValue("mechanics.reincarnation.attributePointCost"), {
-            attributeScore: Decimal(attributes.baseMadness)
-        }),
+        baseBrutality: (attributes.baseBrutality.mul((attributes.baseBrutality.plus(1)))).div(2),
+        baseCunning:(attributes.baseCunning.mul((attributes.baseCunning.plus(1)))).div(2),
+        baseDeceit:(attributes.baseDeceit.mul((attributes.baseDeceit.plus(1)))).div(2),
+        baseMadness:(attributes.baseMadness.mul((attributes.baseMadness.plus(1)))).div(2),
     }
 
     const [currentRegion, setCurrentRegion] = useState(getGlobalState().currentRegion);
@@ -124,7 +116,7 @@ export default function ReincarnationSelectionPage(props) {
                                 </Button>
                                 {Decimal(attributes[attribute]).toFixed()}
                                 <Button
-                                    disabled={Decimal(attributes[attribute]).lte(getConfigurationValue("mechanics.combat.playerAttributeMinimum"))}
+                                    disabled={Decimal(attributes[attribute]).lte(getConfigurationValue("minimum_attribute_score"))}
                                     onClick={() => {
                                         player.attributes[attribute] = Decimal(attributes[attribute]).minus(1);
                                         setAttributes({
