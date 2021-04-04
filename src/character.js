@@ -484,7 +484,7 @@ const characterPropsSchema = JOI.object({
         defensive: JOI.valid(...Object.keys(Tactics.defensive)).default("block"),
     }).default({offensive: "attrit", defensive: "block"}),
     combat: JOI.object({
-        stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal)),
+        stamina: JOI.alternatives().try(JOI.string(), JOI.object().instance(Decimal), JOI.number()),
         precisionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         evasionPoints: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
         fatigue: JOI.alternatives().try(JOI.string(), JOI.number(), JOI.object().instance(Decimal)),
