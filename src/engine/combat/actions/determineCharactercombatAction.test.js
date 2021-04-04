@@ -852,14 +852,6 @@ describe('Tactics counter + block', function () {
             enhancements: []
         });
     });
-    it("with no stamina, do nothing", function () {
-        player.combat.stamina = Decimal(0);
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual({
-                primary: "none",
-                enhancements: []
-            })
-    });
     it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
         player.combat.stamina = player.combat.maximumStamina;
         player.lastAction = "none";
@@ -970,14 +962,6 @@ describe('Tactics counter + evade', function () {
             primary: "basicAttack",
             enhancements: []
         });
-    });
-    it("with no stamina, do nothing", function () {
-        player.combat.stamina = Decimal(0);
-        expect(determineCharacterCombatAction(player, enemy))
-            .toEqual({
-                primary: "none",
-                enhancements: []
-            });
     });
     it("if the character did nothing last round and the enemy is defending or doing nothing, perform a basic attack", function () {
         player.combat.stamina = player.combat.maximumStamina;
