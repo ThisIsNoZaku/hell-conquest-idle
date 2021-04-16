@@ -41,7 +41,7 @@ export const Creatures = {
     bandagedMan: validatedCreature({
         name: "Bandaged Man",
         traits: ["lifetimeOfPain"],
-        description: "A demon born from a man tortued for years before being burned alive.",
+        description: "A demon born from a man tortured for years before being burned alive.",
         texture: "35_mummy.png",
         appearance: "bandagedMan",
         npc: {
