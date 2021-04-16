@@ -82,12 +82,6 @@ export const Traits = {
         icon: "./icons/icons-253.png",
         description: _.template("This Demon's extensive knowledge of a variety of demons let it use enemy Traits against them and enhance their Blocks with magic.")
     }, ["learned", "arcane"])),
-    plagueHarbinger: validatedTrait(generateTrait({
-        name: "Plague Harbinger",
-        enabled: true,
-        icon: "./icons/icons-6.png",
-        description: _.template("This Demon's small size increases Precision and Evasion by ${tier.times(20)}% and reduces Power and Resilience by ${tier.times(10)}% and on being hit, ${tier} stacks of Diseased are inflicted on the enemy.")
-    }, ["small", "diseased"])),
     eerieWatcher: validatedTrait(generateTrait({
         name: "Eerie Watcher",
         icon: "./icons/icons-2381.png",
@@ -105,17 +99,17 @@ export const Traits = {
         icon: "./icons/icons-2305.png",
         description: _.template("This Demon, imbued with Hellfire, can fly through the air and its attacks Burn enemies.")
     }, ["flying", "fiery"])),
+    fortressOfMadness: validatedTrait(generateTrait({
+        name: "Fortress of Madness",
+        icon: "./icons/icons-856.png",
+        description: _.template("Your madness twists your enemy's body as it twists your own mind, reflecting ${tier.times(20)}% of damage taken and statuses applied by the enemy to you.")
+    }, ["reversal", "thorns"])),
     freakyFishGuy: validatedTrait(generateTrait({
         name: "Thassalophilia",
         enabled: true,
         icon: "./icons/icons-2233.png",
         description: _.template("This Demon's strange ways makes it hard to predict its actions, increasing Precision and Evasion by ${tier.times(10)}% and the enemy cannot use this Demon's action when determining it's own and at the beginning of combat enemies gain ${tier} stacks of Frightened for 10 rounds.")
     }, ["inscrutable", "frightening"])),
-    fortressOfMadness: validatedTrait(generateTrait({
-        name: "Fortress of Madness",
-        icon: "./icons/icons-856.png",
-        description: _.template("Your madness twists your enemy's body as it twists your own mind, reflecting ${tier.times(20)}% of damage taken and statuses applied by the enemy to you.")
-    }, ["reversal", "thorns"])),
     heartlessMountain: validatedTrait(generateTrait({
         name: "Heartlessness of the Mountain",
         icon: "./icons/icons-254.png",
@@ -152,12 +146,24 @@ export const Traits = {
         icon: "./icons/icons-122.png",
         description: _.template("This Demon countless eons of suffering means it does not simply ignore pain, it embraces it, gaining energy to ${tier.times(10)}% of max on taking damage")
     }, ["robust", "masochistic"])),
+    outcastStrength: validatedTrait(generateTrait({
+        name: "Outcast's Strength",
+        icon: "./icons/icons-88.png",
+        enabled: true,
+        description: _.template("Your bloody-minded refusal to allow your enemies to defeat you gives a ${tier.times(50)}% bonus to Health and a ${tier.times(25)}% bonus to Resilience.")
+    }, ["robust", "tough"])),
     piercingStrike: validatedTrait(generateTrait({
         name: "Deadly Strikes",
         icon: "./icons/icons-113.png",
         enabled: true,
         description: _.template("This Demon dances around foes while it's fierce attacks can punch right through even armor, increasing both Precision and Evasion by ${tier.times(25)}%. ")
     }, ["precise", "evasive"])),
+    plagueHarbinger: validatedTrait(generateTrait({
+        name: "Plague Harbinger",
+        enabled: true,
+        icon: "./icons/icons-6.png",
+        description: _.template("This Demon's small size increases Precision and Evasion by ${tier.times(20)}% and reduces Power and Resilience by ${tier.times(10)}% and on being hit, ${tier} stacks of Diseased are inflicted on the enemy.")
+    }, ["small", "diseased"])),
     relentless: validatedTrait(generateTrait({
         name: "Tireless",
         description: _.template("The indomitability of this Demon increases maximum and generated Energy by ${tier.times(25)}% and increases resilience by ${tier.times(25)}%."),
@@ -245,12 +251,6 @@ export const Traits = {
         icon: "./icons/icons-2240.png",
         description: _.template("This Demon's liquid form makes it difficult to harm and allows its attacks to flow around defenses, increasing Precision by ${tier.times(25)}% and inflicting Fatigue equal to ${tier.times(20)}% of maximum stamina on a hit.")
     }, ["choking", "precise"])),
-    outcastStrength: validatedTrait(generateTrait({
-        name: "Outcast's Strength",
-        icon: "./icons/icons-88.png",
-        enabled: true,
-        description: _.template("Your bloody-minded refusal to allow your enemies to defeat you gives a ${tier.times(50)}% bonus to Health and a ${tier.times(25)}% bonus to Resilience.")
-    }, ["robust", "tough"]))
 }
 
 export function generateTrait(baseObject, traits) {
